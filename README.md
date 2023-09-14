@@ -1,5 +1,7 @@
 # Schemes
 
+[![CI](https://github.com/acteng/schemes/actions/workflows/ci.yml/badge.svg)](https://github.com/acteng/schemes/actions/workflows/ci.yml)
+
 ## Running locally
 
 1. Create a virtual environment:

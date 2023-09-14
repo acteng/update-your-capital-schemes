@@ -27,3 +27,11 @@
     ```
 
 1. Open http://127.0.0.1:5000
+
+## Running tests
+
+To run the integration tests:
+
+```bash
+pytest
+```

@@ -2,6 +2,10 @@
 
 [![CI](https://github.com/acteng/schemes/actions/workflows/ci.yml/badge.svg)](https://github.com/acteng/schemes/actions/workflows/ci.yml)
 
+## Prerequisites
+
+1. Install Python 3.10
+
 ## Running locally
 
 1. Create a virtual environment:

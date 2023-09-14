@@ -32,8 +32,14 @@
 
 ## Running tests
 
-To run the integration tests:
+1. Install the browsers:
 
-```bash
-pytest
-```
+   ```bash
+   playwright install chromium
+   ```
+
+1. Run the tests:
+   
+   ```bash
+   pytest
+   ```

@@ -32,6 +32,12 @@
 
 ## Running tests
 
+1. Install the dev dependencies:
+
+    ```bash
+    pip install -e .[dev]
+    ```
+
 1. Install the browsers:
 
    ```bash

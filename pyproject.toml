@@ -2,7 +2,11 @@
 name = "schemes"
 version = "1.0.0"
 dependencies = [
-    "flask",
+    "flask"
+]
+
+[project.optional-dependencies]
+dev = [
     "playwright",
     "pytest",
     "pytest-flask",

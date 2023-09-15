@@ -29,7 +29,22 @@ jobs:
     - name: Run tests
       run: pytest
 
-    - name: Build image
+    - id: auth
+      name: Authenticate with Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        token_format: access_token
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - name: Login to Docker repository
+      uses: docker/login-action@v1
+      with:
+        registry: europe-west1-docker.pkg.dev
+        username: oauth2accesstoken
+        password: ${{ steps.auth.outputs.access_token }}
+
+    - name: Build and push image
       uses: docker/build-push-action@v4
       with:
-        tags: schemes
+        tags: europe-west1-docker.pkg.dev/dft-ate-schemes-prt/docker/schemes
+        push: true

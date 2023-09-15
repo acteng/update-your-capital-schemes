@@ -5,6 +5,11 @@
 ## Prerequisites
 
 1. Install Python 3.10
+1. Install Google Cloud CLI and authenticate using ADCs:
+   ```bash
+   gcloud auth application-default login
+   ```
+1. Install Terraform 1.5
 
 ## Running locally
 
@@ -74,4 +79,26 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
    
    ```bash
    pytest
+   ```
+
+# Provisioning infrastructure
+
+## Provision the Terraform backend
+
+1. Change directory:
+
+   ```bash
+   cd cloud/tf-backend
+   ```
+
+1. Initialise Terraform:
+
+   ```bash
+   terraform init
+   ```
+
+1. Apply the changes:
+
+   ```bash
+   terraform apply
    ```

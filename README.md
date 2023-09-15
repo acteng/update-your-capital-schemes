@@ -151,4 +151,4 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
    terraform apply
    ```
 
-1. Open the output `uri`
+1. Open the output `url`

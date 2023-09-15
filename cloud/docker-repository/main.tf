@@ -14,6 +14,10 @@ locals {
   location = "europe-west1"
 }
 
+resource "google_project_service" "iam_credentials" {
+  service = "iamcredentials.googleapis.com"
+}
+
 resource "google_project_service" "artifact_registry" {
   service = "artifactregistry.googleapis.com"
 }

@@ -56,6 +56,12 @@ resource "google_project_iam_member" "github_action_artifact_registry_writer" {
   member  = "serviceAccount:${google_service_account.github_action.email}"
 }
 
+resource "google_project_iam_member" "github_action_run_admin" {
+  project = local.project
+  role    = "roles/run.admin"
+  member  = "serviceAccount:${google_service_account.github_action.email}"
+}
+
 resource "google_service_account_iam_member" "github_action_service_account_user" {
   service_account_id = data.google_compute_default_service_account.main.name
   role               = "roles/iam.serviceAccountUser"

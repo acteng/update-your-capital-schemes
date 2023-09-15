@@ -10,5 +10,9 @@ dev = [
     "playwright",
     "pytest",
     "pytest-flask",
-    "pytest-playwright"
+    "pytest-playwright",
+    "mypy"
 ]
+
+[tool.mypy]
+strict = true

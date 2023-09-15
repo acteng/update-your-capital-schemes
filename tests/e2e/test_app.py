@@ -7,4 +7,4 @@ from playwright.sync_api import Page, expect
 def test_index(page: Page) -> None:
     page.goto(url_for("index", _external=True))
 
-    expect(page.get_by_role("paragraph")).to_contain_text("Hello, World!")
+    expect(page.get_by_role("heading")).to_contain_text("Schemes")

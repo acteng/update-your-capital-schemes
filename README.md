@@ -34,6 +34,28 @@
 
 1. Open http://127.0.0.1:5000
 
+## Running locally as a container
+
+1. Build the Docker image:
+
+   ```bash
+   docker build -t schemes .
+   ```
+   
+1. Run the Docker image:
+
+   ```bash
+   docker run --rm -it -p 5000:5000 schemes
+   ```
+   
+1. Open http://127.0.0.1:5000
+
+The server can also be run on a different port by specifying the `PORT` environment variable:
+
+```bash
+docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
+```
+
 ## Running tests
 
 1. Install the dev dependencies:

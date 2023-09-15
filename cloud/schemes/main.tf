@@ -18,7 +18,7 @@ resource "google_project_service" "run" {
   service = "run.googleapis.com"
 }
 
-resource "google_cloud_run_v2_service" "main" {
+resource "google_cloud_run_v2_service" "schemes" {
   name     = "schemes"
   location = local.location
 

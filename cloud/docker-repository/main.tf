@@ -22,6 +22,14 @@ resource "google_project_service" "artifact_registry" {
   service = "artifactregistry.googleapis.com"
 }
 
+resource "google_project_service" "compute" {
+  service = "compute.googleapis.com"
+}
+
+data "google_compute_default_service_account" "main" {
+  depends_on = [google_project_service.compute]
+}
+
 resource "google_artifact_registry_repository" "main" {
   repository_id = "docker"
   location      = local.location
@@ -46,6 +54,12 @@ resource "google_project_iam_member" "github_action_artifact_registry_writer" {
   project = local.project
   role    = "roles/artifactregistry.writer"
   member  = "serviceAccount:${google_service_account.github_action.email}"
+}
+
+resource "google_service_account_iam_member" "github_action_service_account_user" {
+  service_account_id = data.google_compute_default_service_account.main.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.github_action.email}"
 }
 
 resource "google_service_account_key" "github_action" {

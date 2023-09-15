@@ -102,3 +102,23 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
    ```bash
    terraform apply
    ```
+
+## Provision the Docker repository
+
+1. Change directory:
+
+   ```bash
+   cd cloud/docker-repository
+   ```
+
+1. Initialise Terraform:
+
+   ```bash
+   terraform init
+   ```
+
+1. Apply the changes:
+
+   ```bash
+   terraform apply
+   ```

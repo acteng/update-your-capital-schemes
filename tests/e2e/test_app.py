@@ -1,11 +1,6 @@
 import pytest
 from flask import url_for
 from playwright.sync_api import Page, expect
-import sys
-import multiprocessing
-
-if sys.platform == 'darwin':
-    multiprocessing.set_start_method("fork")
 
 
 @pytest.mark.usefixtures("live_server")

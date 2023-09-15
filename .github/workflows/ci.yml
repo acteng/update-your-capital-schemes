@@ -23,5 +23,8 @@ jobs:
     - name: Install browsers
       run: playwright install --with-deps chromium
 
+    - name: Run type check
+      run: mypy schemes
+
     - name: Run tests
       run: pytest

@@ -15,5 +15,8 @@ dev = [
     "mypy"
 ]
 
+[tool.setuptools.packages.find]
+include = ["schemes"]
+
 [tool.mypy]
 strict = true

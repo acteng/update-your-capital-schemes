@@ -130,3 +130,25 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
    ```
    
 1. [Set the GitHub Actions repository secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) `GCP_CREDENTIALS` to the private key
+
+## Provision the application
+
+1. Change directory:
+
+   ```bash
+   cd cloud/schemes
+   ```
+
+1. Initialise Terraform:
+
+   ```bash
+   terraform init
+   ```
+
+1. Apply the changes:
+
+   ```bash
+   terraform apply
+   ```
+
+1. Open the output `uri`

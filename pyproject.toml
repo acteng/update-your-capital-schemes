@@ -3,7 +3,8 @@ name = "schemes"
 version = "1.0.0"
 dependencies = [
     "flask",
-    "gunicorn"
+    "gunicorn",
+    "govuk-frontend-jinja"
 ]
 
 [project.optional-dependencies]

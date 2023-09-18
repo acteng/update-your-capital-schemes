@@ -61,6 +61,14 @@ The server can also be run on a different port by specifying the `PORT` environm
 docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 ```
 
+## Running linters
+
+1. Run the static type checker:
+
+   ```bash
+   mypy schemes
+   ```
+
 ## Running tests
 
 1. Install the dev dependencies:

@@ -6,9 +6,9 @@ from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 def create_app() -> Flask:
     app = Flask(__name__, static_url_path="/")
 
-    app.jinja_loader = ChoiceLoader(
+    app.jinja_loader = ChoiceLoader(  # type: ignore
         [
-            FileSystemLoader(os.path.join(app.root_path, app.template_folder)),
+            FileSystemLoader(os.path.join(app.root_path, str(app.template_folder))),
             PrefixLoader({"govuk_frontend_jinja": PackageLoader("govuk_frontend_jinja")})
         ]
     )

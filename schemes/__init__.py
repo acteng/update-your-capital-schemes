@@ -19,9 +19,6 @@ def create_app() -> Flask:
 
 
 def create_jinja_loader(app: Flask) -> BaseLoader:
-    return ChoiceLoader(
-        [
-            FileSystemLoader(os.path.join(app.root_path, str(app.template_folder))),
-            PrefixLoader({"govuk_frontend_jinja": PackageLoader("govuk_frontend_jinja")})
-        ]
-    )
+    default_loader = FileSystemLoader(os.path.join(app.root_path, str(app.template_folder)))
+    govuk_loader = PrefixLoader({"govuk_frontend_jinja": PackageLoader("govuk_frontend_jinja")})
+    return ChoiceLoader([default_loader, govuk_loader])

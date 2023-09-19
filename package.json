@@ -8,8 +8,8 @@
   },
   "scripts": {
     "build": "npm run build-css && npm run build-js && npm run copy-assets",
-    "build-css": "sass --style compressed node_modules/govuk-frontend/govuk/all.scss schemes/static/govuk-frontend-4.7.0.min.css",
-    "build-js": "terser node_modules/govuk-frontend/govuk/all.js --source-map includeSources --output schemes/static/govuk-frontend-4.7.0.min.js",
+    "build-css": "sass --style compressed node_modules/govuk-frontend/govuk/all.scss schemes/static/govuk-frontend.min.css",
+    "build-js": "terser node_modules/govuk-frontend/govuk/all.js --source-map includeSources --output schemes/static/govuk-frontend.min.js",
     "copy-assets": "cp -r node_modules/govuk-frontend/govuk/assets schemes/static/assets"
   },
   "author": "",

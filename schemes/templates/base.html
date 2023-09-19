@@ -1,11 +1,11 @@
 {% extends "govuk_frontend_jinja/template.html" %}
 
 {% block head %}
-    <link href="{{ url_for('static', filename='govuk-frontend-4.7.0.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='govuk-frontend.min.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block bodyEnd %}
-    <script src="{{ url_for('static', filename='govuk-frontend-4.7.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='govuk-frontend.min.js') }}"></script>
     <script>
         window.GOVUKFrontend.initAll()
     </script>

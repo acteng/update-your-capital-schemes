@@ -20,6 +20,9 @@ jobs:
     - name: Install dependencies
       run: pip install .[dev]
 
+    - name: Build web assets
+      run: npm install && npm run build
+
     - name: Install browsers
       run: playwright install --with-deps chromium
 

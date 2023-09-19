@@ -5,6 +5,7 @@
 ## Prerequisites
 
 1. Install Python 3.10
+1. Install Node 18
 1. Install Google Cloud CLI and authenticate using ADCs:
    ```bash
    gcloud auth application-default login
@@ -31,6 +32,12 @@
     pip install -e .
     ```
 
+1. Build the web assets:
+
+   ```bash
+   npm install && npm run build
+   ```
+
 1. Run the server:
 
     ```bash
@@ -40,6 +47,12 @@
 1. Open http://127.0.0.1:5000
 
 ## Running locally as a container
+
+1. Build the web assets:
+
+   ```bash
+   npm install && npm run build
+   ```
 
 1. Build the Docker image:
 

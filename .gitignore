@@ -7,6 +7,16 @@ __pycache__/
 # pip
 /*.egg-info/
 
+# npm
+/node_modules/
+
+# GOV.UK Frontend
+/schemes/static/govuk-frontend-4.7.0.min.css
+/schemes/static/govuk-frontend-4.7.0.min.css.map
+/schemes/static/govuk-frontend-4.7.0.min.js
+/schemes/static/govuk-frontend-4.7.0.min.js.map
+/schemes/static/assets/
+
 # Terraform
 .terraform/
 /cloud/tf-backend/terraform.tfstate*

@@ -9,7 +9,7 @@ def create_app() -> Flask:
 
     @app.context_processor
     def govuk_frontend_config() -> dict[str, str]:
-        return {"assetPath": url_for("static", filename="assets")}
+        return {"assetPath": url_for("static", filename="govuk-frontend/assets")}
 
     @app.route("/")
     def index() -> str:

@@ -11,11 +11,7 @@ __pycache__/
 /node_modules/
 
 # GOV.UK Frontend
-/schemes/static/govuk-frontend.min.css
-/schemes/static/govuk-frontend.min.css.map
-/schemes/static/govuk-frontend.min.js
-/schemes/static/govuk-frontend.min.js.map
-/schemes/static/assets/
+/schemes/static/govuk-frontend/
 
 # Terraform
 .terraform/

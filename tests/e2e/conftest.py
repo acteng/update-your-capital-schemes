@@ -10,7 +10,7 @@ def app_fixture() -> Flask:
     return create_app()
 
 
-@pytest.fixture(name="set_mac_multiprocessing", scope="session", autouse=True)
-def set_mac_multiprocessing_fixture() -> None:
+@pytest.fixture(name="configure_live_server", scope="session", autouse=True)
+def configure_live_server_fixture() -> None:
     if sys.platform == 'darwin':
         multiprocessing.set_start_method("fork")

@@ -5,7 +5,7 @@ from playwright.sync_api import Page, expect
 
 @pytest.mark.usefixtures("live_server")
 def test_index(app: Flask, page: Page) -> None:
-    page.goto(f"{_get_base_url(app)}/")
+    page.goto(f"{_get_base_url(app)}")
 
     expect(page.get_by_role("heading")).to_contain_text("Schemes")
 

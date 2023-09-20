@@ -21,3 +21,4 @@ include = ["schemes"]
 
 [tool.mypy]
 strict = true
+packages = ["schemes","tests"]

@@ -13,7 +13,8 @@ dev = [
     "pytest~=7.4.2",
     "pytest-flask~=1.2.0",
     "pytest-playwright~=0.4.2",
-    "mypy~=1.5.1"
+    "mypy~=1.5.1",
+    "pylint~=2.17.5"
 ]
 
 [tool.setuptools.packages.find]
@@ -22,3 +23,9 @@ include = ["schemes"]
 [tool.mypy]
 strict = true
 packages = ["schemes","tests"]
+
+[tool.pylint.'MESSAGES CONTROL']
+disable = [
+    "missing-function-docstring",
+    "missing-module-docstring"
+]

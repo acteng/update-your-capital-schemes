@@ -38,7 +38,7 @@ def check_auth(username: Union[str, None], password: Union[str, None]) -> bool:
 T = TypeVar('T')
 P = ParamSpec('P')
 
-def basic_auth(f: Callable[P, T]) -> Callable[P, Union[T, Response]]:
+def basic_auth(f: Callable[P, T]) -> Callable[P, Union[T, Response]]: # pylint: disable=invalid-name
     @functools.wraps(f)
     def decorated_function(*args: P.args, **kwargs: P.kwargs) -> Union[T, Response]:
         auth = request.authorization

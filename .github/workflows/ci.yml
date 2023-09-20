@@ -29,6 +29,9 @@ jobs:
     - name: Run type check
       run: mypy schemes
 
+    - name: Run linter
+      run: pylint schemes
+
     - name: Run tests
       run: pytest
 

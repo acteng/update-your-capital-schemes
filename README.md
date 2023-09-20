@@ -85,7 +85,7 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 1. Run the linter:
 
    ```bash
-   pylint schemes
+   pylint schemes tests
    ```
 
 ## Running tests

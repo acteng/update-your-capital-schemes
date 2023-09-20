@@ -30,7 +30,7 @@ jobs:
       run: mypy schemes
 
     - name: Run linter
-      run: pylint schemes
+      run: pylint schemes tests
 
     - name: Run tests
       run: pytest

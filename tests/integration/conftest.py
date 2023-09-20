@@ -4,11 +4,11 @@ import pytest
 from schemes import create_app
 
 
-@pytest.fixture
-def app() -> Flask:
+@pytest.fixture(name="app")
+def app_fixture() -> Flask:
     return create_app()
 
 
-@pytest.fixture
-def client(app: Flask) -> FlaskClient:
+@pytest.fixture(name="client")
+def client_fixture(app: Flask) -> FlaskClient:
     return app.test_client()

@@ -2,18 +2,18 @@
 name = "schemes"
 version = "1.0.0"
 dependencies = [
-    "flask",
-    "gunicorn",
-    "govuk-frontend-jinja"
+    "flask~=2.3.3",
+    "gunicorn~=21.2.0",
+    "govuk-frontend-jinja~=2.7.0"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "playwright",
-    "pytest",
-    "pytest-flask",
-    "pytest-playwright",
-    "mypy"
+    "playwright~=1.37.0",
+    "pytest~=7.4.2",
+    "pytest-flask~=1.2.0",
+    "pytest-playwright~=0.4.2",
+    "mypy~=1.5.1"
 ]
 
 [tool.setuptools.packages.find]

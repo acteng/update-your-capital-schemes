@@ -27,7 +27,7 @@ jobs:
       run: playwright install --with-deps chromium
 
     - name: Run type check
-      run: mypy schemes
+      run: mypy schemes tests
 
     - name: Run linter
       run: pylint schemes tests

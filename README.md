@@ -79,7 +79,7 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 1. Run the static type checker:
 
    ```bash
-   mypy schemes
+   mypy schemes tests
    ```
    
 1. Run the linter:

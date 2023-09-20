@@ -24,7 +24,7 @@ include = ["schemes"]
 packages = ["schemes", "tests"]
 strict = true
 
-[tool.pylint."MESSAGES CONTROL"]
+[tool.pylint.messages_control]
 disable = [
     "missing-function-docstring",
     "missing-module-docstring"

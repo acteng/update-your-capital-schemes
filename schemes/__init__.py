@@ -29,10 +29,7 @@ def _configure_basic_auth(app: Flask) -> None:
         def before_request() -> Response | None:
             auth = request.authorization
             if not (auth and username == auth.username and password == auth.password):
-                return Response(
-                    status=401,
-                    headers={"WWW-Authenticate": "Basic realm='Login Required'"}
-                )
+                return Response(status=401, headers={"WWW-Authenticate": "Basic realm='Schemes'"})
             return None
 
 

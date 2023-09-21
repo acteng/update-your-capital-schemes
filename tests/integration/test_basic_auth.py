@@ -8,7 +8,7 @@ def test_access_when_no_basic_auth(client: FlaskClient) -> None:
     assert response.status_code == 200
 
 
-def test_prompt_when_basic_auth() -> None:
+def test_challenge_when_basic_auth() -> None:
     client = _create_test_client("alice", "letmein")
 
     response = client.get("/")

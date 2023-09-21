@@ -35,7 +35,7 @@
 1. Install the dependencies:
 
     ```bash
-    pip install -e .
+    pip install -e .[dev]
     ```
 
 1. Run the server:
@@ -76,7 +76,7 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 
 ## Running linters
 
-1. Install the dev dependencies:
+1. Install the dependencies:
 
     ```bash
     pip install -e .[dev]
@@ -96,7 +96,7 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 
 ## Running tests
 
-1. Install the dev dependencies:
+1. Install the dependencies:
 
     ```bash
     pip install -e .[dev]

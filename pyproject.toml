@@ -20,6 +20,9 @@ dev = [
 [tool.setuptools.packages.find]
 include = ["schemes*"]
 
+[tool.setuptools.package-data]
+"schemes.templates" = ["*.html"]
+
 [tool.mypy]
 packages = ["schemes", "tests"]
 strict = true

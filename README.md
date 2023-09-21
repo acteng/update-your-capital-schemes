@@ -35,7 +35,7 @@
 1. Install the dependencies:
 
     ```bash
-    pip install .
+    pip install -e .
     ```
 
 1. Run the server:
@@ -79,7 +79,7 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 1. Install the dev dependencies:
 
     ```bash
-    pip install .[dev]
+    pip install -e .[dev]
     ```
 
 1. Run the static type checker:
@@ -99,7 +99,7 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 1. Install the dev dependencies:
 
     ```bash
-    pip install .[dev]
+    pip install -e .[dev]
     ```
 
 1. Install the browsers:

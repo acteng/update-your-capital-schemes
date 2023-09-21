@@ -3,16 +3,12 @@ import functools
 from typing import Callable, TypeVar, ParamSpec, Union
 
 from flask import Flask, render_template, url_for, Response, request
-from jinja2 import BaseLoader, ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
+from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
 
 def create_app() -> Flask:
     app = Flask(__name__)
-    app.jinja_loader = create_jinja_loader(app)  # type: ignore
-
-    @app.context_processor
-    def govuk_frontend_config() -> dict[str, str]:
-        return {"assetPath": url_for("static", filename="govuk-frontend/assets")}
+    _configure_govuk_frontend(app)
 
     if os.getenv("AUTH_USER"):
         @app.before_request
@@ -27,10 +23,15 @@ def create_app() -> Flask:
     return app
 
 
-def create_jinja_loader(app: Flask) -> BaseLoader:
+def _configure_govuk_frontend(app: Flask) -> None:
     default_loader = FileSystemLoader(os.path.join(app.root_path, str(app.template_folder)))
     govuk_loader = PrefixLoader({"govuk_frontend_jinja": PackageLoader("govuk_frontend_jinja")})
-    return ChoiceLoader([default_loader, govuk_loader])
+    app.jinja_loader = ChoiceLoader([default_loader, govuk_loader])  # type: ignore
+
+    @app.context_processor
+    def govuk_frontend_config() -> dict[str, str]:
+        return {"assetPath": url_for("static", filename="govuk-frontend/assets")}
+
 
 def check_auth(username: Union[str, None], password: Union[str, None]) -> bool:
     return os.getenv("AUTH_USER") == username and os.getenv("AUTH_PASSWORD") == password

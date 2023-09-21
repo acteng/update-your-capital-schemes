@@ -28,9 +28,9 @@ def _configure_basic_auth(app: Flask) -> None:
         @app.before_request
         def before_request() -> Response | None:
             auth = request.authorization
-            if not (auth and username == auth.username and password == auth.password):
-                return Response(status=401, headers={"WWW-Authenticate": "Basic realm='Schemes'"})
-            return None
+            if auth and auth.type == "basic" and auth.username == username and auth.password == password:
+                return None
+            return Response(status=401, headers={"WWW-Authenticate": "Basic realm='Schemes'"})
 
 
 def _configure_govuk_frontend(app: Flask) -> None:

@@ -76,6 +76,12 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 
 ## Running linters
 
+1. Install the dev dependencies:
+
+    ```bash
+    pip install .[dev]
+    ```
+
 1. Run the static type checker:
 
    ```bash

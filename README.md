@@ -26,17 +26,17 @@
     source .venv/bin/activate
     ```
 
-1. Install the dependencies:
-
-    ```bash
-    pip install .
-    ```
-
 1. Build the web assets:
 
    ```bash
    npm install && npm run build
    ```
+
+1. Install the dependencies:
+
+    ```bash
+    pip install .
+    ```
 
 1. Run the server:
 

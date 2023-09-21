@@ -35,9 +35,9 @@ def test_cannot_access_when_incorrect_basic_auth() -> None:
     assert response.status_code == 401
 
 
-def _create_test_client(auth_user: str, auth_password: str) -> FlaskClient:
+def _create_test_client(username: str, password: str) -> FlaskClient:
     app = create_app({
-        "AUTH_USER": auth_user,
-        "AUTH_PASSWORD": auth_password
+        "BASIC_AUTH_USERNAME": username,
+        "BASIC_AUTH_PASSWORD": password
     })
     return app.test_client()

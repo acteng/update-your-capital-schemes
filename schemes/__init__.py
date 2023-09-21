@@ -21,8 +21,8 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
 
 def _configure_basic_auth(app: Flask) -> None:
-    username = app.config.get("AUTH_USER")
-    password = app.config.get("AUTH_PASSWORD")
+    username = app.config.get("BASIC_AUTH_USERNAME")
+    password = app.config.get("BASIC_AUTH_PASSWORD")
 
     if username:
         @app.before_request

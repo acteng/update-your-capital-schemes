@@ -1,6 +1,5 @@
 import os
-import functools
-from typing import Callable, TypeVar, ParamSpec, Union, Mapping, Any
+from typing import Mapping, Any
 
 from flask import Flask, render_template, url_for, Response, request
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
@@ -22,32 +21,19 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
 
 def _configure_basic_auth(app: Flask) -> None:
-    def check_auth(username: Union[str, None], password: Union[str, None]) -> bool:
-        return str(app.config["AUTH_USER"]) == username \
-            and str(app.config["AUTH_PASSWORD"]) == password
+    username = app.config.get("AUTH_USER")
+    password = app.config.get("AUTH_PASSWORD")
 
-    T = TypeVar('T')
-    P = ParamSpec('P')  # pylint: disable=invalid-name
-
-    def basic_auth(f: Callable[P, T]) -> Callable[P, Union[T, Response]]:  # pylint: disable=invalid-name
-        @functools.wraps(f)
-        def decorated_function(*args: P.args, **kwargs: P.kwargs) -> Union[T, Response]:
+    if username:
+        @app.before_request
+        def before_request() -> Response | None:
             auth = request.authorization
-            if not auth or not check_auth(auth.username, auth.password):
+            if not (auth and username == auth.username and password == auth.password):
                 return Response(
-                    response="Unauthorized",
                     status=401,
                     headers={"WWW-Authenticate": "Basic realm='Login Required'"}
                 )
-            return f(*args, **kwargs)
-
-        return decorated_function
-
-    if "AUTH_USER" in app.config:
-        @app.before_request
-        @basic_auth
-        def before_request() -> None:
-            pass
+            return None
 
 
 def _configure_govuk_frontend(app: Flask) -> None:

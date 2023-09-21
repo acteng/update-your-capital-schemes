@@ -14,7 +14,7 @@ def test_challenge_when_basic_auth() -> None:
     response = client.get("/")
 
     assert response.status_code == 401 \
-        and response.headers["WWW-Authenticate"] == "Basic realm='Schemes'"
+        and response.headers["WWW-Authenticate"] == "Basic realm='Restricted'"
 
 
 def test_access_when_basic_auth() -> None:

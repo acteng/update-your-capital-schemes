@@ -30,7 +30,7 @@ def _configure_basic_auth(app: Flask) -> None:
             auth = request.authorization
             if auth and auth.type == "basic" and auth.username == username and auth.password == password:
                 return None
-            return Response(status=401, headers={"WWW-Authenticate": "Basic realm='Restricted'"})
+            return Response(status=401, headers={"WWW-Authenticate": "Basic realm='Schemes'"}, response="Unauthorized")
 
 
 def _configure_govuk_frontend(app: Flask) -> None:

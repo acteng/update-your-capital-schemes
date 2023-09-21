@@ -1,6 +1,7 @@
 [project]
 name = "schemes"
 version = "1.0.0"
+description = "ATE Schemes App."
 dependencies = [
     "flask~=2.3.0",
     "govuk-frontend-jinja~=2.7.0",
@@ -17,11 +18,9 @@ dev = [
     "pytest~=7.4.0"
 ]
 
-[tool.setuptools.packages.find]
-include = ["schemes*"]
-
-[tool.setuptools.package-data]
-"schemes.templates" = ["*.html"]
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
 
 [tool.mypy]
 packages = ["schemes", "tests"]

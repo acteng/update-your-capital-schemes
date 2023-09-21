@@ -5,6 +5,7 @@ __pycache__/
 /.venv/
 
 # pip
+/build/
 /*.egg-info/
 
 # npm

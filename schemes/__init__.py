@@ -1,14 +1,15 @@
 import os
 import functools
-from typing import Callable, TypeVar, ParamSpec, Union
+from typing import Callable, TypeVar, ParamSpec, Union, Mapping, Any
 
 from flask import Flask, render_template, url_for, Response, request
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
 
-def create_app() -> Flask:
+def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app = Flask(__name__)
     app.config.from_prefixed_env()
+    app.config.from_mapping(test_config)
 
     _configure_basic_auth(app)
     _configure_govuk_frontend(app)

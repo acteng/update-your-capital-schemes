@@ -26,6 +26,9 @@ build-backend = "flit_core.buildapi"
 packages = ["schemes", "tests"]
 strict = true
 
+[tool.pylint.format]
+max-line-length = 120
+
 [tool.pylint.messages_control]
 disable = [
     "missing-function-docstring",

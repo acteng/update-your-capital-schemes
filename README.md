@@ -29,7 +29,7 @@
 1. Install the dependencies:
 
     ```bash
-    pip install -e .
+    pip install .
     ```
 
 1. Build the web assets:
@@ -93,7 +93,7 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 1. Install the dev dependencies:
 
     ```bash
-    pip install -e .[dev]
+    pip install .[dev]
     ```
 
 1. Install the browsers:

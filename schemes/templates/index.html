@@ -1,5 +1,38 @@
+{% from "govuk_frontend_jinja/components/button/macro.html" import govukButton -%}
 {% extends "base.html" %}
 
 {% block content %}
     <h1 class="govuk-heading-xl">Schemes</h1>
+
+    <p class="govuk-body">
+        Use this service if you are updating Active Travel England about capital schemes.
+    </p>
+
+    <p class="govuk-body">
+        You can use this service to:
+    </p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>view information about existing capital schemes</li>
+        <li>update information about existing capital schemes</li>
+    </ul>
+
+    <h1 class="govuk-heading-l">Who can use this service</h1>
+
+    <p class="govuk-body">
+        You can use this service if you:
+    </p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>work for a Local or Combined Authority within England</li>
+        <li>have been invited by Active Travel England to use this service</li>
+    </ul>
+
+    {# <p class="govuk-body">
+        {{ govukButton({
+            "text": "Start now",
+            "isStartButton": true
+        }) }}
+    </p> #}
+
 {% endblock %}

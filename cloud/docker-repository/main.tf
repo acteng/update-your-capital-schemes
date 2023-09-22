@@ -5,32 +5,33 @@ terraform {
   }
 }
 
-provider "google" {
-  project = local.project
-}
-
 locals {
   project  = "dft-ate-schemes-prt"
   location = "europe-west1"
 }
 
 resource "google_project_service" "iam_credentials" {
+  project = local.project
   service = "iamcredentials.googleapis.com"
 }
 
 resource "google_project_service" "artifact_registry" {
+  project = local.project
   service = "artifactregistry.googleapis.com"
 }
 
 resource "google_project_service" "compute" {
+  project = local.project
   service = "compute.googleapis.com"
 }
 
 data "google_compute_default_service_account" "main" {
+  project    = local.project
   depends_on = [google_project_service.compute]
 }
 
 resource "google_artifact_registry_repository" "main" {
+  project       = local.project
   repository_id = "docker"
   location      = local.location
 
@@ -40,6 +41,7 @@ resource "google_artifact_registry_repository" "main" {
 }
 
 resource "google_service_account" "github_action" {
+  project      = local.project
   account_id   = "github-action"
   display_name = "Service account for use within GitHub actions"
 }

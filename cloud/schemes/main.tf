@@ -35,7 +35,7 @@ resource "google_cloud_run_v2_service_iam_binding" "schemes_run_invoker" {
   name     = google_cloud_run_v2_service.schemes.name
   location = local.location
 
-  role    = "roles/run.invoker"
+  role = "roles/run.invoker"
   members = [
     "allUsers"
   ]

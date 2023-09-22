@@ -7,7 +7,7 @@ from playwright.sync_api import Page, expect
 def test_index(app: Flask, page: Page) -> None:
     page.goto(f"{_get_base_url(app)}")
 
-    expect(page.get_by_role("heading")).to_contain_text("Schemes")
+    expect(page.get_by_role("heading").first).to_contain_text("Schemes")
 
 
 def _get_base_url(app: Flask) -> str:

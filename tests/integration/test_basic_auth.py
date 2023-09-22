@@ -1,5 +1,3 @@
-import base64
-
 from flask.testing import FlaskClient
 from schemes import create_app
 
@@ -20,10 +18,10 @@ def test_challenge_when_basic_auth() -> None:
 
 
 def test_access_when_basic_auth() -> None:
-    username, password = "alice", "letmein"
-    client = _create_test_client(username, password)
+    client = _create_test_client("alice", "letmein")
 
-    response = client.get("/", headers={"Authorization": f"Basic {_create_b64_auth(username, password)}"})
+    # echo -n 'alice:letmein' | base64
+    response = client.get("/", headers={"Authorization": "Basic YWxpY2U6bGV0bWVpbg=="})
 
     assert response.status_code == 200
 
@@ -31,7 +29,8 @@ def test_access_when_basic_auth() -> None:
 def test_cannot_access_when_incorrect_basic_auth() -> None:
     client = _create_test_client("alice", "letmein")
 
-    response = client.get("/", headers={"Authorization": f"Basic {_create_b64_auth('bob','opensesame')}"})
+    # echo -n 'bob:opensesame' | base64
+    response = client.get("/", headers={"Authorization": "Basic Ym9iOm9wZW5zZXNhbWU="})
 
     assert response.status_code == 401 and response.text == "Unauthorized"
 
@@ -42,8 +41,3 @@ def _create_test_client(username: str, password: str) -> FlaskClient:
         "BASIC_AUTH_PASSWORD": password
     })
     return app.test_client()
-
-def _create_b64_auth(username: str, password: str) -> str:
-    auth_details = ":".join([username, password])
-    b64_bytes = base64.b64encode(auth_details.encode())
-    return b64_bytes.decode()

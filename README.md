@@ -162,7 +162,7 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
    terraform output -raw github_action_private_key
    ```
    
-1. [Set the GitHub Actions repository secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) `GCP_CREDENTIALS` to the private key
+1. [Set the GitHub Actions repository secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) `GCP_CREDENTIALS_CI` to the private key
 
 ## Provision the application
 

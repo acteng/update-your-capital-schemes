@@ -49,10 +49,16 @@ jobs:
         username: oauth2accesstoken
         password: ${{ steps.auth.outputs.access_token }}
 
+    - name: Docker metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes
+        tags: type=semver,pattern={{version}}
+
     - name: Build and push image
       uses: docker/build-push-action@v5
       with:
         context: .
-        tags: europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes
+        tags: ${{ steps.meta.outputs.tags }}
         push: true
-

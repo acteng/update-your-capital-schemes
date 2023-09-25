@@ -1,0 +1,26 @@
+name: 'Deploy Test'
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Docker image tag'
+        required: true
+        default: 'latest'
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Authenticate with Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS_DEPLOY_TEST }}'
+
+    - name: Deploy image
+      uses: google-github-actions/deploy-cloudrun@v1
+      with:
+        service: schemes
+        image: 'europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes:${{ github.event.inputs.tag }}'
+        region: europe-west1

@@ -10,7 +10,7 @@ provider "google" {
 }
 
 locals {
-  project  = "dft-ate-schemes-dev"
+  project  = "dft-ate-schemes-${terraform.workspace}"
   location = "europe-west1"
 }
 

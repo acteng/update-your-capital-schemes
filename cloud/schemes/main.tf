@@ -16,6 +16,7 @@ locals {
 
 module "cloud_run" {
   source = "./cloud-run"
+  project = local.project
   location = local.location
 }
 

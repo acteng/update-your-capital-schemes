@@ -1,9 +1,11 @@
 resource "google_project_service" "run" {
+  project = var.project
   service = "run.googleapis.com"
 }
 
 resource "google_cloud_run_v2_service" "schemes" {
   name     = "schemes"
+  project  = var.project
   location = var.location
 
   template {
@@ -17,6 +19,7 @@ resource "google_cloud_run_v2_service" "schemes" {
 
 resource "google_cloud_run_v2_service_iam_binding" "schemes_run_invoker" {
   name     = google_cloud_run_v2_service.schemes.name
+  project  = var.project
   location = var.location
 
   role = "roles/run.invoker"
@@ -26,6 +29,7 @@ resource "google_cloud_run_v2_service_iam_binding" "schemes_run_invoker" {
 }
 
 data "google_project" "main" {
+    project_id = var.project
 }
 
 resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {

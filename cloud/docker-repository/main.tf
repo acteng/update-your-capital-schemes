@@ -6,7 +6,7 @@ terraform {
 }
 
 locals {
-  project  = "dft-ate-schemes-prt"
+  project  = "dft-ate-schemes"
   location = "europe-west1"
 }
 

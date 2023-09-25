@@ -49,8 +49,8 @@ jobs:
         username: oauth2accesstoken
         password: ${{ steps.auth.outputs.access_token }}
 
-    - name: Docker metadata
-      id: meta
+    - id: meta
+      name: Extract metadata
       uses: docker/metadata-action@v5
       with:
         images: europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes

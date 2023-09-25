@@ -9,59 +9,59 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: Build web assets
-      run: npm install && npm run build
+      - name: Build web assets
+        run: npm install && npm run build
 
-    - name: Install dependencies
-      run: pip install .[dev]
+      - name: Install dependencies
+        run: pip install .[dev]
 
-    - name: Install browsers
-      run: playwright install --with-deps chromium
+      - name: Install browsers
+        run: playwright install --with-deps chromium
 
-    - name: Run type check
-      run: mypy schemes tests
+      - name: Run type check
+        run: mypy schemes tests
 
-    - name: Run linter
-      run: pylint schemes tests
+      - name: Run linter
+        run: pylint schemes tests
 
-    - name: Run tests
-      run: pytest
+      - name: Run tests
+        run: pytest
 
-    - id: auth
-      name: Authenticate with Google Cloud
-      uses: google-github-actions/auth@v1
-      with:
-        token_format: access_token
-        credentials_json: '${{ secrets.GCP_CREDENTIALS_CI }}'
+      - id: auth
+        name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          token_format: access_token
+          credentials_json: '${{ secrets.GCP_CREDENTIALS_CI }}'
 
-    - name: Login to Docker repository
-      uses: docker/login-action@v3
-      with:
-        registry: europe-west1-docker.pkg.dev
-        username: oauth2accesstoken
-        password: ${{ steps.auth.outputs.access_token }}
+      - name: Login to Docker repository
+        uses: docker/login-action@v3
+        with:
+          registry: europe-west1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
 
-    - id: meta
-      name: Extract metadata
-      uses: docker/metadata-action@v5
-      with:
-        images: europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes
-        tags: |
-          type=semver,pattern={{version}}
-          type=raw,value=latest
+      - id: meta
+        name: Extract metadata
+        uses: docker/metadata-action@v5
+        with:
+          images: europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes
+          tags: |
+            type=semver,pattern={{version}}
+            type=raw,value=latest
 
-    - name: Build and push image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        push: true
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true

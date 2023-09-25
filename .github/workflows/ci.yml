@@ -56,9 +56,3 @@ jobs:
         tags: europe-west1-docker.pkg.dev/dft-ate-schemes-prt/docker/schemes
         push: true
 
-    - name: Deploy image
-      uses: google-github-actions/deploy-cloudrun@v1
-      with:
-        service: schemes
-        image: europe-west1-docker.pkg.dev/dft-ate-schemes-prt/docker/schemes
-        region: europe-west1

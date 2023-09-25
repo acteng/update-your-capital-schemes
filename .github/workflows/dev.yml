@@ -1,0 +1,24 @@
+name: 'Deploy Dev'
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types:
+      - completed
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Authenticate with Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - name: Deploy image
+      uses: google-github-actions/deploy-cloudrun@v1
+      with:
+        service: schemes
+        image: europe-west1-docker.pkg.dev/dft-ate-schemes-prt/docker/schemes
+        region: europe-west1

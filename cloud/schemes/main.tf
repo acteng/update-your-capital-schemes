@@ -10,7 +10,7 @@ provider "google" {
 }
 
 locals {
-  project  = "dft-ate-schemes-prt"
+  project  = "dft-ate-schemes-dev"
   location = "europe-west1"
 }
 

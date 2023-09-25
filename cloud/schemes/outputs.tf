@@ -1,6 +1,6 @@
 output "url" {
   description = "Cloud Run service URL"
-  value       = google_cloud_run_v2_service.schemes.uri
+  value       = module.cloud_run.url
 }
 
 output "github_action_private_key" {

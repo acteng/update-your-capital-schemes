@@ -24,7 +24,7 @@ resource "google_cloud_run_v2_service" "schemes" {
 
   template {
     containers {
-      image = "europe-west1-docker.pkg.dev/dft-ate-schemes-prt/docker/schemes"
+      image = "europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes"
     }
   }
 

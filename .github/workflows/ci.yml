@@ -53,6 +53,6 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        tags: europe-west1-docker.pkg.dev/dft-ate-schemes-prt/docker/schemes
+        tags: europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes
         push: true
 

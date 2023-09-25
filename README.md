@@ -166,6 +166,8 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 
 ## Provision the application
 
+For each environment required (dev, test, prod):
+
 1. Change directory:
 
    ```bash
@@ -176,6 +178,12 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 
    ```bash
    terraform init
+   ```
+
+1. Create a Terraform workspace for the environment:
+
+   ```bash
+   terraform workspace new $ENVIRONMENT
    ```
 
 1. Apply the changes:
@@ -190,6 +198,6 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
    terraform output -raw github_action_private_key
    ```
    
-1. [Set the GitHub Actions repository secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) `GCP_CREDENTIALS_DEPLOY_DEV` to the private key
+1. [Set the GitHub Actions repository secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) `GCP_CREDENTIALS_DEPLOY_$ENVIRONMENT` to the private key
 
 1. Open the output `url`

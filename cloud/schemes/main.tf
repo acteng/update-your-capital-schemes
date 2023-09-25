@@ -15,12 +15,12 @@ locals {
 }
 
 module "cloud_run" {
-  source = "./cloud-run"
-  project = local.project
+  source   = "./cloud-run"
+  project  = local.project
   location = local.location
 }
 
 module "github_action" {
-  source = "./github-action"
+  source  = "./github-action"
   project = local.project
 }

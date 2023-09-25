@@ -29,7 +29,7 @@ resource "google_cloud_run_v2_service_iam_binding" "schemes_run_invoker" {
 }
 
 data "google_project" "main" {
-    project_id = var.project
+  project_id = var.project
 }
 
 resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {

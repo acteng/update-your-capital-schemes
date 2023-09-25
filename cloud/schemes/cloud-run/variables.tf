@@ -1,9 +1,9 @@
 variable "project" {
   description = "GCP project"
-  type = string
+  type        = string
 }
 
 variable "location" {
   description = "GCP location"
-  type = string
+  type        = string
 }

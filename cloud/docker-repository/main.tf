@@ -31,6 +31,6 @@ resource "google_artifact_registry_repository" "main" {
 }
 
 module "github_action" {
-  source = "./github-action"
+  source  = "./github-action"
   project = local.project
 }

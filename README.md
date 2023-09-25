@@ -184,4 +184,12 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
    terraform apply
    ```
 
+1. Obtain the Cloud Run service account private key:
+
+   ```bash
+   terraform output -raw github_action_private_key
+   ```
+   
+1. [Set the GitHub Actions repository secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) `GCP_CREDENTIALS_DEPLOY_DEV` to the private key
+
 1. Open the output `url`

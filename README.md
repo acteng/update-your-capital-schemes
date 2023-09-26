@@ -192,6 +192,9 @@ For each environment required (dev, test, prod):
    terraform apply
    ```
 
+1. This will fail due to missing secrets. Find the secure note in the password manager called `Schemes Secrets ($ENVIRONMENT)`
+and execute the script. Then repeat the previous step.
+
 1. Obtain the Cloud Run service account private key:
 
    ```bash

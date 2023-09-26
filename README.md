@@ -88,6 +88,12 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
    black schemes tests
    ```
 
+1. Organise Python imports:
+
+   ```bash
+   isort schemes tests
+   ```
+
 1. Run the static type checker:
 
    ```bash

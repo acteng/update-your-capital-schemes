@@ -1,7 +1,7 @@
 import os
-from typing import Mapping, Any
+from typing import Any, Mapping
 
-from flask import Flask, render_template, url_for, Response, request
+from flask import Flask, Response, render_template, request, url_for
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
 

@@ -1,7 +1,9 @@
 import multiprocessing
 import sys
-from flask import Flask
+
 import pytest
+from flask import Flask
+
 from schemes import create_app
 
 

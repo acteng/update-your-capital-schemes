@@ -1,6 +1,7 @@
+import pytest
 from flask import Flask
 from flask.testing import FlaskClient
-import pytest
+
 from schemes import create_app
 
 

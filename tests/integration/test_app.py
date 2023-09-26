@@ -1,7 +1,9 @@
 from flask.testing import FlaskClient
 
+from tests.integration.pages import LandingPage
+
 
 def test_index(client: FlaskClient) -> None:
     response = client.get("/")
 
-    assert '<h1 class="govuk-heading-xl">Schemes</h1>' in response.text
+    assert LandingPage(response.text).header == "Schemes"

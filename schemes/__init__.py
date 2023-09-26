@@ -1,8 +1,10 @@
 import os
 from typing import Any, Mapping
 
-from flask import Flask, Response, render_template, request, url_for
+from flask import Flask, Response, request, url_for
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
+
+from schemes import landing
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -13,9 +15,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     _configure_basic_auth(app)
     _configure_govuk_frontend(app)
 
-    @app.route("/")
-    def index() -> str:
-        return render_template("index.html")
+    app.register_blueprint(landing.bp)
 
     return app
 

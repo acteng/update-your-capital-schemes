@@ -1,10 +1,11 @@
 bin = .venv/bin
+packages = schemes tests
 
 black:
-	$(bin)/black schemes tests
+	$(bin)/black $(packages)
 
 isort:
-	$(bin)/isort schemes tests
+	$(bin)/isort $(packages)
 
 terraform-fmt:
 	terraform -chdir=cloud fmt -recursive
@@ -12,10 +13,10 @@ terraform-fmt:
 format: black isort terraform-fmt
 
 mypy:
-	$(bin)/mypy schemes tests
+	$(bin)/mypy $(packages)
 
 pylint:
-	$(bin)/pylint schemes tests
+	$(bin)/pylint $(packages)
 
 lint: mypy pylint
 

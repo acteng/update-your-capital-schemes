@@ -4,7 +4,7 @@ resource "google_project_service" "run" {
 }
 
 resource "google_service_account" "cloud_run_schemes" {
-  account_id = "schemes"
+  account_id = "cloud-run-schemes"
 }
 
 resource "google_cloud_run_v2_service" "schemes" {

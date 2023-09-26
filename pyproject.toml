@@ -39,6 +39,8 @@ max-line-length = 120
 
 [tool.pylint.messages_control]
 disable = [
+    "missing-class-docstring",
     "missing-function-docstring",
-    "missing-module-docstring"
+    "missing-module-docstring",
+    "too-few-public-methods"
 ]

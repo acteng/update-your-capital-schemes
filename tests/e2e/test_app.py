@@ -2,16 +2,11 @@ import pytest
 from flask import Flask
 from playwright.sync_api import Page, expect
 
+from tests.e2e.pages import LandingPage
+
 
 @pytest.mark.usefixtures("live_server")
 def test_index(app: Flask, page: Page) -> None:
-    page.goto(f"{_get_base_url(app)}")
+    landing_page = LandingPage(app, page).open()
 
-    expect(page.get_by_role("heading").first).to_contain_text("Schemes")
-
-
-def _get_base_url(app: Flask) -> str:
-    scheme = app.config["PREFERRED_URL_SCHEME"]
-    server_name = app.config["SERVER_NAME"]
-    root = app.config["APPLICATION_ROOT"]
-    return f"{scheme}://{server_name}{root}"
+    expect(landing_page.header).to_contain_text("Schemes")

@@ -94,6 +94,12 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
    isort schemes tests
    ```
 
+1. Format Terraform:
+
+   ```bash
+   terraform fmt -recursive
+   ```
+
 1. Run the static type checker:
 
    ```bash

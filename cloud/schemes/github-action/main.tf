@@ -1,8 +1,3 @@
-resource "google_project_service" "compute" {
-  project = var.project
-  service = "compute.googleapis.com"
-}
-
 resource "google_service_account" "github_action" {
   project      = var.project
   account_id   = "github-action"
@@ -21,13 +16,8 @@ resource "google_project_iam_member" "github_action_run_admin" {
   member  = "serviceAccount:${google_service_account.github_action.email}"
 }
 
-data "google_compute_default_service_account" "main" {
-  project    = var.project
-  depends_on = [google_project_service.compute]
-}
-
 resource "google_service_account_iam_member" "github_action_service_account_user" {
-  service_account_id = data.google_compute_default_service_account.main.name
+  service_account_id = var.cloud_run_service_account_id
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:${google_service_account.github_action.email}"
 }

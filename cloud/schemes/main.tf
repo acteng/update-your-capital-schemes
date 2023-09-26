@@ -21,6 +21,7 @@ module "cloud_run" {
 }
 
 module "github_action" {
-  source  = "./github-action"
-  project = local.project
+  source                       = "./github-action"
+  project                      = local.project
+  cloud_run_service_account_id = module.cloud_run.service_account_id
 }

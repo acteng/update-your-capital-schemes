@@ -3,6 +3,10 @@ resource "google_project_service" "run" {
   service = "run.googleapis.com"
 }
 
+resource "google_service_account" "cloud_run_schemes" {
+  account_id = "schemes"
+}
+
 resource "google_cloud_run_v2_service" "schemes" {
   name     = "schemes"
   project  = var.project
@@ -12,6 +16,7 @@ resource "google_cloud_run_v2_service" "schemes" {
     containers {
       image = "europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes"
     }
+    service_account = google_service_account.cloud_run_schemes.email
   }
 
   depends_on = [google_project_service.run]

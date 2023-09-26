@@ -14,10 +14,17 @@ locals {
   location = "europe-west1"
 }
 
+module "secret_manager" {
+  source  = "./secret-manager"
+  project = local.project
+}
+
 module "cloud_run" {
   source   = "./cloud-run"
   project  = local.project
   location = local.location
+
+  depends_on = [module.secret_manager]
 }
 
 module "github_action" {

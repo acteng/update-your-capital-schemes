@@ -10,6 +10,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "black~=23.9.0",
     "mypy~=1.5.0",
     "playwright~=1.37.0",
     "pylint~=2.17.0",
@@ -21,6 +22,9 @@ dev = [
 [build-system]
 requires = ["flit_core<4"]
 build-backend = "flit_core.buildapi"
+
+[tool.black]
+line-length = 120
 
 [tool.mypy]
 packages = ["schemes", "tests"]

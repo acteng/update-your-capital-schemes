@@ -25,6 +25,7 @@ def _configure_basic_auth(app: Flask) -> None:
     password = app.config.get("BASIC_AUTH_PASSWORD")
 
     if username:
+
         @app.before_request
         def before_request() -> Response | None:
             auth = request.authorization

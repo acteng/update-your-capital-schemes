@@ -13,8 +13,7 @@ def test_challenge_when_basic_auth() -> None:
 
     response = client.get("/")
 
-    assert response.status_code == 401 \
-        and response.headers["WWW-Authenticate"] == "Basic realm='Schemes'"
+    assert response.status_code == 401 and response.headers["WWW-Authenticate"] == "Basic realm='Schemes'"
 
 
 def test_access_when_basic_auth() -> None:
@@ -36,8 +35,5 @@ def test_cannot_access_when_incorrect_basic_auth() -> None:
 
 
 def _create_test_client(username: str, password: str) -> FlaskClient:
-    app = create_app({
-        "BASIC_AUTH_USERNAME": username,
-        "BASIC_AUTH_PASSWORD": password
-    })
+    app = create_app({"BASIC_AUTH_USERNAME": username, "BASIC_AUTH_PASSWORD": password})
     return app.test_client()

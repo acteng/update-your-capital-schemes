@@ -74,13 +74,19 @@ The server can also be run on a different port by specifying the `PORT` environm
 docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 ```
 
-## Running linters
+## Running formatters and linters
 
 1. Install the dependencies:
 
     ```bash
     pip install -e .[dev]
     ```
+
+1. Format Python:
+
+   ```bash
+   black schemes tests
+   ```
 
 1. Run the static type checker:
 

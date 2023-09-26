@@ -18,14 +18,17 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Create virtual environment
+        run: python3 -m venv .venv
+
       - name: Build web assets
         run: npm install && npm run build
 
       - name: Install dependencies
-        run: pip install .[dev]
+        run: .venv/bin/pip install .[dev]
 
       - name: Install browsers
-        run: playwright install --with-deps chromium
+        run: .venv/bin/playwright install --with-deps chromium
 
       - name: Run type check
         run: make mypy

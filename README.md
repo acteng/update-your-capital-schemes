@@ -82,36 +82,18 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
     pip install -e .[dev]
     ```
 
-1. Format Python:
+1. Run the formatters:
 
    ```bash
-   black schemes tests
+   make format
    ```
 
-1. Organise Python imports:
+1. Run the linters:
 
    ```bash
-   isort schemes tests
-   ```
-
-1. Format Terraform:
-
-   ```bash
-   terraform fmt -recursive
-   ```
-
-1. Run the static type checker:
-
-   ```bash
-   mypy schemes tests
+   make lint
    ```
    
-1. Run the linter:
-
-   ```bash
-   pylint schemes tests
-   ```
-
 ## Running tests
 
 1. Install the dependencies:
@@ -129,7 +111,7 @@ docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
 1. Run the tests:
    
    ```bash
-   pytest
+   make test
    ```
 
 # Provisioning infrastructure

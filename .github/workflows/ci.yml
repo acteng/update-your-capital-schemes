@@ -28,13 +28,13 @@ jobs:
         run: playwright install --with-deps chromium
 
       - name: Run type check
-        run: mypy schemes tests
+        run: make mypy
 
       - name: Run linter
-        run: pylint schemes tests
+        run: make pylint
 
       - name: Run tests
-        run: pytest
+        run: make test
 
       - id: auth
         name: Authenticate with Google Cloud

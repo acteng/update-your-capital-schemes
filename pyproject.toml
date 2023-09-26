@@ -33,7 +33,6 @@ line-length = 120
 profile = "black"
 
 [tool.mypy]
-packages = ["schemes", "tests"]
 strict = true
 
 [tool.pylint.format]

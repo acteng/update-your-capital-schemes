@@ -28,11 +28,12 @@
         <li>have been invited by Active Travel England</li>
     </ul>
 
-    {# <p class="govuk-body">
+    <p class="govuk-body">
         {{ govukButton({
             "text": "Start now",
+            "href": url_for("home.index"),
             "isStartButton": true
         }) }}
-    </p> #}
+    </p>
 
 {% endblock %}

@@ -10,3 +10,12 @@ def test_index(app: Flask, page: Page) -> None:
     landing_page = LandingPage(app, page).open()
 
     expect(landing_page.header).to_contain_text("Schemes")
+
+
+@pytest.mark.usefixtures("live_server")
+def test_start_shows_home(app: Flask, page: Page) -> None:
+    landing_page = LandingPage(app, page).open()
+
+    home_page = landing_page.start()
+
+    assert home_page.visible()

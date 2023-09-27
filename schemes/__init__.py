@@ -4,7 +4,7 @@ from typing import Any, Mapping
 from flask import Flask, Response, request, url_for
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
-from schemes import landing
+from schemes import home, landing
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -16,6 +16,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     _configure_govuk_frontend(app)
 
     app.register_blueprint(landing.bp)
+    app.register_blueprint(home.bp, url_prefix="/home")
 
     return app
 

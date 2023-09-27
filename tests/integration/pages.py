@@ -5,3 +5,9 @@ class LandingPage:
     def __init__(self, html: str):
         self._soup = BeautifulSoup(html, "html.parser")
         self.header = self._soup.h1 and self._soup.h1.string
+
+
+class HomePage:
+    def __init__(self, html: str):
+        self._soup = BeautifulSoup(html, "html.parser")
+        self.header = self._soup.h1 and self._soup.h1.string

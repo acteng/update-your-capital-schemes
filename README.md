@@ -204,3 +204,27 @@ and execute the script. Then repeat the previous step.
 1. [Set the GitHub Actions repository secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) `GCP_CREDENTIALS_DEPLOY_$ENVIRONMENT` to the private key
 
 1. Open the output `url`
+
+## Authentication
+
+We have [registered](https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/) the following two services with [GOV.UK One Login](https://www.sign-in.service.gov.uk/):
+
+### Dev
+
+* Service name: ATE Schemes (Dev)
+* Service redirect URLs: https://schemes-ijnazoz5mq-ew.a.run.app/auth, http://127.0.0.1:5000/auth
+* Service contact email address: mark.hobson@activetravelengland.gov.uk
+* Scopes: openid email
+* Public key: (see "Schemes GOV.UK One Login Public Key (Dev)" in Bitwarden)
+* Logout URL: https://schemes-ijnazoz5mq-ew.a.run.app/, http://127.0.0.1:5000/
+* Sector identifier URI: https://schemes-ijnazoz5mq-ew.a.run.app/
+
+### Test
+
+* Service name: ATE Schemes (Test)
+* Service redirect URLs: https://schemes-dcmtqc7uca-ew.a.run.app/auth
+* Service contact email address: mark.hobson@activetravelengland.gov.uk
+* Scopes: openid email
+* Public key: (see "Schemes GOV.UK One Login Public Key (Test)" in Bitwarden)
+* Logout URL: https://schemes-dcmtqc7uca-ew.a.run.app/
+* Sector identifier URI: https://schemes-dcmtqc7uca-ew.a.run.app/

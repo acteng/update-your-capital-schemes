@@ -7,7 +7,7 @@ from schemes import create_app
 
 @pytest.fixture(name="app")
 def app_fixture() -> Flask:
-    return create_app()
+    return create_app({"TESTING": True})
 
 
 @pytest.fixture(name="client")

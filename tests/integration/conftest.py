@@ -9,7 +9,14 @@ from schemes import create_app
 
 @pytest.fixture(name="config")
 def config_fixture() -> Mapping[str, Any]:
-    return {"TESTING": True}
+    return {
+        "TESTING": True,
+        "SECRET_KEY": b"secret_key",
+        "GOVUK_CLIENT_ID": "test",
+        "GOVUK_CLIENT_SECRET": "test",
+        "GOVUK_SERVER_METADATA_URL": "test",
+        "GOVUK_TOKEN_ENDPOINT": "test",
+    }
 
 
 @pytest.fixture(name="app")

@@ -3,14 +3,15 @@ name = "schemes"
 version = "1.0.0"
 description = "ATE Schemes App."
 dependencies = [
+    "authlib~=1.2.0",
     "flask~=2.3.0",
     "govuk-frontend-jinja~=2.7.0",
-    "gunicorn~=21.2.0"
+    "gunicorn~=21.2.0",
+    "python-dotenv~=1.0.0"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "authlib~=1.2.0",
     "beautifulsoup4~=4.12.0",
     "black~=23.9.0",
     "isort~=5.12.0",
@@ -46,6 +47,9 @@ ignore_missing_imports = true
 [tool.pylint.format]
 good-names = ["id"]
 max-line-length = 120
+
+[tool.pytest.ini_options]
+live_server_scope = "class"
 
 [tool.pylint.messages_control]
 disable = [

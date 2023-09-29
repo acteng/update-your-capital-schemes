@@ -10,7 +10,8 @@ provider "google" {
 }
 
 locals {
-  project  = "dft-ate-schemes-${terraform.workspace}"
+  env      = terraform.workspace
+  project  = "dft-ate-schemes-${local.env}"
   location = "europe-west1"
 }
 
@@ -23,6 +24,7 @@ module "cloud_run" {
   source   = "./cloud-run"
   project  = local.project
   location = local.location
+  env      = local.env
 
   depends_on = [module.secret_manager]
 }

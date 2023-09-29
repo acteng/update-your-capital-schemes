@@ -30,8 +30,22 @@ class HomePage:
         self._page.goto(f"{_get_base_url(self._app)}/home")
         return self
 
+    def open_when_unauthenticated(self) -> LoginPage:
+        self.open()
+        return LoginPage(self._app, self._page)
+
     def visible(self) -> bool:
         return self.header.text_content() == "Home"
+
+
+class LoginPage:
+    def __init__(self, app: Flask, page: Page):
+        self._app = app
+        self._page = page
+        self.header = page.get_by_role("heading").first
+
+    def visible(self) -> bool:
+        return self.header.text_content() == "Login"
 
 
 def _get_base_url(app: Flask) -> str:

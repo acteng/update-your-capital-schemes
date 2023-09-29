@@ -107,6 +107,10 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerFlask:
     @app.route("/authorize")
     def authorize() -> Response:
         authorized_user = app.authorized_user()
+
+        if authorized_user is None:
+            return Response("<h1>Login</h1>")
+
         response: Response = authorization_server.create_authorization_response(grant_user=authorized_user)
         return response
 

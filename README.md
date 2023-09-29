@@ -12,6 +12,22 @@
    ```
 1. Install Terraform 1.5
 
+## Configure the app
+
+1. Generate a Flask secret key:
+
+    ```bash
+    echo "FLASK_SECRET_KEY=$(openssl rand -hex 32)" > .env
+    ```
+
+1. Add the 'Schemes GOV.UK One Login Private Key (Dev)' from Bitwarden to `.env`:
+
+    ```
+    FLASK_GOVUK_CLIENT_SECRET="-----BEGIN PRIVATE KEY-----
+    ...
+    -----END PRIVATE KEY-----"
+    ```
+
 ## Running locally
 
 1. Create a virtual environment:

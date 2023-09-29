@@ -16,6 +16,19 @@ resource "google_cloud_run_v2_service" "schemes" {
     containers {
       image = "europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes"
       env {
+        name  = "FLASK_ENV"
+        value = var.env
+      }
+      env {
+        name = "FLASK_SECRET_KEY"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.secret_key.secret_id
+            version = "latest"
+          }
+        }
+      }
+      env {
         name = "FLASK_BASIC_AUTH_USERNAME"
         value_source {
           secret_key_ref {
@@ -33,11 +46,23 @@ resource "google_cloud_run_v2_service" "schemes" {
           }
         }
       }
+      env {
+        name = "FLASK_GOVUK_CLIENT_SECRET"
+        value_source {
+          secret_key_ref {
+            secret  = data.google_secret_manager_secret.govuk_client_secret.secret_id
+            version = "latest"
+          }
+        }
+      }
     }
     service_account = google_service_account.cloud_run_schemes.email
   }
 
-  depends_on = [google_project_service.run]
+  depends_on = [
+    google_project_service.run,
+    google_secret_manager_secret_version.secret_key_version
+  ]
 }
 
 resource "google_cloud_run_v2_service_iam_binding" "schemes_run_invoker" {
@@ -63,6 +88,28 @@ resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
   depends_on = [google_project_service.run]
 }
 
+resource "random_uuid" "secret_key" {
+}
+
+resource "google_secret_manager_secret" "secret_key" {
+  secret_id = "secret-key"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "secret_key_version" {
+  secret      = google_secret_manager_secret.secret_key.id
+  secret_data = random_uuid.secret_key.id
+}
+
+resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_secret_key" {
+  member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
+  role      = "roles/secretmanager.secretAccessor"
+  secret_id = google_secret_manager_secret.secret_key.id
+}
+
 data "google_secret_manager_secret" "basic_auth_username" {
   secret_id = "basic-auth-username"
 }
@@ -81,4 +128,14 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_basic_auth
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
   role      = "roles/secretmanager.secretAccessor"
   secret_id = data.google_secret_manager_secret.basic_auth_password.id
+}
+
+data "google_secret_manager_secret" "govuk_client_secret" {
+  secret_id = "govuk-client-secret"
+}
+
+resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_govuk_client_secret" {
+  member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
+  role      = "roles/secretmanager.secretAccessor"
+  secret_id = data.google_secret_manager_secret.govuk_client_secret.id
 }

@@ -19,6 +19,10 @@ class LandingPage:
         self._start.click()
         return HomePage(self._app, self._page)
 
+    def start_when_unauthenticated(self) -> LoginPage:
+        self.start()
+        return LoginPage(self._app, self._page)
+
 
 class HomePage:
     def __init__(self, app: Flask, page: Page):

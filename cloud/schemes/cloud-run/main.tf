@@ -61,7 +61,7 @@ resource "google_cloud_run_v2_service" "schemes" {
 
   depends_on = [
     google_project_service.run,
-    google_secret_manager_secret_version.secret_key_version
+    google_secret_manager_secret_version.secret_key
   ]
 }
 
@@ -99,9 +99,14 @@ resource "google_secret_manager_secret" "secret_key" {
   }
 }
 
-resource "google_secret_manager_secret_version" "secret_key_version" {
+resource "google_secret_manager_secret_version" "secret_key" {
   secret      = google_secret_manager_secret.secret_key.id
   secret_data = random_uuid.secret_key.id
+}
+
+moved {
+  from = google_secret_manager_secret_version.secret_key_version
+  to   = google_secret_manager_secret_version.secret_key
 }
 
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_secret_key" {

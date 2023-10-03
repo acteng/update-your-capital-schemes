@@ -1,8 +1,12 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, Response, redirect, render_template, session, url_for
+from werkzeug import Response as BaseResponse
 
 bp = Blueprint("landing", __name__)
 
 
 @bp.route("/")
-def index() -> str:
-    return render_template("index.html")
+def index() -> BaseResponse:
+    if "user" in session:
+        return redirect(url_for("home.index"))
+
+    return Response(render_template("index.html"))

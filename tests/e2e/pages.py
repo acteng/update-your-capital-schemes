@@ -15,6 +15,10 @@ class LandingPage:
         self._page.goto(f"{_get_base_url(self._app)}")
         return self
 
+    def open_when_authenticated(self) -> HomePage:
+        self.open()
+        return HomePage(self._app, self._page)
+
     def start(self) -> HomePage:
         self._start.click()
         return HomePage(self._app, self._page)

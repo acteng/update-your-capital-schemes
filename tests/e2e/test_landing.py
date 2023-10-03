@@ -28,3 +28,12 @@ class TestAuthenticated:
     def oidc_server_app_fixture(self, oidc_server_app: OidcServerFlask) -> OidcServerFlask:
         oidc_server_app.add_user(StubUser("stub_user", "user@domain.com"))
         return oidc_server_app
+
+    @pytest.mark.usefixtures("live_server", "oidc_server")
+    def test_landing_shows_home(self, app: Flask, page: Page) -> None:
+        landing_page = LandingPage(app, page).open()
+        landing_page.start()
+
+        home_page = landing_page.open_when_authenticated()
+
+        assert home_page.visible()

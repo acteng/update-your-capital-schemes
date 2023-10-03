@@ -88,6 +88,8 @@ resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
   depends_on = [google_project_service.run]
 }
 
+# secret key
+
 resource "random_uuid" "secret_key" {
 }
 
@@ -115,6 +117,8 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_secret_key
   secret_id = google_secret_manager_secret.secret_key.id
 }
 
+# basic auth username
+
 data "google_secret_manager_secret" "basic_auth_username" {
   secret_id = "basic-auth-username"
 }
@@ -125,6 +129,8 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_basic_auth
   secret_id = data.google_secret_manager_secret.basic_auth_username.id
 }
 
+# basic auth password
+
 data "google_secret_manager_secret" "basic_auth_password" {
   secret_id = "basic-auth-password"
 }
@@ -134,6 +140,8 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_basic_auth
   role      = "roles/secretmanager.secretAccessor"
   secret_id = data.google_secret_manager_secret.basic_auth_password.id
 }
+
+# govuk client secret
 
 data "google_secret_manager_secret" "govuk_client_secret" {
   secret_id = "govuk-client-secret"

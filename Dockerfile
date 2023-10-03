@@ -8,4 +8,4 @@ COPY pyproject.toml .
 
 RUN pip install --no-cache-dir .
 
-CMD [ "sh", "-c", "gunicorn --bind 0.0.0.0:${PORT} 'schemes:create_app()'" ]
+CMD [ "sh", "-c", "gunicorn --bind 0.0.0.0:${PORT} --forwarded-allow-ips='*' 'schemes:create_app()'" ]

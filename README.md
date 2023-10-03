@@ -28,6 +28,19 @@
     -----END PRIVATE KEY-----"
     ```
 
+The application can also be configured with the following environment variables:
+
+| Name                            | Value                                                                                       |
+|---------------------------------|---------------------------------------------------------------------------------------------|
+| FLASK_ENV                       | Application environment name (`dev` / `test`)                                               |
+| FLASK_SECRET_KEY                | Flask session [secret key](https://flask.palletsprojects.com/en/2.3.x/quickstart/#sessions) |
+| FLASK_BASIC_AUTH_USERNAME       | HTTP Basic Auth username                                                                    |
+| FLASK_BASIC_AUTH_PASSWORD       | HTTP Basic Auth password                                                                    |
+| FLASK_GOVUK_CLIENT_ID           | OIDC client id                                                                              |
+| FLASK_GOVUK_CLIENT_SECRET       | OIDC client secret                                                                          |
+| FLASK_GOVUK_SERVER_METADATA_URL | OIDC discovery endpoint                                                                     |
+| FLASK_GOVUK_TOKEN_ENDPOINT      | OIDC token endpoint                                                                         |
+
 ## Running locally
 
 1. Create a virtual environment:

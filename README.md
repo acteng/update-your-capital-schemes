@@ -87,8 +87,10 @@
 The server can also be run on a different port by specifying the `PORT` environment variable:
 
 ```bash
-docker run --rm -it -e PORT=8000 -p 8000:8000 schemes
+docker run --rm -it -e PORT=8000 -p 8000:8000 --env-file ./.env schemes
 ```
+
+**NOTE:** You'll need to concatenate multiline values with `\n` in `.env` for Docker to correctly parse.
 
 ## Running formatters and linters
 

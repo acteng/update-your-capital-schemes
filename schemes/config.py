@@ -4,7 +4,7 @@ class Config:
 
 
 class DevConfig(Config):
-    NAME = "dev"
+    name = "dev"
     GOVUK_CLIENT_ID = "ACQWA69dKqUjccEMgMVKu0jX0q4"
 
 

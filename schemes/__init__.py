@@ -11,7 +11,7 @@ from schemes.config import DevConfig
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
-    env = os.environ.get("FLASK_ENV", DevConfig.NAME)
+    env = os.environ.get("FLASK_ENV", DevConfig.name)
 
     app = Flask(__name__)
     app.config.from_object(f"schemes.config.{env.title()}Config")

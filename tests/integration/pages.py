@@ -15,10 +15,7 @@ class LandingPage:
         return self
 
     def visible(self) -> bool:
-        return self.header() == "Schemes"
-
-    def header(self) -> str | None:
-        return self._soup.h1.string if self._soup and self._soup.h1 else None
+        return self._soup.h1.string == "Schemes" if self._soup and self._soup.h1 else False
 
 
 class HomePage:
@@ -32,7 +29,4 @@ class HomePage:
         return self
 
     def visible(self) -> bool:
-        return self.header() == "Home"
-
-    def header(self) -> str | None:
-        return self._soup.h1.string if self._soup and self._soup.h1 else None
+        return self._soup.h1.string == "Home" if self._soup and self._soup.h1 else False

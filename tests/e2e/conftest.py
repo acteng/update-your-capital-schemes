@@ -5,6 +5,7 @@ import sys
 from typing import Any, Generator
 
 import pytest
+from _pytest.mark import Mark
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.serialization import (
@@ -20,6 +21,14 @@ from schemes import create_app
 from tests.e2e.oidc_server.app import OidcServerFlask
 from tests.e2e.oidc_server.app import create_app as oidc_server_create_app
 from tests.e2e.oidc_server.clients import StubClient
+from tests.e2e.oidc_server.users import StubUser
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    config.addinivalue_line(
+        "markers",
+        "add_oidc_user(**kwargs): Add an OIDC Stub user to the OIDC Server instance by passing an id and email",
+    )
 
 
 @pytest.fixture(name="app", scope="class")
@@ -60,11 +69,17 @@ def configure_live_server_fixture() -> None:
 
 
 @pytest.fixture(name="oidc_server_app", scope="class")
-def oidc_server_app_fixture() -> OidcServerFlask:
+def oidc_server_app_fixture(request: pytest.FixtureRequest) -> OidcServerFlask:
     os.environ["AUTHLIB_INSECURE_TRANSPORT"] = "true"
     port = _get_random_port()
 
-    return oidc_server_create_app({"TESTING": True, "SERVER_NAME": f"localhost:{port}"})
+    oidc_server_app = oidc_server_create_app({"TESTING": True, "SERVER_NAME": f"localhost:{port}"})
+
+    add_user_marker: Mark | None = next(request.node.iter_markers(name="add_oidc_user"), None)
+    if add_user_marker is not None:
+        oidc_server_app.add_user(StubUser(**add_user_marker.kwargs))
+
+    return oidc_server_app
 
 
 @pytest.fixture(name="oidc_server", scope="class")

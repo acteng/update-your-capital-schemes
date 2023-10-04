@@ -5,7 +5,7 @@ from playwright.sync_api import Page, expect
 from tests.e2e.pages import HomePage
 
 
-@pytest.mark.add_oidc_user(id="stub_user", email="user@domain.com")
+@pytest.mark.oidc_user(id="stub_user", email="user@domain.com")
 class TestAuthenticated:
     @pytest.mark.usefixtures("live_server", "oidc_server")
     def test_home_when_authenticated(self, app: Flask, page: Page) -> None:

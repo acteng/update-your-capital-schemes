@@ -21,7 +21,7 @@ class TestUnauthenticated:
         assert login_page.visible()
 
 
-@pytest.mark.add_oidc_user(id="stub_user", email="user@domain.com")
+@pytest.mark.oidc_user(id="stub_user", email="user@domain.com")
 class TestAuthenticated:
     @pytest.mark.usefixtures("live_server", "oidc_server")
     def test_landing_shows_home(self, app: Flask, page: Page) -> None:

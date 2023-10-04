@@ -27,7 +27,7 @@ from tests.e2e.oidc_server.users import StubUser
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line(
         "markers",
-        "add_oidc_user(**kwargs): Add an OIDC Stub user to the OIDC Server instance by passing an id and email",
+        "oidc_user(**kwargs): Add an OIDC Stub user to the OIDC Server instance by passing an id and email",
     )
 
 
@@ -75,9 +75,9 @@ def oidc_server_app_fixture(request: pytest.FixtureRequest) -> OidcServerFlask:
 
     oidc_server_app = oidc_server_create_app({"TESTING": True, "SERVER_NAME": f"localhost:{port}"})
 
-    add_user_marker: Mark | None = next(request.node.iter_markers(name="add_oidc_user"), None)
-    if add_user_marker is not None:
-        oidc_server_app.add_user(StubUser(**add_user_marker.kwargs))
+    user_marker: Mark | None = next(request.node.iter_markers(name="oidc_user"), None)
+    if user_marker is not None:
+        oidc_server_app.add_user(StubUser(**user_marker.kwargs))
 
     return oidc_server_app
 

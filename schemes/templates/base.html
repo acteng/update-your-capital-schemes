@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block header %}
-    {{ govukHeader({"serviceName": "Schemes"}) }}
+    {{ govukHeader({"serviceName": "Schemes", "homepageUrl": url_for("landing.index")}) }}
 {% endblock %}
 
 {% block bodyEnd %}

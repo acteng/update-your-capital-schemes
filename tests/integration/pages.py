@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from flask.testing import FlaskClient
 
 
@@ -16,6 +16,16 @@ class LandingPage:
 
     def visible(self) -> bool:
         return self._soup.h1.string == "Schemes" if self._soup and self._soup.h1 else False
+
+    def header(self) -> Header:
+        assert self._soup and self._soup.header
+        return Header(self._soup.header)
+
+
+class Header:
+    def __init__(self, tag: Tag):
+        home = tag.find("a", class_="govuk-header__link")
+        self.home_url = home["href"] if isinstance(home, Tag) else None
 
 
 class HomePage:

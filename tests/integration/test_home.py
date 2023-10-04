@@ -7,6 +7,6 @@ def test_home(client: FlaskClient) -> None:
     with client.session_transaction() as session:
         session["user"] = {"email": "user@domain.com"}
 
-    response = client.get("/home")
+    home_page = HomePage(client).show()
 
-    assert HomePage(response.text).header == "Home"
+    assert home_page.visible()

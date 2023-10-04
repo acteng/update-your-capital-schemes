@@ -4,9 +4,9 @@ from tests.integration.pages import LandingPage
 
 
 def test_landing(client: FlaskClient) -> None:
-    response = client.get("/")
+    landing_page = LandingPage(client).show()
 
-    assert LandingPage(response.text).header == "Schemes"
+    assert landing_page.visible()
 
 
 def test_landing_when_authenticated_shows_home(client: FlaskClient) -> None:

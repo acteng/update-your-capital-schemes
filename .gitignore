@@ -19,3 +19,6 @@ __pycache__/
 
 # PyCharm
 /.idea/
+
+# playwright
+/test-results/

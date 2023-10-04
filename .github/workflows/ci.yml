@@ -39,6 +39,13 @@ jobs:
       - name: Run tests
         run: make test
 
+      - name: Upload screenshots on test failures
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: screenshots
+          path: test-results
+
       - id: auth
         name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1

@@ -7,7 +7,7 @@ from tests.e2e.pages import LandingPage
 
 class TestUnauthenticated:
     @pytest.mark.usefixtures("live_server")
-    def test_index(self, app: Flask, page: Page) -> None:
+    def test_landing(self, app: Flask, page: Page) -> None:
         landing_page = LandingPage(app, page).open()
 
         expect(landing_page.header).to_contain_text("Schemes")

@@ -9,4 +9,4 @@ def index() -> BaseResponse:
     if "user" in session:
         return redirect(url_for("home.index"))
 
-    return Response(render_template("index.html"))
+    return Response(render_template("start.html"))

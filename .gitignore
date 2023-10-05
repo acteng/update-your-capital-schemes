@@ -13,6 +13,9 @@ __pycache__/
 # GOV.UK Frontend
 /schemes/static/govuk-frontend/
 
+# GOV.UK One Login Service header
+/schemes/static/govuk-one-login-service-header/
+
 # Terraform
 .terraform/
 /cloud/tf-backend/terraform.tfstate*

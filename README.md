@@ -40,6 +40,7 @@ The application can also be configured with the following environment variables:
 | FLASK_GOVUK_CLIENT_SECRET       | OIDC client secret                                                                          |
 | FLASK_GOVUK_SERVER_METADATA_URL | OIDC discovery endpoint                                                                     |
 | FLASK_GOVUK_TOKEN_ENDPOINT      | OIDC token endpoint                                                                         |
+| FLASK_GOVUK_PROFILE_URL         | OIDC profile URL                                                                            |
 
 ## Running locally
 

@@ -50,7 +50,10 @@ def _configure_govuk_frontend(app: Flask) -> None:
 
     @app.context_processor
     def govuk_frontend_config() -> dict[str, str]:
-        return {"assetPath": url_for("static", filename="govuk-frontend/assets")}
+        return {
+            "assetPath": url_for("static", filename="govuk-frontend/assets"),
+            "oneLoginLink": app.config["GOVUK_PROFILE_URL"],
+        }
 
 
 def _configure_oidc(app: Flask) -> None:

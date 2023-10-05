@@ -4,14 +4,14 @@ from flask import Flask
 from playwright.sync_api import Page
 
 
-class LandingPage:
+class StartPage:
     def __init__(self, app: Flask, page: Page):
         self._app = app
         self._page = page
         self.header = page.get_by_role("heading").first
         self._start = page.get_by_role("button")
 
-    def open(self) -> LandingPage:
+    def open(self) -> StartPage:
         self._page.goto(f"{_get_base_url(self._app)}")
         return self
 

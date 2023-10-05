@@ -6,12 +6,12 @@ from bs4 import BeautifulSoup, Tag
 from flask.testing import FlaskClient
 
 
-class LandingPage:
+class StartPage:
     def __init__(self, client: FlaskClient):
         self._client = client
         self._soup = BeautifulSoup()
 
-    def show(self) -> LandingPage:
+    def show(self) -> StartPage:
         response = self._client.get("/")
         self._soup = BeautifulSoup(response.text, "html.parser")
         return self

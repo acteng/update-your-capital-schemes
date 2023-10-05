@@ -6,7 +6,7 @@ from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from flask import Flask, Response, request, url_for
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
-from schemes import auth, home, landing
+from schemes import auth, home, start
 from schemes.config import DevConfig
 
 
@@ -22,7 +22,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     _configure_govuk_frontend(app)
     _configure_oidc(app)
 
-    app.register_blueprint(landing.bp)
+    app.register_blueprint(start.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
     app.register_blueprint(home.bp, url_prefix="/home")
 

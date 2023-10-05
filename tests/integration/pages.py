@@ -19,11 +19,11 @@ class LandingPage:
     def visible(self) -> bool:
         return self._soup.h1.string == "Schemes" if self._soup.h1 else False
 
-    def header(self) -> Header:
-        return Header(cast(Tag, self._soup.header))
+    def header(self) -> HeaderComponent:
+        return HeaderComponent(cast(Tag, self._soup.header))
 
 
-class Header:
+class HeaderComponent:
     def __init__(self, tag: Tag):
         self.home_url = cast(Tag, tag.find("a", class_="govuk-header__link"))["href"]
 

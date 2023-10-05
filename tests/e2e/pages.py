@@ -19,6 +19,9 @@ class StartPage:
         self.open()
         return HomePage(self._app, self._page)
 
+    def visible(self) -> bool:
+        return self.header.text_content() == "Schemes"
+
     def start(self) -> HomePage:
         self._start.click()
         return HomePage(self._app, self._page)

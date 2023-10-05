@@ -1,6 +1,6 @@
 import pytest
 from flask import Flask
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
 
 from tests.e2e.pages import HomePage
 
@@ -11,7 +11,7 @@ class TestAuthenticated:
     def test_home_when_authenticated(self, app: Flask, page: Page) -> None:
         home_page = HomePage(app, page).open()
 
-        expect(home_page.header).to_contain_text("Home")
+        assert home_page.visible()
 
 
 class TestUnauthenticated:

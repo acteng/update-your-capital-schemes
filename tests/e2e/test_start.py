@@ -1,6 +1,6 @@
 import pytest
 from flask import Flask
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
 
 from tests.e2e.pages import StartPage
 
@@ -10,7 +10,7 @@ class TestUnauthenticated:
     def test_start(self, app: Flask, page: Page) -> None:
         start_page = StartPage(app, page).open()
 
-        expect(start_page.header).to_contain_text("Schemes")
+        assert start_page.visible()
 
     @pytest.mark.usefixtures("live_server", "oidc_server")
     def test_start_shows_login(self, app: Flask, page: Page) -> None:

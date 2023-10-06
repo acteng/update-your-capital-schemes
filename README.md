@@ -10,7 +10,7 @@
    ```bash
    gcloud auth application-default login
    ```
-1. Install Terraform 1.5
+1. Install Terraform 1.6
 
 ## Configure the app
 

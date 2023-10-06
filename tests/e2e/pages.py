@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from flask import Flask
-from playwright.sync_api import Page
+from playwright.sync_api import Locator, Page
 
 
 class StartPage:
@@ -34,6 +34,7 @@ class HomePage:
     def __init__(self, app: Flask, page: Page):
         self._app = app
         self._page = page
+        self.header = ServiceHeaderComponent(app, page.get_by_role("banner"))
 
     def open(self) -> HomePage:
         self._page.goto(f"{_get_base_url(self._app)}/home")
@@ -45,6 +46,16 @@ class HomePage:
 
     def visible(self) -> bool:
         return self._page.get_by_role("heading", name="Home").is_visible()
+
+
+class ServiceHeaderComponent:
+    def __init__(self, app: Flask, component: Locator):
+        self._app = app
+        self._component = component
+
+    def sign_out(self) -> StartPage:
+        self._component.get_by_role("link", name="Sign out").click()
+        return StartPage(self._app, self._component.page)
 
 
 class LoginPage:

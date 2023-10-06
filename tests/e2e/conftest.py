@@ -47,6 +47,7 @@ def app_fixture(oidc_server_app: OidcServerFlask) -> Flask:
             "GOVUK_CLIENT_SECRET": private_key.decode(),
             "GOVUK_SERVER_METADATA_URL": oidc_server_app.url_for("openid_configuration", _external=True),
             "GOVUK_TOKEN_ENDPOINT": oidc_server_app.url_for("token", _external=True),
+            "GOVUK_END_SESSION_ENDPOINT": oidc_server_app.url_for("logout", _external=True),
         }
     )
 

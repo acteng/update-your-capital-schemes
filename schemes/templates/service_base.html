@@ -7,7 +7,12 @@
 {% endblock %}
 
 {% block header %}
-    {{ govukOneLoginServiceHeader({"serviceName": "Schemes", "homepageLink": url_for("start.index"), "oneLoginLink": oneLoginLink}) }}
+    {{ govukOneLoginServiceHeader({
+        "serviceName": "Schemes",
+        "homepageLink": url_for("start.index"),
+        "oneLoginLink": oneLoginLink,
+        "signOutLink": url_for("auth.logout")
+    }) }}
 {% endblock %}
 
 {% block bodyEnd %}

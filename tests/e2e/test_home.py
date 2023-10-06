@@ -13,6 +13,14 @@ class TestAuthenticated:
 
         assert home_page.visible()
 
+    @pytest.mark.usefixtures("live_server", "oidc_server")
+    def test_header_sign_out(self, app: Flask, page: Page) -> None:
+        home_page = HomePage(app, page).open()
+
+        start_page = home_page.header.sign_out()
+
+        assert start_page.visible()
+
 
 class TestUnauthenticated:
     @pytest.mark.usefixtures("live_server", "oidc_server")

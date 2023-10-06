@@ -5,7 +5,8 @@ from authlib.jose.rfc7517.base_key import Key
 from authlib.jose.rfc7517.key_set import KeySet
 from authlib.jose.rfc7518.rsa_key import RSAKey
 from authlib.oauth2.rfc6749.requests import OAuth2Request
-from flask import Flask, Response, jsonify, url_for
+from flask import Flask, Response, jsonify, redirect, request, url_for
+from werkzeug import Response as BaseResponse
 
 from tests.e2e.oidc_server.clients import ClientRepository, StubClient
 from tests.e2e.oidc_server.grants import (
@@ -77,10 +78,10 @@ class OidcServerFlask(Flask):
         grant.authorization_codes = self._authorization_codes
         grant.users = self._users
 
-    def _save_token(self, token: dict[str, str], request: OAuth2Request) -> None:
+    def _save_token(self, token: dict[str, str], oauth2_request: OAuth2Request) -> None:
         self._tokens.add(
             token["access_token"],
-            StubToken(client_id=request.client.client_id, user_id=request.user.id, scope=token["scope"]),
+            StubToken(client_id=oauth2_request.client.client_id, user_id=oauth2_request.user.id, scope=token["scope"]),
         )
 
 
@@ -128,6 +129,13 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerFlask:
     @app.route("/jwks_uri")
     def jwks() -> Response:
         return jsonify(KeySet([key]).as_dict())
+
+    @app.route("/logout")
+    def logout() -> BaseResponse:
+        post_logout_redirect_uri = request.args.get("post_logout_redirect_uri")
+        assert post_logout_redirect_uri is not None
+
+        return redirect(post_logout_redirect_uri)
 
     # register after token endpoint has been defined
     authorization_server.register_client_auth_method(

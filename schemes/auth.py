@@ -1,5 +1,6 @@
 from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
+from urllib.parse import urlencode, urlparse
 
 from authlib.integrations.flask_client import OAuth
 from flask import Blueprint, Response, current_app, redirect, session, url_for
@@ -15,6 +16,19 @@ def callback() -> BaseResponse:
     session["user"] = oauth.govuk.userinfo(token=token)
     session["id_token"] = token["id_token"]
     return redirect(url_for("home.index"))
+
+
+@bp.route("/logout")
+def logout() -> BaseResponse:
+    id_token = session["id_token"]
+    del session["user"]
+    del session["id_token"]
+
+    end_session_endpoint = current_app.config["GOVUK_END_SESSION_ENDPOINT"]
+    post_logout_redirect_uri = url_for("start.index", _external=True)
+    logout_query = urlencode({"id_token_hint": id_token, "post_logout_redirect_uri": post_logout_redirect_uri})
+    logout_url = urlparse(end_session_endpoint)._replace(query=logout_query).geturl()
+    return redirect(logout_url)
 
 
 T = TypeVar("T")

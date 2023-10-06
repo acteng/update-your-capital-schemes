@@ -2,6 +2,7 @@ class Config:
     GOVUK_SERVER_METADATA_URL = "https://oidc.integration.account.gov.uk/.well-known/openid-configuration"
     GOVUK_TOKEN_ENDPOINT = "https://oidc.integration.account.gov.uk/token"
     GOVUK_PROFILE_URL = "https://home.integration.account.gov.uk/"
+    GOVUK_END_SESSION_ENDPOINT = "https://oidc.integration.account.gov.uk/logout"
 
 
 class DevConfig(Config):

@@ -11,7 +11,7 @@ class StartPage:
         self._client = client
         self._soup = BeautifulSoup()
 
-    def show(self) -> StartPage:
+    def open(self) -> StartPage:
         response = self._client.get("/")
         self._soup = BeautifulSoup(response.text, "html.parser")
         return self
@@ -33,7 +33,7 @@ class HomePage:
         self._client = client
         self._soup = BeautifulSoup()
 
-    def show(self) -> HomePage:
+    def open(self) -> HomePage:
         response = self._client.get("/home")
         self._soup = BeautifulSoup(response.text, "html.parser")
         return self

@@ -19,18 +19,18 @@ def client_fixture(client: FlaskClient) -> FlaskClient:
 
 
 def test_header_home_shows_start(client: FlaskClient) -> None:
-    home_page = HomePage(client).show()
+    home_page = HomePage(client).open()
 
     assert home_page.header().home_url == "/"
 
 
 def test_header_profile_shows_profile(client: FlaskClient) -> None:
-    home_page = HomePage(client).show()
+    home_page = HomePage(client).open()
 
     assert home_page.header().profile_url == "https://example.com/profile"
 
 
 def test_home(client: FlaskClient) -> None:
-    home_page = HomePage(client).show()
+    home_page = HomePage(client).open()
 
     assert home_page.visible()

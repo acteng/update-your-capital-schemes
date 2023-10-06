@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import cast
 
 from bs4 import BeautifulSoup, Tag
@@ -49,3 +50,4 @@ class ServiceHeaderComponent:
     def __init__(self, tag: Tag):
         self.home_url = cast(Tag, tag.find("a", class_="one-login-header__link"))["href"]
         self.profile_url = cast(Tag, tag.find("a", class_="one-login-header__nav__link"))["href"]
+        self.sign_out_url = cast(Tag, tag.find("a", string=re.compile("Sign out")))["href"]

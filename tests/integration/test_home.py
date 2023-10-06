@@ -30,6 +30,12 @@ def test_header_profile_shows_profile(client: FlaskClient) -> None:
     assert home_page.header().profile_url == "https://example.com/profile"
 
 
+def test_header_sign_out_signs_out(client: FlaskClient) -> None:
+    home_page = HomePage(client).open()
+
+    assert home_page.header().sign_out_url == "/auth/logout"
+
+
 def test_home(client: FlaskClient) -> None:
     home_page = HomePage(client).open()
 

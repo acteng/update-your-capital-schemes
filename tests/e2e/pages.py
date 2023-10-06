@@ -8,7 +8,6 @@ class StartPage:
     def __init__(self, app: Flask, page: Page):
         self._app = app
         self._page = page
-        self.header = page.get_by_role("heading", name="Schemes")
         self._start = page.get_by_role("button")
 
     def open(self) -> StartPage:
@@ -20,7 +19,7 @@ class StartPage:
         return HomePage(self._app, self._page)
 
     def visible(self) -> bool:
-        return self.header.is_visible()
+        return self._page.get_by_role("heading", name="Schemes").is_visible()
 
     def start(self) -> HomePage:
         self._start.click()
@@ -35,7 +34,6 @@ class HomePage:
     def __init__(self, app: Flask, page: Page):
         self._app = app
         self._page = page
-        self.header = page.get_by_role("heading", name="Home")
 
     def open(self) -> HomePage:
         self._page.goto(f"{_get_base_url(self._app)}/home")
@@ -46,17 +44,16 @@ class HomePage:
         return LoginPage(self._app, self._page)
 
     def visible(self) -> bool:
-        return self.header.is_visible()
+        return self._page.get_by_role("heading", name="Home").is_visible()
 
 
 class LoginPage:
     def __init__(self, app: Flask, page: Page):
         self._app = app
         self._page = page
-        self.header = page.get_by_role("heading", name="Login")
 
     def visible(self) -> bool:
-        return self.header.is_visible()
+        return self._page.get_by_role("heading", name="Login").is_visible()
 
 
 def _get_base_url(app: Flask) -> str:

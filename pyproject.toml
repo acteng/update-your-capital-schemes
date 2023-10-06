@@ -49,6 +49,9 @@ ignore_missing_imports = true
 good-names = ["id"]
 max-line-length = 120
 
+[tool.pylint.miscellaneous]
+notes = []
+
 [tool.pytest.ini_options]
 live_server_scope = "class"
 addopts = "--screenshot only-on-failure"

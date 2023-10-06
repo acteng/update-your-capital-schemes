@@ -132,8 +132,10 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerFlask:
 
     @app.route("/logout")
     def logout() -> BaseResponse:
+        id_token_hint = request.args.get("id_token_hint")
         post_logout_redirect_uri = request.args.get("post_logout_redirect_uri")
-        assert post_logout_redirect_uri is not None
+        assert id_token_hint is not None and post_logout_redirect_uri is not None
+        # TODO: revoke token for id_token_hint
 
         return redirect(post_logout_redirect_uri)
 

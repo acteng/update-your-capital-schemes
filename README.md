@@ -94,8 +94,10 @@ The application can also be configured with the following environment variables:
 1. Run the Docker image:
 
    ```bash
-   docker run --rm -it -p 5000:5000 schemes
+   docker run --rm -it -p 5000:5000 --env-file ./.env schemes
    ```
+   
+   **NOTE:** You'll need to concatenate multiline values with `\n` in `.env` for Docker to correctly parse.
    
 1. Open http://127.0.0.1:5000
 
@@ -104,8 +106,6 @@ The server can also be run on a different port by specifying the `PORT` environm
 ```bash
 docker run --rm -it -e PORT=8000 -p 8000:8000 --env-file ./.env schemes
 ```
-
-**NOTE:** You'll need to concatenate multiline values with `\n` in `.env` for Docker to correctly parse.
 
 ## Running formatters and linters
 

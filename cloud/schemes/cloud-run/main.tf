@@ -97,7 +97,8 @@ resource "google_secret_manager_secret" "secret_key" {
   secret_id = "secret-key"
 
   replication {
-    automatic = true
+    auto {
+    }
   }
 }
 

@@ -20,15 +20,6 @@ resource "google_cloud_run_v2_service" "schemes" {
         value = var.env
       }
       env {
-        name = "FLASK_SECRET_KEY"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.secret_key.secret_id
-            version = "latest"
-          }
-        }
-      }
-      env {
         name = "FLASK_BASIC_AUTH_USERNAME"
         value_source {
           secret_key_ref {
@@ -59,10 +50,7 @@ resource "google_cloud_run_v2_service" "schemes" {
     service_account = google_service_account.cloud_run_schemes.email
   }
 
-  depends_on = [
-    google_project_service.run,
-    google_secret_manager_secret_version.secret_key
-  ]
+  depends_on = [google_project_service.run]
 }
 
 resource "google_cloud_run_v2_service_iam_binding" "schemes_run_invoker" {
@@ -90,32 +78,9 @@ resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
 
 # secret key
 
-resource "random_uuid" "secret_key" {
-}
-
-resource "google_secret_manager_secret" "secret_key" {
-  secret_id = "secret-key"
-
-  replication {
-    auto {
-    }
-  }
-}
-
-resource "google_secret_manager_secret_version" "secret_key" {
-  secret      = google_secret_manager_secret.secret_key.id
-  secret_data = random_uuid.secret_key.id
-}
-
 moved {
   from = google_secret_manager_secret_version.secret_key_version
   to   = google_secret_manager_secret_version.secret_key
-}
-
-resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_secret_key" {
-  member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
-  role      = "roles/secretmanager.secretAccessor"
-  secret_id = google_secret_manager_secret.secret_key.id
 }
 
 # basic auth username

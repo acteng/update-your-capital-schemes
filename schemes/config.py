@@ -1,4 +1,10 @@
 class Config:
+    # Flask-Session
+    SESSION_TYPE = "filesystem"
+    SESSION_FILE_DIR = ".flask_session"
+    PERMANENT_SESSION_LIFETIME = 60 * 60  # 1 hour
+
+    # GOV.UK One Login
     GOVUK_SERVER_METADATA_URL = "https://oidc.integration.account.gov.uk/.well-known/openid-configuration"
     GOVUK_TOKEN_ENDPOINT = "https://oidc.integration.account.gov.uk/token"
     GOVUK_PROFILE_URL = "https://home.integration.account.gov.uk/"
@@ -7,8 +13,11 @@ class Config:
 
 class DevConfig(Config):
     name = "dev"
+
+    # GOV.UK One Login
     GOVUK_CLIENT_ID = "ACQWA69dKqUjccEMgMVKu0jX0q4"
 
 
 class TestConfig(Config):
+    # GOV.UK One Login
     GOVUK_CLIENT_ID = "0OJC1ThcrcGoFtEmxxiFXedQsqn"

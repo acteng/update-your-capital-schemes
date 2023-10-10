@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-1. Install Python 3.10
+1. Install Python 3.11
 1. Install Node 18
 1. Install Google Cloud CLI and authenticate using ADCs:
    ```bash
@@ -41,7 +41,7 @@ The application can also be configured with the following environment variables:
 1. Create a virtual environment:
 
     ```bash
-    python3 -m venv --prompt . .venv
+    python3.11 -m venv --prompt . .venv
     ```
 
 1. Activate the virtual environment:

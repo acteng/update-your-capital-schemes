@@ -2,6 +2,7 @@
 name = "schemes"
 version = "1.0.0"
 description = "ATE Schemes App."
+requires-python = ">=3.10"
 dependencies = [
     "authlib~=1.2.0",
     "flask~=2.3.0",

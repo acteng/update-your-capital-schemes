@@ -7,6 +7,17 @@ clean:
 	find . -name __pycache__ -type d -prune -exec rm -rf {} \;
 	find . -name .pytest_cache -type d -prune -exec rm -rf {} \;
 
+black-check:
+	$(bin)/black --check $(packages)
+
+isort-check:
+	$(bin)/isort --check-only $(packages)
+
+terraform-fmt-check:
+	terraform -chdir=cloud fmt -check -recursive
+
+format-check: black-check isort-check terraform-fmt-check
+
 black:
 	$(bin)/black $(packages)
 
@@ -29,4 +40,4 @@ lint: mypy pylint
 test:
 	$(bin)/pytest
 
-verify: lint test
+verify: format-check lint test

@@ -30,6 +30,9 @@ jobs:
       - name: Install browsers
         run: .venv/bin/playwright install --with-deps chromium
 
+      - name: Run format check
+        run: make format-check
+
       - name: Run type check
         run: make mypy
 

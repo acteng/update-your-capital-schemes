@@ -76,13 +76,6 @@ resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
   depends_on = [google_project_service.run]
 }
 
-# secret key
-
-moved {
-  from = google_secret_manager_secret_version.secret_key_version
-  to   = google_secret_manager_secret_version.secret_key
-}
-
 # basic auth username
 
 data "google_secret_manager_secret" "basic_auth_username" {

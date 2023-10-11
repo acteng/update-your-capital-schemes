@@ -32,7 +32,7 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 @pytest.fixture(name="app", scope="class")
-def app_fixture(oidc_server_app: OidcServerFlask) -> Flask:
+def app_fixture(oidc_server: OidcServer) -> Flask:
     port = _get_random_port()
     client_id = "app"
     private_key, public_key = _generate_key_pair()
@@ -45,13 +45,13 @@ def app_fixture(oidc_server_app: OidcServerFlask) -> Flask:
             "LIVESERVER_PORT": port,
             "GOVUK_CLIENT_ID": client_id,
             "GOVUK_CLIENT_SECRET": private_key.decode(),
-            "GOVUK_SERVER_METADATA_URL": oidc_server_app.url_for("openid_configuration", _external=True),
-            "GOVUK_TOKEN_ENDPOINT": oidc_server_app.url_for("token", _external=True),
-            "GOVUK_END_SESSION_ENDPOINT": oidc_server_app.url_for("logout", _external=True),
+            "GOVUK_SERVER_METADATA_URL": oidc_server.app.url_for("openid_configuration", _external=True),
+            "GOVUK_TOKEN_ENDPOINT": oidc_server.app.url_for("token", _external=True),
+            "GOVUK_END_SESSION_ENDPOINT": oidc_server.app.url_for("logout", _external=True),
         }
     )
 
-    oidc_server_app.add_client(
+    oidc_server.add_client(
         StubClient(
             client_id=client_id,
             redirect_uri=app.url_for("auth.callback", _external=True),

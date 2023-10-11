@@ -109,6 +109,13 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerFlask:
         app.clear_users()
         return Response(status=204)
 
+    @app.route("/clients", methods=["POST"])
+    def add_client() -> Response:
+        json = request.get_json()
+        client = StubClient(json["client_id"], json["redirect_uri"], json["public_key"], json["scope"])
+        app.add_client(client)
+        return Response(status=201)
+
     @app.route("/.well-known/openid-configuration")
     def openid_configuration() -> Response:
         return jsonify(

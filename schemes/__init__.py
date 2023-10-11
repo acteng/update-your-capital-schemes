@@ -4,7 +4,6 @@ from typing import Any, Mapping
 from authlib.integrations.flask_client import OAuth
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from flask import Flask, Response, request, url_for
-from flask_session import Session
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
 from schemes import auth, home, start
@@ -19,7 +18,6 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.config.from_prefixed_env()
     app.config.from_mapping(test_config)
 
-    Session(app)
     _configure_basic_auth(app)
     _configure_govuk_frontend(app)
     _configure_oidc(app)

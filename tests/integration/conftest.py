@@ -11,6 +11,7 @@ from schemes import create_app
 def config_fixture() -> Mapping[str, Any]:
     return {
         "TESTING": True,
+        "SECRET_KEY": b"secret_key",
         "GOVUK_CLIENT_ID": "test",
         "GOVUK_CLIENT_SECRET": "test",
         "GOVUK_SERVER_METADATA_URL": "test",

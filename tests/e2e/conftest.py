@@ -40,6 +40,7 @@ def app_fixture(oidc_server_app: OidcServerFlask) -> Flask:
     app = create_app(
         {
             "TESTING": True,
+            "SECRET_KEY": b"secret_key",
             "SERVER_NAME": f"localhost:{port}",
             "LIVESERVER_PORT": port,
             "GOVUK_CLIENT_ID": client_id,

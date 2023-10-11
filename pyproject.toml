@@ -6,7 +6,6 @@ requires-python = ">=3.11"
 dependencies = [
     "authlib~=1.2.0",
     "flask~=2.3.0",
-    "flask-session~=0.5.0",
     "govuk-frontend-jinja~=2.7.0",
     "gunicorn~=21.2.0",
     "python-dotenv~=1.0.0",
@@ -43,7 +42,6 @@ strict = true
 [[tool.mypy.overrides]]
 module = [
     "authlib.*",
-    "flask_session.*",
     "pytest_flask.*"
 ]
 ignore_missing_imports = true

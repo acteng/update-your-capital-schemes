@@ -54,6 +54,9 @@ class OidcServerFlask(Flask):
         if self._authorized_user_id is None:
             self.authorize_user(user.id)
 
+    def clear_users(self) -> None:
+        self._users.clear()
+
     def authorize_user(self, user_id: str) -> None:
         self._authorized_user_id = user_id
 
@@ -93,6 +96,18 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerFlask:
     key = RSAKey.generate_key(is_private=True)
     authorization_server = app.create_authorization_server(key)
     require_oauth = app.create_resource_protector()
+
+    @app.route("/users", methods=["POST"])
+    def add_user() -> Response:
+        json = request.get_json()
+        user = StubUser(json["id"], json["email"])
+        app.add_user(user)
+        return Response(status=201)
+
+    @app.route("/users", methods=["DELETE"])
+    def clear_users() -> Response:
+        app.clear_users()
+        return Response(status=204)
 
     @app.route("/.well-known/openid-configuration")
     def openid_configuration() -> Response:

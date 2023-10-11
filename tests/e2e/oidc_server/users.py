@@ -16,3 +16,6 @@ class UserRepository:
 
     def get(self, user_id: str) -> StubUser:
         return self._users[user_id]
+
+    def clear(self) -> None:
+        self._users.clear()

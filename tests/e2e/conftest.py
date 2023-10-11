@@ -15,12 +15,12 @@ from cryptography.hazmat.primitives.serialization import (
     PublicFormat,
 )
 from flask import Flask
-from pytest_flask.live_server import LiveServer
 
 from schemes import create_app
 from tests.e2e.oidc_server.app import OidcServerFlask
 from tests.e2e.oidc_server.app import create_app as oidc_server_create_app
 from tests.e2e.oidc_server.clients import StubClient
+from tests.e2e.oidc_server.server import OidcServer
 from tests.e2e.oidc_server.users import StubUser
 
 
@@ -70,27 +70,31 @@ def configure_live_server_fixture() -> None:
 
 
 @pytest.fixture(name="oidc_server_app", scope="class")
-def oidc_server_app_fixture(request: pytest.FixtureRequest) -> OidcServerFlask:
+def oidc_server_app_fixture() -> OidcServerFlask:
     os.environ["AUTHLIB_INSECURE_TRANSPORT"] = "true"
     port = _get_random_port()
-
-    oidc_server_app = oidc_server_create_app({"TESTING": True, "SERVER_NAME": f"localhost:{port}"})
-
-    user_marker: Mark | None = next(request.node.iter_markers(name="oidc_user"), None)
-    if user_marker is not None:
-        oidc_server_app.add_user(StubUser(**user_marker.kwargs))
-
-    return oidc_server_app
+    return oidc_server_create_app({"TESTING": True, "SERVER_NAME": f"localhost:{port}"})
 
 
 @pytest.fixture(name="oidc_server", scope="class")
 def oidc_server_fixture(
     oidc_server_app: OidcServerFlask, request: pytest.FixtureRequest
-) -> Generator[LiveServer, Any, Any]:
-    server = LiveServer(oidc_server_app, "localhost", _get_port(oidc_server_app), 5, True)
+) -> Generator[OidcServer, Any, Any]:
+    server = OidcServer(oidc_server_app, "localhost", _get_port(oidc_server_app), 5, True)
     server.start()
     request.addfinalizer(server.stop)
     yield server
+
+
+@pytest.fixture(name="oidc_user")
+def oidc_user(oidc_server: OidcServer, request: pytest.FixtureRequest) -> Generator[StubUser | None, Any, Any]:
+    user_marker: Mark | None = next(request.node.iter_markers(name="oidc_user"), None)
+    user = StubUser(**user_marker.kwargs) if user_marker is not None else None
+    if user is not None:
+        oidc_server.add_user(user)
+    yield user
+    if user is not None:
+        oidc_server.clear_users()
 
 
 def _get_port(app: Flask) -> int:

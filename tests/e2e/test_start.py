@@ -5,14 +5,14 @@ from playwright.sync_api import Page
 from tests.e2e.pages import StartPage
 
 
+@pytest.mark.usefixtures("live_server")
 class TestUnauthenticated:
-    @pytest.mark.usefixtures("live_server")
     def test_start(self, app: Flask, page: Page) -> None:
         start_page = StartPage(app, page).open()
 
         assert start_page.visible()
 
-    @pytest.mark.usefixtures("live_server", "oidc_server")
+    @pytest.mark.usefixtures("oidc_server")
     def test_start_shows_login(self, app: Flask, page: Page) -> None:
         start_page = StartPage(app, page).open()
 
@@ -21,9 +21,9 @@ class TestUnauthenticated:
         assert login_page.visible()
 
 
+@pytest.mark.usefixtures("live_server", "oidc_server", "oidc_user")
 @pytest.mark.oidc_user(id="stub_user", email="user@domain.com")
 class TestAuthenticated:
-    @pytest.mark.usefixtures("live_server", "oidc_server", "oidc_user")
     def test_start_shows_home(self, app: Flask, page: Page) -> None:
         start_page = StartPage(app, page).open()
         start_page.start()

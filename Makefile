@@ -2,7 +2,7 @@ bin = .venv/bin
 packages = schemes tests
 
 clean:
-	rm -rf .flask_session .mypy_cache .venv node_modules
+	rm -rf .flask_session .mypy_cache .venv node_modules test-results
 	rm -rf schemes/static/govuk-frontend schemes/static/govuk-one-login-service-header
 	find . -name __pycache__ -type d -prune -exec rm -rf {} \;
 	find . -name .pytest_cache -type d -prune -exec rm -rf {} \;

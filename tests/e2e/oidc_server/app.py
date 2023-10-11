@@ -99,8 +99,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerFlask:
 
     @app.route("/users", methods=["POST"])
     def add_user() -> Response:
-        json = request.get_json()
-        user = StubUser(json["id"], json["email"])
+        user = StubUser(**request.get_json())
         app.add_user(user)
         return Response(status=201)
 
@@ -111,8 +110,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerFlask:
 
     @app.route("/clients", methods=["POST"])
     def add_client() -> Response:
-        json = request.get_json()
-        client = StubClient(json["client_id"], json["redirect_uri"], json["public_key"], json["scope"])
+        client = StubClient(**request.get_json())
         app.add_client(client)
         return Response(status=201)
 

@@ -25,7 +25,7 @@ from tests.e2e.oidc_server.tokens import (
 from tests.e2e.oidc_server.users import StubUser, UserRepository
 
 
-class OidcServerFlask(Flask):
+class OidcServerApp(Flask):
     def __init__(self, import_name: str):
         super().__init__(import_name)
         self._users = UserRepository()
@@ -88,8 +88,8 @@ class OidcServerFlask(Flask):
         )
 
 
-def create_app(test_config: dict[str, Any] | None = None) -> OidcServerFlask:
-    app = OidcServerFlask(__name__)
+def create_app(test_config: dict[str, Any] | None = None) -> OidcServerApp:
+    app = OidcServerApp(__name__)
     app.config.from_prefixed_env()
     app.config.from_mapping(test_config)
 

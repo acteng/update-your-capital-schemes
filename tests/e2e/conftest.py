@@ -17,7 +17,7 @@ from cryptography.hazmat.primitives.serialization import (
 from flask import Flask
 
 from schemes import create_app
-from tests.e2e.oidc_server.app import OidcServerFlask
+from tests.e2e.oidc_server.app import OidcServerApp
 from tests.e2e.oidc_server.app import create_app as oidc_server_create_app
 from tests.e2e.oidc_server.clients import StubClient
 from tests.e2e.oidc_server.server import OidcServer
@@ -70,7 +70,7 @@ def configure_live_server_fixture() -> None:
 
 
 @pytest.fixture(name="oidc_server_app", scope="class")
-def oidc_server_app_fixture() -> OidcServerFlask:
+def oidc_server_app_fixture() -> OidcServerApp:
     os.environ["AUTHLIB_INSECURE_TRANSPORT"] = "true"
     port = _get_random_port()
     return oidc_server_create_app({"TESTING": True, "SERVER_NAME": f"localhost:{port}"})
@@ -78,7 +78,7 @@ def oidc_server_app_fixture() -> OidcServerFlask:
 
 @pytest.fixture(name="oidc_server", scope="class")
 def oidc_server_fixture(
-    oidc_server_app: OidcServerFlask, request: pytest.FixtureRequest
+    oidc_server_app: OidcServerApp, request: pytest.FixtureRequest
 ) -> Generator[OidcServer, Any, Any]:
     server = OidcServer(oidc_server_app, "localhost", _get_port(oidc_server_app), 5, True)
     server.start()

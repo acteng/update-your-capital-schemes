@@ -14,20 +14,20 @@ def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
 
 
 def test_callback_logs_in(client: FlaskClient) -> None:
-    current_app.extensions["users"].append("user@domain.com")
+    current_app.extensions["users"].append("boardman@example.com")
     _given_token_response({"id_token": "jwt"})
-    _given_user_info(UserInfo({"email": "user@domain.com"}))
+    _given_user_info(UserInfo({"email": "boardman@example.com"}))
 
     with client:
         client.get("/auth")
 
-        assert session["user"] == UserInfo({"email": "user@domain.com"}) and session["id_token"] == "jwt"
+        assert session["user"] == UserInfo({"email": "boardman@example.com"}) and session["id_token"] == "jwt"
 
 
 def test_callback_redirects_to_home(client: FlaskClient) -> None:
-    current_app.extensions["users"].append("user@domain.com")
+    current_app.extensions["users"].append("boardman@example.com")
     _given_token_response({"id_token": "jwt"})
-    _given_user_info(UserInfo({"email": "user@domain.com"}))
+    _given_user_info(UserInfo({"email": "boardman@example.com"}))
 
     response = client.get("/auth")
 
@@ -35,8 +35,9 @@ def test_callback_redirects_to_home(client: FlaskClient) -> None:
 
 
 def test_callback_when_unauthorized_shows_unauthorized(client: FlaskClient) -> None:
+    current_app.extensions["users"].append("boardman@example.com")
     _given_token_response({"id_token": "jwt"})
-    _given_user_info(UserInfo({"email": "user@domain.com"}))
+    _given_user_info(UserInfo({"email": "obree@example.com"}))
 
     response = client.get("/auth")
 
@@ -45,22 +46,22 @@ def test_callback_when_unauthorized_shows_unauthorized(client: FlaskClient) -> N
 
 def test_logout_logs_out_from_oidc(client: FlaskClient) -> None:
     with client.session_transaction() as setup_session:
-        setup_session["user"] = "test"
-        setup_session["id_token"] = "id_token"
+        setup_session["user"] = UserInfo({"email": "boardman@example.com"})
+        setup_session["id_token"] = "jwt"
 
     response = client.get("/auth/logout")
 
     assert (
         response.status_code == 302
         and response.location
-        == "https://example.com/logout?id_token_hint=id_token&post_logout_redirect_uri=http%3A%2F%2Flocalhost%2F"
+        == "https://example.com/logout?id_token_hint=jwt&post_logout_redirect_uri=http%3A%2F%2Flocalhost%2F"
     )
 
 
 def test_logout_logs_out_from_schemes(client: FlaskClient) -> None:
     with client.session_transaction() as setup_session:
-        setup_session["user"] = "test"
-        setup_session["id_token"] = "test"
+        setup_session["user"] = UserInfo({"email": "boardman@example.com"})
+        setup_session["id_token"] = "jwt"
 
     with client:
         client.get("/auth/logout")

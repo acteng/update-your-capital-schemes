@@ -23,10 +23,10 @@ class TestUnauthenticated:
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server", "oidc_user")
-@pytest.mark.oidc_user(id="stub_user", email="user@domain.com")
+@pytest.mark.oidc_user(id="boardman", email="boardman@example.com")
 class TestAuthenticated:
     def test_start_shows_home(self, app_client: AppClient, app: Flask, page: Page) -> None:
-        app_client.add_user("user@domain.com")
+        app_client.add_user("boardman@example.com")
         start_page = StartPage(app, page).open()
         start_page.start()
 

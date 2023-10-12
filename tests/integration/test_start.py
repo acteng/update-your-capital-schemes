@@ -17,7 +17,7 @@ def test_header_home_shows_start(client: FlaskClient) -> None:
 
 def test_start_when_authenticated_shows_home(client: FlaskClient) -> None:
     with client.session_transaction() as session:
-        session["user"] = {"email": "user@domain.com"}
+        session["user"] = {"email": "boardman@example.com"}
 
     response = client.get("/")
 

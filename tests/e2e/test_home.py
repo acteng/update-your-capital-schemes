@@ -7,10 +7,10 @@ from tests.e2e.pages import HomePage
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server", "oidc_user")
-@pytest.mark.oidc_user(id="stub_user", email="user@domain.com")
+@pytest.mark.oidc_user(id="boardman", email="boardman@example.com")
 class TestAuthenticated:
     def test_home_when_authorized(self, app_client: AppClient, app: Flask, page: Page) -> None:
-        app_client.add_user("user@domain.com")
+        app_client.add_user("boardman@example.com")
 
         home_page = HomePage(app, page).open()
 
@@ -22,7 +22,7 @@ class TestAuthenticated:
         assert unauthorized_page.visible()
 
     def test_header_sign_out(self, app_client: AppClient, app: Flask, page: Page) -> None:
-        app_client.add_user("user@domain.com")
+        app_client.add_user("boardman@example.com")
         home_page = HomePage(app, page).open()
 
         start_page = home_page.header.sign_out()

@@ -14,7 +14,7 @@ def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
 @pytest.fixture(name="client")
 def client_fixture(client: FlaskClient) -> FlaskClient:
     with client.session_transaction() as session:
-        session["user"] = {"email": "user@domain.com"}
+        session["user"] = {"email": "boardman@example.com"}
     return client
 
 

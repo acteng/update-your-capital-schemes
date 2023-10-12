@@ -27,9 +27,6 @@ jobs:
       - name: Install dependencies
         run: .venv/bin/pip install .[dev]
 
-      - name: Install browsers
-        run: .venv/bin/playwright install --with-deps chromium
-
       - name: Run format check
         run: make format-check
 
@@ -38,6 +35,9 @@ jobs:
 
       - name: Run linter
         run: make pylint
+
+      - name: Install browsers
+        run: .venv/bin/playwright install --with-deps chromium
 
       - name: Run tests
         run: make test

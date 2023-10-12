@@ -1,13 +1,35 @@
 from typing import Any, Mapping
+from unittest.mock import Mock
 
 import pytest
-from flask import session
+from authlib.integrations.flask_client import OAuth
+from authlib.oidc.core import UserInfo
+from flask import current_app, session
 from flask.testing import FlaskClient
 
 
 @pytest.fixture(name="config")
 def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
     return config | {"GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
+
+
+def test_callback_logs_in(client: FlaskClient) -> None:
+    _given_token_response({"id_token": "jwt"})
+    _given_user_info(UserInfo({"sub": "123"}))
+
+    with client:
+        client.get("/auth")
+
+        assert session["user"] == UserInfo({"sub": "123"}) and session["id_token"] == "jwt"
+
+
+def test_callback_redirects_to_home(client: FlaskClient) -> None:
+    _given_token_response({"id_token": "jwt"})
+    _given_user_info(UserInfo({"sub": "123"}))
+
+    response = client.get("/auth")
+
+    assert response.status_code == 302 and response.location == "/home"
 
 
 def test_logout_logs_out_from_oidc(client: FlaskClient) -> None:
@@ -33,3 +55,15 @@ def test_logout_logs_out_from_schemes(client: FlaskClient) -> None:
         client.get("/auth/logout")
 
         assert "user" not in session and "id_token" not in session
+
+
+def _given_token_response(token: dict[str, str]) -> None:
+    _get_oauth().govuk.authorize_access_token = Mock(return_value=token)
+
+
+def _given_user_info(user_info: UserInfo) -> None:
+    _get_oauth().govuk.userinfo = Mock(return_value=user_info)
+
+
+def _get_oauth() -> OAuth:
+    return current_app.extensions["authlib.integrations.flask_client"]

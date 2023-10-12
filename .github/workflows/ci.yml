@@ -27,19 +27,19 @@ jobs:
       - name: Install dependencies
         run: .venv/bin/pip install .[dev]
 
-      - name: Run format check
+      - name: Check formatting
         run: make format-check
 
-      - name: Run type check
+      - name: Check types
         run: make mypy
 
-      - name: Run linter
+      - name: Lint
         run: make pylint
 
       - name: Install browsers
         run: .venv/bin/playwright install --with-deps chromium
 
-      - name: Run tests
+      - name: Test
         run: make test
 
       - name: Upload screenshots on test failures

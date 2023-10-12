@@ -30,6 +30,24 @@ class StartPage:
         return LoginPage(self._app, self._page)
 
 
+class LoginPage:
+    def __init__(self, app: Flask, page: Page):
+        self._app = app
+        self._page = page
+
+    def visible(self) -> bool:
+        return self._page.get_by_role("heading", name="Login").is_visible()
+
+
+class UnauthorizedPage:
+    def __init__(self, app: Flask, page: Page):
+        self._app = app
+        self._page = page
+
+    def visible(self) -> bool:
+        return self._page.get_by_role("heading", name="Unauthorized").is_visible()
+
+
 class HomePage:
     def __init__(self, app: Flask, page: Page):
         self._app = app
@@ -60,24 +78,6 @@ class ServiceHeaderComponent:
     def sign_out(self) -> StartPage:
         self._component.get_by_role("link", name="Sign out").click()
         return StartPage(self._app, self._component.page)
-
-
-class LoginPage:
-    def __init__(self, app: Flask, page: Page):
-        self._app = app
-        self._page = page
-
-    def visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Login").is_visible()
-
-
-class UnauthorizedPage:
-    def __init__(self, app: Flask, page: Page):
-        self._app = app
-        self._page = page
-
-    def visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Unauthorized").is_visible()
 
 
 def _get_base_url(app: Flask) -> str:

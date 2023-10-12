@@ -7,6 +7,8 @@ from authlib.oidc.core import UserInfo
 from flask import current_app, session
 from flask.testing import FlaskClient
 
+from tests.integration.pages import UnauthorizedPage
+
 
 @pytest.fixture(name="config")
 def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
@@ -45,9 +47,9 @@ def test_callback_when_unauthorized_redirects_to_unauthorized(client: FlaskClien
 
 
 def test_unauthorized(client: FlaskClient) -> None:
-    response = client.get("/auth/unauthorized")
+    unauthorized_page = UnauthorizedPage(client).open()
 
-    assert response.status_code == 401 and response.text == "<h1>Unauthorized</h1>"
+    assert unauthorized_page.visible() and unauthorized_page.is_unauthorized()
 
 
 def test_logout_logs_out_from_oidc(client: FlaskClient) -> None:

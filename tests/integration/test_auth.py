@@ -15,8 +15,8 @@ def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
 
 def test_callback_logs_in(client: FlaskClient) -> None:
     current_app.extensions["users"].append("boardman@example.com")
-    _given_token_response({"id_token": "jwt"})
-    _given_user_info(UserInfo({"email": "boardman@example.com"}))
+    _given_oidc_returns_token_response({"id_token": "jwt"})
+    _given_oidc_returns_user_info(UserInfo({"email": "boardman@example.com"}))
 
     with client:
         client.get("/auth")
@@ -26,8 +26,8 @@ def test_callback_logs_in(client: FlaskClient) -> None:
 
 def test_callback_redirects_to_home(client: FlaskClient) -> None:
     current_app.extensions["users"].append("boardman@example.com")
-    _given_token_response({"id_token": "jwt"})
-    _given_user_info(UserInfo({"email": "boardman@example.com"}))
+    _given_oidc_returns_token_response({"id_token": "jwt"})
+    _given_oidc_returns_user_info(UserInfo({"email": "boardman@example.com"}))
 
     response = client.get("/auth")
 
@@ -36,8 +36,8 @@ def test_callback_redirects_to_home(client: FlaskClient) -> None:
 
 def test_callback_when_unauthorized_shows_unauthorized(client: FlaskClient) -> None:
     current_app.extensions["users"].append("boardman@example.com")
-    _given_token_response({"id_token": "jwt"})
-    _given_user_info(UserInfo({"email": "obree@example.com"}))
+    _given_oidc_returns_token_response({"id_token": "jwt"})
+    _given_oidc_returns_user_info(UserInfo({"email": "obree@example.com"}))
 
     response = client.get("/auth")
 
@@ -69,11 +69,11 @@ def test_logout_logs_out_from_schemes(client: FlaskClient) -> None:
         assert "user" not in session and "id_token" not in session
 
 
-def _given_token_response(token: dict[str, str]) -> None:
+def _given_oidc_returns_token_response(token: dict[str, str]) -> None:
     _get_oauth().govuk.authorize_access_token = Mock(return_value=token)
 
 
-def _given_user_info(user_info: UserInfo) -> None:
+def _given_oidc_returns_user_info(user_info: UserInfo) -> None:
     _get_oauth().govuk.userinfo = Mock(return_value=user_info)
 
 

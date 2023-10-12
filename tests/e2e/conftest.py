@@ -15,13 +15,14 @@ from cryptography.hazmat.primitives.serialization import (
     PublicFormat,
 )
 from flask import Flask
+from pytest_flask.live_server import LiveServer
 
 from schemes import create_app
 from tests.e2e.oidc_server.app import OidcServerApp
 from tests.e2e.oidc_server.app import create_app as oidc_server_create_app
 from tests.e2e.oidc_server.clients import StubClient
-from tests.e2e.oidc_server.server import OidcServer
 from tests.e2e.oidc_server.users import StubUser
+from tests.e2e.oidc_server.web_client import OidcClient
 
 
 def pytest_configure(config: pytest.Config) -> None:
@@ -32,7 +33,7 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 @pytest.fixture(name="app", scope="class")
-def app_fixture(oidc_server: OidcServer) -> Flask:
+def app_fixture(oidc_client: OidcClient) -> Flask:
     port = _get_random_port()
     client_id = "app"
     private_key, public_key = _generate_key_pair()
@@ -45,13 +46,13 @@ def app_fixture(oidc_server: OidcServer) -> Flask:
             "LIVESERVER_PORT": port,
             "GOVUK_CLIENT_ID": client_id,
             "GOVUK_CLIENT_SECRET": private_key.decode(),
-            "GOVUK_SERVER_METADATA_URL": oidc_server.app.url_for("openid_configuration", _external=True),
-            "GOVUK_TOKEN_ENDPOINT": oidc_server.app.url_for("token", _external=True),
-            "GOVUK_END_SESSION_ENDPOINT": oidc_server.app.url_for("logout", _external=True),
+            "GOVUK_SERVER_METADATA_URL": oidc_client.metadata_url,
+            "GOVUK_TOKEN_ENDPOINT": oidc_client.token_endpoint,
+            "GOVUK_END_SESSION_ENDPOINT": oidc_client.end_session_endpoint,
         }
     )
 
-    oidc_server.add_client(
+    oidc_client.add_client(
         StubClient(
             client_id=client_id,
             redirect_uri=app.url_for("auth.callback", _external=True),
@@ -79,22 +80,28 @@ def oidc_server_app_fixture() -> OidcServerApp:
 @pytest.fixture(name="oidc_server", scope="class")
 def oidc_server_fixture(
     oidc_server_app: OidcServerApp, request: pytest.FixtureRequest
-) -> Generator[OidcServer, Any, Any]:
-    server = OidcServer(oidc_server_app, "localhost", _get_port(oidc_server_app), 5, True)
+) -> Generator[LiveServer, Any, Any]:
+    server = LiveServer(oidc_server_app, "localhost", _get_port(oidc_server_app), 5, True)
     server.start()
     request.addfinalizer(server.stop)
     yield server
 
 
+@pytest.fixture(name="oidc_client", scope="class")
+def oidc_client_fixture(oidc_server: LiveServer) -> OidcClient:
+    url = f"http://{oidc_server.host}:{oidc_server.port}"
+    return OidcClient(url)
+
+
 @pytest.fixture(name="oidc_user")
-def oidc_user(oidc_server: OidcServer, request: pytest.FixtureRequest) -> Generator[StubUser | None, Any, Any]:
+def oidc_user(oidc_client: OidcClient, request: pytest.FixtureRequest) -> Generator[StubUser | None, Any, Any]:
     user_marker: Mark | None = next(request.node.iter_markers(name="oidc_user"), None)
     user = StubUser(**user_marker.kwargs) if user_marker is not None else None
     if user is not None:
-        oidc_server.add_user(user)
+        oidc_client.add_user(user)
     yield user
     if user is not None:
-        oidc_server.clear_users()
+        oidc_client.clear_users()
 
 
 def _get_port(app: Flask) -> int:

@@ -2,6 +2,7 @@ import pytest
 from flask import Flask
 from playwright.sync_api import Page
 
+from tests.e2e.app_client import AppClient
 from tests.e2e.pages import StartPage
 
 
@@ -24,7 +25,8 @@ class TestUnauthenticated:
 @pytest.mark.usefixtures("live_server", "oidc_server", "oidc_user")
 @pytest.mark.oidc_user(id="stub_user", email="user@domain.com")
 class TestAuthenticated:
-    def test_start_shows_home(self, app: Flask, page: Page) -> None:
+    def test_start_shows_home(self, app_client: AppClient, app: Flask, page: Page) -> None:
+        app_client.add_user("user@domain.com")
         start_page = StartPage(app, page).open()
         start_page.start()
 

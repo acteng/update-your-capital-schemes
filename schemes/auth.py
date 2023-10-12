@@ -13,7 +13,12 @@ bp = Blueprint("auth", __name__)
 def callback() -> BaseResponse:
     oauth = _get_oauth()
     token = oauth.govuk.authorize_access_token()
-    session["user"] = oauth.govuk.userinfo(token=token)
+    user = oauth.govuk.userinfo(token=token)
+
+    if user["email"] not in current_app.extensions["users"]:
+        return Response("<h1>Unauthorized</h1>", status=401)
+
+    session["user"] = user
     session["id_token"] = token["id_token"]
     return redirect(url_for("home.index"))
 

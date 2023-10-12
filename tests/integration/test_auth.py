@@ -14,22 +14,33 @@ def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
 
 
 def test_callback_logs_in(client: FlaskClient) -> None:
+    current_app.extensions["users"].append("user@domain.com")
     _given_token_response({"id_token": "jwt"})
-    _given_user_info(UserInfo({"sub": "123"}))
+    _given_user_info(UserInfo({"email": "user@domain.com"}))
 
     with client:
         client.get("/auth")
 
-        assert session["user"] == UserInfo({"sub": "123"}) and session["id_token"] == "jwt"
+        assert session["user"] == UserInfo({"email": "user@domain.com"}) and session["id_token"] == "jwt"
 
 
 def test_callback_redirects_to_home(client: FlaskClient) -> None:
+    current_app.extensions["users"].append("user@domain.com")
     _given_token_response({"id_token": "jwt"})
-    _given_user_info(UserInfo({"sub": "123"}))
+    _given_user_info(UserInfo({"email": "user@domain.com"}))
 
     response = client.get("/auth")
 
     assert response.status_code == 302 and response.location == "/home"
+
+
+def test_callback_when_unauthorized_shows_unauthorized(client: FlaskClient) -> None:
+    _given_token_response({"id_token": "jwt"})
+    _given_user_info(UserInfo({"email": "user@domain.com"}))
+
+    response = client.get("/auth")
+
+    assert response.status_code == 401 and response.text == "<h1>Unauthorized</h1>"
 
 
 def test_logout_logs_out_from_oidc(client: FlaskClient) -> None:

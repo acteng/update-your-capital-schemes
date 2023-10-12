@@ -44,6 +44,10 @@ class HomePage:
         self.open()
         return LoginPage(self._app, self._page)
 
+    def open_when_unauthorized(self) -> UnauthorizedPage:
+        self.open()
+        return UnauthorizedPage(self._app, self._page)
+
     def visible(self) -> bool:
         return self._page.get_by_role("heading", name="Home").is_visible()
 
@@ -65,6 +69,15 @@ class LoginPage:
 
     def visible(self) -> bool:
         return self._page.get_by_role("heading", name="Login").is_visible()
+
+
+class UnauthorizedPage:
+    def __init__(self, app: Flask, page: Page):
+        self._app = app
+        self._page = page
+
+    def visible(self) -> bool:
+        return self._page.get_by_role("heading", name="Unauthorized").is_visible()
 
 
 def _get_base_url(app: Flask) -> str:

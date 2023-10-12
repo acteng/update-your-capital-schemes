@@ -18,6 +18,7 @@ from flask import Flask
 from pytest_flask.live_server import LiveServer
 
 from schemes import create_app
+from tests.e2e.app_client import AppClient
 from tests.e2e.oidc_server.app import OidcServerApp
 from tests.e2e.oidc_server.app import create_app as oidc_server_create_app
 from tests.e2e.oidc_server.clients import StubClient
@@ -68,6 +69,14 @@ def app_fixture(oidc_client: OidcClient) -> Flask:
 def configure_live_server_fixture() -> None:
     if sys.platform == "darwin":
         multiprocessing.set_start_method("fork")
+
+
+@pytest.fixture(name="app_client")
+def app_client_fixture(live_server: LiveServer) -> Generator[AppClient, Any, Any]:
+    url = f"http://{live_server.host}:{live_server.port}"
+    client = AppClient(url)
+    yield client
+    client.clear_users()
 
 
 @pytest.fixture(name="oidc_server_app", scope="class")

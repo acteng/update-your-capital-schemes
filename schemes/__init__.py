@@ -6,7 +6,7 @@ from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from flask import Flask, Response, request, url_for
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
-from schemes import auth, home, start
+from schemes import api, auth, home, start
 from schemes.config import DevConfig
 
 
@@ -21,10 +21,13 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     _configure_basic_auth(app)
     _configure_govuk_frontend(app)
     _configure_oidc(app)
+    _configure_users(app)
 
     app.register_blueprint(start.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
     app.register_blueprint(home.bp, url_prefix="/home")
+    if app.testing:
+        app.register_blueprint(api.bp, url_prefix="/api")
 
     return app
 
@@ -68,3 +71,12 @@ def _configure_oidc(app: Flask) -> None:
             "token_endpoint_auth_method": PrivateKeyJWT(app.config["GOVUK_TOKEN_ENDPOINT"]),
         },
     )
+
+
+def _configure_users(app: Flask) -> None:
+    app.extensions["users"] = []
+
+    if not app.testing:
+        app.extensions["users"].extend(
+            ["alex.coleman@activetravelengland.gov.uk", "mark.hobson@activetravelengland.gov.uk"]
+        )

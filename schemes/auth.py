@@ -3,7 +3,15 @@ from typing import Callable, ParamSpec, TypeVar
 from urllib.parse import urlencode, urlparse
 
 from authlib.integrations.flask_client import OAuth
-from flask import Blueprint, Response, current_app, redirect, session, url_for
+from flask import (
+    Blueprint,
+    Response,
+    current_app,
+    redirect,
+    render_template,
+    session,
+    url_for,
+)
 from werkzeug.wrappers import Response as BaseResponse
 
 bp = Blueprint("auth", __name__)
@@ -25,7 +33,7 @@ def callback() -> BaseResponse:
 
 @bp.route("/unauthorized")
 def unauthorized() -> Response:
-    return Response("<h1>Unauthorized</h1>", status=401)
+    return Response(render_template("unauthorized.html"), status=401)
 
 
 @bp.route("/logout")

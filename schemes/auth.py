@@ -16,11 +16,16 @@ def callback() -> BaseResponse:
     user = oauth.govuk.userinfo(token=token)
 
     if user["email"] not in current_app.extensions["users"]:
-        return Response("<h1>Unauthorized</h1>", status=401)
+        return redirect(url_for("auth.unauthorized"))
 
     session["user"] = user
     session["id_token"] = token["id_token"]
     return redirect(url_for("home.index"))
+
+
+@bp.route("/unauthorized")
+def unauthorized() -> Response:
+    return Response("<h1>Unauthorized</h1>", status=401)
 
 
 @bp.route("/logout")

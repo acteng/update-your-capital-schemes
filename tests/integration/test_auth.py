@@ -34,12 +34,18 @@ def test_callback_redirects_to_home(client: FlaskClient) -> None:
     assert response.status_code == 302 and response.location == "/home"
 
 
-def test_callback_when_unauthorized_shows_unauthorized(client: FlaskClient) -> None:
+def test_callback_when_unauthorized_redirects_to_unauthorized(client: FlaskClient) -> None:
     current_app.extensions["users"].append("boardman@example.com")
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "obree@example.com"}))
 
     response = client.get("/auth")
+
+    assert response.status_code == 302 and response.location == "/auth/unauthorized"
+
+
+def test_unauthorized(client: FlaskClient) -> None:
+    response = client.get("/auth/unauthorized")
 
     assert response.status_code == 401 and response.text == "<h1>Unauthorized</h1>"
 

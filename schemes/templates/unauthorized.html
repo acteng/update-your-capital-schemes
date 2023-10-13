@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 
+{% set mainClasses = "govuk-main-wrapper--l" %}
+
 {% block content %}
-    <h1 class="govuk-heading-xl">Unauthorized</h1>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">Unauthorized</h1>
+            <p class="govuk-body">
+                If you have been invited to use this service,
+                <a href="mailto:contact@activetravelengland.gov.uk" class="govuk-link">contact Active Travel England</a>
+                to speak to someone about gaining access.
+            </p>
+        </div>
+    </div>
 {% endblock %}

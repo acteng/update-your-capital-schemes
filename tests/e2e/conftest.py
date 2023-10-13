@@ -15,6 +15,7 @@ from cryptography.hazmat.primitives.serialization import (
     PublicFormat,
 )
 from flask import Flask
+from pytest import FixtureRequest
 from pytest_flask.live_server import LiveServer
 
 from schemes import create_app
@@ -80,9 +81,7 @@ def oidc_server_app_fixture() -> OidcServerApp:
 
 
 @pytest.fixture(name="oidc_server", scope="package")
-def oidc_server_fixture(
-    oidc_server_app: OidcServerApp, request: pytest.FixtureRequest
-) -> Generator[LiveServer, Any, Any]:
+def oidc_server_fixture(oidc_server_app: OidcServerApp, request: FixtureRequest) -> Generator[LiveServer, Any, Any]:
     server = LiveServer(oidc_server_app, "localhost", _get_port(oidc_server_app), 5, True)
     server.start()
     request.addfinalizer(server.stop)

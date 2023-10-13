@@ -24,7 +24,7 @@ from tests.e2e.oidc_server.clients import StubClient
 from tests.e2e.oidc_server.web_client import OidcClient
 
 
-@pytest.fixture(name="app", scope="session")
+@pytest.fixture(name="app", scope="package")
 def app_fixture(oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
     port = _get_random_port()
     client_id = "app"
@@ -57,7 +57,7 @@ def app_fixture(oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
     oidc_client.clear_clients()
 
 
-@pytest.fixture(name="configure_live_server", scope="session", autouse=True)
+@pytest.fixture(name="configure_live_server", scope="package", autouse=True)
 def configure_live_server_fixture() -> None:
     if sys.platform == "darwin":
         multiprocessing.set_start_method("fork")
@@ -70,14 +70,14 @@ def app_client_fixture(live_server: LiveServer) -> Generator[AppClient, Any, Any
     client.clear_users()
 
 
-@pytest.fixture(name="oidc_server_app", scope="session")
+@pytest.fixture(name="oidc_server_app", scope="package")
 def oidc_server_app_fixture() -> OidcServerApp:
     os.environ["AUTHLIB_INSECURE_TRANSPORT"] = "true"
     port = _get_random_port()
     return oidc_server_create_app({"TESTING": True, "SERVER_NAME": f"localhost:{port}"})
 
 
-@pytest.fixture(name="oidc_server", scope="session")
+@pytest.fixture(name="oidc_server", scope="package")
 def oidc_server_fixture(
     oidc_server_app: OidcServerApp, request: pytest.FixtureRequest
 ) -> Generator[LiveServer, Any, Any]:

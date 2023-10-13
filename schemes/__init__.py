@@ -8,7 +8,7 @@ from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
 from schemes import api, auth, home, start
 from schemes.config import DevConfig
-from schemes.users import User
+from schemes.users import User, UserRepository
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -75,9 +75,10 @@ def _configure_oidc(app: Flask) -> None:
 
 
 def _configure_users(app: Flask) -> None:
-    app.extensions["users"] = []
+    users = UserRepository()
 
     if not app.testing:
-        app.extensions["users"].extend(
-            [User("alex.coleman@activetravelengland.gov.uk"), User("mark.hobson@activetravelengland.gov.uk")]
-        )
+        users.add(User("alex.coleman@activetravelengland.gov.uk"))
+        users.add(User("mark.hobson@activetravelengland.gov.uk"))
+
+    app.extensions["users"] = users

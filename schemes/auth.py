@@ -15,6 +15,8 @@ from flask import (
 )
 from werkzeug.wrappers import Response as BaseResponse
 
+from schemes.users import UserRepository
+
 bp = Blueprint("auth", __name__)
 
 
@@ -68,8 +70,8 @@ def secure(func: Callable[P, T]) -> Callable[P, T | Response]:
 
 
 def _is_authorized(user: UserInfo) -> bool:
-    users = current_app.extensions["users"]
-    return user["email"] in [user.email for user in users]
+    users: UserRepository = current_app.extensions["users"]
+    return users.get(user["email"]) is not None
 
 
 def _get_oauth() -> OAuth:

@@ -4,7 +4,7 @@ from typing import Any, Mapping
 import inject
 from authlib.integrations.flask_client import OAuth
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
-from flask import Flask, Response, request, url_for
+from flask import Flask, Response, render_template, request, url_for
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
@@ -23,6 +23,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
     inject.configure(_bindings, bind_in_runtime=False)
 
+    _configure_error_pages(app)
     _configure_basic_auth(app)
     _configure_govuk_frontend(app)
     _configure_oidc(app)
@@ -40,6 +41,16 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
 def _bindings(binder: Binder) -> None:
     binder.bind(UserRepository, DatabaseUserRepository())
+
+
+def _configure_error_pages(app: Flask) -> None:
+    @app.errorhandler(404)
+    def not_found(error: Exception) -> Response:  # pylint: disable=unused-argument
+        return Response(render_template("404.html"), status=404)
+
+    @app.errorhandler(500)
+    def internal_server_error(error: Exception) -> Response:  # pylint: disable=unused-argument
+        return Response(render_template("500.html"), status=500)
 
 
 def _configure_basic_auth(app: Flask) -> None:

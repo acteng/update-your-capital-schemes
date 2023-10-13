@@ -25,7 +25,7 @@ from tests.e2e.oidc_server.web_client import OidcClient
 
 
 @pytest.fixture(name="app", scope="class")
-def app_fixture(oidc_client: OidcClient) -> Flask:
+def app_fixture(oidc_server: LiveServer) -> Flask:
     port = _get_random_port()
     client_id = "app"
     private_key, public_key = _generate_key_pair()
@@ -38,12 +38,13 @@ def app_fixture(oidc_client: OidcClient) -> Flask:
             "LIVESERVER_PORT": port,
             "GOVUK_CLIENT_ID": client_id,
             "GOVUK_CLIENT_SECRET": private_key.decode(),
-            "GOVUK_SERVER_METADATA_URL": oidc_client.metadata_url,
-            "GOVUK_TOKEN_ENDPOINT": oidc_client.token_endpoint,
-            "GOVUK_END_SESSION_ENDPOINT": oidc_client.end_session_endpoint,
+            "GOVUK_SERVER_METADATA_URL": oidc_server.app.url_for("openid_configuration", _external=True),
+            "GOVUK_TOKEN_ENDPOINT": oidc_server.app.url_for("token", _external=True),
+            "GOVUK_END_SESSION_ENDPOINT": oidc_server.app.url_for("logout", _external=True),
         }
     )
 
+    oidc_client = OidcClient(_get_url(oidc_server))
     oidc_client.add_client(
         StubClient(
             client_id=client_id,
@@ -86,7 +87,7 @@ def oidc_server_fixture(
     yield server
 
 
-@pytest.fixture(name="oidc_client", scope="class")
+@pytest.fixture(name="oidc_client")
 def oidc_client_fixture(oidc_server: LiveServer) -> Generator[OidcClient, Any, Any]:
     client = OidcClient(_get_url(oidc_server))
     yield client

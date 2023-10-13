@@ -45,15 +45,15 @@ def app_fixture(oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
         }
     )
 
-    oidc_client = OidcClient(_get_url(oidc_server))
-    oidc_client.add_client(
-        StubClient(
-            client_id=client_id,
-            redirect_uri=app.url_for("auth.callback", _external=True),
-            public_key=public_key.decode(),
-            scope="openid email",
-        )
+    app_oidc_client = StubClient(
+        client_id=client_id,
+        redirect_uri=app.url_for("auth.callback", _external=True),
+        public_key=public_key.decode(),
+        scope="openid email",
     )
+
+    oidc_client = OidcClient(_get_url(oidc_server))
+    oidc_client.add_client(app_oidc_client)
     yield app
     inject.clear()
     oidc_client.clear_clients()

@@ -8,6 +8,7 @@ from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
 from schemes import api, auth, home, start
 from schemes.config import DevConfig
+from schemes.users import User
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -78,5 +79,5 @@ def _configure_users(app: Flask) -> None:
 
     if not app.testing:
         app.extensions["users"].extend(
-            ["alex.coleman@activetravelengland.gov.uk", "mark.hobson@activetravelengland.gov.uk"]
+            [User("alex.coleman@activetravelengland.gov.uk"), User("mark.hobson@activetravelengland.gov.uk")]
         )

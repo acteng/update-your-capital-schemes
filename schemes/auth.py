@@ -68,7 +68,8 @@ def secure(func: Callable[P, T]) -> Callable[P, T | Response]:
 
 
 def _is_authorized(user: UserInfo) -> bool:
-    return user["email"] in current_app.extensions["users"]
+    users = current_app.extensions["users"]
+    return user["email"] in [user.email for user in users]
 
 
 def _get_oauth() -> OAuth:

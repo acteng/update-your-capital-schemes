@@ -1,12 +1,14 @@
 from flask import Blueprint, Response, current_app, request
 
+from schemes.users import User
+
 bp = Blueprint("api", __name__)
 
 
 @bp.route("/users", methods=["POST"])
 def add_user() -> Response:
-    email = request.get_json()["email"]
-    current_app.extensions["users"].append(email)
+    user = User(request.get_json()["email"])
+    current_app.extensions["users"].append(user)
     return Response(status=201)
 
 

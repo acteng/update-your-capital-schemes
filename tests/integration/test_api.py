@@ -4,16 +4,18 @@ import pytest
 from flask import current_app
 from flask.testing import FlaskClient
 
+from schemes.users import User
+
 
 def test_add_user(client: FlaskClient) -> None:
     response = client.post("/api/users", json={"email": "boardman@example.com"})
 
     assert response.status_code == 201
-    assert "boardman@example.com" in current_app.extensions["users"]
+    assert User("boardman@example.com") in current_app.extensions["users"]
 
 
 def test_clear_users(client: FlaskClient) -> None:
-    current_app.extensions["users"].append("boardman@example.com")
+    current_app.extensions["users"].append(User("boardman@example.com"))
 
     response = client.delete("/api/users")
 

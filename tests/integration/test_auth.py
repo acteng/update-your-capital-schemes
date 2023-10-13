@@ -7,6 +7,7 @@ from authlib.oidc.core import UserInfo
 from flask import current_app, session
 from flask.testing import FlaskClient
 
+from schemes.users import User
 from tests.integration.pages import UnauthorizedPage
 
 
@@ -16,7 +17,7 @@ def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
 
 
 def test_callback_logs_in(client: FlaskClient) -> None:
-    current_app.extensions["users"].append("boardman@example.com")
+    current_app.extensions["users"].append(User("boardman@example.com"))
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "boardman@example.com"}))
 
@@ -27,7 +28,7 @@ def test_callback_logs_in(client: FlaskClient) -> None:
 
 
 def test_callback_redirects_to_home(client: FlaskClient) -> None:
-    current_app.extensions["users"].append("boardman@example.com")
+    current_app.extensions["users"].append(User("boardman@example.com"))
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "boardman@example.com"}))
 
@@ -37,7 +38,7 @@ def test_callback_redirects_to_home(client: FlaskClient) -> None:
 
 
 def test_callback_when_unauthorized_redirects_to_unauthorized(client: FlaskClient) -> None:
-    current_app.extensions["users"].append("boardman@example.com")
+    current_app.extensions["users"].append(User("boardman@example.com"))
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "obree@example.com"}))
 

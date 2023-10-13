@@ -21,3 +21,7 @@ class OidcClient:
     def add_client(self, client: StubClient) -> None:
         response = requests.post(f"{self._url}/clients", json=client.__dict__, timeout=self.DEFAULT_TIMEOUT)
         assert response.status_code == 201
+
+    def clear_clients(self) -> None:
+        response = requests.delete(f"{self._url}/clients", timeout=self.DEFAULT_TIMEOUT)
+        assert response.status_code == 204

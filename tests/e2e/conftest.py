@@ -25,7 +25,7 @@ from tests.e2e.oidc_server.web_client import OidcClient
 
 
 @pytest.fixture(name="app", scope="class")
-def app_fixture(oidc_server: LiveServer) -> Flask:
+def app_fixture(oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
     port = _get_random_port()
     client_id = "app"
     private_key, public_key = _generate_key_pair()
@@ -53,8 +53,8 @@ def app_fixture(oidc_server: LiveServer) -> Flask:
             scope="openid email",
         )
     )
-
-    return app
+    yield app
+    oidc_client.clear_clients()
 
 
 @pytest.fixture(name="configure_live_server", scope="session", autouse=True)

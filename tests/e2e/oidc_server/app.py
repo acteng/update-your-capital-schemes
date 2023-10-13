@@ -70,6 +70,9 @@ class OidcServerApp(Flask):
     def add_client(self, client: StubClient) -> None:
         self._clients.add(client)
 
+    def clear_clients(self) -> None:
+        self._clients.clear()
+
     def _get_base_url(self) -> str:
         scheme = self.config["PREFERRED_URL_SCHEME"]
         server_name = self.config["SERVER_NAME"]
@@ -113,6 +116,11 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerApp:
         client = StubClient(**request.get_json())
         app.add_client(client)
         return Response(status=201)
+
+    @app.route("/clients", methods=["DELETE"])
+    def clear_clients() -> Response:
+        app.clear_clients()
+        return Response(status=204)
 
     @app.route("/.well-known/openid-configuration")
     def openid_configuration() -> Response:

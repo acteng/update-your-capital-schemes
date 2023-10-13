@@ -45,3 +45,6 @@ class ClientRepository:
 
     def get(self, client_id: str) -> StubClient:
         return self._clients[client_id]
+
+    def clear(self) -> None:
+        self._clients.clear()

@@ -4,8 +4,11 @@ import inject
 import pytest
 from flask import Flask
 from flask.testing import FlaskClient
+from inject import Binder
 
 from schemes import create_app
+from schemes.users import UserRepository
+from tests.integration.fakes import MemoryUserRepository
 
 
 @pytest.fixture(name="config")
@@ -24,10 +27,16 @@ def config_fixture() -> Mapping[str, Any]:
 
 @pytest.fixture(name="app")
 def app_fixture(config: Mapping[str, Any]) -> Generator[Flask, Any, Any]:
-    yield create_app(config)
+    app = create_app(config)
+    inject.clear_and_configure(_bindings)
+    yield app
     inject.clear()
 
 
 @pytest.fixture(name="client")
 def client_fixture(app: Flask) -> FlaskClient:
     return app.test_client()
+
+
+def _bindings(binder: Binder) -> None:
+    binder.bind(UserRepository, MemoryUserRepository())

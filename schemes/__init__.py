@@ -10,7 +10,7 @@ from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
 from schemes import api, auth, home, start
 from schemes.config import DevConfig
-from schemes.users import User, UserRepository
+from schemes.users import DatabaseUserRepository, User, UserRepository
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -39,7 +39,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
 
 def _bindings(binder: Binder) -> None:
-    binder.bind(UserRepository, UserRepository())
+    binder.bind(UserRepository, DatabaseUserRepository())
 
 
 def _configure_basic_auth(app: Flask) -> None:

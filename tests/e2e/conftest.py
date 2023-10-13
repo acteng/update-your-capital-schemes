@@ -25,6 +25,12 @@ from tests.e2e.oidc_server.clients import StubClient
 from tests.e2e.oidc_server.web_client import OidcClient
 
 
+@pytest.fixture(name="configure_live_server", scope="package", autouse=True)
+def configure_live_server_fixture() -> None:
+    if sys.platform == "darwin":
+        multiprocessing.set_start_method("fork")
+
+
 @pytest.fixture(name="app", scope="package")
 def app_fixture(oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
     port = _get_random_port()
@@ -57,12 +63,6 @@ def app_fixture(oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
     yield app
     inject.clear()
     oidc_client.clear_clients()
-
-
-@pytest.fixture(name="configure_live_server", scope="package", autouse=True)
-def configure_live_server_fixture() -> None:
-    if sys.platform == "darwin":
-        multiprocessing.set_start_method("fork")
 
 
 @pytest.fixture(name="app_client")

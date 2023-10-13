@@ -64,8 +64,7 @@ def configure_live_server_fixture() -> None:
 
 @pytest.fixture(name="app_client")
 def app_client_fixture(live_server: LiveServer) -> Generator[AppClient, Any, Any]:
-    url = f"http://{live_server.host}:{live_server.port}"
-    client = AppClient(url)
+    client = AppClient(_get_url(live_server))
     yield client
     client.clear_users()
 
@@ -89,10 +88,13 @@ def oidc_server_fixture(
 
 @pytest.fixture(name="oidc_client", scope="class")
 def oidc_client_fixture(oidc_server: LiveServer) -> Generator[OidcClient, Any, Any]:
-    url = f"http://{oidc_server.host}:{oidc_server.port}"
-    client = OidcClient(url)
+    client = OidcClient(_get_url(oidc_server))
     yield client
     client.clear_users()
+
+
+def _get_url(live_server: LiveServer) -> str:
+    return f"http://{live_server.host}:{live_server.port}"
 
 
 def _get_port(app: Flask) -> int:

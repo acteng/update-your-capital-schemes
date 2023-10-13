@@ -55,7 +55,6 @@ max-line-length = 120
 notes = []
 
 [tool.pytest.ini_options]
-live_server_scope = "class"
 addopts = "--screenshot only-on-failure"
 
 [tool.pylint.messages_control]

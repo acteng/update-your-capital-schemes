@@ -24,7 +24,7 @@ from tests.e2e.oidc_server.clients import StubClient
 from tests.e2e.oidc_server.web_client import OidcClient
 
 
-@pytest.fixture(name="app", scope="class")
+@pytest.fixture(name="app", scope="session")
 def app_fixture(oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
     port = _get_random_port()
     client_id = "app"
@@ -70,14 +70,14 @@ def app_client_fixture(live_server: LiveServer) -> Generator[AppClient, Any, Any
     client.clear_users()
 
 
-@pytest.fixture(name="oidc_server_app", scope="class")
+@pytest.fixture(name="oidc_server_app", scope="session")
 def oidc_server_app_fixture() -> OidcServerApp:
     os.environ["AUTHLIB_INSECURE_TRANSPORT"] = "true"
     port = _get_random_port()
     return oidc_server_create_app({"TESTING": True, "SERVER_NAME": f"localhost:{port}"})
 
 
-@pytest.fixture(name="oidc_server", scope="class")
+@pytest.fixture(name="oidc_server", scope="session")
 def oidc_server_fixture(
     oidc_server_app: OidcServerApp, request: pytest.FixtureRequest
 ) -> Generator[LiveServer, Any, Any]:

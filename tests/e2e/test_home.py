@@ -3,12 +3,17 @@ from flask import Flask
 from playwright.sync_api import Page
 
 from tests.e2e.app_client import AppClient
+from tests.e2e.oidc_server.users import StubUser
+from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import HomePage
 
 
-@pytest.mark.usefixtures("live_server", "oidc_server", "oidc_user")
-@pytest.mark.oidc_user(id="boardman", email="boardman@example.com")
+@pytest.mark.usefixtures("live_server", "oidc_server")
 class TestAuthenticated:
+    @pytest.fixture(autouse=True)
+    def oidc_user(self, oidc_client: OidcClient) -> None:
+        oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
+
     def test_home_when_authorized(self, app_client: AppClient, app: Flask, page: Page) -> None:
         app_client.add_user("boardman@example.com")
 

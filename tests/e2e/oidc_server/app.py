@@ -56,9 +56,13 @@ class OidcServerApp(Flask):
 
     def clear_users(self) -> None:
         self._users.clear()
+        self.deauthorize_user()
 
     def authorize_user(self, user_id: str) -> None:
         self._authorized_user_id = user_id
+
+    def deauthorize_user(self) -> None:
+        self._authorized_user_id = None
 
     def authorized_user(self) -> StubUser | None:
         return None if self._authorized_user_id is None else self._users.get(self._authorized_user_id)

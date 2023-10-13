@@ -21,7 +21,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.config.from_prefixed_env()
     app.config.from_mapping(test_config)
 
-    inject.configure(_bindings)
+    inject.configure(_bindings, bind_in_runtime=False)
 
     _configure_basic_auth(app)
     _configure_govuk_frontend(app)

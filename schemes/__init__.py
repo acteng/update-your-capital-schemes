@@ -1,9 +1,11 @@
 import os
 from typing import Any, Mapping
 
+import inject
 from authlib.integrations.flask_client import OAuth
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from flask import Flask, Response, request, url_for
+from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 
 from schemes import api, auth, home, start
@@ -19,10 +21,13 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.config.from_prefixed_env()
     app.config.from_mapping(test_config)
 
+    inject.configure(_bindings)
+
     _configure_basic_auth(app)
     _configure_govuk_frontend(app)
     _configure_oidc(app)
-    _configure_users(app)
+    if not app.testing:
+        _configure_users()
 
     app.register_blueprint(start.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
@@ -31,6 +36,10 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
         app.register_blueprint(api.bp, url_prefix="/api")
 
     return app
+
+
+def _bindings(binder: Binder) -> None:
+    binder.bind(UserRepository, UserRepository())
 
 
 def _configure_basic_auth(app: Flask) -> None:
@@ -74,11 +83,7 @@ def _configure_oidc(app: Flask) -> None:
     )
 
 
-def _configure_users(app: Flask) -> None:
-    users = UserRepository()
-
-    if not app.testing:
-        users.add(User("alex.coleman@activetravelengland.gov.uk"))
-        users.add(User("mark.hobson@activetravelengland.gov.uk"))
-
-    app.extensions["users"] = users
+def _configure_users() -> None:
+    users = inject.instance(UserRepository)
+    users.add(User("alex.coleman@activetravelengland.gov.uk"))
+    users.add(User("mark.hobson@activetravelengland.gov.uk"))

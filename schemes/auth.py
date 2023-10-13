@@ -2,6 +2,7 @@ from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
 from urllib.parse import urlencode, urlparse
 
+import inject
 from authlib.integrations.flask_client import OAuth
 from authlib.oidc.core import UserInfo
 from flask import (
@@ -21,12 +22,13 @@ bp = Blueprint("auth", __name__)
 
 
 @bp.route("")
-def callback() -> BaseResponse:
+@inject.autoparams()
+def callback(users: UserRepository) -> BaseResponse:
     oauth = _get_oauth()
     token = oauth.govuk.authorize_access_token()
     user = oauth.govuk.userinfo(token=token)
 
-    if not _is_authorized(user):
+    if not _is_authorized(users, user):
         return redirect(url_for("auth.unauthorized"))
 
     session["user"] = user
@@ -69,8 +71,7 @@ def secure(func: Callable[P, T]) -> Callable[P, T | Response]:
     return decorated_function
 
 
-def _is_authorized(user: UserInfo) -> bool:
-    users: UserRepository = current_app.extensions["users"]
+def _is_authorized(users: UserRepository, user: UserInfo) -> bool:
     return users.get(user["email"]) is not None
 
 

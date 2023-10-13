@@ -4,6 +4,7 @@ import socket
 import sys
 from typing import Any, Generator
 
+import inject
 import pytest
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -54,6 +55,7 @@ def app_fixture(oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
         )
     )
     yield app
+    inject.clear()
     oidc_client.clear_clients()
 
 

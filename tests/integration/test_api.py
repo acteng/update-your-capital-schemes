@@ -1,26 +1,31 @@
 from typing import Any, Mapping
 
+import inject
 import pytest
-from flask import current_app
 from flask.testing import FlaskClient
 
-from schemes.users import User
+from schemes.users import User, UserRepository
 
 
-def test_add_user(client: FlaskClient) -> None:
+@pytest.fixture(name="users")
+def users_fixture() -> UserRepository:
+    return inject.instance(UserRepository)
+
+
+def test_add_user(users: UserRepository, client: FlaskClient) -> None:
     response = client.post("/api/users", json={"email": "boardman@example.com"})
 
     assert response.status_code == 201
-    assert current_app.extensions["users"].get("boardman@example.com")
+    assert users.get("boardman@example.com")
 
 
-def test_clear_users(client: FlaskClient) -> None:
-    current_app.extensions["users"].add(User("boardman@example.com"))
+def test_clear_users(users: UserRepository, client: FlaskClient) -> None:
+    users.add(User("boardman@example.com"))
 
     response = client.delete("/api/users")
 
     assert response.status_code == 204
-    assert not current_app.extensions["users"].get_all()
+    assert not users.get_all()
 
 
 class TestProduction:

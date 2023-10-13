@@ -1,5 +1,6 @@
-from typing import Any, Mapping
+from typing import Any, Generator, Mapping
 
+import inject
 import pytest
 from flask import Flask
 from flask.testing import FlaskClient
@@ -22,8 +23,9 @@ def config_fixture() -> Mapping[str, Any]:
 
 
 @pytest.fixture(name="app")
-def app_fixture(config: Mapping[str, Any]) -> Flask:
-    return create_app(config)
+def app_fixture(config: Mapping[str, Any]) -> Generator[Flask, Any, Any]:
+    yield create_app(config)
+    inject.clear()
 
 
 @pytest.fixture(name="client")

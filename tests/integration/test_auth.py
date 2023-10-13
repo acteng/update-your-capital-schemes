@@ -1,13 +1,14 @@
 from typing import Any, Mapping
 from unittest.mock import Mock
 
+import inject
 import pytest
 from authlib.integrations.flask_client import OAuth
 from authlib.oidc.core import UserInfo
 from flask import current_app, session
 from flask.testing import FlaskClient
 
-from schemes.users import User
+from schemes.users import User, UserRepository
 from tests.integration.pages import UnauthorizedPage
 
 
@@ -16,8 +17,13 @@ def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
     return config | {"GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
 
 
-def test_callback_logs_in(client: FlaskClient) -> None:
-    current_app.extensions["users"].add(User("boardman@example.com"))
+@pytest.fixture(name="users")
+def users_fixture() -> UserRepository:
+    return inject.instance(UserRepository)
+
+
+def test_callback_logs_in(users: UserRepository, client: FlaskClient) -> None:
+    users.add(User("boardman@example.com"))
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "boardman@example.com"}))
 
@@ -27,8 +33,8 @@ def test_callback_logs_in(client: FlaskClient) -> None:
         assert session["user"] == UserInfo({"email": "boardman@example.com"}) and session["id_token"] == "jwt"
 
 
-def test_callback_redirects_to_home(client: FlaskClient) -> None:
-    current_app.extensions["users"].add(User("boardman@example.com"))
+def test_callback_redirects_to_home(users: UserRepository, client: FlaskClient) -> None:
+    users.add(User("boardman@example.com"))
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "boardman@example.com"}))
 
@@ -37,8 +43,8 @@ def test_callback_redirects_to_home(client: FlaskClient) -> None:
     assert response.status_code == 302 and response.location == "/home"
 
 
-def test_callback_when_unauthorized_redirects_to_unauthorized(client: FlaskClient) -> None:
-    current_app.extensions["users"].add(User("boardman@example.com"))
+def test_callback_when_unauthorized_redirects_to_unauthorized(users: UserRepository, client: FlaskClient) -> None:
+    users.add(User("boardman@example.com"))
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "obree@example.com"}))
 

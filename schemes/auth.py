@@ -3,6 +3,7 @@ from typing import Callable, ParamSpec, TypeVar
 from urllib.parse import urlencode, urlparse
 
 from authlib.integrations.flask_client import OAuth
+from authlib.oidc.core import UserInfo
 from flask import (
     Blueprint,
     Response,
@@ -23,7 +24,7 @@ def callback() -> BaseResponse:
     token = oauth.govuk.authorize_access_token()
     user = oauth.govuk.userinfo(token=token)
 
-    if user["email"] not in current_app.extensions["users"]:
+    if not _is_authorized(user):
         return redirect(url_for("auth.unauthorized"))
 
     session["user"] = user
@@ -64,6 +65,10 @@ def secure(func: Callable[P, T]) -> Callable[P, T | Response]:
         return func(*args, **kwargs)
 
     return decorated_function
+
+
+def _is_authorized(user: UserInfo) -> bool:
+    return user["email"] in current_app.extensions["users"]
 
 
 def _get_oauth() -> OAuth:

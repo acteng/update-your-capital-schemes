@@ -9,7 +9,7 @@ def users_fixture() -> DatabaseUserRepository:
     metadata = MetaData()
     add_tables(metadata)
 
-    engine = create_engine("sqlite+pysqlite:///:memory:", echo=True)
+    engine = create_engine("sqlite+pysqlite:///:memory:")
     metadata.create_all(engine)
 
     repository: DatabaseUserRepository = DatabaseUserRepository(engine)

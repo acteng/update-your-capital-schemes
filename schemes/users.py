@@ -28,7 +28,6 @@ def add_tables(metadata: MetaData) -> None:
     Table("users", metadata, Column("email", Text, nullable=False, unique=True))
 
 
-# pylint: disable=duplicate-code
 class DatabaseUserRepository(UserRepository):
     @inject.autoparams()
     def __init__(self, engine: Engine):

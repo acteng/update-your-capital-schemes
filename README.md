@@ -107,6 +107,24 @@ The server can also be run on a different port by specifying the `PORT` environm
 docker run --rm -it -e PORT=8000 -p 8000:8000 --env-file ./.env schemes
 ```
 
+## Running locally using Compose
+
+1. Build the web assets:
+
+   ```bash
+   npm install && npm run build
+   ```
+
+1. Run the services:
+
+   ```bash
+   docker compose up
+   ```
+   
+   **NOTE:** You'll need to concatenate multiline values with `\n` in `.env` for Docker to correctly parse.
+   
+1. Open http://127.0.0.1:5000
+
 ## Running formatters and linters
 
 1. Install the dependencies:

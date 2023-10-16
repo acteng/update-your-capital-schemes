@@ -1,10 +1,10 @@
 import os
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 import inject
 from authlib.integrations.flask_client import OAuth
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
-from flask import Flask, Response, render_template, request, url_for
+from flask import Config, Flask, Response, render_template, request, url_for
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 from sqlalchemy import Engine, MetaData, create_engine
@@ -22,7 +22,11 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.config.from_prefixed_env()
     app.config.from_mapping(test_config)
 
-    inject.configure(_bindings, bind_in_runtime=False)
+    def bindings(binder: Binder) -> None:
+        binder.bind(Config, app.config)
+        _bindings(binder)
+
+    inject.configure(bindings, bind_in_runtime=False)
 
     _configure_error_pages(app)
     _configure_basic_auth(app)
@@ -43,7 +47,11 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
 
 def _bindings(binder: Binder) -> None:
-    binder.bind(Engine, create_engine("sqlite+pysqlite:///file::memory:?uri=true"))
+    @inject.autoparams()
+    def engine(config: Config) -> Engine:
+        return create_engine(config["SQLALCHEMY_DATABASE_URI"])
+
+    binder.bind_to_constructor(Engine, engine)
     binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
 
 

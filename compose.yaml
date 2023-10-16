@@ -1,6 +1,21 @@
 services:
+
   app:
     build: .
     env_file: .env
+    environment:
+      FLASK_SQLALCHEMY_DATABASE_URI: "postgresql+pg8000://schemes:password@database/schemes"
     ports:
       - "5000:5000"
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: schemes
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: pg_isready -U $$POSTGRES_USER
+      interval: 5s

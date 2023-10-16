@@ -25,7 +25,7 @@ class UserRepository:
 
 
 def add_tables(metadata: MetaData) -> None:
-    Table("users", metadata, Column("email", Text, nullable=False))
+    Table("users", metadata, Column("email", Text, nullable=False, unique=True))
 
 
 # pylint: disable=duplicate-code

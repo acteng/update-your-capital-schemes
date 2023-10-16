@@ -1,5 +1,8 @@
 from dataclasses import dataclass
-from typing import List, TypeGuard
+from typing import List
+
+import inject
+from sqlalchemy import Column, Engine, MetaData, Table, Text, text
 
 
 @dataclass
@@ -21,22 +24,31 @@ class UserRepository:
         raise NotImplementedError()
 
 
+def add_tables(metadata: MetaData) -> None:
+    Table("users", metadata, Column("email", Text, nullable=False))
+
+
 # pylint: disable=duplicate-code
 class DatabaseUserRepository(UserRepository):
-    def __init__(self) -> None:
-        self._users: List[User] = []
+    @inject.autoparams()
+    def __init__(self, engine: Engine):
+        self._engine = engine
 
     def add(self, user: User) -> None:
-        self._users.append(user)
+        with self._engine.begin() as connection:
+            connection.execute(text("INSERT INTO users (email) VALUES (:email)"), {"email": user.email})
 
     def clear(self) -> None:
-        self._users.clear()
+        with self._engine.begin() as connection:
+            connection.execute(text("DELETE FROM users"))
 
     def get(self, email: str) -> User | None:
-        def by_email(user: User) -> TypeGuard[User]:
-            return user.email == email
-
-        return next(filter(by_email, self._users), None)
+        with self._engine.connect() as connection:
+            result = connection.execute(text("SELECT email FROM users WHERE email = :email"), {"email": email})
+            row = result.one_or_none()
+            return User(row.email) if row else None
 
     def get_all(self) -> List[User]:
-        return self._users
+        with self._engine.connect() as connection:
+            result = connection.execute(text("SELECT email FROM users"))
+            return [User(row.email) for row in result]

@@ -10,7 +10,8 @@ dependencies = [
     "gunicorn~=21.2.0",
     "inject~=5.0.0",
     "python-dotenv~=1.0.0",
-    "requests~=2.31.0"
+    "requests~=2.31.0",
+    "sqlalchemy~=2.0.22"
 ]
 
 [project.optional-dependencies]

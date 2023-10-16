@@ -7,10 +7,11 @@ from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from flask import Flask, Response, render_template, request, url_for
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
+from sqlalchemy import Engine, MetaData, create_engine
 
 from schemes import api, auth, home, start
 from schemes.config import DevConfig
-from schemes.users import DatabaseUserRepository, User, UserRepository
+from schemes.users import DatabaseUserRepository, User, UserRepository, add_tables
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -27,8 +28,6 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     _configure_basic_auth(app)
     _configure_govuk_frontend(app)
     _configure_oidc(app)
-    if not app.testing:
-        _configure_users()
 
     app.register_blueprint(start.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
@@ -36,11 +35,16 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     if app.testing:
         app.register_blueprint(api.bp, url_prefix="/api")
 
+    _create_database()
+    if not app.testing:
+        _configure_users()
+
     return app
 
 
 def _bindings(binder: Binder) -> None:
-    binder.bind(UserRepository, DatabaseUserRepository())
+    binder.bind(Engine, create_engine("sqlite+pysqlite:///file::memory:?uri=true"))
+    binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
 
 
 def _configure_error_pages(app: Flask) -> None:
@@ -92,6 +96,14 @@ def _configure_oidc(app: Flask) -> None:
             "token_endpoint_auth_method": PrivateKeyJWT(app.config["GOVUK_TOKEN_ENDPOINT"]),
         },
     )
+
+
+def _create_database() -> None:
+    metadata = MetaData()
+    add_tables(metadata)
+
+    engine = inject.instance(Engine)
+    metadata.create_all(engine)
 
 
 def _configure_users() -> None:

@@ -13,7 +13,7 @@ class MemoryUserRepository(UserRepository):
     def clear(self) -> None:
         self._users.clear()
 
-    def get(self, email: str) -> User | None:
+    def get_by_email(self, email: str) -> User | None:
         def by_email(user: User) -> TypeGuard[User]:
             return user.email == email
 

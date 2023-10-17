@@ -16,7 +16,7 @@ def test_add_user(users: UserRepository, client: FlaskClient) -> None:
     response = client.post("/api/users", json={"email": "boardman@example.com"})
 
     assert response.status_code == 201
-    assert users.get("boardman@example.com")
+    assert users.get_by_email("boardman@example.com")
 
 
 def test_clear_users(users: UserRepository, client: FlaskClient) -> None:

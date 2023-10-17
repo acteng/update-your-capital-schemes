@@ -17,7 +17,7 @@ class UserRepository:
     def clear(self) -> None:
         raise NotImplementedError()
 
-    def get(self, email: str) -> User | None:
+    def get_by_email(self, email: str) -> User | None:
         raise NotImplementedError()
 
     def get_all(self) -> List[User]:
@@ -41,7 +41,7 @@ class DatabaseUserRepository(UserRepository):
         with self._engine.begin() as connection:
             connection.execute(text("DELETE FROM users"))
 
-    def get(self, email: str) -> User | None:
+    def get_by_email(self, email: str) -> User | None:
         with self._engine.connect() as connection:
             result = connection.execute(text("SELECT email FROM users WHERE email = :email"), {"email": email})
             row = result.one_or_none()

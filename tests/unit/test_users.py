@@ -19,19 +19,19 @@ def users_fixture() -> DatabaseUserRepository:
 def test_add_user(users: DatabaseUserRepository) -> None:
     users.add(User("boardman@example.com"))
 
-    assert users.get("boardman@example.com") == User("boardman@example.com")
+    assert users.get_by_email("boardman@example.com") == User("boardman@example.com")
 
 
-def test_get_user(users: DatabaseUserRepository) -> None:
+def test_get_user_by_email(users: DatabaseUserRepository) -> None:
     users.add(User("boardman@example.com"))
 
-    assert users.get("boardman@example.com") == User("boardman@example.com")
+    assert users.get_by_email("boardman@example.com") == User("boardman@example.com")
 
 
-def test_get_user_who_does_not_exist(users: DatabaseUserRepository) -> None:
+def test_get_user_by_email_who_does_not_exist(users: DatabaseUserRepository) -> None:
     users.add(User("boardman@example.com"))
 
-    assert users.get("obree@example.com") is None
+    assert users.get_by_email("obree@example.com") is None
 
 
 def test_get_all_users(users: DatabaseUserRepository) -> None:

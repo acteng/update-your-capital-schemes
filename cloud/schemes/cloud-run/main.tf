@@ -3,6 +3,11 @@ resource "google_project_service" "run" {
   service = "run.googleapis.com"
 }
 
+resource "google_project_service" "vpc_access" {
+  project = var.project
+  service = "vpcaccess.googleapis.com"
+}
+
 resource "google_service_account" "cloud_run_schemes" {
   account_id = "cloud-run-schemes"
 }
@@ -10,7 +15,7 @@ resource "google_service_account" "cloud_run_schemes" {
 resource "google_cloud_run_v2_service" "schemes" {
   name     = "schemes"
   project  = var.project
-  location = var.location
+  location = var.region
 
   template {
     containers {
@@ -24,6 +29,15 @@ resource "google_cloud_run_v2_service" "schemes" {
         value_source {
           secret_key_ref {
             secret  = google_secret_manager_secret.secret_key.secret_id
+            version = "latest"
+          }
+        }
+      }
+      env {
+        name = "FLASK_SQLALCHEMY_DATABASE_URI"
+        value_source {
+          secret_key_ref {
+            secret  = var.database_uri_secret_id
             version = "latest"
           }
         }
@@ -56,19 +70,24 @@ resource "google_cloud_run_v2_service" "schemes" {
         }
       }
     }
+    vpc_access {
+      connector = google_vpc_access_connector.cloud_run.id
+      egress    = "PRIVATE_RANGES_ONLY"
+    }
     service_account = google_service_account.cloud_run_schemes.email
   }
 
   depends_on = [
     google_project_service.run,
-    google_secret_manager_secret_version.secret_key
+    google_secret_manager_secret_version.secret_key,
+    google_secret_manager_secret_iam_member.cloud_run_schemes_database_uri
   ]
 }
 
 resource "google_cloud_run_v2_service_iam_binding" "schemes_run_invoker" {
   name     = google_cloud_run_v2_service.schemes.name
   project  = var.project
-  location = var.location
+  location = var.region
 
   role = "roles/run.invoker"
   members = [
@@ -86,6 +105,15 @@ resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
   member  = "serviceAccount:service-${data.google_project.main.number}@serverless-robot-prod.iam.gserviceaccount.com"
 
   depends_on = [google_project_service.run]
+}
+
+resource "google_vpc_access_connector" "cloud_run" {
+  name          = "cloud-run"
+  ip_cidr_range = "10.0.0.0/28"
+  region        = var.region
+  network       = var.vpc_id
+
+  depends_on = [google_project_service.vpc_access]
 }
 
 # secret key
@@ -111,6 +139,14 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_secret_key
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
   role      = "roles/secretmanager.secretAccessor"
   secret_id = google_secret_manager_secret.secret_key.id
+}
+
+# database URI
+
+resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_database_uri" {
+  member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
+  role      = "roles/secretmanager.secretAccessor"
+  secret_id = var.database_uri_secret_id
 }
 
 # basic auth username

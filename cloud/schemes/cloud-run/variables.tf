@@ -3,12 +3,22 @@ variable "project" {
   type        = string
 }
 
-variable "location" {
-  description = "GCP location"
+variable "region" {
+  description = "GCP region"
   type        = string
 }
 
 variable "env" {
   description = "App environment"
+  type        = string
+}
+
+variable "database_uri_secret_id" {
+  description = "Database URI secret ID"
+  type        = string
+}
+
+variable "vpc_id" {
+  description = "VPC ID"
   type        = string
 }

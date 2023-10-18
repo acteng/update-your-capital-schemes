@@ -20,13 +20,28 @@ module "secret_manager" {
   project = local.project
 }
 
-module "cloud_run" {
-  source   = "./cloud-run"
-  project  = local.project
-  location = local.location
-  env      = local.env
+module "vpc" {
+  source = "./vpc"
+}
 
-  depends_on = [module.secret_manager]
+module "cloud_sql" {
+  source = "./cloud-sql"
+  region = local.location
+  vpc_id = module.vpc.id
+
+  depends_on = [
+    module.secret_manager,
+    module.vpc
+  ]
+}
+
+module "cloud_run" {
+  source                 = "./cloud-run"
+  project                = local.project
+  region                 = local.location
+  env                    = local.env
+  database_uri_secret_id = module.cloud_sql.database_uri_secret_id
+  vpc_id                 = module.vpc.id
 }
 
 module "github_action" {

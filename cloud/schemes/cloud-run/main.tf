@@ -3,19 +3,15 @@ resource "google_project_service" "run" {
   service = "run.googleapis.com"
 }
 
-resource "google_project_service" "vpc_access" {
-  project = var.project
-  service = "vpcaccess.googleapis.com"
-}
-
 resource "google_service_account" "cloud_run_schemes" {
   account_id = "cloud-run-schemes"
 }
 
 resource "google_cloud_run_v2_service" "schemes" {
-  name     = "schemes"
-  project  = var.project
-  location = var.region
+  name         = "schemes"
+  project      = var.project
+  location     = var.region
+  launch_stage = "BETA"
 
   template {
     containers {
@@ -71,8 +67,10 @@ resource "google_cloud_run_v2_service" "schemes" {
       }
     }
     vpc_access {
-      connector = google_vpc_access_connector.cloud_run.id
-      egress    = "PRIVATE_RANGES_ONLY"
+      network_interfaces {
+        subnetwork = google_compute_subnetwork.cloud_run.name
+      }
+      egress = "PRIVATE_RANGES_ONLY"
     }
     service_account = google_service_account.cloud_run_schemes.email
   }
@@ -107,13 +105,11 @@ resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
   depends_on = [google_project_service.run]
 }
 
-resource "google_vpc_access_connector" "cloud_run" {
+resource "google_compute_subnetwork" "cloud_run" {
   name          = "cloud-run"
-  ip_cidr_range = "10.0.0.0/28"
+  ip_cidr_range = "10.1.0.0/24"
   region        = var.region
   network       = var.vpc_id
-
-  depends_on = [google_project_service.vpc_access]
 }
 
 # secret key

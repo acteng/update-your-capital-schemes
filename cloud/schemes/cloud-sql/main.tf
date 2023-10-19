@@ -8,8 +8,9 @@ resource "google_sql_database_instance" "main" {
     tier = "db-f1-micro"
 
     ip_configuration {
-      ipv4_enabled    = false
-      private_network = var.vpc_id
+      ipv4_enabled       = false
+      private_network    = var.vpc_id
+      allocated_ip_range = var.vpc_private_ip_address_name
     }
   }
 }

@@ -25,9 +25,10 @@ module "vpc" {
 }
 
 module "cloud_sql" {
-  source = "./cloud-sql"
-  region = local.location
-  vpc_id = module.vpc.id
+  source                      = "./cloud-sql"
+  region                      = local.location
+  vpc_id                      = module.vpc.id
+  vpc_private_ip_address_name = module.vpc.private_ip_address_name
 
   depends_on = [
     module.secret_manager,

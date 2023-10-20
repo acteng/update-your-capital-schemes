@@ -11,7 +11,7 @@ class User:
 
 
 class UserRepository:
-    def add(self, user: User) -> None:
+    def add(self, *users: User) -> None:
         raise NotImplementedError()
 
     def clear(self) -> None:
@@ -38,9 +38,10 @@ class DatabaseUserRepository(UserRepository):
     def __init__(self, engine: Engine):
         self._engine = engine
 
-    def add(self, user: User) -> None:
+    def add(self, *users: User) -> None:
         with self._engine.begin() as connection:
-            connection.execute(text("INSERT INTO users (email) VALUES (:email)"), {"email": user.email})
+            for user in users:
+                connection.execute(text("INSERT INTO users (email) VALUES (:email)"), {"email": user.email})
 
     def clear(self) -> None:
         with self._engine.begin() as connection:

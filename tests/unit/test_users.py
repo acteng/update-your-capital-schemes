@@ -16,10 +16,10 @@ def users_fixture() -> DatabaseUserRepository:
     return repository
 
 
-def test_add_user(users: DatabaseUserRepository) -> None:
-    users.add(User("boardman@example.com"))
+def test_add_users(users: DatabaseUserRepository) -> None:
+    users.add(User("boardman@example.com"), User("obree@example.com"))
 
-    assert users.get_by_email("boardman@example.com") == User("boardman@example.com")
+    assert users.get_all() == [User("boardman@example.com"), User("obree@example.com")]
 
 
 def test_get_user_by_email(users: DatabaseUserRepository) -> None:

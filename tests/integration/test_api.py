@@ -12,11 +12,11 @@ def users_fixture() -> UserRepository:
     return inject.instance(UserRepository)
 
 
-def test_add_user(users: UserRepository, client: FlaskClient) -> None:
-    response = client.post("/api/users", json={"email": "boardman@example.com"})
+def test_add_users(users: UserRepository, client: FlaskClient) -> None:
+    response = client.post("/api/users", json=[{"email": "boardman@example.com"}, {"email": "obree@example.com"}])
 
     assert response.status_code == 201
-    assert users.get_by_email("boardman@example.com")
+    assert users.get_all() == [User("boardman@example.com"), User("obree@example.com")]
 
 
 def test_clear_users(users: UserRepository, client: FlaskClient) -> None:

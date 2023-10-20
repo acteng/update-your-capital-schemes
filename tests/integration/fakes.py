@@ -7,8 +7,8 @@ class MemoryUserRepository(UserRepository):
     def __init__(self) -> None:
         self._users: List[User] = []
 
-    def add(self, user: User) -> None:
-        self._users.append(user)
+    def add(self, *users: User) -> None:
+        self._users.extend(users)
 
     def clear(self) -> None:
         self._users.clear()

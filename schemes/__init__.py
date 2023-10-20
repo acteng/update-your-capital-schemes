@@ -122,5 +122,4 @@ def _create_database() -> None:
 def _configure_users() -> None:
     users = inject.instance(UserRepository)
     if not users.get_all():
-        users.add(User("alex.coleman@activetravelengland.gov.uk"))
-        users.add(User("mark.hobson@activetravelengland.gov.uk"))
+        users.add(User("alex.coleman@activetravelengland.gov.uk"), User("mark.hobson@activetravelengland.gov.uk"))

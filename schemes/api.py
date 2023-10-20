@@ -8,9 +8,9 @@ bp = Blueprint("api", __name__)
 
 @bp.route("/users", methods=["POST"])
 @inject.autoparams()
-def add_user(users: UserRepository) -> Response:
-    user = User(request.get_json()["email"])
-    users.add(user)
+def add_users(users: UserRepository) -> Response:
+    json = request.get_json()
+    users.add(*[User(element["email"]) for element in json])
     return Response(status=201)
 
 

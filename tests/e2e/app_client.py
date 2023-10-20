@@ -9,9 +9,9 @@ class AppClient:
 
     def add_user(self, email: str) -> None:
         users = [{"email": email}]
-        response = requests.post(f"{self._url}/api/users", json=users, timeout=self.DEFAULT_TIMEOUT)
+        response = requests.post(f"{self._url}/users", json=users, timeout=self.DEFAULT_TIMEOUT)
         assert response.status_code == 201
 
     def clear_users(self) -> None:
-        response = requests.delete(f"{self._url}/api/users", timeout=self.DEFAULT_TIMEOUT)
+        response = requests.delete(f"{self._url}/users", timeout=self.DEFAULT_TIMEOUT)
         assert response.status_code == 204

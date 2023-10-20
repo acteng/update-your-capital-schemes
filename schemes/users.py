@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 import inject
+from flask import Blueprint, Response, request
 from sqlalchemy import Column, Engine, Integer, MetaData, String, Table, text
 
 
@@ -57,3 +58,21 @@ class DatabaseUserRepository(UserRepository):
         with self._engine.connect() as connection:
             result = connection.execute(text("SELECT email FROM users"))
             return [User(row.email) for row in result]
+
+
+bp = Blueprint("users", __name__)
+
+
+@bp.route("", methods=["POST"])
+@inject.autoparams()
+def add(users: UserRepository) -> Response:
+    json = request.get_json()
+    users.add(*[User(element["email"]) for element in json])
+    return Response(status=201)
+
+
+@bp.route("", methods=["DELETE"])
+@inject.autoparams()
+def clear(users: UserRepository) -> Response:
+    users.clear()
+    return Response(status=204)

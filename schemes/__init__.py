@@ -11,7 +11,7 @@ from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 from sqlalchemy import Engine, create_engine
 
-from schemes import api, auth, home, start
+from schemes import auth, home, start, users
 from schemes.config import DevConfig
 from schemes.users import DatabaseUserRepository, User, UserRepository
 
@@ -39,7 +39,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.register_blueprint(auth.bp, url_prefix="/auth")
     app.register_blueprint(home.bp, url_prefix="/home")
     if app.testing:
-        app.register_blueprint(api.bp, url_prefix="/api")
+        app.register_blueprint(users.bp, url_prefix="/users")
 
     _create_database()
     if not app.testing:
@@ -120,6 +120,8 @@ def _create_database() -> None:
 
 
 def _configure_users() -> None:
-    users = inject.instance(UserRepository)
-    if not users.get_all():
-        users.add(User("alex.coleman@activetravelengland.gov.uk"), User("mark.hobson@activetravelengland.gov.uk"))
+    user_repository = inject.instance(UserRepository)
+    if not user_repository.get_all():
+        user_repository.add(
+            User("alex.coleman@activetravelengland.gov.uk"), User("mark.hobson@activetravelengland.gov.uk")
+        )

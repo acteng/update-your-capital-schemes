@@ -1,17 +1,19 @@
 import os
 from typing import Any, Mapping
 
+import alembic.config
 import inject
+from alembic import command
 from authlib.integrations.flask_client import OAuth
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from flask import Config, Flask, Response, render_template, request, url_for
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
-from sqlalchemy import Engine, MetaData, create_engine
+from sqlalchemy import Engine, create_engine
 
 from schemes import api, auth, home, start
 from schemes.config import DevConfig
-from schemes.users import DatabaseUserRepository, User, UserRepository, add_tables
+from schemes.users import DatabaseUserRepository, User, UserRepository
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -107,11 +109,14 @@ def _configure_oidc(app: Flask) -> None:
 
 
 def _create_database() -> None:
-    metadata = MetaData()
-    add_tables(metadata)
-
     engine = inject.instance(Engine)
-    metadata.create_all(engine)
+
+    alembic_config = alembic.config.Config()
+    alembic_config.set_main_option("script_location", "schemes:migrations")
+
+    with engine.connect() as connection:
+        alembic_config.attributes["connection"] = connection
+        command.upgrade(alembic_config, "head")
 
 
 def _configure_users() -> None:

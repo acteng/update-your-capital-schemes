@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 import inject
-from sqlalchemy import Column, Engine, MetaData, String, Table, text
+from sqlalchemy import Column, Engine, Integer, MetaData, String, Table, text
 
 
 @dataclass
@@ -25,7 +25,12 @@ class UserRepository:
 
 
 def add_tables(metadata: MetaData) -> None:
-    Table("users", metadata, Column("email", String(length=256), nullable=False, unique=True))
+    Table(
+        "users",
+        metadata,
+        Column("id", Integer, primary_key=True),
+        Column("email", String(length=256), nullable=False, unique=True),
+    )
 
 
 class DatabaseUserRepository(UserRepository):

@@ -31,7 +31,6 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     inject.configure(bindings, bind_in_runtime=False)
 
     _configure_error_pages(app)
-    _configure_basic_auth(app)
     _configure_govuk_frontend(app)
     _configure_oidc(app)
 
@@ -65,20 +64,6 @@ def _configure_error_pages(app: Flask) -> None:
     @app.errorhandler(500)
     def internal_server_error(error: Exception) -> Response:  # pylint: disable=unused-argument
         return Response(render_template("500.html"), status=500)
-
-
-def _configure_basic_auth(app: Flask) -> None:
-    username = app.config.get("BASIC_AUTH_USERNAME")
-    password = app.config.get("BASIC_AUTH_PASSWORD")
-
-    if username:
-
-        @app.before_request
-        def before_request() -> Response | None:
-            authz = request.authorization
-            if authz and authz.type == "basic" and authz.username == username and authz.password == password:
-                return None
-            return Response(status=401, headers={"WWW-Authenticate": "Basic realm='Schemes'"}, response="Unauthorized")
 
 
 def _configure_govuk_frontend(app: Flask) -> None:

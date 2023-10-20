@@ -52,7 +52,7 @@ module = [
 ignore_missing_imports = true
 
 [tool.pylint.format]
-good-names = ["id"]
+good-names = ["id", "ui"]
 max-line-length = 120
 
 [tool.pylint.miscellaneous]

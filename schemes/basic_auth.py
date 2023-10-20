@@ -7,17 +7,24 @@ T = TypeVar("T")
 P = ParamSpec("P")
 
 
-def basic_auth(func: Callable[P, T]) -> Callable[P, T | Response]:
-    @functools.wraps(func)
-    def wrapped_view(*args: P.args, **kwargs: P.kwargs) -> T | Response:
-        return func(*args, **kwargs) if _authorized() else _challenge()
-
-    return wrapped_view
+def ui() -> Callable[[Callable[P, T]], Callable[P, T | Response]]:
+    return basic_auth("BASIC_AUTH_USERNAME", "BASIC_AUTH_PASSWORD")
 
 
-def _authorized() -> bool:
-    username = current_app.config.get("BASIC_AUTH_USERNAME")
-    password = current_app.config.get("BASIC_AUTH_PASSWORD")
+def basic_auth(username_config: str, password_config: str) -> Callable[[Callable[P, T]], Callable[P, T | Response]]:
+    def decorator(func: Callable[P, T]) -> Callable[P, T | Response]:
+        @functools.wraps(func)
+        def decorated_function(*args: P.args, **kwargs: P.kwargs) -> T | Response:
+            return func(*args, **kwargs) if _authorized(username_config, password_config) else _challenge()
+
+        return decorated_function
+
+    return decorator
+
+
+def _authorized(username_config: str, password_config: str) -> bool:
+    username = current_app.config.get(username_config)
+    password = current_app.config.get(password_config)
 
     if username:
         auth = request.authorization

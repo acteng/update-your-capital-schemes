@@ -5,6 +5,8 @@ import inject
 from flask import Blueprint, Response, request
 from sqlalchemy import Column, Engine, Integer, MetaData, String, Table, text
 
+from schemes import basic_auth
+
 
 @dataclass
 class User:
@@ -64,6 +66,7 @@ bp = Blueprint("users", __name__)
 
 
 @bp.route("", methods=["POST"])
+@basic_auth.api()
 @inject.autoparams()
 def add(users: UserRepository) -> Response:
     json = request.get_json()
@@ -72,6 +75,7 @@ def add(users: UserRepository) -> Response:
 
 
 @bp.route("", methods=["DELETE"])
+@basic_auth.api()
 @inject.autoparams()
 def clear(users: UserRepository) -> Response:
     users.clear()

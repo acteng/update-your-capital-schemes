@@ -17,6 +17,13 @@ def ui() -> Callable[[Callable[P, T]], Callable[P, T | Response]]:
     return basic_auth(authorized)
 
 
+def api() -> Callable[[Callable[P, T]], Callable[P, T | Response]]:
+    def authorized(auth: Authorization | None) -> bool:
+        return _authorized(auth, current_app.config["API_USERNAME"], current_app.config["API_PASSWORD"])
+
+    return basic_auth(authorized)
+
+
 def basic_auth(authorized: Authorized) -> Callable[[Callable[P, T]], Callable[P, T | Response]]:
     def decorator(func: Callable[P, T]) -> Callable[P, T | Response]:
         @functools.wraps(func)

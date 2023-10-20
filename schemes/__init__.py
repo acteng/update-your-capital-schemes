@@ -1,5 +1,5 @@
 import os
-from typing import Any, Callable, Mapping
+from typing import Any, Mapping
 
 import inject
 from authlib.integrations.flask_client import OAuth

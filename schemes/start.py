@@ -1,7 +1,7 @@
 from flask import Blueprint, Response, redirect, render_template, session, url_for
 from werkzeug import Response as BaseResponse
 
-from schemes.basic_auth import basic_auth
+from schemes.auth.basic import basic_auth
 
 bp = Blueprint("start", __name__)
 

@@ -5,7 +5,7 @@ import inject
 from flask import Blueprint, Response, request
 from sqlalchemy import Column, Engine, Integer, MetaData, String, Table, text
 
-from schemes.api_key_auth import api_key_auth
+from schemes.auth.api_key import api_key_auth
 
 
 @dataclass

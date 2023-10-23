@@ -39,7 +39,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.register_blueprint(home.bp, url_prefix="/home")
     app.register_blueprint(users.bp, url_prefix="/users")
 
-    _create_database()
+    _migrate_database()
 
     return app
 
@@ -90,7 +90,7 @@ def _configure_oidc(app: Flask) -> None:
     )
 
 
-def _create_database() -> None:
+def _migrate_database() -> None:
     engine = inject.instance(Engine)
 
     alembic_config = alembic.config.Config()

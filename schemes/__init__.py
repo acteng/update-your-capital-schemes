@@ -6,7 +6,7 @@ import inject
 from alembic import command
 from authlib.integrations.flask_client import OAuth
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
-from flask import Config, Flask, Response, render_template, request, url_for
+from flask import Config, Flask, Response, render_template, url_for
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 from sqlalchemy import Engine, create_engine

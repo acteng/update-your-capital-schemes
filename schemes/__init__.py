@@ -37,8 +37,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.register_blueprint(start.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
     app.register_blueprint(home.bp, url_prefix="/home")
-    if app.testing:
-        app.register_blueprint(users.bp, url_prefix="/users")
+    app.register_blueprint(users.bp, url_prefix="/users")
 
     _create_database()
     if not app.testing:

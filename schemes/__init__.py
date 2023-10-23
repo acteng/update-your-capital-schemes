@@ -40,8 +40,6 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.register_blueprint(users.bp, url_prefix="/users")
 
     _create_database()
-    if not app.testing:
-        _configure_users()
 
     return app
 
@@ -101,11 +99,3 @@ def _create_database() -> None:
     with engine.connect() as connection:
         alembic_config.attributes["connection"] = connection
         command.upgrade(alembic_config, "head")
-
-
-def _configure_users() -> None:
-    user_repository = inject.instance(UserRepository)
-    if not user_repository.get_all():
-        user_repository.add(
-            User("alex.coleman@activetravelengland.gov.uk"), User("mark.hobson@activetravelengland.gov.uk")
-        )

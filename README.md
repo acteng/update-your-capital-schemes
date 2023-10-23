@@ -15,19 +15,7 @@
 
 ## Configure the app
 
-1. Generate a Flask secret key:
-
-    ```bash
-    echo "FLASK_SECRET_KEY=$(openssl rand -hex 32)" > .env
-    ```
-
-1. Add the 'Schemes GOV.UK One Login Private Key (Dev)' from Bitwarden to `.env`:
-
-    ```
-    FLASK_GOVUK_CLIENT_SECRET="-----BEGIN PRIVATE KEY-----
-    ...
-    -----END PRIVATE KEY-----"
-    ```
+Find the secure note in the password manager called `Schemes Secrets (Local)` and copy the contents to `.env`.
 
 The application can also be configured with the following environment variables:
 
@@ -102,8 +90,6 @@ To run the server as a container using an in-memory SQLite database:
    docker run --rm -it -p 5000:5000 --env-file ./.env schemes
    ```
    
-   **NOTE:** You'll need to concatenate multiline values with `\n` in `.env` for Docker to correctly parse.
-   
 1. Open http://127.0.0.1:5000
 
 The server can also be run on a different port by specifying the `PORT` environment variable:
@@ -127,8 +113,6 @@ To run the server as a container using a PostgreSQL database:
    ```bash
    docker compose up
    ```
-   
-   **NOTE:** You'll need to concatenate multiline values with `\n` in `.env` for Docker to correctly parse.
    
 1. Open http://127.0.0.1:5000
 

@@ -15,7 +15,7 @@
 
 ## Configure the app
 
-Find the secure note in the password manager called `Schemes Secrets (Local)` and copy the contents to `.env`.
+Find the secure note in the password manager called `Schemes Secrets (Localhost)` and copy the contents to `.env`.
 
 The application can also be configured with the following environment variables:
 

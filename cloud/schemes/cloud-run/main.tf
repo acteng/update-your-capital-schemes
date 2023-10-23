@@ -114,7 +114,9 @@ resource "google_compute_subnetwork" "cloud_run" {
 
 # secret key
 
-resource "random_uuid" "secret_key" {
+resource "random_password" "secret_key" {
+  length  = 32
+  special = false
 }
 
 resource "google_secret_manager_secret" "secret_key" {
@@ -128,7 +130,7 @@ resource "google_secret_manager_secret" "secret_key" {
 
 resource "google_secret_manager_secret_version" "secret_key" {
   secret      = google_secret_manager_secret.secret_key.id
-  secret_data = random_uuid.secret_key.id
+  secret_data = random_password.secret_key.result
 }
 
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_secret_key" {

@@ -32,15 +32,14 @@ def configure_live_server_fixture() -> None:
         multiprocessing.set_start_method("fork")
 
 
-@pytest.fixture(name="api_credentials", scope="package")
-def api_credentials_fixture() -> tuple[str, str]:
-    return "api-user", "api-password"
+@pytest.fixture(name="api_key", scope="package")
+def api_key_fixture() -> str:
+    return "api-key"
 
 
 @pytest.fixture(name="app", scope="package")
-def app_fixture(api_credentials: tuple[str, str], oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
+def app_fixture(api_key: str, oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
     port = _get_random_port()
-    api_username, api_password = api_credentials
     client_id = "app"
     private_key, public_key = _generate_key_pair()
 
@@ -50,8 +49,7 @@ def app_fixture(api_credentials: tuple[str, str], oidc_server: LiveServer) -> Ge
             "SECRET_KEY": b"secret_key",
             "SERVER_NAME": f"localhost:{port}",
             "LIVESERVER_PORT": port,
-            "API_USERNAME": api_username,
-            "API_PASSWORD": api_password,
+            "API_KEY": api_key,
             "GOVUK_CLIENT_ID": client_id,
             "GOVUK_CLIENT_SECRET": private_key.decode(),
             "GOVUK_SERVER_METADATA_URL": oidc_server.app.url_for("openid_configuration", _external=True),
@@ -75,9 +73,8 @@ def app_fixture(api_credentials: tuple[str, str], oidc_server: LiveServer) -> Ge
 
 
 @pytest.fixture(name="app_client")
-def app_client_fixture(live_server: LiveServer, api_credentials: tuple[str, str]) -> Generator[AppClient, Any, Any]:
-    username, password = api_credentials
-    client = AppClient(_get_url(live_server), username, password)
+def app_client_fixture(live_server: LiveServer, api_key: str) -> Generator[AppClient, Any, Any]:
+    client = AppClient(_get_url(live_server), api_key)
     yield client
     client.clear_users()
 

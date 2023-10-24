@@ -30,7 +30,7 @@ resource "google_secret_manager_secret" "database_uri" {
 }
 
 resource "random_password" "schemes" {
-  length  = 20
+  length  = 32
   special = false
 }
 

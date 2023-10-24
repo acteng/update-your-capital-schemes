@@ -86,10 +86,21 @@ resource "google_cloud_run_v2_service" "schemes" {
 
   depends_on = [
     google_project_service.run,
+    # secret key
     google_secret_manager_secret_version.secret_key,
+    google_secret_manager_secret_iam_member.cloud_run_schemes_secret_key,
+    # database URI
     var.database_uri_secret_version_id,
     google_secret_manager_secret_iam_member.cloud_run_schemes_database_uri,
-    google_secret_manager_secret_version.api_key
+    # basic auth username
+    google_secret_manager_secret_iam_member.cloud_run_schemes_basic_auth_username,
+    # basic auth password
+    google_secret_manager_secret_iam_member.cloud_run_schemes_basic_auth_password,
+    # api key
+    google_secret_manager_secret_version.api_key,
+    google_secret_manager_secret_iam_member.cloud_run_schemes_api_key,
+    # govuk client secret
+    google_secret_manager_secret_iam_member.cloud_run_schemes_govuk_client_secret
   ]
 }
 

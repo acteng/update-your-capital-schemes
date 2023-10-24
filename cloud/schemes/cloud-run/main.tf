@@ -87,6 +87,7 @@ resource "google_cloud_run_v2_service" "schemes" {
   depends_on = [
     google_project_service.run,
     google_secret_manager_secret_version.secret_key,
+    var.database_uri_secret_version_id,
     google_secret_manager_secret_iam_member.cloud_run_schemes_database_uri,
     google_secret_manager_secret_version.api_key
   ]

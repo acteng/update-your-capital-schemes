@@ -37,12 +37,13 @@ module "cloud_sql" {
 }
 
 module "cloud_run" {
-  source                 = "./cloud-run"
-  project                = local.project
-  region                 = local.location
-  env                    = local.env
-  database_uri_secret_id = module.cloud_sql.database_uri_secret_id
-  vpc_id                 = module.vpc.id
+  source                         = "./cloud-run"
+  project                        = local.project
+  region                         = local.location
+  env                            = local.env
+  database_uri_secret_id         = module.cloud_sql.database_uri_secret_id
+  database_uri_secret_version_id = module.cloud_sql.database_uri_secret_version_id
+  vpc_id                         = module.vpc.id
 }
 
 module "github_action" {

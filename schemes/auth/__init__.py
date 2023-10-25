@@ -58,7 +58,7 @@ T = TypeVar("T")
 P = ParamSpec("P")
 
 
-def secure(func: Callable[P, T]) -> Callable[P, T | Response]:
+def bearer_auth(func: Callable[P, T]) -> Callable[P, T | Response]:
     @wraps(func)
     def decorated_function(*args: P.args, **kwargs: P.kwargs) -> T | Response:
         if "user" not in session:

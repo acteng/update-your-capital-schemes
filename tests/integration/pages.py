@@ -42,7 +42,7 @@ class UnauthorizedPage:
         return self
 
     def visible(self) -> bool:
-        return self._soup.h1.string == "Unauthorized" if self._soup.h1 else False
+        return self._soup.h1.string == "Unauthorised" if self._soup.h1 else False
 
     def is_unauthorized(self) -> bool:
         return self._response.status_code == 401

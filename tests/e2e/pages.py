@@ -45,7 +45,7 @@ class UnauthorizedPage:
         self._page = page
 
     def visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Unauthorized").is_visible()
+        return self._page.get_by_role("heading", name="Unauthorised").is_visible()
 
 
 class HomePage:

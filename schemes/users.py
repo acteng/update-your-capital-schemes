@@ -65,7 +65,7 @@ class DatabaseUserRepository(UserRepository):
 bp = Blueprint("users", __name__)
 
 
-@bp.route("", methods=["POST"])
+@bp.post("")
 @api_key_auth
 @inject.autoparams()
 def add(users: UserRepository) -> Response:
@@ -74,7 +74,7 @@ def add(users: UserRepository) -> Response:
     return Response(status=201)
 
 
-@bp.route("", methods=["DELETE"])
+@bp.delete("")
 @api_key_auth
 @inject.autoparams()
 def clear(users: UserRepository) -> Response:

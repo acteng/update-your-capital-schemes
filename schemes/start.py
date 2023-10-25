@@ -6,7 +6,7 @@ from schemes.auth.basic import basic_auth
 bp = Blueprint("start", __name__)
 
 
-@bp.route("/")
+@bp.get("/")
 @basic_auth
 def index() -> BaseResponse:
     if "user" in session:

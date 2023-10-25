@@ -104,29 +104,29 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerApp:
     authorization_server = app.create_authorization_server(key)
     require_oauth = app.create_resource_protector()
 
-    @app.route("/users", methods=["POST"])
+    @app.post("/users")
     def add_user() -> Response:
         user = StubUser(**request.get_json())
         app.add_user(user)
         return Response(status=201)
 
-    @app.route("/users", methods=["DELETE"])
+    @app.delete("/users")
     def clear_users() -> Response:
         app.clear_users()
         return Response(status=204)
 
-    @app.route("/clients", methods=["POST"])
+    @app.post("/clients")
     def add_client() -> Response:
         client = StubClient(**request.get_json())
         app.add_client(client)
         return Response(status=201)
 
-    @app.route("/clients", methods=["DELETE"])
+    @app.delete("/clients")
     def clear_clients() -> Response:
         app.clear_clients()
         return Response(status=204)
 
-    @app.route("/.well-known/openid-configuration")
+    @app.get("/.well-known/openid-configuration")
     def openid_configuration() -> Response:
         return jsonify(
             {
@@ -137,7 +137,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerApp:
             }
         )
 
-    @app.route("/authorize")
+    @app.get("/authorize")
     def authorize() -> Response:
         authorized_user = app.authorized_user()
 
@@ -147,22 +147,22 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerApp:
         response: Response = authorization_server.create_authorization_response(grant_user=authorized_user)
         return response
 
-    @app.route("/token", methods=["POST"])
+    @app.post("/token")
     def token() -> Response:
         response: Response = authorization_server.create_token_response()
         return response
 
-    @app.route("/userinfo")
+    @app.get("/userinfo")
     @require_oauth("openid email")
     def userinfo() -> Response:
         user = app.current_user()
         return jsonify(StubUserInfo(user))
 
-    @app.route("/jwks_uri")
+    @app.get("/jwks_uri")
     def jwks() -> Response:
         return jsonify(KeySet([key]).as_dict())
 
-    @app.route("/logout")
+    @app.get("/logout")
     def logout() -> BaseResponse:
         id_token_hint = request.args.get("id_token_hint")
         post_logout_redirect_uri = request.args.get("post_logout_redirect_uri")

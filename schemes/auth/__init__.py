@@ -21,7 +21,7 @@ from schemes.users import UserRepository
 bp = Blueprint("auth", __name__)
 
 
-@bp.route("")
+@bp.get("")
 @inject.autoparams()
 def callback(users: UserRepository) -> BaseResponse:
     oauth = _get_oauth()
@@ -36,12 +36,12 @@ def callback(users: UserRepository) -> BaseResponse:
     return redirect(url_for("home.index"))
 
 
-@bp.route("/unauthorized")
+@bp.get("/unauthorized")
 def unauthorized() -> Response:
     return Response(render_template("unauthorized.html"), status=401)
 
 
-@bp.route("/logout")
+@bp.get("/logout")
 def logout() -> BaseResponse:
     id_token = session["id_token"]
     del session["user"]

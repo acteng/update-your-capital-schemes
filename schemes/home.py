@@ -5,7 +5,7 @@ from schemes.auth import secure
 bp = Blueprint("home", __name__)
 
 
-@bp.route("")
+@bp.get("")
 @secure
 def index() -> str:
     return render_template("home.html")

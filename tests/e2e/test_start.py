@@ -28,7 +28,7 @@ class TestUnauthenticated:
 class TestAuthenticated:
     def test_start_shows_schemes(self, oidc_client: OidcClient, app_client: AppClient, app: Flask, page: Page) -> None:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
-        app_client.add_user(UserRepr(email="boardman@example.com"))
+        app_client.add_users(UserRepr(email="boardman@example.com"))
         start_page = StartPage(app, page).open()
         start_page.start()
 

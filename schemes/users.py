@@ -69,8 +69,8 @@ bp = Blueprint("users", __name__)
 @api_key_auth
 @inject.autoparams()
 def add(users: UserRepository) -> Response:
-    json = request.get_json()
-    users.add(*[User(element["email"]) for element in json])
+    users_repr = [UserRepr(**element) for element in request.get_json()]
+    users.add(*[user_repr.to_domain() for user_repr in users_repr])
     return Response(status=201)
 
 
@@ -80,3 +80,11 @@ def add(users: UserRepository) -> Response:
 def clear(users: UserRepository) -> Response:
     users.clear()
     return Response(status=204)
+
+
+@dataclass
+class UserRepr:
+    email: str
+
+    def to_domain(self) -> User:
+        return User(email=self.email)

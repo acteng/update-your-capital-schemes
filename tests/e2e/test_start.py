@@ -2,7 +2,7 @@ import pytest
 from flask import Flask
 from playwright.sync_api import Page
 
-from tests.e2e.app_client import AppClient
+from tests.e2e.app_client import AppClient, UserRepr
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import StartPage
@@ -28,7 +28,7 @@ class TestUnauthenticated:
 class TestAuthenticated:
     def test_start_shows_schemes(self, oidc_client: OidcClient, app_client: AppClient, app: Flask, page: Page) -> None:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
-        app_client.add_user("boardman@example.com")
+        app_client.add_user(UserRepr(email="boardman@example.com"))
         start_page = StartPage(app, page).open()
         start_page.start()
 

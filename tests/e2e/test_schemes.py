@@ -2,7 +2,7 @@ import pytest
 from flask import Flask
 from playwright.sync_api import Page
 
-from tests.e2e.app_client import AppClient
+from tests.e2e.app_client import AppClient, UserRepr
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemesPage
@@ -15,7 +15,7 @@ class TestAuthenticated:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     def test_schemes_when_authorized(self, app_client: AppClient, app: Flask, page: Page) -> None:
-        app_client.add_user("boardman@example.com")
+        app_client.add_user(UserRepr(email="boardman@example.com"))
 
         schemes_page = SchemesPage(app, page).open()
 
@@ -27,7 +27,7 @@ class TestAuthenticated:
         assert unauthorized_page.visible()
 
     def test_header_sign_out(self, app_client: AppClient, app: Flask, page: Page) -> None:
-        app_client.add_user("boardman@example.com")
+        app_client.add_user(UserRepr(email="boardman@example.com"))
         schemes_page = SchemesPage(app, page).open()
 
         start_page = schemes_page.header.sign_out()

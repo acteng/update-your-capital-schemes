@@ -33,14 +33,14 @@ def test_callback_logs_in(users: UserRepository, client: FlaskClient) -> None:
         assert session["user"] == UserInfo({"email": "boardman@example.com"}) and session["id_token"] == "jwt"
 
 
-def test_callback_redirects_to_home(users: UserRepository, client: FlaskClient) -> None:
+def test_callback_redirects_to_schemes(users: UserRepository, client: FlaskClient) -> None:
     users.add(User("boardman@example.com"))
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "boardman@example.com"}))
 
     response = client.get("/auth")
 
-    assert response.status_code == 302 and response.location == "/home"
+    assert response.status_code == 302 and response.location == "/schemes"
 
 
 def test_callback_when_unauthorized_redirects_to_unauthorized(users: UserRepository, client: FlaskClient) -> None:

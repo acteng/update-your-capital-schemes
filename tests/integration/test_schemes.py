@@ -3,7 +3,7 @@ from typing import Any, Mapping
 import pytest
 from flask.testing import FlaskClient
 
-from tests.integration.pages import HomePage
+from tests.integration.pages import SchemesPage
 
 
 @pytest.fixture(name="config")
@@ -19,24 +19,24 @@ def client_fixture(client: FlaskClient) -> FlaskClient:
 
 
 def test_header_home_shows_start(client: FlaskClient) -> None:
-    home_page = HomePage(client).open()
+    schemes_page = SchemesPage(client).open()
 
-    assert home_page.header().home_url == "/"
+    assert schemes_page.header().home_url == "/"
 
 
 def test_header_profile_shows_profile(client: FlaskClient) -> None:
-    home_page = HomePage(client).open()
+    schemes_page = SchemesPage(client).open()
 
-    assert home_page.header().profile_url == "https://example.com/profile"
+    assert schemes_page.header().profile_url == "https://example.com/profile"
 
 
 def test_header_sign_out_signs_out(client: FlaskClient) -> None:
-    home_page = HomePage(client).open()
+    schemes_page = SchemesPage(client).open()
 
-    assert home_page.header().sign_out_url == "/auth/logout"
+    assert schemes_page.header().sign_out_url == "/auth/logout"
 
 
-def test_home(client: FlaskClient) -> None:
-    home_page = HomePage(client).open()
+def test_schemes(client: FlaskClient) -> None:
+    schemes_page = SchemesPage(client).open()
 
-    assert home_page.visible()
+    assert schemes_page.visible()

@@ -10,6 +10,6 @@ bp = Blueprint("start", __name__)
 @basic_auth
 def index() -> BaseResponse:
     if "user" in session:
-        return redirect(url_for("home.index"))
+        return redirect(url_for("schemes.index"))
 
     return Response(render_template("start.html"))

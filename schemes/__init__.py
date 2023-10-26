@@ -11,7 +11,7 @@ from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 from sqlalchemy import Engine, create_engine
 
-from schemes import auth, home, start, users
+from schemes import auth, schemes, start, users
 from schemes.config import DevConfig
 from schemes.users import DatabaseUserRepository, User, UserRepository
 
@@ -36,7 +36,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
     app.register_blueprint(start.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
-    app.register_blueprint(home.bp, url_prefix="/home")
+    app.register_blueprint(schemes.bp, url_prefix="/schemes")
     app.register_blueprint(users.bp, url_prefix="/users")
 
     _migrate_database()

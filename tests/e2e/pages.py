@@ -14,16 +14,16 @@ class StartPage:
         self._page.goto(f"{_get_base_url(self._app)}")
         return self
 
-    def open_when_authenticated(self) -> HomePage:
+    def open_when_authenticated(self) -> SchemesPage:
         self.open()
-        return HomePage(self._app, self._page)
+        return SchemesPage(self._app, self._page)
 
     def visible(self) -> bool:
         return self._page.get_by_role("heading", name="Schemes").is_visible()
 
-    def start(self) -> HomePage:
+    def start(self) -> SchemesPage:
         self._start.click()
-        return HomePage(self._app, self._page)
+        return SchemesPage(self._app, self._page)
 
     def start_when_unauthenticated(self) -> LoginPage:
         self.start()
@@ -48,14 +48,14 @@ class UnauthorizedPage:
         return self._page.get_by_role("heading", name="Unauthorised").is_visible()
 
 
-class HomePage:
+class SchemesPage:
     def __init__(self, app: Flask, page: Page):
         self._app = app
         self._page = page
         self.header = ServiceHeaderComponent(app, page.get_by_role("banner"))
 
-    def open(self) -> HomePage:
-        self._page.goto(f"{_get_base_url(self._app)}/home")
+    def open(self) -> SchemesPage:
+        self._page.goto(f"{_get_base_url(self._app)}/schemes")
         return self
 
     def open_when_unauthenticated(self) -> LoginPage:

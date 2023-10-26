@@ -48,13 +48,13 @@ class UnauthorizedPage:
         return self._response.status_code == 401
 
 
-class HomePage:
+class SchemesPage:
     def __init__(self, client: FlaskClient):
         self._client = client
         self._soup = BeautifulSoup()
 
-    def open(self) -> HomePage:
-        response = self._client.get("/home")
+    def open(self) -> SchemesPage:
+        response = self._client.get("/schemes")
         self._soup = BeautifulSoup(response.text, "html.parser")
         return self
 

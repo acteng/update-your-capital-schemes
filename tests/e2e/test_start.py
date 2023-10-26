@@ -26,12 +26,12 @@ class TestUnauthenticated:
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 class TestAuthenticated:
-    def test_start_shows_home(self, oidc_client: OidcClient, app_client: AppClient, app: Flask, page: Page) -> None:
+    def test_start_shows_schemes(self, oidc_client: OidcClient, app_client: AppClient, app: Flask, page: Page) -> None:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
         app_client.add_user("boardman@example.com")
         start_page = StartPage(app, page).open()
         start_page.start()
 
-        home_page = start_page.open_when_authenticated()
+        schemes_page = start_page.open_when_authenticated()
 
-        assert home_page.visible()
+        assert schemes_page.visible()

@@ -15,10 +15,10 @@ def test_header_home_shows_start(client: FlaskClient) -> None:
     assert start_page.header().home_url == "/"
 
 
-def test_start_when_authenticated_shows_home(client: FlaskClient) -> None:
+def test_start_when_authenticated_shows_schemes(client: FlaskClient) -> None:
     with client.session_transaction() as session:
         session["user"] = {"email": "boardman@example.com"}
 
     response = client.get("/")
 
-    assert response.status_code == 302 and response.location == "/home"
+    assert response.status_code == 302 and response.location == "/schemes"

@@ -33,7 +33,7 @@ def callback(users: UserRepository) -> BaseResponse:
 
     session["user"] = user
     session["id_token"] = token["id_token"]
-    return redirect(url_for("home.index"))
+    return redirect(url_for("schemes.index"))
 
 
 @bp.get("/unauthorized")

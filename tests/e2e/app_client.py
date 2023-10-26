@@ -10,21 +10,15 @@ class AppClient:
 
     def __init__(self, url: str, api_key: str):
         self._url = url
-        self._api_key = api_key
+        self._session = requests.Session()
+        self._session.headers.update({"Authorization": f"API-Key {api_key}"})
 
     def add_user(self, user: UserRepr) -> None:
-        response = requests.post(
-            f"{self._url}/users",
-            headers={"Authorization": f"API-Key {self._api_key}"},
-            json=[user.__dict__],
-            timeout=self.DEFAULT_TIMEOUT,
-        )
+        response = self._session.post(f"{self._url}/users", json=[user.__dict__], timeout=self.DEFAULT_TIMEOUT)
         assert response.status_code == 201
 
     def clear_users(self) -> None:
-        response = requests.delete(
-            f"{self._url}/users", headers={"Authorization": f"API-Key {self._api_key}"}, timeout=self.DEFAULT_TIMEOUT
-        )
+        response = self._session.delete(f"{self._url}/users", timeout=self.DEFAULT_TIMEOUT)
         assert response.status_code == 204
 
 

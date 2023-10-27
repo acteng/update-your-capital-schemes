@@ -7,14 +7,15 @@ from flask.testing import FlaskClient
 from schemes.users import User, UserRepository
 
 
+@pytest.fixture(name="users")
+def users_fixture() -> UserRepository:
+    return inject.instance(UserRepository)
+
+
 class TestApiEnabled:
     @pytest.fixture(name="config")
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return config | {"API_KEY": "boardman"}
-
-    @pytest.fixture(name="users")
-    def users_fixture(self) -> UserRepository:
-        return inject.instance(UserRepository)
 
     def test_add_users(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -66,9 +67,10 @@ class TestApiEnabled:
 
 
 class TestApiDisabled:
-    def test_cannot_add_user(self, client: FlaskClient) -> None:
+    def test_cannot_add_users(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/users", headers={"Authorization": "API-Key boardman"}, json={"email": "boardman@example.com"}
+            "/users", headers={"Authorization": "API-Key boardman"}, json=[{"email": "boardman@example.com"}]
         )
 
         assert response.status_code == 401
+        assert not users.get_all()

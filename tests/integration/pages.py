@@ -64,6 +64,9 @@ class SchemesPage:
     def header(self) -> ServiceHeaderComponent:
         return ServiceHeaderComponent(cast(Tag, self._soup.header))
 
+    def authority(self) -> str:
+        return (self._soup.main.h1.string if self._soup.main and self._soup.main.h1 else None) or ""
+
 
 class ServiceHeaderComponent:
     def __init__(self, tag: Tag):

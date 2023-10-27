@@ -23,7 +23,7 @@ def users_fixture() -> UserRepository:
 
 
 def test_callback_logs_in(users: UserRepository, client: FlaskClient) -> None:
-    users.add(User("boardman@example.com"))
+    users.add(User("boardman@example.com", authority_id=1))
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "boardman@example.com"}))
 
@@ -34,7 +34,7 @@ def test_callback_logs_in(users: UserRepository, client: FlaskClient) -> None:
 
 
 def test_callback_redirects_to_schemes(users: UserRepository, client: FlaskClient) -> None:
-    users.add(User("boardman@example.com"))
+    users.add(User("boardman@example.com", authority_id=1))
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "boardman@example.com"}))
 
@@ -44,7 +44,7 @@ def test_callback_redirects_to_schemes(users: UserRepository, client: FlaskClien
 
 
 def test_callback_when_unauthorized_redirects_to_unauthorized(users: UserRepository, client: FlaskClient) -> None:
-    users.add(User("boardman@example.com"))
+    users.add(User("boardman@example.com", authority_id=1))
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "obree@example.com"}))
 

@@ -1,6 +1,25 @@
-from typing import List, TypeGuard
+from typing import Dict, List, TypeGuard
 
+from schemes.authorities import Authority, AuthorityRepository
 from schemes.users import User, UserRepository
+
+
+class MemoryAuthorityRepository(AuthorityRepository):
+    def __init__(self) -> None:
+        self._authorities: Dict[int, Authority] = {}
+
+    def add(self, *authorities: Authority) -> None:
+        for authority in authorities:
+            self._authorities[authority.id] = authority
+
+    def clear(self) -> None:
+        self._authorities.clear()
+
+    def get(self, id_: int) -> Authority | None:
+        return self._authorities.get(id_)
+
+    def get_all(self) -> List[Authority]:
+        return list(self._authorities.values())
 
 
 class MemoryUserRepository(UserRepository):

@@ -7,8 +7,9 @@ from flask.testing import FlaskClient
 from inject import Binder
 
 from schemes import create_app
+from schemes.authorities import AuthorityRepository
 from schemes.users import UserRepository
-from tests.integration.fakes import MemoryUserRepository
+from tests.integration.fakes import MemoryAuthorityRepository, MemoryUserRepository
 
 
 @pytest.fixture(name="config")
@@ -39,4 +40,5 @@ def client_fixture(app: Flask) -> FlaskClient:
 
 
 def _bindings(binder: Binder) -> None:
+    binder.bind(AuthorityRepository, MemoryAuthorityRepository())
     binder.bind(UserRepository, MemoryUserRepository())

@@ -11,7 +11,8 @@ from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 from sqlalchemy import Engine, create_engine
 
-from schemes import auth, schemes, start, users
+from schemes import auth, authorities, schemes, start, users
+from schemes.authorities import AuthorityRepository, DatabaseAuthorityRepository
 from schemes.config import DevConfig
 from schemes.users import DatabaseUserRepository, User, UserRepository
 
@@ -36,6 +37,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
     app.register_blueprint(start.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
+    app.register_blueprint(authorities.bp, url_prefix="/authorities")
     app.register_blueprint(schemes.bp, url_prefix="/schemes")
     app.register_blueprint(users.bp, url_prefix="/users")
 
@@ -50,6 +52,7 @@ def _bindings(binder: Binder) -> None:
         return create_engine(config["SQLALCHEMY_DATABASE_URI"])
 
     binder.bind_to_constructor(Engine, engine)
+    binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
     binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
 
 

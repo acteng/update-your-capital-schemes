@@ -77,6 +77,7 @@ def app_client_fixture(live_server: LiveServer, api_key: str) -> Generator[AppCl
     client = AppClient(_get_url(live_server), api_key)
     yield client
     client.clear_users()
+    client.clear_authorities()
 
 
 @pytest.fixture(name="oidc_server_app", scope="package")

@@ -1,9 +1,23 @@
 from typing import Any, Mapping
 
+import inject
 import pytest
+from flask import Flask
 from flask.testing import FlaskClient
 
+from schemes.authorities import Authority, AuthorityRepository
+from schemes.users import User, UserRepository
 from tests.integration.pages import SchemesPage
+
+
+@pytest.fixture(name="users")
+def users_fixture(app: Flask) -> UserRepository:  # pylint: disable=unused-argument
+    return inject.instance(UserRepository)
+
+
+@pytest.fixture(name="authorities")
+def authorities_fixture(app: Flask) -> AuthorityRepository:  # pylint: disable=unused-argument
+    return inject.instance(AuthorityRepository)
 
 
 @pytest.fixture(name="config")
@@ -11,11 +25,12 @@ def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
     return config | {"GOVUK_PROFILE_URL": "https://example.com/profile"}
 
 
-@pytest.fixture(name="client")
-def client_fixture(client: FlaskClient) -> FlaskClient:
+@pytest.fixture(name="auth", autouse=True)
+def auth_fixture(authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
+    authorities.add(Authority(id=1, name="Liverpool City Region Combined Authority"))
+    users.add(User(email="boardman@example.com", authority_id=1))
     with client.session_transaction() as session:
         session["user"] = {"email": "boardman@example.com"}
-    return client
 
 
 def test_header_home_shows_start(client: FlaskClient) -> None:
@@ -39,4 +54,4 @@ def test_header_sign_out_signs_out(client: FlaskClient) -> None:
 def test_schemes(client: FlaskClient) -> None:
     schemes_page = SchemesPage(client).open()
 
-    assert schemes_page.visible()
+    assert schemes_page.authority() == "Liverpool City Region Combined Authority"

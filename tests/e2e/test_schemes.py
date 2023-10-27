@@ -2,7 +2,7 @@ import pytest
 from flask import Flask
 from playwright.sync_api import Page
 
-from tests.e2e.app_client import AppClient, UserRepr
+from tests.e2e.app_client import AppClient, AuthorityRepr, UserRepr
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemesPage
@@ -14,12 +14,13 @@ class TestAuthenticated:
     def oidc_user(self, oidc_client: OidcClient) -> None:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    def test_schemes_when_authorized(self, app_client: AppClient, app: Flask, page: Page) -> None:
-        app_client.add_users(UserRepr(email="boardman@example.com"))
+    def test_schemes(self, app_client: AppClient, app: Flask, page: Page) -> None:
+        app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
+        app_client.add_users(1, UserRepr(email="boardman@example.com"))
 
         schemes_page = SchemesPage(app, page).open()
 
-        assert schemes_page.visible()
+        assert schemes_page.authority() == "Liverpool City Region Combined Authority"
 
     def test_schemes_when_unauthorized(self, app: Flask, page: Page) -> None:
         unauthorized_page = SchemesPage(app, page).open_when_unauthorized()
@@ -27,7 +28,8 @@ class TestAuthenticated:
         assert unauthorized_page.visible()
 
     def test_header_sign_out(self, app_client: AppClient, app: Flask, page: Page) -> None:
-        app_client.add_users(UserRepr(email="boardman@example.com"))
+        app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
+        app_client.add_users(1, UserRepr(email="boardman@example.com"))
         schemes_page = SchemesPage(app, page).open()
 
         start_page = schemes_page.header.sign_out()

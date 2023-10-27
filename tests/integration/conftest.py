@@ -28,7 +28,7 @@ def config_fixture() -> Mapping[str, Any]:
 @pytest.fixture(name="app")
 def app_fixture(config: Mapping[str, Any]) -> Generator[Flask, Any, Any]:
     app = create_app(config)
-    inject.clear_and_configure(_bindings)
+    inject.clear_and_configure(_bindings, bind_in_runtime=False)
     yield app
     inject.clear()
 

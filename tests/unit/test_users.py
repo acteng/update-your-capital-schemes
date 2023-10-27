@@ -35,8 +35,7 @@ def test_get_user_by_email_who_does_not_exist(users: DatabaseUserRepository) -> 
 
 
 def test_get_all_users(users: DatabaseUserRepository) -> None:
-    users.add(User("boardman@example.com"))
-    users.add(User("obree@example.com"))
+    users.add(User("boardman@example.com"), User("obree@example.com"))
 
     user_list = users.get_all()
 
@@ -44,8 +43,7 @@ def test_get_all_users(users: DatabaseUserRepository) -> None:
 
 
 def test_clear_all_users(users: DatabaseUserRepository) -> None:
-    users.add(User("boardman@example.com"))
-    users.add(User("obree@example.com"))
+    users.add(User("boardman@example.com"), User("obree@example.com"))
 
     users.clear()
 

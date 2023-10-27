@@ -29,9 +29,9 @@ class UserRepository:
 
 def add_tables(metadata: MetaData) -> None:
     Table(
-        "users",
+        "user",
         metadata,
-        Column("id", Integer, primary_key=True),
+        Column("user_id", Integer, primary_key=True),
         Column("email", String(length=256), nullable=False, unique=True),
     )
 
@@ -44,21 +44,21 @@ class DatabaseUserRepository(UserRepository):
     def add(self, *users: User) -> None:
         with self._engine.begin() as connection:
             for user in users:
-                connection.execute(text("INSERT INTO users (email) VALUES (:email)"), {"email": user.email})
+                connection.execute(text("INSERT INTO user (email) VALUES (:email)"), {"email": user.email})
 
     def clear(self) -> None:
         with self._engine.begin() as connection:
-            connection.execute(text("DELETE FROM users"))
+            connection.execute(text("DELETE FROM user"))
 
     def get_by_email(self, email: str) -> User | None:
         with self._engine.connect() as connection:
-            result = connection.execute(text("SELECT email FROM users WHERE email = :email"), {"email": email})
+            result = connection.execute(text("SELECT email FROM user WHERE email = :email"), {"email": email})
             row = result.one_or_none()
             return User(row.email) if row else None
 
     def get_all(self) -> List[User]:
         with self._engine.connect() as connection:
-            result = connection.execute(text("SELECT email FROM users"))
+            result = connection.execute(text("SELECT email FROM user"))
             return [User(row.email) for row in result]
 
 

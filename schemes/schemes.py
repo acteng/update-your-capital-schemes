@@ -1,7 +1,7 @@
 import inject
 from flask import Blueprint, render_template, session
 
-from schemes.auth import bearer_auth
+from schemes.auth.bearer import bearer_auth
 from schemes.authorities import AuthorityRepository
 from schemes.users import UserRepository
 

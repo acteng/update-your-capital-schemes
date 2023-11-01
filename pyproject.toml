@@ -35,11 +35,17 @@ dev = [
 requires = ["flit_core<4"]
 build-backend = "flit_core.buildapi"
 
+# black
+
 [tool.black]
 line-length = 120
 
+# isort
+
 [tool.isort]
 profile = "black"
+
+# mypy
 
 [tool.mypy]
 strict = true
@@ -50,6 +56,8 @@ module = [
     "pytest_flask.*"
 ]
 ignore_missing_imports = true
+
+# pylint
 
 [tool.pylint.format]
 good-names = ["id", "ui"]
@@ -68,6 +76,8 @@ disable = [
 
 [tool.pylint.miscellaneous]
 notes = []
+
+# pytest
 
 [tool.pytest.ini_options]
 live_server_scope = "package"

@@ -16,7 +16,7 @@ from flask import (
 )
 from werkzeug.wrappers import Response as BaseResponse
 
-from schemes.users import UserRepository
+from schemes.users.services import UserRepository
 
 bp = Blueprint("auth", __name__)
 

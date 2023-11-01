@@ -1,7 +1,8 @@
 from typing import Dict, List, TypeGuard
 
 from schemes.authorities import Authority, AuthorityRepository
-from schemes.users import User, UserRepository
+from schemes.users.domain import User
+from schemes.users.services import UserRepository
 
 
 class MemoryAuthorityRepository(AuthorityRepository):

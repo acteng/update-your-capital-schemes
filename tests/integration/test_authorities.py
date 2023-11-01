@@ -6,7 +6,8 @@ from flask import Flask
 from flask.testing import FlaskClient
 
 from schemes.authorities import Authority, AuthorityRepository
-from schemes.users import User, UserRepository
+from schemes.users.domain import User
+from schemes.users.services import UserRepository
 
 
 @pytest.fixture(name="authorities")

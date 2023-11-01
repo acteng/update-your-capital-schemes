@@ -8,7 +8,8 @@ from authlib.oidc.core import UserInfo
 from flask import current_app, session
 from flask.testing import FlaskClient
 
-from schemes.users import User, UserRepository
+from schemes.users.domain import User
+from schemes.users.services import UserRepository
 from tests.integration.pages import UnauthorizedPage
 
 

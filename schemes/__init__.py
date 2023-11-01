@@ -14,7 +14,8 @@ from sqlalchemy import Engine, create_engine
 from schemes import auth, authorities, schemes, start, users
 from schemes.authorities import AuthorityRepository, DatabaseAuthorityRepository
 from schemes.config import DevConfig
-from schemes.users import DatabaseUserRepository, User, UserRepository
+from schemes.users.domain import User
+from schemes.users.services import DatabaseUserRepository, UserRepository
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:

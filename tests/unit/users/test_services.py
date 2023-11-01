@@ -2,7 +2,8 @@ import pytest
 from sqlalchemy import MetaData, create_engine
 
 from schemes import authorities, users
-from schemes.users import DatabaseUserRepository, User
+from schemes.users.domain import User
+from schemes.users.services import DatabaseUserRepository
 
 
 @pytest.fixture(name="users")

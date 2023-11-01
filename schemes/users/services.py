@@ -1,8 +1,6 @@
-from dataclasses import dataclass
 from typing import List
 
 import inject
-from flask import Blueprint, Response
 from sqlalchemy import (
     Column,
     Engine,
@@ -14,13 +12,7 @@ from sqlalchemy import (
     text,
 )
 
-from schemes.auth.api_key import api_key_auth
-
-
-@dataclass
-class User:
-    email: str
-    authority_id: int
+from schemes.users.domain import User
 
 
 class UserRepository:  # pylint:disable=duplicate-code
@@ -78,22 +70,3 @@ class DatabaseUserRepository(UserRepository):
         with self._engine.connect() as connection:
             result = connection.execute(text('SELECT email, authority_id FROM "user"'))
             return [User(email=row.email, authority_id=row.authority_id) for row in result]
-
-
-bp = Blueprint("users", __name__)
-
-
-@bp.delete("")
-@api_key_auth
-@inject.autoparams()
-def clear(users: UserRepository) -> Response:
-    users.clear()
-    return Response(status=204)
-
-
-@dataclass
-class UserRepr:
-    email: str
-
-    def to_domain(self, authority_id: int) -> User:
-        return User(email=self.email, authority_id=authority_id)

@@ -6,7 +6,8 @@ from flask import Blueprint, Response, request
 from sqlalchemy import Column, Engine, Integer, MetaData, Table, Text, text
 
 from schemes.auth.api_key import api_key_auth
-from schemes.users import UserRepository, UserRepr
+from schemes.users.services import UserRepository
+from schemes.users.views import UserRepr
 
 
 @dataclass

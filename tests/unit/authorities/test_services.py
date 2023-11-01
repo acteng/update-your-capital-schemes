@@ -1,7 +1,9 @@
 import pytest
 from sqlalchemy import MetaData, create_engine
 
-from schemes.authorities import Authority, DatabaseAuthorityRepository, add_tables
+from schemes.authorities import add_tables
+from schemes.authorities.domain import Authority
+from schemes.authorities.services import DatabaseAuthorityRepository
 
 
 @pytest.fixture(name="authorities")

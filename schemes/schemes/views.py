@@ -2,7 +2,7 @@ import inject
 from flask import Blueprint, render_template, session
 
 from schemes.auth.bearer import bearer_auth
-from schemes.authorities import AuthorityRepository
+from schemes.authorities.services import AuthorityRepository
 from schemes.users.services import UserRepository
 
 bp = Blueprint("schemes", __name__)

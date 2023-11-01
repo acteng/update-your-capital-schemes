@@ -7,7 +7,7 @@ from flask.testing import FlaskClient
 from inject import Binder
 
 from schemes import create_app
-from schemes.authorities import AuthorityRepository
+from schemes.authorities.services import AuthorityRepository
 from schemes.users.services import UserRepository
 from tests.integration.fakes import MemoryAuthorityRepository, MemoryUserRepository
 

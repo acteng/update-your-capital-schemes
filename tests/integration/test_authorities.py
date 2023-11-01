@@ -5,7 +5,8 @@ import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 
-from schemes.authorities import Authority, AuthorityRepository
+from schemes.authorities.domain import Authority
+from schemes.authorities.services import AuthorityRepository
 from schemes.users.domain import User
 from schemes.users.services import UserRepository
 

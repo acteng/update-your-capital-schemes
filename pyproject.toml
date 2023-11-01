@@ -58,13 +58,6 @@ max-line-length = 120
 [tool.pylint.imports]
 allow-reexport-from-package = true
 
-[tool.pylint.miscellaneous]
-notes = []
-
-[tool.pytest.ini_options]
-live_server_scope = "package"
-addopts = "--screenshot only-on-failure"
-
 [tool.pylint.messages_control]
 disable = [
     "missing-class-docstring",
@@ -72,3 +65,10 @@ disable = [
     "missing-module-docstring",
     "too-few-public-methods"
 ]
+
+[tool.pylint.miscellaneous]
+notes = []
+
+[tool.pytest.ini_options]
+live_server_scope = "package"
+addopts = "--screenshot only-on-failure"

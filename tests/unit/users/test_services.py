@@ -1,17 +1,17 @@
 import pytest
 from sqlalchemy import MetaData, create_engine
 
-import schemes.authorities.services
-import schemes.users.services
+from schemes.authorities.services import add_tables as authorities_add_tables
 from schemes.users.domain import User
 from schemes.users.services import DatabaseUserRepository
+from schemes.users.services import add_tables as users_add_tables
 
 
 @pytest.fixture(name="users")
 def users_fixture() -> DatabaseUserRepository:
     metadata = MetaData()
-    schemes.authorities.services.add_tables(metadata)
-    schemes.users.services.add_tables(metadata)
+    authorities_add_tables(metadata)
+    users_add_tables(metadata)
 
     engine = create_engine("sqlite+pysqlite:///:memory:")
     metadata.create_all(engine)

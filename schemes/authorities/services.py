@@ -1,5 +1,3 @@
-from typing import List
-
 import inject
 from sqlalchemy import Column, Engine, Integer, MetaData, Table, Text, text
 
@@ -16,7 +14,7 @@ class AuthorityRepository:  # pylint:disable=duplicate-code
     def get(self, id_: int) -> Authority | None:
         raise NotImplementedError()
 
-    def get_all(self) -> List[Authority]:
+    def get_all(self) -> list[Authority]:
         raise NotImplementedError()
 
 
@@ -57,7 +55,7 @@ class DatabaseAuthorityRepository(AuthorityRepository):
             row = result.one_or_none()
             return Authority(id=row.authority_id, name=row.authority_name) if row else None
 
-    def get_all(self) -> List[Authority]:
+    def get_all(self) -> list[Authority]:
         with self._engine.connect() as connection:
             result = connection.execute(text("SELECT authority_id, authority_name FROM authority"))
             return [Authority(id=row.authority_id, name=row.authority_name) for row in result]

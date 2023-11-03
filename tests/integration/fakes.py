@@ -1,4 +1,4 @@
-from typing import Dict, List, TypeGuard
+from typing import TypeGuard
 
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
@@ -8,7 +8,7 @@ from schemes.users.services import UserRepository
 
 class MemoryAuthorityRepository(AuthorityRepository):
     def __init__(self) -> None:
-        self._authorities: Dict[int, Authority] = {}
+        self._authorities: dict[int, Authority] = {}
 
     def add(self, *authorities: Authority) -> None:
         for authority in authorities:
@@ -20,13 +20,13 @@ class MemoryAuthorityRepository(AuthorityRepository):
     def get(self, id_: int) -> Authority | None:
         return self._authorities.get(id_)
 
-    def get_all(self) -> List[Authority]:
+    def get_all(self) -> list[Authority]:
         return list(self._authorities.values())
 
 
 class MemoryUserRepository(UserRepository):
     def __init__(self) -> None:
-        self._users: List[User] = []
+        self._users: list[User] = []
 
     def add(self, *users: User) -> None:
         self._users.extend(users)
@@ -40,5 +40,5 @@ class MemoryUserRepository(UserRepository):
 
         return next(filter(by_email, self._users), None)
 
-    def get_all(self) -> List[User]:
+    def get_all(self) -> list[User]:
         return self._users

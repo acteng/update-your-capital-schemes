@@ -1,5 +1,3 @@
-from typing import List
-
 import inject
 from sqlalchemy import (
     Column,
@@ -25,7 +23,7 @@ class UserRepository:  # pylint:disable=duplicate-code
     def get_by_email(self, email: str) -> User | None:
         raise NotImplementedError()
 
-    def get_all(self) -> List[User]:
+    def get_all(self) -> list[User]:
         raise NotImplementedError()
 
 
@@ -66,7 +64,7 @@ class DatabaseUserRepository(UserRepository):
             row = result.one_or_none()
             return User(email=row.email, authority_id=row.authority_id) if row else None
 
-    def get_all(self) -> List[User]:
+    def get_all(self) -> list[User]:
         with self._engine.connect() as connection:
             result = connection.execute(text('SELECT email, authority_id FROM "user"'))
             return [User(email=row.email, authority_id=row.authority_id) for row in result]

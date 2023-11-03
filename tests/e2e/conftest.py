@@ -4,7 +4,6 @@ import socket
 import sys
 from typing import Any, Generator
 
-import inject
 import pytest
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -18,7 +17,7 @@ from flask import Flask
 from pytest import FixtureRequest
 from pytest_flask.live_server import LiveServer
 
-from schemes import create_app
+from schemes import create_app, destroy_app
 from tests.e2e.app_client import AppClient
 from tests.e2e.oidc_server.app import OidcServerApp
 from tests.e2e.oidc_server.app import create_app as oidc_server_create_app
@@ -68,7 +67,7 @@ def app_fixture(api_key: str, oidc_server: LiveServer) -> Generator[Flask, Any, 
     oidc_client = OidcClient(_get_url(oidc_server))
     oidc_client.add_client(app_oidc_client)
     yield app
-    inject.clear()
+    destroy_app(app)
     oidc_client.clear_clients()
 
 

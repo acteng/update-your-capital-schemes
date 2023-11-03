@@ -53,6 +53,10 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     return app
 
 
+def destroy_app(_app: Flask) -> None:
+    inject.clear()
+
+
 def _bindings(binder: Binder) -> None:
     binder.bind_to_constructor(Engine, _create_engine)
     binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)

@@ -7,6 +7,8 @@ from flask.testing import FlaskClient
 
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
+from schemes.schemes.domain import Scheme
+from schemes.schemes.services import SchemeRepository
 from schemes.users.domain import User
 from schemes.users.services import UserRepository
 from tests.integration.pages import SchemesPage
@@ -20,6 +22,11 @@ def users_fixture(app: Flask) -> UserRepository:  # pylint: disable=unused-argum
 @pytest.fixture(name="authorities")
 def authorities_fixture(app: Flask) -> AuthorityRepository:  # pylint: disable=unused-argument
     return inject.instance(AuthorityRepository)
+
+
+@pytest.fixture(name="schemes")
+def schemes_fixture(app: Flask) -> SchemeRepository:  # pylint: disable=unused-argument
+    return inject.instance(SchemeRepository)
 
 
 @pytest.fixture(name="config")
@@ -53,7 +60,64 @@ def test_header_sign_out_signs_out(client: FlaskClient) -> None:
     assert schemes_page.header().sign_out_url == "/auth/logout"
 
 
-def test_schemes(client: FlaskClient) -> None:
+def test_schemes_shows_authority(client: FlaskClient) -> None:
     schemes_page = SchemesPage(client).open()
 
     assert schemes_page.authority() == "Liverpool City Region Combined Authority"
+
+
+def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(
+        Scheme(id=1, name="Wirral Package", authority_id=1),
+        Scheme(id=2, name="School Streets", authority_id=1),
+        Scheme(id=3, name="Hospital Fields Road", authority_id=2),
+    )
+
+    schemes_page = SchemesPage(client).open()
+
+    assert list(schemes_page.schemes()) == [
+        {"reference": "ATE00001", "name": "Wirral Package"},
+        {"reference": "ATE00002", "name": "School Streets"},
+    ]
+
+
+class TestApiEnabled:
+    @pytest.fixture(name="config")
+    def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
+        return config | {"API_KEY": "boardman"}
+
+    def test_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+
+        response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
+
+        assert response.status_code == 204
+        assert not schemes.get_all()
+
+    def test_cannot_clear_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+
+        response = client.delete("/schemes")
+
+        assert response.status_code == 401
+        assert schemes.get_all() == [Scheme(id=1, name="Wirral Package", authority_id=1)]
+
+    def test_cannot_clear_schemes_when_incorrect_credentials(
+        self, schemes: SchemeRepository, client: FlaskClient
+    ) -> None:
+        schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+
+        response = client.delete("/schemes", headers={"Authorization": "API-Key obree"})
+
+        assert response.status_code == 401
+        assert schemes.get_all() == [Scheme(id=1, name="Wirral Package", authority_id=1)]
+
+
+class TestApiDisabled:
+    def test_cannot_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+
+        response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
+
+        assert response.status_code == 401
+        assert schemes.get_all() == [Scheme(id=1, name="Wirral Package", authority_id=1)]

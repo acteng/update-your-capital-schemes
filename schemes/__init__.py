@@ -20,6 +20,7 @@ from schemes.authorities.services import (
     DatabaseAuthorityRepository,
 )
 from schemes.config import DevConfig
+from schemes.schemes.services import DatabaseSchemeRepository, SchemeRepository
 from schemes.users.domain import User
 from schemes.users.services import DatabaseUserRepository, UserRepository
 
@@ -38,6 +39,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
     inject.configure(bindings, bind_in_runtime=False)
 
+    _configure_jinja(app)
     _configure_error_pages(app)
     _configure_govuk_frontend(app)
     _configure_oidc(app)
@@ -62,6 +64,7 @@ def _bindings(binder: Binder) -> None:
     binder.bind_to_constructor(Engine, _create_engine)
     binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
     binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
+    binder.bind_to_constructor(SchemeRepository, DatabaseSchemeRepository)
 
 
 @inject.autoparams()
@@ -78,6 +81,10 @@ def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
+
+
+def _configure_jinja(app: Flask) -> None:
+    app.jinja_options["extensions"] = ["jinja2.ext.do"]
 
 
 def _configure_error_pages(app: Flask) -> None:

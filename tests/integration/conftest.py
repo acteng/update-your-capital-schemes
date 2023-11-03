@@ -8,8 +8,13 @@ from inject import Binder
 
 from schemes import create_app, destroy_app
 from schemes.authorities.services import AuthorityRepository
+from schemes.schemes.services import SchemeRepository
 from schemes.users.services import UserRepository
-from tests.integration.fakes import MemoryAuthorityRepository, MemoryUserRepository
+from tests.integration.fakes import (
+    MemoryAuthorityRepository,
+    MemorySchemeRepository,
+    MemoryUserRepository,
+)
 
 
 @pytest.fixture(name="config")
@@ -42,3 +47,4 @@ def client_fixture(app: Flask) -> FlaskClient:
 def _bindings(binder: Binder) -> None:
     binder.bind(AuthorityRepository, MemoryAuthorityRepository())
     binder.bind(UserRepository, MemoryUserRepository())
+    binder.bind(SchemeRepository, MemorySchemeRepository())

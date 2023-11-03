@@ -2,7 +2,7 @@ import pytest
 from flask import Flask
 from playwright.sync_api import Page
 
-from tests.e2e.app_client import AppClient, AuthorityRepr, UserRepr
+from tests.e2e.app_client import AppClient, AuthorityRepr, SchemeRepr, UserRepr
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemesPage
@@ -17,10 +17,15 @@ class TestAuthenticated:
     def test_schemes(self, app_client: AppClient, app: Flask, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
+        app_client.add_schemes(1, SchemeRepr(id=1, name="Wirral Package"), SchemeRepr(id=2, name="School Streets"))
 
         schemes_page = SchemesPage(app, page).open()
 
         assert schemes_page.authority() == "Liverpool City Region Combined Authority"
+        assert list(schemes_page.schemes) == [
+            {"reference": "ATE00001", "name": "Wirral Package"},
+            {"reference": "ATE00002", "name": "School Streets"},
+        ]
 
     def test_schemes_when_unauthorized(self, app: Flask, page: Page) -> None:
         unauthorized_page = SchemesPage(app, page).open_when_unauthorized()

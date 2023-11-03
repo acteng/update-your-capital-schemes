@@ -75,6 +75,7 @@ def app_fixture(api_key: str, oidc_server: LiveServer) -> Generator[Flask, Any, 
 def app_client_fixture(live_server: LiveServer, api_key: str) -> Generator[AppClient, Any, Any]:
     client = AppClient(_get_url(live_server), api_key)
     yield client
+    client.clear_schemes()
     client.clear_users()
     client.clear_authorities()
 

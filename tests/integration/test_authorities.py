@@ -7,6 +7,8 @@ from flask.testing import FlaskClient
 
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
+from schemes.schemes.domain import Scheme
+from schemes.schemes.services import SchemeRepository
 from schemes.users.domain import User
 from schemes.users.services import UserRepository
 
@@ -19,6 +21,11 @@ def authorities_fixture(app: Flask) -> AuthorityRepository:  # pylint: disable=u
 @pytest.fixture(name="users")
 def users_fixture(app: Flask) -> UserRepository:  # pylint: disable=unused-argument
     return inject.instance(UserRepository)
+
+
+@pytest.fixture(name="schemes")
+def schemes_fixture(app: Flask) -> SchemeRepository:  # pylint: disable=unused-argument
+    return inject.instance(SchemeRepository)
 
 
 class TestApiEnabled:
@@ -88,6 +95,19 @@ class TestApiEnabled:
 
         assert response.status_code == 401
         assert not users.get_all()
+
+    def test_add_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        response = client.post(
+            "/authorities/1/schemes",
+            headers={"Authorization": "API-Key boardman"},
+            json=[{"id": 1, "name": "Wirral Package"}, {"id": 2, "name": "School Streets"}],
+        )
+
+        assert response.status_code == 201
+        assert schemes.get_all() == [
+            Scheme(id=1, name="Wirral Package", authority_id=1),
+            Scheme(id=2, name="School Streets", authority_id=1),
+        ]
 
     def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
         authorities.add(Authority(id=1, name="Liverpool City Region Combined Authority"))

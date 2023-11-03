@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import cast
+from typing import Iterator, cast
 
 from bs4 import BeautifulSoup, Tag
 from flask.testing import FlaskClient
@@ -67,9 +67,30 @@ class SchemesPage:
     def authority(self) -> str:
         return (self._soup.main.h1.string if self._soup.main and self._soup.main.h1 else None) or ""
 
+    def schemes(self) -> SchemesTableComponent:
+        return SchemesTableComponent(cast(Tag, cast(Tag, self._soup.main).table))
+
 
 class ServiceHeaderComponent:
     def __init__(self, tag: Tag):
         self.home_url = cast(Tag, tag.find("a", class_="one-login-header__link"))["href"]
         self.profile_url = cast(Tag, tag.find("a", class_="one-login-header__nav__link"))["href"]
         self.sign_out_url = cast(Tag, tag.find("a", string=re.compile("Sign out")))["href"]
+
+
+class SchemesTableComponent:
+    def __init__(self, tag: Tag):
+        self._rows = tag.tbody.find_all("tr") if tag.tbody else []
+
+    def __iter__(self) -> Iterator[dict[str, str]]:
+        return iter([SchemeRowComponent(row).to_dict() for row in self._rows])
+
+
+class SchemeRowComponent:
+    def __init__(self, tag: Tag):
+        cells = tag.find_all("td")
+        self.reference = cells[0].string
+        self.name = cells[1].string
+
+    def to_dict(self) -> dict[str, str]:
+        return {"reference": self.reference, "name": self.name}

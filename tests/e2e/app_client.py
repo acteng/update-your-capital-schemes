@@ -25,12 +25,23 @@ class AppClient:
         )
         assert response.status_code == 201
 
+    def add_schemes(self, authority_id: int, *schemes: SchemeRepr) -> None:
+        json = [scheme.__dict__ for scheme in schemes]
+        response = self._session.post(
+            f"{self._url}/authorities/{authority_id}/schemes", json=json, timeout=self.DEFAULT_TIMEOUT
+        )
+        assert response.status_code == 201
+
     def clear_authorities(self) -> None:
         response = self._session.delete(f"{self._url}/authorities", timeout=self.DEFAULT_TIMEOUT)
         assert response.status_code == 204
 
     def clear_users(self) -> None:
         response = self._session.delete(f"{self._url}/users", timeout=self.DEFAULT_TIMEOUT)
+        assert response.status_code == 204
+
+    def clear_schemes(self) -> None:
+        response = self._session.delete(f"{self._url}/schemes", timeout=self.DEFAULT_TIMEOUT)
         assert response.status_code == 204
 
 
@@ -43,3 +54,9 @@ class AuthorityRepr:
 @dataclass
 class UserRepr:
     email: str
+
+
+@dataclass
+class SchemeRepr:
+    id: int
+    name: str

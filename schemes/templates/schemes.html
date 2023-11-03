@@ -1,5 +1,31 @@
 {% extends "service_base.html" %}
+{% from "govuk_frontend_jinja/components/table/macro.html" import govukTable -%}
 
 {% block content %}
     <h1 class="govuk-heading-l">{{ authority_name }}</h1>
+
+    {% set rows = [] %}
+    {% for scheme in schemes %}
+        {% do rows.append([
+            {
+                "text": scheme.reference
+            },
+            {
+                "text": scheme.name
+            }
+        ]) %}
+    {% endfor %}
+
+    {{ govukTable({
+        "head": [
+            {
+                "text": "Reference"
+            },
+            {
+                "text": "Name"
+            }
+        ],
+        "rows": rows
+    }) }}
+
 {% endblock %}

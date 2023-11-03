@@ -58,9 +58,6 @@ class SchemesPage:
         self._soup = BeautifulSoup(response.text, "html.parser")
         return self
 
-    def visible(self) -> bool:
-        return self._soup.h1.string == "Home" if self._soup.h1 else False
-
     def header(self) -> ServiceHeaderComponent:
         return ServiceHeaderComponent(cast(Tag, self._soup.header))
 

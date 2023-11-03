@@ -1,5 +1,7 @@
+from typing import Generator
+
 import pytest
-from sqlalchemy import Engine, MetaData, create_engine
+from sqlalchemy import Engine, MetaData
 
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import DatabaseAuthorityRepository
@@ -10,14 +12,12 @@ from schemes.users.services import add_tables as users_add_tables
 
 
 @pytest.fixture(name="engine")
-def engine_fixture() -> Engine:
+def engine_fixture(engine: Engine) -> Generator[Engine, None, None]:
     metadata = MetaData()
     authorities_add_tables(metadata)
     users_add_tables(metadata)
-
-    engine = create_engine("sqlite+pysqlite:///:memory:")
     metadata.create_all(engine)
-    return engine
+    yield engine
 
 
 @pytest.fixture(name="authorities")

@@ -13,7 +13,7 @@ class TestUnauthenticated:
     def test_start(self, app: Flask, page: Page) -> None:
         start_page = StartPage(app, page).open()
 
-        assert start_page.visible()
+        assert start_page.is_visible()
 
     @pytest.mark.usefixtures("oidc_server")
     def test_start_shows_login(self, app: Flask, page: Page) -> None:
@@ -21,7 +21,7 @@ class TestUnauthenticated:
 
         login_page = start_page.start_when_unauthenticated()
 
-        assert login_page.visible()
+        assert login_page.is_visible()
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")

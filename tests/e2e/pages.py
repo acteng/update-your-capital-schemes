@@ -20,7 +20,7 @@ class StartPage:
         self.open()
         return SchemesPage(self._app, self._page)
 
-    def visible(self) -> bool:
+    def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Schemes").is_visible()
 
     def start(self) -> SchemesPage:
@@ -37,7 +37,7 @@ class LoginPage:
         self._app = app
         self._page = page
 
-    def visible(self) -> bool:
+    def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Login").is_visible()
 
 
@@ -46,7 +46,7 @@ class UnauthorizedPage:
         self._app = app
         self._page = page
 
-    def visible(self) -> bool:
+    def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Unauthorised").is_visible()
 
 

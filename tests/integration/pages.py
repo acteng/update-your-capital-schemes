@@ -18,7 +18,7 @@ class StartPage:
         self._soup = BeautifulSoup(response.text, "html.parser")
         return self
 
-    def visible(self) -> bool:
+    def is_visible(self) -> bool:
         return self._soup.h1.string == "Schemes" if self._soup.h1 else False
 
     def header(self) -> HeaderComponent:
@@ -41,7 +41,7 @@ class UnauthorizedPage:
         self._soup = BeautifulSoup(self._response.text, "html.parser")
         return self
 
-    def visible(self) -> bool:
+    def is_visible(self) -> bool:
         return self._soup.h1.string == "Unauthorised" if self._soup.h1 else False
 
     def is_unauthorized(self) -> bool:

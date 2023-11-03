@@ -6,7 +6,7 @@ from tests.integration.pages import StartPage
 def test_start(client: FlaskClient) -> None:
     start_page = StartPage(client).open()
 
-    assert start_page.visible()
+    assert start_page.is_visible()
 
 
 def test_header_home_shows_start(client: FlaskClient) -> None:

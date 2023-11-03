@@ -30,7 +30,7 @@ class TestAuthenticated:
     def test_schemes_when_unauthorized(self, app: Flask, page: Page) -> None:
         unauthorized_page = SchemesPage(app, page).open_when_unauthorized()
 
-        assert unauthorized_page.visible()
+        assert unauthorized_page.is_visible()
 
     def test_header_sign_out(self, app_client: AppClient, app: Flask, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
@@ -39,7 +39,7 @@ class TestAuthenticated:
 
         start_page = schemes_page.header.sign_out()
 
-        assert start_page.visible()
+        assert start_page.is_visible()
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
@@ -47,4 +47,4 @@ class TestUnauthenticated:
     def test_schemes_when_unauthenticated(self, app: Flask, page: Page) -> None:
         login_page = SchemesPage(app, page).open_when_unauthenticated()
 
-        assert login_page.visible()
+        assert login_page.is_visible()

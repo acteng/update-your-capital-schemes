@@ -78,10 +78,14 @@ class SchemesPage:
         return heading.string if heading else None
 
     @property
-    def schemes(self) -> SchemesTableComponent:
+    def schemes(self) -> SchemesTableComponent | None:
         table = self._soup.select_one("main table")
-        assert table
-        return SchemesTableComponent(table)
+        return SchemesTableComponent(table) if table else None
+
+    @property
+    def is_no_schemes_message_visible(self) -> bool:
+        paragraph = self._soup.select_one("main p")
+        return paragraph.string == "There are no schemes for your authority to update." if paragraph else False
 
 
 class ServiceHeaderComponent:

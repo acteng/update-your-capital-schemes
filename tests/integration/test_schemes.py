@@ -75,10 +75,19 @@ def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -
 
     schemes_page = SchemesPage(client).open()
 
+    assert schemes_page.schemes
     assert list(schemes_page.schemes) == [
         {"reference": "ATE00001", "name": "Wirral Package"},
         {"reference": "ATE00002", "name": "School Streets"},
     ]
+    assert not schemes_page.is_no_schemes_message_visible
+
+
+def test_schemes_shows_message_when_no_schemes(client: FlaskClient) -> None:
+    schemes_page = SchemesPage(client).open()
+
+    assert not schemes_page.schemes
+    assert schemes_page.is_no_schemes_message_visible
 
 
 class TestApiEnabled:

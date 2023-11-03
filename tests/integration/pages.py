@@ -18,9 +18,11 @@ class StartPage:
         self._soup = BeautifulSoup(response.text, "html.parser")
         return self
 
+    @property
     def is_visible(self) -> bool:
         return self._soup.h1.string == "Schemes" if self._soup.h1 else False
 
+    @property
     def header(self) -> HeaderComponent:
         return HeaderComponent(cast(Tag, self._soup.header))
 
@@ -41,9 +43,11 @@ class UnauthorizedPage:
         self._soup = BeautifulSoup(self._response.text, "html.parser")
         return self
 
+    @property
     def is_visible(self) -> bool:
         return self._soup.h1.string == "Unauthorised" if self._soup.h1 else False
 
+    @property
     def is_unauthorized(self) -> bool:
         return self._response.status_code == 401
 
@@ -58,12 +62,15 @@ class SchemesPage:
         self._soup = BeautifulSoup(response.text, "html.parser")
         return self
 
+    @property
     def header(self) -> ServiceHeaderComponent:
         return ServiceHeaderComponent(cast(Tag, self._soup.header))
 
+    @property
     def authority(self) -> str:
         return (self._soup.main.h1.string if self._soup.main and self._soup.main.h1 else None) or ""
 
+    @property
     def schemes(self) -> SchemesTableComponent:
         return SchemesTableComponent(cast(Tag, cast(Tag, self._soup.main).table))
 

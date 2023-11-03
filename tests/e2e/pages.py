@@ -20,6 +20,7 @@ class StartPage:
         self.open()
         return SchemesPage(self._app, self._page)
 
+    @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Schemes").is_visible()
 
@@ -37,6 +38,7 @@ class LoginPage:
         self._app = app
         self._page = page
 
+    @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Login").is_visible()
 
@@ -46,6 +48,7 @@ class UnauthorizedPage:
         self._app = app
         self._page = page
 
+    @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Unauthorised").is_visible()
 
@@ -71,6 +74,7 @@ class SchemesPage:
         self.open()
         return UnauthorizedPage(self._app, self._page)
 
+    @property
     def authority(self) -> str:
         return self._authority.text_content() or ""
 

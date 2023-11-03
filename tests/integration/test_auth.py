@@ -57,7 +57,7 @@ def test_callback_when_unauthorized_redirects_to_unauthorized(users: UserReposit
 def test_unauthorized(client: FlaskClient) -> None:
     unauthorized_page = UnauthorizedPage(client).open()
 
-    assert unauthorized_page.is_visible() and unauthorized_page.is_unauthorized()
+    assert unauthorized_page.is_visible and unauthorized_page.is_unauthorized
 
 
 def test_logout_logs_out_from_oidc(client: FlaskClient) -> None:

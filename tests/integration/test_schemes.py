@@ -45,25 +45,25 @@ def auth_fixture(authorities: AuthorityRepository, users: UserRepository, client
 def test_header_home_shows_start(client: FlaskClient) -> None:
     schemes_page = SchemesPage(client).open()
 
-    assert schemes_page.header().home_url == "/"
+    assert schemes_page.header.home_url == "/"
 
 
 def test_header_profile_shows_profile(client: FlaskClient) -> None:
     schemes_page = SchemesPage(client).open()
 
-    assert schemes_page.header().profile_url == "https://example.com/profile"
+    assert schemes_page.header.profile_url == "https://example.com/profile"
 
 
 def test_header_sign_out_signs_out(client: FlaskClient) -> None:
     schemes_page = SchemesPage(client).open()
 
-    assert schemes_page.header().sign_out_url == "/auth/logout"
+    assert schemes_page.header.sign_out_url == "/auth/logout"
 
 
 def test_schemes_shows_authority(client: FlaskClient) -> None:
     schemes_page = SchemesPage(client).open()
 
-    assert schemes_page.authority() == "Liverpool City Region Combined Authority"
+    assert schemes_page.authority == "Liverpool City Region Combined Authority"
 
 
 def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -75,7 +75,7 @@ def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -
 
     schemes_page = SchemesPage(client).open()
 
-    assert list(schemes_page.schemes()) == [
+    assert list(schemes_page.schemes) == [
         {"reference": "ATE00001", "name": "Wirral Package"},
         {"reference": "ATE00002", "name": "School Streets"},
     ]

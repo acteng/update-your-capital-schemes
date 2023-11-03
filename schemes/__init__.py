@@ -9,7 +9,10 @@ from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from flask import Config, Flask, Response, render_template, url_for
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
-from sqlalchemy import Engine, create_engine
+from sqlalchemy import Engine, create_engine, event
+from sqlalchemy.dialects.sqlite.base import SQLiteDialect
+from sqlalchemy.engine.interfaces import DBAPIConnection
+from sqlalchemy.pool import ConnectionPoolEntry
 
 from schemes import auth, authorities, schemes, start, users
 from schemes.authorities.services import (
@@ -51,13 +54,24 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
 
 def _bindings(binder: Binder) -> None:
-    @inject.autoparams()
-    def engine(config: Config) -> Engine:
-        return create_engine(config["SQLALCHEMY_DATABASE_URI"])
-
-    binder.bind_to_constructor(Engine, engine)
+    binder.bind_to_constructor(Engine, _create_engine)
     binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
     binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
+
+
+@inject.autoparams()
+def _create_engine(config: Config) -> Engine:
+    engine = create_engine(config["SQLALCHEMY_DATABASE_URI"])
+
+    def enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_record: ConnectionPoolEntry) -> None:
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
+    if engine.dialect.name == SQLiteDialect.name:
+        event.listen(Engine, "connect", enforce_sqlite_foreign_keys)
+
+    return engine
 
 
 def _configure_error_pages(app: Flask) -> None:

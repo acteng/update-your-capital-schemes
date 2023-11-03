@@ -54,6 +54,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
 
 def destroy_app(_app: Flask) -> None:
+    event.remove(Engine, "connect", _enforce_sqlite_foreign_keys)
     inject.clear()
 
 
@@ -67,15 +68,16 @@ def _bindings(binder: Binder) -> None:
 def _create_engine(config: Config) -> Engine:
     engine = create_engine(config["SQLALCHEMY_DATABASE_URI"])
 
-    def enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_record: ConnectionPoolEntry) -> None:
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
-
     if engine.dialect.name == SQLiteDialect.name:
-        event.listen(Engine, "connect", enforce_sqlite_foreign_keys)
+        event.listen(Engine, "connect", _enforce_sqlite_foreign_keys)
 
     return engine
+
+
+def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_record: ConnectionPoolEntry) -> None:
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 def _configure_error_pages(app: Flask) -> None:

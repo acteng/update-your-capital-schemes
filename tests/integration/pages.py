@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import re
-from typing import Iterator, cast
+from typing import Iterator
 
 from bs4 import BeautifulSoup, Tag
 from flask.testing import FlaskClient
@@ -20,16 +19,20 @@ class StartPage:
 
     @property
     def is_visible(self) -> bool:
-        return self._soup.h1.string == "Schemes" if self._soup.h1 else False
+        heading = self._soup.select_one("main h1")
+        return heading.string == "Schemes" if heading else False
 
     @property
     def header(self) -> HeaderComponent:
-        return HeaderComponent(cast(Tag, self._soup.header))
+        header_ = self._soup.select_one("header")
+        assert header_
+        return HeaderComponent(header_)
 
 
 class HeaderComponent:
     def __init__(self, tag: Tag):
-        self.home_url = cast(Tag, tag.find("a", class_="govuk-header__link"))["href"]
+        home = tag.select_one("a.govuk-header__link")
+        self.home_url = home["href"] if home else None
 
 
 class UnauthorizedPage:
@@ -45,7 +48,8 @@ class UnauthorizedPage:
 
     @property
     def is_visible(self) -> bool:
-        return self._soup.h1.string == "Unauthorised" if self._soup.h1 else False
+        heading = self._soup.select_one("main h1")
+        return heading.string == "Unauthorised" if heading else False
 
     @property
     def is_unauthorized(self) -> bool:
@@ -64,37 +68,45 @@ class SchemesPage:
 
     @property
     def header(self) -> ServiceHeaderComponent:
-        return ServiceHeaderComponent(cast(Tag, self._soup.header))
+        header_ = self._soup.select_one("header")
+        assert header_
+        return ServiceHeaderComponent(header_)
 
     @property
-    def authority(self) -> str:
-        return (self._soup.main.h1.string if self._soup.main and self._soup.main.h1 else None) or ""
+    def authority(self) -> str | None:
+        heading = self._soup.select_one("main h1")
+        return heading.string if heading else None
 
     @property
     def schemes(self) -> SchemesTableComponent:
-        return SchemesTableComponent(cast(Tag, cast(Tag, self._soup.main).table))
+        table = self._soup.select_one("main table")
+        assert table
+        return SchemesTableComponent(table)
 
 
 class ServiceHeaderComponent:
     def __init__(self, tag: Tag):
-        self.home_url = cast(Tag, tag.find("a", class_="one-login-header__link"))["href"]
-        self.profile_url = cast(Tag, tag.find("a", class_="one-login-header__nav__link"))["href"]
-        self.sign_out_url = cast(Tag, tag.find("a", string=re.compile("Sign out")))["href"]
+        home = tag.select_one("a.one-login-header__link")
+        profile = tag.select_one("a.one-login-header__nav__link")
+        sign_out = tag.select_one("a:-soup-contains('Sign out')")
+        self.home_url = home["href"] if home else None
+        self.profile_url = profile["href"] if profile else None
+        self.sign_out_url = sign_out["href"] if sign_out else None
 
 
 class SchemesTableComponent:
     def __init__(self, tag: Tag):
-        self._rows = tag.tbody.find_all("tr") if tag.tbody else []
+        self._rows = tag.select("tbody tr")
 
-    def __iter__(self) -> Iterator[dict[str, str]]:
+    def __iter__(self) -> Iterator[dict[str, str | None]]:
         return iter([SchemeRowComponent(row).to_dict() for row in self._rows])
 
 
 class SchemeRowComponent:
     def __init__(self, tag: Tag):
-        cells = tag.find_all("td")
+        cells = tag.select("td")
         self.reference = cells[0].string
         self.name = cells[1].string
 
-    def to_dict(self) -> dict[str, str]:
+    def to_dict(self) -> dict[str, str | None]:
         return {"reference": self.reference, "name": self.name}

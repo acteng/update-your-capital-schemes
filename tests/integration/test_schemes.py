@@ -68,8 +68,8 @@ def test_schemes_shows_authority(client: FlaskClient) -> None:
 
 def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(
-        Scheme(id=1, name="Wirral Package", authority_id=1),
         Scheme(id=2, name="School Streets", authority_id=1),
+        Scheme(id=1, name="Wirral Package", authority_id=1),
         Scheme(id=3, name="Hospital Fields Road", authority_id=2),
     )
 

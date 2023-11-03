@@ -61,7 +61,7 @@ class MemorySchemeRepository(SchemeRepository):
         def by_authority(scheme: Scheme) -> TypeGuard[Scheme]:
             return scheme.authority_id == authority_id
 
-        return list(filter(by_authority, self._schemes.values()))
+        return sorted(list(filter(by_authority, self._schemes.values())), key=lambda scheme: scheme.id)
 
     def get_all(self) -> list[Scheme]:
-        return list(self._schemes.values())
+        return sorted(list(self._schemes.values()), key=lambda scheme: scheme.id)

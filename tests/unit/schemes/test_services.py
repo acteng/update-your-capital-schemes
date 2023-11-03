@@ -54,8 +54,8 @@ def test_add_schemes(schemes: DatabaseSchemeRepository) -> None:
 
 def test_get_all_schemes_by_authority(schemes: DatabaseSchemeRepository) -> None:
     schemes.add(
-        Scheme(id=1, name="Wirral Package", authority_id=1),
         Scheme(id=2, name="School Streets", authority_id=1),
+        Scheme(id=1, name="Wirral Package", authority_id=1),
         Scheme(id=3, name="Hospital Fields Road", authority_id=2),
     )
 
@@ -69,8 +69,8 @@ def test_get_all_schemes_by_authority(schemes: DatabaseSchemeRepository) -> None
 
 def test_get_all_schemes(schemes: DatabaseSchemeRepository) -> None:
     schemes.add(
-        Scheme(id=1, name="Wirral Package", authority_id=1),
         Scheme(id=2, name="School Streets", authority_id=1),
+        Scheme(id=1, name="Wirral Package", authority_id=1),
     )
 
     schemes_list = schemes.get_all()

@@ -61,7 +61,8 @@ class DatabaseSchemeRepository(SchemeRepository):
             result = connection.execute(
                 text(
                     "SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id FROM capital_scheme "
-                    "WHERE bid_submitting_authority_id=:bid_submitting_authority_id"
+                    "WHERE bid_submitting_authority_id=:bid_submitting_authority_id "
+                    "ORDER BY capital_scheme_id"
                 ),
                 {"bid_submitting_authority_id": authority_id},
             )
@@ -73,7 +74,10 @@ class DatabaseSchemeRepository(SchemeRepository):
     def get_all(self) -> list[Scheme]:
         with self._engine.connect() as connection:
             result = connection.execute(
-                text("SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id FROM capital_scheme")
+                text(
+                    "SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id FROM capital_scheme "
+                    "ORDER BY capital_scheme_id"
+                )
             )
             return [
                 Scheme(id=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)

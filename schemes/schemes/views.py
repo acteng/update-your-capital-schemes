@@ -48,7 +48,7 @@ class SchemeContext:
     name: str
 
     def __init__(self, scheme: Scheme):
-        self.reference = f"ATE{scheme.id:05}"
+        self.reference = scheme.reference
         self.name = scheme.name
 
 

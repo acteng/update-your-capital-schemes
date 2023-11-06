@@ -58,10 +58,10 @@ class MemorySchemeRepository(SchemeRepository):
         self._schemes.clear()
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
-        def by_authority(scheme: Scheme) -> TypeGuard[Scheme]:
-            return scheme.authority_id == authority_id
-
-        return sorted(list(filter(by_authority, self._schemes.values())), key=lambda scheme: scheme.id)
+        return sorted(
+            list(filter(lambda scheme: scheme.authority_id == authority_id, self._schemes.values())),
+            key=lambda scheme: scheme.id,
+        )
 
     def get_all(self) -> list[Scheme]:
         return sorted(list(self._schemes.values()), key=lambda scheme: scheme.id)

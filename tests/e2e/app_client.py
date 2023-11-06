@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 
 import requests
 
@@ -14,19 +14,19 @@ class AppClient:
         self._session.headers.update({"Authorization": f"API-Key {api_key}"})
 
     def add_authorities(self, *authorities: AuthorityRepr) -> None:
-        json = [authority.__dict__ for authority in authorities]
+        json = [asdict(authority) for authority in authorities]
         response = self._session.post(f"{self._url}/authorities", json=json, timeout=self.DEFAULT_TIMEOUT)
         assert response.status_code == 201
 
     def add_users(self, authority_id: int, *users: UserRepr) -> None:
-        json = [user.__dict__ for user in users]
+        json = [asdict(user) for user in users]
         response = self._session.post(
             f"{self._url}/authorities/{authority_id}/users", json=json, timeout=self.DEFAULT_TIMEOUT
         )
         assert response.status_code == 201
 
     def add_schemes(self, authority_id: int, *schemes: SchemeRepr) -> None:
-        json = [scheme.__dict__ for scheme in schemes]
+        json = [asdict(scheme) for scheme in schemes]
         response = self._session.post(
             f"{self._url}/authorities/{authority_id}/schemes", json=json, timeout=self.DEFAULT_TIMEOUT
         )

@@ -89,11 +89,11 @@ def _configure_jinja(app: Flask) -> None:
 
 def _configure_error_pages(app: Flask) -> None:
     @app.errorhandler(404)
-    def not_found(error: Exception) -> Response:  # pylint: disable=unused-argument
+    def not_found(_error: Exception) -> Response:
         return Response(render_template("404.html"), status=404)
 
     @app.errorhandler(500)
-    def internal_server_error(error: Exception) -> Response:  # pylint: disable=unused-argument
+    def internal_server_error(_error: Exception) -> Response:
         return Response(render_template("500.html"), status=500)
 
 

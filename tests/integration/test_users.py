@@ -48,9 +48,7 @@ class TestApiDisabled:
     def test_cannot_clear_users(self, users: UserRepository, client: FlaskClient) -> None:
         users.add(User("boardman@example.com", authority_id=1))
 
-        response = client.delete(
-            "/users", headers={"Authorization": "API-Key boardman"}, json=[{"email": "boardman@example.com"}]
-        )
+        response = client.delete("/users", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 401
         assert users.get_all() == [User("boardman@example.com", authority_id=1)]

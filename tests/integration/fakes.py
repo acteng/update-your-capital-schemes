@@ -1,5 +1,3 @@
-from typing import TypeGuard
-
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
 from schemes.schemes.domain import Scheme
@@ -37,10 +35,7 @@ class MemoryUserRepository(UserRepository):
         self._users.clear()
 
     def get_by_email(self, email: str) -> User | None:
-        def by_email(user: User) -> TypeGuard[User]:
-            return user.email == email
-
-        return next(filter(by_email, self._users), None)
+        return next((user for user in self._users if user.email == email), None)
 
     def get_all(self) -> list[User]:
         return self._users
@@ -59,7 +54,7 @@ class MemorySchemeRepository(SchemeRepository):
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
         return sorted(
-            list(filter(lambda scheme: scheme.authority_id == authority_id, self._schemes.values())),
+            [scheme for scheme in self._schemes.values() if scheme.authority_id == authority_id],
             key=lambda scheme: scheme.id,
         )
 

@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass
-from typing import Any, TypeGuard
+from typing import Any
 
 from authlib.jose.rfc7517.base_key import Key
 from authlib.oauth2.rfc6749.authorization_server import AuthorizationServer
@@ -50,10 +50,9 @@ class AuthorizationCodeRepository:
         return self._codes.get(self._key(client_id, code))
 
     def get_by_nonce(self, client_id: str, nonce: str) -> StubAuthorizationCode | None:
-        def by_client_id_and_none(code: StubAuthorizationCode) -> TypeGuard[StubAuthorizationCode]:
-            return code.client_id == client_id and code.nonce == nonce
-
-        return next(filter(by_client_id_and_none, self._codes.values()), None)
+        return next(
+            (code for code in self._codes.values() if code.client_id == client_id and code.nonce == nonce), None
+        )
 
     def delete(self, code: StubAuthorizationCode) -> None:
         key = self._key(code.client_id, code.code)

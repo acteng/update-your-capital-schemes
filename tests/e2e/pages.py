@@ -75,8 +75,8 @@ class SchemesPage:
         return UnauthorizedPage(self._app, self._page)
 
     @property
-    def authority(self) -> str:
-        return self._authority.text_content() or ""
+    def authority(self) -> str | None:
+        return self._authority.text_content()
 
 
 class ServiceHeaderComponent:

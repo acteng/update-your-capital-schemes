@@ -102,8 +102,11 @@ class SchemesTableComponent:
     def __init__(self, tag: Tag):
         self._rows = tag.select("tbody tr")
 
-    def __iter__(self) -> Iterator[dict[str, str | None]]:
-        return iter([SchemeRowComponent(row).to_dict() for row in self._rows])
+    def __iter__(self) -> Iterator[SchemeRowComponent]:
+        return iter([SchemeRowComponent(row) for row in self._rows])
+
+    def to_dicts(self) -> list[dict[str, str | None]]:
+        return [scheme.to_dict() for scheme in self]
 
 
 class SchemeRowComponent:

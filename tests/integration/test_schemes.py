@@ -76,7 +76,7 @@ def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -
     schemes_page = SchemesPage(client).open()
 
     assert schemes_page.schemes
-    assert list(schemes_page.schemes) == [
+    assert schemes_page.schemes.to_dicts() == [
         {"reference": "ATE00001", "name": "Wirral Package"},
         {"reference": "ATE00002", "name": "School Streets"},
     ]

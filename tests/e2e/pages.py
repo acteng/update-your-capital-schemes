@@ -93,18 +93,24 @@ class SchemesTableComponent:
     def __init__(self, component: Locator):
         self._rows = component.get_by_role("row")
 
-    def __iter__(self) -> Iterator[dict[str, str]]:
+    def __iter__(self) -> Iterator[dict[str, str | None]]:
         return iter([SchemeRowComponent(row).to_dict() for row in self._rows.all()[1:]])
 
 
 class SchemeRowComponent:
     def __init__(self, component: Locator):
-        cells = component.get_by_role("cell")
-        self._reference = cells.nth(0)
-        self._name = cells.nth(1)
+        self._cells = component.get_by_role("cell")
 
-    def to_dict(self) -> dict[str, str]:
-        return {"reference": self._reference.text_content() or "", "name": self._name.text_content() or ""}
+    @property
+    def reference(self) -> str | None:
+        return self._cells.nth(0).text_content()
+
+    @property
+    def name(self) -> str | None:
+        return self._cells.nth(1).text_content()
+
+    def to_dict(self) -> dict[str, str | None]:
+        return {"reference": self.reference, "name": self.name}
 
 
 def _get_base_url(app: Flask) -> str:

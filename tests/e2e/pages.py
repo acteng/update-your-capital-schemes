@@ -60,7 +60,7 @@ class SchemesPage:
         self.header = ServiceHeaderComponent(app, page.get_by_role("banner"))
         self._main = page.get_by_role("main")
         self._authority = self._main.get_by_role("heading")
-        self.schemes = SchemesTableComponent(self._main.get_by_role("table"))
+        self.schemes = SchemesTableComponent(app, page, self._main.get_by_role("table"))
 
     def open(self) -> SchemesPage:
         self._page.goto(f"{_get_base_url(self._app)}/schemes")
@@ -90,30 +90,60 @@ class ServiceHeaderComponent:
 
 
 class SchemesTableComponent:
-    def __init__(self, component: Locator):
+    def __init__(self, app: Flask, page: Page, component: Locator):
+        self._app = app
+        self._page = page
         self._rows = component.get_by_role("row")
 
     def __iter__(self) -> Iterator[SchemeRowComponent]:
-        return iter([SchemeRowComponent(row) for row in self._rows.all()[1:]])
+        return iter([SchemeRowComponent(self._app, self._page, row) for row in self._rows.all()[1:]])
+
+    def __getitem__(self, reference: str) -> SchemeRowComponent:
+        return next((scheme for scheme in self if scheme.reference == reference))
 
     def to_dicts(self) -> list[dict[str, str | None]]:
         return [scheme.to_dict() for scheme in self]
 
 
 class SchemeRowComponent:
-    def __init__(self, component: Locator):
+    def __init__(self, app: Flask, page: Page, component: Locator):
+        self._app = app
+        self._page = page
         self._cells = component.get_by_role("cell")
+        self._reference = self._cells.nth(0)
 
     @property
     def reference(self) -> str | None:
-        return self._cells.nth(0).text_content()
+        return self._reference.text_content()
 
     @property
     def name(self) -> str | None:
         return self._cells.nth(1).text_content()
 
+    def open(self) -> SchemePage:
+        self._reference.get_by_role("link").click()
+        return SchemePage(self._app, self._page)
+
     def to_dict(self) -> dict[str, str | None]:
         return {"reference": self.reference, "name": self.name}
+
+
+class SchemePage:
+    def __init__(self, app: Flask, page: Page):
+        self._app = app
+        self._page = page
+        self._main = page.get_by_role("main")
+        self._scheme = self._main.get_by_role("heading")
+
+    def open(self, id_: int) -> SchemePage:
+        # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
+        self._page.goto(f"{_get_base_url(self._app)}/schemes")
+        self._page.goto(f"{_get_base_url(self._app)}/schemes/{id_}")
+        return self
+
+    @property
+    def name(self) -> str | None:
+        return self._scheme.text_content()
 
 
 def _get_base_url(app: Flask) -> str:

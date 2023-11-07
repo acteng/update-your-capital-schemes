@@ -105,6 +105,9 @@ class SchemesTableComponent:
     def __iter__(self) -> Iterator[SchemeRowComponent]:
         return iter([SchemeRowComponent(row) for row in self._rows])
 
+    def __getitem__(self, reference: str) -> SchemeRowComponent:
+        return next((scheme for scheme in self if scheme.reference == reference))
+
     def to_dicts(self) -> list[dict[str, str | None]]:
         return [scheme.to_dict() for scheme in self]
 
@@ -112,8 +115,27 @@ class SchemesTableComponent:
 class SchemeRowComponent:
     def __init__(self, tag: Tag):
         cells = tag.select("td")
-        self.reference = cells[0].string
+        reference = cells[0]
+        self.reference = reference.string
+        reference_link = reference.select_one("a")
+        self.reference_url = reference_link.get("href") if reference_link else None
         self.name = cells[1].string
 
     def to_dict(self) -> dict[str, str | None]:
         return {"reference": self.reference, "name": self.name}
+
+
+class SchemePage:
+    def __init__(self, client: FlaskClient):
+        self._client = client
+        self._soup = BeautifulSoup()
+
+    def open(self, id_: int) -> SchemePage:
+        response = self._client.get(f"/schemes/{id_}")
+        self._soup = BeautifulSoup(response.text, "html.parser")
+        return self
+
+    @property
+    def name(self) -> str | None:
+        heading = self._soup.select_one("main h1")
+        return heading.string if heading else None

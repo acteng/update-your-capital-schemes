@@ -52,6 +52,18 @@ def test_add_schemes(schemes: DatabaseSchemeRepository) -> None:
     ]
 
 
+def test_get_scheme(schemes: DatabaseSchemeRepository) -> None:
+    schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+
+    assert schemes.get(1) == Scheme(id=1, name="Wirral Package", authority_id=1)
+
+
+def test_get_scheme_that_does_not_exist(schemes: DatabaseSchemeRepository) -> None:
+    schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+
+    assert schemes.get(2) is None
+
+
 def test_get_all_schemes_by_authority(schemes: DatabaseSchemeRepository) -> None:
     schemes.add(
         Scheme(id=2, name="School Streets", authority_id=1),

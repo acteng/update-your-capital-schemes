@@ -9,7 +9,10 @@
         {% for scheme in schemes %}
             {% do rows.append([
                 {
-                    "text": scheme.reference
+                    "html": '<a class="govuk-link" href="{}">{}</a>'.format(
+                        url_for("schemes.get", scheme_id=scheme.id),
+                        scheme.reference
+                    )
                 },
                 {
                     "text": scheme.name

@@ -83,6 +83,15 @@ def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -
     assert not schemes_page.is_no_schemes_message_visible
 
 
+def test_scheme_shows_scheme(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+
+    schemes_page = SchemesPage(client).open()
+
+    assert schemes_page.schemes
+    assert schemes_page.schemes["ATE00001"].reference_url == "/schemes/1"
+
+
 def test_schemes_shows_message_when_no_schemes(client: FlaskClient) -> None:
     schemes_page = SchemesPage(client).open()
 

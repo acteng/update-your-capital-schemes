@@ -11,6 +11,9 @@ class SchemeRepository:  # pylint:disable=duplicate-code
     def clear(self) -> None:
         raise NotImplementedError()
 
+    def get(self, id_: int) -> Scheme | None:
+        raise NotImplementedError()
+
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
         raise NotImplementedError()
 
@@ -55,6 +58,22 @@ class DatabaseSchemeRepository(SchemeRepository):
     def clear(self) -> None:
         with self._engine.begin() as connection:
             connection.execute(text("DELETE FROM capital_scheme"))
+
+    def get(self, id_: int) -> Scheme | None:
+        with self._engine.connect() as connection:
+            result = connection.execute(
+                text(
+                    "SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id FROM capital_scheme "
+                    "WHERE capital_scheme_id=:capital_scheme_id"
+                ),
+                {"capital_scheme_id": id_},
+            )
+            row = result.one_or_none()
+            return (
+                Scheme(id=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
+                if row
+                else None
+            )
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
         with self._engine.connect() as connection:

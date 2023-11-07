@@ -32,6 +32,15 @@ class TestAuthenticated:
 
         assert unauthorized_page.is_visible
 
+    def test_scheme_shows_scheme(self, app_client: AppClient, app: Flask, page: Page) -> None:
+        app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
+        app_client.add_users(1, UserRepr(email="boardman@example.com"))
+        app_client.add_schemes(1, SchemeRepr(id=1, name="Wirral Package"))
+
+        scheme_page = SchemesPage(app, page).open().schemes["ATE00001"].open()
+
+        assert scheme_page.name == "ATE00001 - Wirral Package"
+
     def test_header_sign_out(self, app_client: AppClient, app: Flask, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
         app_client.add_users(1, UserRepr(email="boardman@example.com"))

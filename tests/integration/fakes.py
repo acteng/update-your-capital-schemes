@@ -52,6 +52,9 @@ class MemorySchemeRepository(SchemeRepository):
     def clear(self) -> None:
         self._schemes.clear()
 
+    def get(self, id_: int) -> Scheme | None:
+        return self._schemes[id_]
+
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
         return sorted(
             [scheme for scheme in self._schemes.values() if scheme.authority_id == authority_id],

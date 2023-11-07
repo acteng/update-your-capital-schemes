@@ -22,7 +22,7 @@ class TestAuthenticated:
         schemes_page = SchemesPage(app, page).open()
 
         assert schemes_page.authority == "Liverpool City Region Combined Authority"
-        assert list(schemes_page.schemes) == [
+        assert schemes_page.schemes.to_dicts() == [
             {"reference": "ATE00001", "name": "Wirral Package"},
             {"reference": "ATE00002", "name": "School Streets"},
         ]

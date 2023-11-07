@@ -93,8 +93,11 @@ class SchemesTableComponent:
     def __init__(self, component: Locator):
         self._rows = component.get_by_role("row")
 
-    def __iter__(self) -> Iterator[dict[str, str | None]]:
-        return iter([SchemeRowComponent(row).to_dict() for row in self._rows.all()[1:]])
+    def __iter__(self) -> Iterator[SchemeRowComponent]:
+        return iter([SchemeRowComponent(row) for row in self._rows.all()[1:]])
+
+    def to_dicts(self) -> list[dict[str, str | None]]:
+        return [scheme.to_dict() for scheme in self]
 
 
 class SchemeRowComponent:

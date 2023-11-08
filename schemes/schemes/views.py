@@ -61,7 +61,18 @@ def get(schemes: SchemeRepository, scheme_id: int) -> str:
     scheme = schemes.get(scheme_id)
     assert scheme
 
-    return render_template("scheme.html", reference=scheme.reference, name=scheme.name)
+    context = SchemeContext(scheme)
+    return render_template("scheme.html", **asdict(context))
+
+
+@dataclass
+class SchemeContext:
+    name: str
+    reference: str
+
+    def __init__(self, scheme: Scheme):
+        self.name = scheme.name
+        self.reference = scheme.reference
 
 
 @bp.delete("")

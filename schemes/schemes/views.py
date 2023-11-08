@@ -28,7 +28,6 @@ def index(users: UserRepository, authorities: AuthorityRepository, schemes: Sche
     authority_schemes = schemes.get_by_authority(authority.id)
 
     context = SchemesContext(authority, authority_schemes)
-
     return render_template("schemes.html", **asdict(context))
 
 

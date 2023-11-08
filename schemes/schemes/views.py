@@ -35,15 +35,15 @@ def index(users: UserRepository, authorities: AuthorityRepository, schemes: Sche
 @dataclass
 class SchemesContext:
     authority_name: str
-    schemes: list[SchemeContext]
+    schemes: list[SchemeRowContext]
 
     def __init__(self, authority: Authority, schemes: list[Scheme]):
         self.authority_name = authority.name
-        self.schemes = [SchemeContext(scheme) for scheme in schemes]
+        self.schemes = [SchemeRowContext(scheme) for scheme in schemes]
 
 
 @dataclass
-class SchemeContext:
+class SchemeRowContext:
     id: int
     reference: str
     name: str

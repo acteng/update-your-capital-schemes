@@ -139,12 +139,10 @@ class TestApiEnabled:
 
 
 class TestApiDisabled:
-    def test_cannot_add_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
-        response = client.post(
-            "/authorities",
-            headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "name": "Liverpool City Region Combined Authority"}],
-        )
+    def test_cannot_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
+        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
+
+        response = client.delete("/authorities", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 401
-        assert not authorities.get_all()
+        assert [authority.id for authority in authorities.get_all()] == [1]

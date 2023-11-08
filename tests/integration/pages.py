@@ -136,6 +136,6 @@ class SchemePage:
         return self
 
     @property
-    def name(self) -> str | None:
+    def reference_and_name(self) -> str | None:
         heading = self._soup.select_one("main h1")
         return heading.string if heading else None

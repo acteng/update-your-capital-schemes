@@ -39,7 +39,7 @@ def get(schemes: SchemeRepository, scheme_id: int) -> str:
     scheme = schemes.get(scheme_id)
     assert scheme
 
-    return render_template("scheme.html", scheme_name=f"{scheme.reference} - {scheme.name}")
+    return render_template("scheme.html", reference=scheme.reference, name=scheme.name)
 
 
 @dataclass

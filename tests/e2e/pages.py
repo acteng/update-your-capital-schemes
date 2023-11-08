@@ -133,7 +133,7 @@ class SchemePage:
         self._app = app
         self._page = page
         self._main = page.get_by_role("main")
-        self._scheme = self._main.get_by_role("heading")
+        self._reference_and_name = self._main.get_by_role("heading")
 
     def open(self, id_: int) -> SchemePage:
         # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
@@ -142,8 +142,8 @@ class SchemePage:
         return self
 
     @property
-    def name(self) -> str | None:
-        return self._scheme.text_content()
+    def reference_and_name(self) -> str | None:
+        return self._reference_and_name.text_content()
 
 
 def _get_base_url(app: Flask) -> str:

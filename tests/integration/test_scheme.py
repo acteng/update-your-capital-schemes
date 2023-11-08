@@ -27,7 +27,7 @@ def schemes_fixture(app: Flask) -> SchemeRepository:  # pylint: disable=unused-a
     return inject.instance(SchemeRepository)
 
 
-def test_scheme_shows_name(
+def test_scheme_shows_reference_and_name(
     authorities: AuthorityRepository, users: UserRepository, schemes: SchemeRepository, client: FlaskClient
 ) -> None:
     authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
@@ -38,4 +38,4 @@ def test_scheme_shows_name(
 
     scheme_page = SchemePage(client).open(1)
 
-    assert scheme_page.name == "ATE00001 - Wirral Package"
+    assert scheme_page.reference_and_name == "ATE00001 - Wirral Package"

@@ -39,7 +39,7 @@ class TestAuthenticated:
 
         scheme_page = SchemesPage(app, page).open().schemes["ATE00001"].open()
 
-        assert scheme_page.name == "ATE00001 - Wirral Package"
+        assert scheme_page.reference_and_name == "ATE00001 - Wirral Package"
 
     def test_header_sign_out(self, app_client: AppClient, app: Flask, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))

@@ -17,4 +17,4 @@ def test_scheme(app_client: AppClient, oidc_client: OidcClient, app: Flask, page
 
     scheme_page = SchemePage(app, page).open(1)
 
-    assert scheme_page.name == "ATE00001 - Wirral Package"
+    assert scheme_page.reference_and_name == "ATE00001 - Wirral Package"

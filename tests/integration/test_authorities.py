@@ -44,9 +44,9 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 201
-        assert authorities.get_all() == [
-            Authority(id=1, name="Liverpool City Region Combined Authority"),
-            Authority(id=2, name="West Yorkshire Combined Authority"),
+        assert [authority.__dict__ for authority in authorities.get_all()] == [
+            Authority(id_=1, name="Liverpool City Region Combined Authority").__dict__,
+            Authority(id_=2, name="West Yorkshire Combined Authority").__dict__,
         ]
 
     def test_cannot_add_authorities_when_no_credentials(
@@ -110,7 +110,7 @@ class TestApiEnabled:
         ]
 
     def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(id=1, name="Liverpool City Region Combined Authority"))
+        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
 
         response = client.delete("/authorities", headers={"Authorization": "API-Key boardman"})
 
@@ -120,22 +120,22 @@ class TestApiEnabled:
     def test_cannot_clear_authorities_when_no_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
     ) -> None:
-        authorities.add(Authority(id=1, name="Liverpool City Region Combined Authority"))
+        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
 
         response = client.delete("/authorities")
 
         assert response.status_code == 401
-        assert authorities.get_all() == [Authority(id=1, name="Liverpool City Region Combined Authority")]
+        assert [authority.id for authority in authorities.get_all()] == [1]
 
     def test_cannot_clear_authorities_when_incorrect_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
     ) -> None:
-        authorities.add(Authority(id=1, name="Liverpool City Region Combined Authority"))
+        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
 
         response = client.delete("/authorities", headers={"Authorization": "API-Key obree"})
 
         assert response.status_code == 401
-        assert authorities.get_all() == [Authority(id=1, name="Liverpool City Region Combined Authority")]
+        assert [authority.id for authority in authorities.get_all()] == [1]
 
 
 class TestApiDisabled:

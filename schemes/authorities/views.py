@@ -55,4 +55,4 @@ class AuthorityRepr:
     name: str
 
     def to_domain(self) -> Authority:
-        return Authority(id=self.id, name=self.name)
+        return Authority(id_=self.id, name=self.name)

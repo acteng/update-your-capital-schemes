@@ -34,7 +34,7 @@ def users_fixture(engine: Engine) -> DatabaseUserRepository:
 
 @pytest.fixture(name="authority", autouse=True)
 def authority_fixture(authorities: DatabaseAuthorityRepository) -> None:
-    authorities.add(Authority(id=1, name="Liverpool City Region Combined Authority"))
+    authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
 
 
 def test_add_users(users: DatabaseUserRepository) -> None:

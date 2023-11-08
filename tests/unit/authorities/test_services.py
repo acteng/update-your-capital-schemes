@@ -24,27 +24,27 @@ def authorities_fixture(engine: Engine) -> DatabaseAuthorityRepository:
 
 def test_add_authorities(authorities: DatabaseAuthorityRepository) -> None:
     authorities.add(
-        Authority(id=1, name="Liverpool City Region Combined Authority"),
-        Authority(id=2, name="West Yorkshire Combined Authority"),
+        Authority(id_=1, name="Liverpool City Region Combined Authority"),
+        Authority(id_=2, name="West Yorkshire Combined Authority"),
     )
 
-    assert authorities.get_all() == [
-        Authority(id=1, name="Liverpool City Region Combined Authority"),
-        Authority(id=2, name="West Yorkshire Combined Authority"),
+    assert [authority.__dict__ for authority in authorities.get_all()] == [
+        Authority(id_=1, name="Liverpool City Region Combined Authority").__dict__,
+        Authority(id_=2, name="West Yorkshire Combined Authority").__dict__,
     ]
 
 
 def test_get_authority(authorities: DatabaseAuthorityRepository) -> None:
     authorities.add(
-        Authority(id=1, name="Liverpool City Region Combined Authority"),
+        Authority(id_=1, name="Liverpool City Region Combined Authority"),
     )
 
-    assert authorities.get(1) == Authority(id=1, name="Liverpool City Region Combined Authority")
+    assert authorities.get(1).__dict__ == Authority(id_=1, name="Liverpool City Region Combined Authority").__dict__
 
 
 def test_get_authority_that_does_not_exist(authorities: DatabaseAuthorityRepository) -> None:
     authorities.add(
-        Authority(id=1, name="Liverpool City Region Combined Authority"),
+        Authority(id_=1, name="Liverpool City Region Combined Authority"),
     )
 
     assert authorities.get(2) is None
@@ -52,22 +52,22 @@ def test_get_authority_that_does_not_exist(authorities: DatabaseAuthorityReposit
 
 def test_get_all_authorities(authorities: DatabaseAuthorityRepository) -> None:
     authorities.add(
-        Authority(id=1, name="Liverpool City Region Combined Authority"),
-        Authority(id=2, name="West Yorkshire Combined Authority"),
+        Authority(id_=1, name="Liverpool City Region Combined Authority"),
+        Authority(id_=2, name="West Yorkshire Combined Authority"),
     )
 
     authorities_list = authorities.get_all()
 
-    assert authorities_list == [
-        Authority(id=1, name="Liverpool City Region Combined Authority"),
-        Authority(id=2, name="West Yorkshire Combined Authority"),
+    assert [authority.__dict__ for authority in authorities_list] == [
+        Authority(id_=1, name="Liverpool City Region Combined Authority").__dict__,
+        Authority(id_=2, name="West Yorkshire Combined Authority").__dict__,
     ]
 
 
 def test_clear_all_authorities(authorities: DatabaseAuthorityRepository) -> None:
     authorities.add(
-        Authority(id=1, name="Liverpool City Region Combined Authority"),
-        Authority(id=2, name="West Yorkshire Combined Authority"),
+        Authority(id_=1, name="Liverpool City Region Combined Authority"),
+        Authority(id_=2, name="West Yorkshire Combined Authority"),
     )
 
     authorities.clear()

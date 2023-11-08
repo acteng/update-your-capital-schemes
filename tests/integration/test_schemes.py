@@ -36,7 +36,7 @@ def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
 
 @pytest.fixture(name="auth", autouse=True)
 def auth_fixture(authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
-    authorities.add(Authority(id=1, name="Liverpool City Region Combined Authority"))
+    authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
     users.add(User(email="boardman@example.com", authority_id=1))
     with client.session_transaction() as session:
         session["user"] = {"email": "boardman@example.com"}

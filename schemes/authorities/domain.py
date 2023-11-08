@@ -1,7 +1,4 @@
-from dataclasses import dataclass
-
-
-@dataclass
 class Authority:
-    id: int
-    name: str
+    def __init__(self, id_: int, name: str):
+        self.id = id_
+        self.name = name

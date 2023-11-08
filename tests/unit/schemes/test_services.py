@@ -35,8 +35,8 @@ def schemes_fixture(engine: Engine) -> DatabaseSchemeRepository:
 @pytest.fixture(name="authority", autouse=True)
 def authority_fixture(authorities: DatabaseAuthorityRepository) -> None:
     authorities.add(
-        Authority(id=1, name="Liverpool City Region Combined Authority"),
-        Authority(id=2, name="West Yorkshire Combined Authority"),
+        Authority(id_=1, name="Liverpool City Region Combined Authority"),
+        Authority(id_=2, name="West Yorkshire Combined Authority"),
     )
 
 

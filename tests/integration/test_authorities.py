@@ -104,9 +104,9 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 201
-        assert schemes.get_all() == [
-            Scheme(id=1, name="Wirral Package", authority_id=1),
-            Scheme(id=2, name="School Streets", authority_id=1),
+        assert [scheme.__dict__ for scheme in schemes.get_all()] == [
+            Scheme(id_=1, name="Wirral Package", authority_id=1).__dict__,
+            Scheme(id_=2, name="School Streets", authority_id=1).__dict__,
         ]
 
     def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:

@@ -42,61 +42,61 @@ def authority_fixture(authorities: DatabaseAuthorityRepository) -> None:
 
 def test_add_schemes(schemes: DatabaseSchemeRepository) -> None:
     schemes.add(
-        Scheme(id=1, name="Wirral Package", authority_id=1),
-        Scheme(id=2, name="School Streets", authority_id=1),
+        Scheme(id_=1, name="Wirral Package", authority_id=1),
+        Scheme(id_=2, name="School Streets", authority_id=1),
     )
 
-    assert schemes.get_all() == [
-        Scheme(id=1, name="Wirral Package", authority_id=1),
-        Scheme(id=2, name="School Streets", authority_id=1),
+    assert [scheme.__dict__ for scheme in schemes.get_all()] == [
+        Scheme(id_=1, name="Wirral Package", authority_id=1).__dict__,
+        Scheme(id_=2, name="School Streets", authority_id=1).__dict__,
     ]
 
 
 def test_get_scheme(schemes: DatabaseSchemeRepository) -> None:
-    schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    assert schemes.get(1) == Scheme(id=1, name="Wirral Package", authority_id=1)
+    assert schemes.get(1).__dict__ == Scheme(id_=1, name="Wirral Package", authority_id=1).__dict__
 
 
 def test_get_scheme_that_does_not_exist(schemes: DatabaseSchemeRepository) -> None:
-    schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
     assert schemes.get(2) is None
 
 
 def test_get_all_schemes_by_authority(schemes: DatabaseSchemeRepository) -> None:
     schemes.add(
-        Scheme(id=2, name="School Streets", authority_id=1),
-        Scheme(id=1, name="Wirral Package", authority_id=1),
-        Scheme(id=3, name="Hospital Fields Road", authority_id=2),
+        Scheme(id_=2, name="School Streets", authority_id=1),
+        Scheme(id_=1, name="Wirral Package", authority_id=1),
+        Scheme(id_=3, name="Hospital Fields Road", authority_id=2),
     )
 
     schemes_list = schemes.get_by_authority(1)
 
-    assert schemes_list == [
-        Scheme(id=1, name="Wirral Package", authority_id=1),
-        Scheme(id=2, name="School Streets", authority_id=1),
+    assert [scheme.__dict__ for scheme in schemes_list] == [
+        Scheme(id_=1, name="Wirral Package", authority_id=1).__dict__,
+        Scheme(id_=2, name="School Streets", authority_id=1).__dict__,
     ]
 
 
 def test_get_all_schemes(schemes: DatabaseSchemeRepository) -> None:
     schemes.add(
-        Scheme(id=2, name="School Streets", authority_id=1),
-        Scheme(id=1, name="Wirral Package", authority_id=1),
+        Scheme(id_=2, name="School Streets", authority_id=1),
+        Scheme(id_=1, name="Wirral Package", authority_id=1),
     )
 
     schemes_list = schemes.get_all()
 
-    assert schemes_list == [
-        Scheme(id=1, name="Wirral Package", authority_id=1),
-        Scheme(id=2, name="School Streets", authority_id=1),
+    assert [scheme.__dict__ for scheme in schemes_list] == [
+        Scheme(id_=1, name="Wirral Package", authority_id=1).__dict__,
+        Scheme(id_=2, name="School Streets", authority_id=1).__dict__,
     ]
 
 
 def test_clear_all_schemes(schemes: DatabaseSchemeRepository) -> None:
     schemes.add(
-        Scheme(id=1, name="Wirral Package", authority_id=1),
-        Scheme(id=2, name="School Streets", authority_id=1),
+        Scheme(id_=1, name="Wirral Package", authority_id=1),
+        Scheme(id_=2, name="School Streets", authority_id=1),
     )
 
     schemes.clear()

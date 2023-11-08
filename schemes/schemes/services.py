@@ -70,7 +70,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             )
             row = result.one_or_none()
             return (
-                Scheme(id=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
+                Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
                 if row
                 else None
             )
@@ -86,7 +86,7 @@ class DatabaseSchemeRepository(SchemeRepository):
                 {"bid_submitting_authority_id": authority_id},
             )
             return [
-                Scheme(id=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
+                Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
                 for row in result
             ]
 
@@ -99,6 +99,6 @@ class DatabaseSchemeRepository(SchemeRepository):
                 )
             )
             return [
-                Scheme(id=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
+                Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
                 for row in result
             ]

@@ -78,4 +78,4 @@ class SchemeRepr:
     name: str
 
     def to_domain(self, authority_id: int) -> Scheme:
-        return Scheme(id=self.id, name=self.name, authority_id=authority_id)
+        return Scheme(id_=self.id, name=self.name, authority_id=authority_id)

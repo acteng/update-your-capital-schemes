@@ -1,11 +1,8 @@
-from dataclasses import dataclass
-
-
-@dataclass
 class Scheme:
-    id: int
-    name: str
-    authority_id: int
+    def __init__(self, id_: int, name: str, authority_id: int):
+        self.id = id_
+        self.name = name
+        self.authority_id = authority_id
 
     @property
     def reference(self) -> str:

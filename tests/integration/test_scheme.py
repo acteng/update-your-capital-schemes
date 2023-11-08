@@ -32,7 +32,7 @@ def test_scheme_shows_name(
 ) -> None:
     authorities.add(Authority(id=1, name="Liverpool City Region Combined Authority"))
     users.add(User(email="boardman@example.com", authority_id=1))
-    schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
     with client.session_transaction() as session:
         session["user"] = {"email": "boardman@example.com"}
 

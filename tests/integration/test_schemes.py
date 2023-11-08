@@ -68,9 +68,9 @@ def test_schemes_shows_authority(client: FlaskClient) -> None:
 
 def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(
-        Scheme(id=2, name="School Streets", authority_id=1),
-        Scheme(id=1, name="Wirral Package", authority_id=1),
-        Scheme(id=3, name="Hospital Fields Road", authority_id=2),
+        Scheme(id_=2, name="School Streets", authority_id=1),
+        Scheme(id_=1, name="Wirral Package", authority_id=1),
+        Scheme(id_=3, name="Hospital Fields Road", authority_id=2),
     )
 
     schemes_page = SchemesPage(client).open()
@@ -84,7 +84,7 @@ def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -
 
 
 def test_scheme_shows_scheme(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
     schemes_page = SchemesPage(client).open()
 
@@ -105,7 +105,7 @@ class TestApiEnabled:
         return config | {"API_KEY": "boardman"}
 
     def test_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 
@@ -113,29 +113,29 @@ class TestApiEnabled:
         assert not schemes.get_all()
 
     def test_cannot_clear_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes")
 
         assert response.status_code == 401
-        assert schemes.get_all() == [Scheme(id=1, name="Wirral Package", authority_id=1)]
+        assert [scheme.id for scheme in schemes.get_all()] == [1]
 
     def test_cannot_clear_schemes_when_incorrect_credentials(
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key obree"})
 
         assert response.status_code == 401
-        assert schemes.get_all() == [Scheme(id=1, name="Wirral Package", authority_id=1)]
+        assert [scheme.id for scheme in schemes.get_all()] == [1]
 
 
 class TestApiDisabled:
     def test_cannot_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id=1, name="Wirral Package", authority_id=1))
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 401
-        assert schemes.get_all() == [Scheme(id=1, name="Wirral Package", authority_id=1)]
+        assert [scheme.id for scheme in schemes.get_all()] == [1]

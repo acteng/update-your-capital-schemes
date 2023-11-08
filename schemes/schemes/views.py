@@ -32,16 +32,6 @@ def index(users: UserRepository, authorities: AuthorityRepository, schemes: Sche
     return render_template("schemes.html", **asdict(context))
 
 
-@bp.get("<int:scheme_id>")
-@bearer_auth
-@inject.autoparams("schemes")
-def get(schemes: SchemeRepository, scheme_id: int) -> str:
-    scheme = schemes.get(scheme_id)
-    assert scheme
-
-    return render_template("scheme.html", reference=scheme.reference, name=scheme.name)
-
-
 @dataclass
 class SchemesContext:
     authority_name: str
@@ -62,6 +52,16 @@ class SchemeContext:
         self.id = scheme.id
         self.reference = scheme.reference
         self.name = scheme.name
+
+
+@bp.get("<int:scheme_id>")
+@bearer_auth
+@inject.autoparams("schemes")
+def get(schemes: SchemeRepository, scheme_id: int) -> str:
+    scheme = schemes.get(scheme_id)
+    assert scheme
+
+    return render_template("scheme.html", reference=scheme.reference, name=scheme.name)
 
 
 @bp.delete("")

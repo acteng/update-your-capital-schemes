@@ -77,9 +77,9 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 201
-        assert users.get_all() == [
-            User("boardman@example.com", authority_id=1),
-            User("obree@example.com", authority_id=1),
+        assert [user.__dict__ for user in users.get_all()] == [
+            User("boardman@example.com", authority_id=1).__dict__,
+            User("obree@example.com", authority_id=1).__dict__,
         ]
 
     def test_cannot_add_users_when_no_credentials(self, users: UserRepository, client: FlaskClient) -> None:

@@ -40,16 +40,16 @@ def authority_fixture(authorities: DatabaseAuthorityRepository) -> None:
 def test_add_users(users: DatabaseUserRepository) -> None:
     users.add(User(email="boardman@example.com", authority_id=1), User(email="obree@example.com", authority_id=1))
 
-    assert users.get_all() == [
-        User(email="boardman@example.com", authority_id=1),
-        User(email="obree@example.com", authority_id=1),
+    assert [user.__dict__ for user in users.get_all()] == [
+        User(email="boardman@example.com", authority_id=1).__dict__,
+        User(email="obree@example.com", authority_id=1).__dict__,
     ]
 
 
 def test_get_user_by_email(users: DatabaseUserRepository) -> None:
     users.add(User(email="boardman@example.com", authority_id=1))
 
-    assert users.get_by_email("boardman@example.com") == User("boardman@example.com", authority_id=1)
+    assert users.get_by_email("boardman@example.com").__dict__ == User("boardman@example.com", authority_id=1).__dict__
 
 
 def test_get_user_by_email_who_does_not_exist(users: DatabaseUserRepository) -> None:
@@ -63,9 +63,9 @@ def test_get_all_users(users: DatabaseUserRepository) -> None:
 
     user_list = users.get_all()
 
-    assert user_list == [
-        User(email="boardman@example.com", authority_id=1),
-        User(email="obree@example.com", authority_id=1),
+    assert [user.__dict__ for user in user_list] == [
+        User(email="boardman@example.com", authority_id=1).__dict__,
+        User(email="obree@example.com", authority_id=1).__dict__,
     ]
 
 

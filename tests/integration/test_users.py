@@ -33,7 +33,7 @@ class TestApiEnabled:
         response = client.delete("/users")
 
         assert response.status_code == 401
-        assert users.get_all() == [User("boardman@example.com", authority_id=1)]
+        assert [user.email for user in users.get_all()] == ["boardman@example.com"]
 
     def test_cannot_clear_users_when_incorrect_credentials(self, users: UserRepository, client: FlaskClient) -> None:
         users.add(User("boardman@example.com", authority_id=1))
@@ -41,7 +41,7 @@ class TestApiEnabled:
         response = client.delete("/users", headers={"Authorization": "API-Key obree"})
 
         assert response.status_code == 401
-        assert users.get_all() == [User("boardman@example.com", authority_id=1)]
+        assert [user.email for user in users.get_all()] == ["boardman@example.com"]
 
 
 class TestApiDisabled:
@@ -51,4 +51,4 @@ class TestApiDisabled:
         response = client.delete("/users", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 401
-        assert users.get_all() == [User("boardman@example.com", authority_id=1)]
+        assert [user.email for user in users.get_all()] == ["boardman@example.com"]

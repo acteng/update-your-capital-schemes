@@ -1,5 +1,17 @@
+from typing import Any
+
 import inject
-from sqlalchemy import Column, Engine, ForeignKey, Integer, MetaData, Table, Text, text
+from sqlalchemy import (
+    Column,
+    Engine,
+    ForeignKey,
+    Integer,
+    MetaData,
+    Row,
+    Table,
+    Text,
+    text,
+)
 
 from schemes.schemes.domain import Scheme
 
@@ -69,11 +81,7 @@ class DatabaseSchemeRepository(SchemeRepository):
                 {"capital_scheme_id": id_},
             )
             row = result.one_or_none()
-            return (
-                Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
-                if row
-                else None
-            )
+            return self._to_domain(row) if row else None
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
         with self._engine.connect() as connection:
@@ -85,10 +93,7 @@ class DatabaseSchemeRepository(SchemeRepository):
                 ),
                 {"bid_submitting_authority_id": authority_id},
             )
-            return [
-                Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
-                for row in result
-            ]
+            return [self._to_domain(row) for row in result]
 
     def get_all(self) -> list[Scheme]:
         with self._engine.connect() as connection:
@@ -98,7 +103,8 @@ class DatabaseSchemeRepository(SchemeRepository):
                     "ORDER BY capital_scheme_id"
                 )
             )
-            return [
-                Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
-                for row in result
-            ]
+            return [self._to_domain(row) for row in result]
+
+    @staticmethod
+    def _to_domain(row: Row[Any]) -> Scheme:
+        return Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)

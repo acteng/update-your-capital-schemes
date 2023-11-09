@@ -60,7 +60,7 @@ def get(schemes: SchemeRepository, scheme_id: int) -> str:
     scheme = schemes.get(scheme_id)
     assert scheme
 
-    context = SchemeContext(scheme)
+    context = SchemeContext.for_domain(scheme)
     return render_template("scheme.html", **asdict(context))
 
 
@@ -69,9 +69,9 @@ class SchemeContext:
     name: str
     reference: str
 
-    def __init__(self, scheme: Scheme):
-        self.name = scheme.name
-        self.reference = scheme.reference
+    @staticmethod
+    def for_domain(scheme: Scheme) -> SchemeContext:
+        return SchemeContext(scheme.name, scheme.reference)
 
 
 @bp.delete("")

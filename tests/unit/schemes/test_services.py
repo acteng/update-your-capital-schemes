@@ -46,16 +46,16 @@ def test_add_schemes(schemes: DatabaseSchemeRepository) -> None:
         Scheme(id_=2, name="School Streets", authority_id=1),
     )
 
-    assert [scheme.__dict__ for scheme in schemes.get_all()] == [
-        Scheme(id_=1, name="Wirral Package", authority_id=1).__dict__,
-        Scheme(id_=2, name="School Streets", authority_id=1).__dict__,
+    assert [_to_tuple(scheme) for scheme in schemes.get_all()] == [
+        _to_tuple(Scheme(id_=1, name="Wirral Package", authority_id=1)),
+        _to_tuple(Scheme(id_=2, name="School Streets", authority_id=1)),
     ]
 
 
 def test_get_scheme(schemes: DatabaseSchemeRepository) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    assert schemes.get(1).__dict__ == Scheme(id_=1, name="Wirral Package", authority_id=1).__dict__
+    assert _to_tuple(schemes.get(1)) == _to_tuple(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
 
 def test_get_scheme_that_does_not_exist(schemes: DatabaseSchemeRepository) -> None:
@@ -73,9 +73,9 @@ def test_get_all_schemes_by_authority(schemes: DatabaseSchemeRepository) -> None
 
     schemes_list = schemes.get_by_authority(1)
 
-    assert [scheme.__dict__ for scheme in schemes_list] == [
-        Scheme(id_=1, name="Wirral Package", authority_id=1).__dict__,
-        Scheme(id_=2, name="School Streets", authority_id=1).__dict__,
+    assert [_to_tuple(scheme) for scheme in schemes_list] == [
+        _to_tuple(Scheme(id_=1, name="Wirral Package", authority_id=1)),
+        _to_tuple(Scheme(id_=2, name="School Streets", authority_id=1)),
     ]
 
 
@@ -87,9 +87,9 @@ def test_get_all_schemes(schemes: DatabaseSchemeRepository) -> None:
 
     schemes_list = schemes.get_all()
 
-    assert [scheme.__dict__ for scheme in schemes_list] == [
-        Scheme(id_=1, name="Wirral Package", authority_id=1).__dict__,
-        Scheme(id_=2, name="School Streets", authority_id=1).__dict__,
+    assert [_to_tuple(scheme) for scheme in schemes_list] == [
+        _to_tuple(Scheme(id_=1, name="Wirral Package", authority_id=1)),
+        _to_tuple(Scheme(id_=2, name="School Streets", authority_id=1)),
     ]
 
 
@@ -102,3 +102,7 @@ def test_clear_all_schemes(schemes: DatabaseSchemeRepository) -> None:
     schemes.clear()
 
     assert schemes.get_all() == []
+
+
+def _to_tuple(scheme: Scheme | None) -> tuple[int, str, int] | None:
+    return (scheme.id, scheme.name, scheme.authority_id) if scheme else None

@@ -28,9 +28,9 @@ def test_add_authorities(authorities: DatabaseAuthorityRepository) -> None:
         Authority(id_=2, name="West Yorkshire Combined Authority"),
     )
 
-    assert [authority.__dict__ for authority in authorities.get_all()] == [
-        Authority(id_=1, name="Liverpool City Region Combined Authority").__dict__,
-        Authority(id_=2, name="West Yorkshire Combined Authority").__dict__,
+    assert [_to_tuple(authority) for authority in authorities.get_all()] == [
+        _to_tuple(Authority(id_=1, name="Liverpool City Region Combined Authority")),
+        _to_tuple(Authority(id_=2, name="West Yorkshire Combined Authority")),
     ]
 
 
@@ -39,7 +39,7 @@ def test_get_authority(authorities: DatabaseAuthorityRepository) -> None:
         Authority(id_=1, name="Liverpool City Region Combined Authority"),
     )
 
-    assert authorities.get(1).__dict__ == Authority(id_=1, name="Liverpool City Region Combined Authority").__dict__
+    assert _to_tuple(authorities.get(1)) == _to_tuple(Authority(id_=1, name="Liverpool City Region Combined Authority"))
 
 
 def test_get_authority_that_does_not_exist(authorities: DatabaseAuthorityRepository) -> None:
@@ -58,9 +58,9 @@ def test_get_all_authorities(authorities: DatabaseAuthorityRepository) -> None:
 
     authorities_list = authorities.get_all()
 
-    assert [authority.__dict__ for authority in authorities_list] == [
-        Authority(id_=1, name="Liverpool City Region Combined Authority").__dict__,
-        Authority(id_=2, name="West Yorkshire Combined Authority").__dict__,
+    assert [_to_tuple(authority) for authority in authorities_list] == [
+        _to_tuple(Authority(id_=1, name="Liverpool City Region Combined Authority")),
+        _to_tuple(Authority(id_=2, name="West Yorkshire Combined Authority")),
     ]
 
 
@@ -73,3 +73,7 @@ def test_clear_all_authorities(authorities: DatabaseAuthorityRepository) -> None
     authorities.clear()
 
     assert authorities.get_all() == []
+
+
+def _to_tuple(authority: Authority | None) -> tuple[int, str] | None:
+    return (authority.id, authority.name) if authority else None

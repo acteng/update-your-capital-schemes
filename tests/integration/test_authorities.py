@@ -44,9 +44,9 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 201
-        assert [authority.__dict__ for authority in authorities.get_all()] == [
-            Authority(id_=1, name="Liverpool City Region Combined Authority").__dict__,
-            Authority(id_=2, name="West Yorkshire Combined Authority").__dict__,
+        assert [_authority_to_tuple(authority) for authority in authorities.get_all()] == [
+            _authority_to_tuple(Authority(id_=1, name="Liverpool City Region Combined Authority")),
+            _authority_to_tuple(Authority(id_=2, name="West Yorkshire Combined Authority")),
         ]
 
     def test_cannot_add_authorities_when_no_credentials(
@@ -77,9 +77,9 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 201
-        assert [user.__dict__ for user in users.get_all()] == [
-            User("boardman@example.com", authority_id=1).__dict__,
-            User("obree@example.com", authority_id=1).__dict__,
+        assert [_user_to_tuple(user) for user in users.get_all()] == [
+            _user_to_tuple(User("boardman@example.com", authority_id=1)),
+            _user_to_tuple(User("obree@example.com", authority_id=1)),
         ]
 
     def test_cannot_add_users_when_no_credentials(self, users: UserRepository, client: FlaskClient) -> None:
@@ -104,9 +104,9 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 201
-        assert [scheme.__dict__ for scheme in schemes.get_all()] == [
-            Scheme(id_=1, name="Wirral Package", authority_id=1).__dict__,
-            Scheme(id_=2, name="School Streets", authority_id=1).__dict__,
+        assert [_scheme_to_tuple(scheme) for scheme in schemes.get_all()] == [
+            _scheme_to_tuple(Scheme(id_=1, name="Wirral Package", authority_id=1)),
+            _scheme_to_tuple(Scheme(id_=2, name="School Streets", authority_id=1)),
         ]
 
     def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
@@ -146,3 +146,15 @@ class TestApiDisabled:
 
         assert response.status_code == 401
         assert [authority.id for authority in authorities.get_all()] == [1]
+
+
+def _authority_to_tuple(authority: Authority | None) -> tuple[int, str] | None:
+    return (authority.id, authority.name) if authority else None
+
+
+def _user_to_tuple(user: User | None) -> tuple[str, int] | None:
+    return (user.email, user.authority_id) if user else None
+
+
+def _scheme_to_tuple(scheme: Scheme | None) -> tuple[int, str, int] | None:
+    return (scheme.id, scheme.name, scheme.authority_id) if scheme else None

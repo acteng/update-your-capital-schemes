@@ -139,3 +139,8 @@ class SchemePage:
     def reference_and_name(self) -> str | None:
         heading = self._soup.select_one("main h1")
         return heading.string if heading else None
+
+    @property
+    def scheme_type(self) -> str | None:
+        definition = self._soup.select_one("main dd")
+        return definition.string.strip() if definition and definition.string else None

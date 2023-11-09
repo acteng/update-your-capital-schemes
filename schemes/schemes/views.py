@@ -9,7 +9,7 @@ from schemes.auth.api_key import api_key_auth
 from schemes.auth.bearer import bearer_auth
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
-from schemes.schemes.domain import Scheme
+from schemes.schemes.domain import Scheme, SchemeType
 from schemes.schemes.services import SchemeRepository
 from schemes.users.services import UserRepository
 
@@ -68,10 +68,22 @@ def get(schemes: SchemeRepository, scheme_id: int) -> str:
 class SchemeContext:
     name: str
     reference: str
+    type: str | None = None
 
     @staticmethod
     def for_domain(scheme: Scheme) -> SchemeContext:
-        return SchemeContext(scheme.name, scheme.reference)
+        return SchemeContext(
+            name=scheme.name,
+            reference=scheme.reference,
+            type=SchemeContext._type_to_name(scheme.type) if scheme.type else None,
+        )
+
+    @staticmethod
+    def _type_to_name(type_: SchemeType) -> str:
+        return {
+            SchemeType.DEVELOPMENT: "Development",
+            SchemeType.CONSTRUCTION: "Construction",
+        }[type_]
 
 
 @bp.delete("")
@@ -83,9 +95,22 @@ def clear(schemes: SchemeRepository) -> Response:
 
 
 @dataclass
-class SchemeRepr:
+class SchemeRepr:  # pylint:disable=duplicate-code
     id: int
     name: str
+    type: str | None = None
 
     def to_domain(self, authority_id: int) -> Scheme:
-        return Scheme(id_=self.id, name=self.name, authority_id=authority_id)
+        return Scheme(
+            id_=self.id,
+            name=self.name,
+            authority_id=authority_id,
+            type_=self._type_to_domain(self.type) if self.type else None,
+        )
+
+    @staticmethod
+    def _type_to_domain(type_: str) -> SchemeType:
+        return {
+            "development": SchemeType.DEVELOPMENT,
+            "construction": SchemeType.CONSTRUCTION,
+        }[type_]

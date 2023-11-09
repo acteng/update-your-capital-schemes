@@ -7,7 +7,7 @@ from flask.testing import FlaskClient
 
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
-from schemes.schemes.domain import Scheme
+from schemes.schemes.domain import Scheme, SchemeType
 from schemes.schemes.services import SchemeRepository
 from schemes.users.domain import User
 from schemes.users.services import UserRepository
@@ -100,13 +100,16 @@ class TestApiEnabled:
         response = client.post(
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "name": "Wirral Package"}, {"id": 2, "name": "School Streets"}],
+            json=[
+                {"id": 1, "name": "Wirral Package", "type": "development"},
+                {"id": 2, "name": "School Streets", "type": "construction"},
+            ],
         )
 
         assert response.status_code == 201
         assert [_scheme_to_tuple(scheme) for scheme in schemes.get_all()] == [
-            _scheme_to_tuple(Scheme(id_=1, name="Wirral Package", authority_id=1)),
-            _scheme_to_tuple(Scheme(id_=2, name="School Streets", authority_id=1)),
+            _scheme_to_tuple(Scheme(id_=1, name="Wirral Package", authority_id=1, type_=SchemeType.DEVELOPMENT)),
+            _scheme_to_tuple(Scheme(id_=2, name="School Streets", authority_id=1, type_=SchemeType.CONSTRUCTION)),
         ]
 
     def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
@@ -156,5 +159,5 @@ def _user_to_tuple(user: User | None) -> tuple[str, int] | None:
     return (user.email, user.authority_id) if user else None
 
 
-def _scheme_to_tuple(scheme: Scheme | None) -> tuple[int, str, int] | None:
-    return (scheme.id, scheme.name, scheme.authority_id) if scheme else None
+def _scheme_to_tuple(scheme: Scheme | None) -> tuple[int, str, int, SchemeType | None] | None:
+    return (scheme.id, scheme.name, scheme.authority_id, scheme.type) if scheme else None

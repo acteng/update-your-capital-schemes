@@ -57,6 +57,7 @@ class UserRepr:
 
 
 @dataclass
-class SchemeRepr:
+class SchemeRepr:  # pylint:disable=duplicate-code
     id: int
     name: str
+    type: str | None = None

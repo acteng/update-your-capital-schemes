@@ -53,13 +53,14 @@ class DatabaseSchemeRepository(SchemeRepository):
         self._engine = engine
 
     def add(self, *schemes: Scheme) -> None:
+        sql = """
+            INSERT INTO capital_scheme (capital_scheme_id, scheme_name, bid_submitting_authority_id)
+            VALUES (:capital_scheme_id, :scheme_name, :bid_submitting_authority_id)
+        """
         with self._engine.begin() as connection:
             for scheme in schemes:
                 connection.execute(
-                    text(
-                        "INSERT INTO capital_scheme (capital_scheme_id, scheme_name, bid_submitting_authority_id) "
-                        "VALUES (:capital_scheme_id, :scheme_name, :bid_submitting_authority_id)"
-                    ),
+                    text(sql),
                     {
                         "capital_scheme_id": scheme.id,
                         "scheme_name": scheme.name,
@@ -72,37 +73,32 @@ class DatabaseSchemeRepository(SchemeRepository):
             connection.execute(text("DELETE FROM capital_scheme"))
 
     def get(self, id_: int) -> Scheme | None:
+        sql = """
+            SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id FROM capital_scheme
+            WHERE capital_scheme_id=:capital_scheme_id
+        """
         with self._engine.connect() as connection:
-            result = connection.execute(
-                text(
-                    "SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id FROM capital_scheme "
-                    "WHERE capital_scheme_id=:capital_scheme_id"
-                ),
-                {"capital_scheme_id": id_},
-            )
+            result = connection.execute(text(sql), {"capital_scheme_id": id_})
             row = result.one_or_none()
             return self._to_domain(row) if row else None
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
+        sql = """
+            SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id FROM capital_scheme
+            WHERE bid_submitting_authority_id=:bid_submitting_authority_id
+            ORDER BY capital_scheme_id
+        """
         with self._engine.connect() as connection:
-            result = connection.execute(
-                text(
-                    "SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id FROM capital_scheme "
-                    "WHERE bid_submitting_authority_id=:bid_submitting_authority_id "
-                    "ORDER BY capital_scheme_id"
-                ),
-                {"bid_submitting_authority_id": authority_id},
-            )
+            result = connection.execute(text(sql), {"bid_submitting_authority_id": authority_id})
             return [self._to_domain(row) for row in result]
 
     def get_all(self) -> list[Scheme]:
+        sql = """
+            SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id FROM capital_scheme
+            ORDER BY capital_scheme_id
+        """
         with self._engine.connect() as connection:
-            result = connection.execute(
-                text(
-                    "SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id FROM capital_scheme "
-                    "ORDER BY capital_scheme_id"
-                )
-            )
+            result = connection.execute(text(sql))
             return [self._to_domain(row) for row in result]
 
     @staticmethod

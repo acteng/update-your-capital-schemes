@@ -107,9 +107,13 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 201
+        wirral_package = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        wirral_package.type = SchemeType.DEVELOPMENT
+        school_streets = Scheme(id_=2, name="School Streets", authority_id=1)
+        school_streets.type = SchemeType.CONSTRUCTION
         assert [_scheme_to_tuple(scheme) for scheme in schemes.get_all()] == [
-            _scheme_to_tuple(Scheme(id_=1, name="Wirral Package", authority_id=1, type_=SchemeType.DEVELOPMENT)),
-            _scheme_to_tuple(Scheme(id_=2, name="School Streets", authority_id=1, type_=SchemeType.CONSTRUCTION)),
+            _scheme_to_tuple(wirral_package),
+            _scheme_to_tuple(school_streets),
         ]
 
     def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:

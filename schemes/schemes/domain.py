@@ -4,11 +4,11 @@ from enum import Enum, auto
 
 
 class Scheme:
-    def __init__(self, id_: int, name: str, authority_id: int, type_: SchemeType | None = None):
+    def __init__(self, id_: int, name: str, authority_id: int):
         self.id = id_
         self.name = name
         self.authority_id = authority_id
-        self.type = type_
+        self.type: SchemeType | None = None
 
     @property
     def reference(self) -> str:

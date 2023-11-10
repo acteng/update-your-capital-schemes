@@ -17,7 +17,8 @@ class TestSchemeContext:
         [(SchemeType.DEVELOPMENT, "Development"), (SchemeType.CONSTRUCTION, "Construction"), (None, None)],
     )
     def test_set_type(self, type_: SchemeType | None, expected_type: str | None) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0, type_=type_)
+        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme.type = type_
 
         context = SchemeContext.for_domain(scheme)
 

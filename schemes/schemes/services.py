@@ -115,9 +115,6 @@ class DatabaseSchemeRepository(SchemeRepository):
         return next(key for key, value in self._TYPE_IDS.items() if value == id_)
 
     def _to_domain(self, row: Row[Any]) -> Scheme:
-        return Scheme(
-            id_=row.capital_scheme_id,
-            name=row.scheme_name,
-            authority_id=row.bid_submitting_authority_id,
-            type_=self._id_to_type(row.scheme_type_id) if row.scheme_type_id else None,
-        )
+        scheme = Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
+        scheme.type = self._id_to_type(row.scheme_type_id) if row.scheme_type_id else None
+        return scheme

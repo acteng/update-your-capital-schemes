@@ -101,12 +101,9 @@ class SchemeRepr:  # pylint:disable=duplicate-code
     type: str | None = None
 
     def to_domain(self, authority_id: int) -> Scheme:
-        return Scheme(
-            id_=self.id,
-            name=self.name,
-            authority_id=authority_id,
-            type_=self._type_to_domain(self.type) if self.type else None,
-        )
+        scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
+        scheme.type = self._type_to_domain(self.type) if self.type else None
+        return scheme
 
     @staticmethod
     def _type_to_domain(type_: str) -> SchemeType:

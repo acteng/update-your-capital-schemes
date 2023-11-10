@@ -27,7 +27,7 @@ def index(users: UserRepository, authorities: AuthorityRepository, schemes: Sche
     assert authority
     authority_schemes = schemes.get_by_authority(authority.id)
 
-    context = SchemesContext(authority, authority_schemes)
+    context = SchemesContext.for_domain(authority, authority_schemes)
     return render_template("schemes.html", **asdict(context))
 
 
@@ -36,9 +36,12 @@ class SchemesContext:
     authority_name: str
     schemes: list[SchemeRowContext]
 
-    def __init__(self, authority: Authority, schemes: list[Scheme]):
-        self.authority_name = authority.name
-        self.schemes = [SchemeRowContext(scheme) for scheme in schemes]
+    @staticmethod
+    def for_domain(authority: Authority, schemes: list[Scheme]) -> SchemesContext:
+        return SchemesContext(
+            authority_name=authority.name,
+            schemes=[SchemeRowContext.for_domain(scheme) for scheme in schemes],
+        )
 
 
 @dataclass
@@ -47,10 +50,13 @@ class SchemeRowContext:
     reference: str
     name: str
 
-    def __init__(self, scheme: Scheme):
-        self.id = scheme.id
-        self.reference = scheme.reference
-        self.name = scheme.name
+    @staticmethod
+    def for_domain(scheme: Scheme) -> SchemeRowContext:
+        return SchemeRowContext(
+            id=scheme.id,
+            reference=scheme.reference,
+            name=scheme.name,
+        )
 
 
 @bp.get("<int:scheme_id>")

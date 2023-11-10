@@ -7,7 +7,7 @@ from schemes.authorities.domain import Authority
 from schemes.authorities.services import DatabaseAuthorityRepository
 from schemes.authorities.services import add_tables as authorities_add_tables
 from schemes.schemes.domain import Scheme, SchemeType
-from schemes.schemes.services import DatabaseSchemeRepository
+from schemes.schemes.services import DatabaseSchemeRepository, SchemeTypeMapper
 from schemes.schemes.services import add_tables as schemes_add_tables
 
 
@@ -102,3 +102,10 @@ def school_streets() -> Scheme:
 
 def _to_tuple(scheme: Scheme | None) -> tuple[int, str, int, SchemeType | None] | None:
     return (scheme.id, scheme.name, scheme.authority_id, scheme.type) if scheme else None
+
+
+class TestSchemeTypeMapper:
+    @pytest.mark.parametrize("type_, id_", [(SchemeType.DEVELOPMENT, 1), (SchemeType.CONSTRUCTION, 2)])
+    def test_mapper(self, type_: SchemeType, id_: int) -> None:
+        mapper = SchemeTypeMapper()
+        assert mapper.to_id(type_) == id_ and mapper.to_type(id_) == type_

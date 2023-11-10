@@ -49,14 +49,10 @@ def add_tables(metadata: MetaData) -> None:
 
 
 class DatabaseSchemeRepository(SchemeRepository):
-    _TYPE_IDS = {
-        SchemeType.DEVELOPMENT: 1,
-        SchemeType.CONSTRUCTION: 2,
-    }
-
     @inject.autoparams()
     def __init__(self, engine: Engine):
         self._engine = engine
+        self._type_mapper = SchemeTypeMapper()
 
     def add(self, *schemes: Scheme) -> None:
         sql = """
@@ -71,7 +67,7 @@ class DatabaseSchemeRepository(SchemeRepository):
                         "capital_scheme_id": scheme.id,
                         "scheme_name": scheme.name,
                         "bid_submitting_authority_id": scheme.authority_id,
-                        "scheme_type_id": self._type_to_id(scheme.type) if scheme.type else None,
+                        "scheme_type_id": self._type_mapper.to_id(scheme.type) if scheme.type else None,
                     },
                 )
 
@@ -108,13 +104,20 @@ class DatabaseSchemeRepository(SchemeRepository):
             result = connection.execute(text(sql))
             return [self._to_domain(row) for row in result]
 
-    def _type_to_id(self, type_: SchemeType) -> int:
-        return self._TYPE_IDS[type_]
-
-    def _id_to_type(self, id_: int) -> SchemeType:
-        return next(key for key, value in self._TYPE_IDS.items() if value == id_)
-
     def _to_domain(self, row: Row[Any]) -> Scheme:
         scheme = Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
-        scheme.type = self._id_to_type(row.scheme_type_id) if row.scheme_type_id else None
+        scheme.type = self._type_mapper.to_type(row.scheme_type_id) if row.scheme_type_id else None
         return scheme
+
+
+class SchemeTypeMapper:
+    _TYPE_IDS = {
+        SchemeType.DEVELOPMENT: 1,
+        SchemeType.CONSTRUCTION: 2,
+    }
+
+    def to_id(self, type_: SchemeType) -> int:
+        return self._TYPE_IDS[type_]
+
+    def to_type(self, id_: int) -> SchemeType:
+        return next(key for key, value in self._TYPE_IDS.items() if value == id_)

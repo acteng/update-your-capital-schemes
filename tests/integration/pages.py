@@ -142,5 +142,10 @@ class SchemePage:
 
     @property
     def scheme_type(self) -> str | None:
-        definition = self._soup.select_one("main dd")
+        definition = self._soup.select("main dd")[0]
+        return definition.string.strip() if definition and definition.string else None
+
+    @property
+    def funding_programme(self) -> str | None:
+        definition = self._soup.select("main dd")[1]
         return definition.string.strip() if definition and definition.string else None

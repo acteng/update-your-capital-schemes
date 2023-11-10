@@ -9,7 +9,7 @@ from schemes.auth.api_key import api_key_auth
 from schemes.auth.bearer import bearer_auth
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
-from schemes.schemes.domain import Scheme, SchemeType
+from schemes.schemes.domain import FundingProgramme, Scheme, SchemeType
 from schemes.schemes.services import SchemeRepository
 from schemes.users.services import UserRepository
 
@@ -69,6 +69,7 @@ class SchemeContext:
     name: str
     reference: str
     type: str | None = None
+    funding_programme: str | None = None
 
     @staticmethod
     def for_domain(scheme: Scheme) -> SchemeContext:
@@ -76,6 +77,9 @@ class SchemeContext:
             name=scheme.name,
             reference=scheme.reference,
             type=SchemeContext._type_to_name(scheme.type) if scheme.type else None,
+            funding_programme=SchemeContext._funding_programme_to_name(scheme.funding_programme)
+            if scheme.funding_programme
+            else None,
         )
 
     @staticmethod
@@ -84,6 +88,19 @@ class SchemeContext:
             SchemeType.DEVELOPMENT: "Development",
             SchemeType.CONSTRUCTION: "Construction",
         }[type_]
+
+    @staticmethod
+    def _funding_programme_to_name(funding_programme: FundingProgramme) -> str:
+        return {
+            FundingProgramme.ATF2: "ATF2",
+            FundingProgramme.ATF3: "ATF3",
+            FundingProgramme.ATF4: "ATF4",
+            FundingProgramme.ATF4E: "ATF4e",
+            FundingProgramme.ATF5: "ATF5",
+            FundingProgramme.MRN: "MRN",
+            FundingProgramme.LUF: "LUF",
+            FundingProgramme.CRSTS: "CRSTS",
+        }[funding_programme]
 
 
 @bp.delete("")
@@ -99,10 +116,14 @@ class SchemeRepr:  # pylint:disable=duplicate-code
     id: int
     name: str
     type: str | None = None
+    funding_programme: str | None = None
 
     def to_domain(self, authority_id: int) -> Scheme:
         scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
         scheme.type = self._type_to_domain(self.type) if self.type else None
+        scheme.funding_programme = (
+            self._funding_programme_to_domain(self.funding_programme) if self.funding_programme else None
+        )
         return scheme
 
     @staticmethod
@@ -111,3 +132,16 @@ class SchemeRepr:  # pylint:disable=duplicate-code
             "development": SchemeType.DEVELOPMENT,
             "construction": SchemeType.CONSTRUCTION,
         }[type_]
+
+    @staticmethod
+    def _funding_programme_to_domain(funding_programme: str) -> FundingProgramme:
+        return {
+            "ATF2": FundingProgramme.ATF2,
+            "ATF3": FundingProgramme.ATF3,
+            "ATF4": FundingProgramme.ATF4,
+            "ATF4e": FundingProgramme.ATF4E,
+            "ATF5": FundingProgramme.ATF5,
+            "MRN": FundingProgramme.MRN,
+            "LUF": FundingProgramme.LUF,
+            "CRSTS": FundingProgramme.CRSTS,
+        }[funding_programme]

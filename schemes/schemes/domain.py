@@ -9,6 +9,7 @@ class Scheme:
         self.name = name
         self.authority_id = authority_id
         self.type: SchemeType | None = None
+        self.funding_programme: FundingProgramme | None = None
 
     @property
     def reference(self) -> str:
@@ -18,3 +19,14 @@ class Scheme:
 class SchemeType(Enum):
     DEVELOPMENT = auto()
     CONSTRUCTION = auto()
+
+
+class FundingProgramme(Enum):
+    ATF2 = auto()
+    ATF3 = auto()
+    ATF4 = auto()
+    ATF4E = auto()
+    ATF5 = auto()
+    MRN = auto()
+    LUF = auto()
+    CRSTS = auto()

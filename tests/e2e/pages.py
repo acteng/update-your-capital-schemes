@@ -134,7 +134,8 @@ class SchemePage:
         self._page = page
         self._main = page.get_by_role("main")
         self._reference_and_name = self._main.get_by_role("heading")
-        self._scheme_type = self._main.get_by_role("definition")
+        self._scheme_type = self._main.get_by_role("definition").nth(0)
+        self._funding_programme = self._main.get_by_role("definition").nth(1)
 
     def open(self, id_: int) -> SchemePage:
         # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
@@ -149,6 +150,11 @@ class SchemePage:
     @property
     def scheme_type(self) -> str | None:
         text = self._scheme_type.text_content()
+        return text.strip() if text else None
+
+    @property
+    def funding_programme(self) -> str | None:
+        text = self._funding_programme.text_content()
         return text.strip() if text else None
 
 

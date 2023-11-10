@@ -7,7 +7,7 @@ from flask.testing import FlaskClient
 
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
-from schemes.schemes.domain import Scheme, SchemeType
+from schemes.schemes.domain import FundingProgramme, Scheme, SchemeType
 from schemes.schemes.services import SchemeRepository
 from schemes.users.domain import User
 from schemes.users.services import UserRepository
@@ -101,16 +101,18 @@ class TestApiEnabled:
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
-                {"id": 1, "name": "Wirral Package", "type": "development"},
-                {"id": 2, "name": "School Streets", "type": "construction"},
+                {"id": 1, "name": "Wirral Package", "type": "development", "funding_programme": "ATF3"},
+                {"id": 2, "name": "School Streets", "type": "construction", "funding_programme": "ATF4"},
             ],
         )
 
         assert response.status_code == 201
         wirral_package = Scheme(id_=1, name="Wirral Package", authority_id=1)
         wirral_package.type = SchemeType.DEVELOPMENT
+        wirral_package.funding_programme = FundingProgramme.ATF3
         school_streets = Scheme(id_=2, name="School Streets", authority_id=1)
         school_streets.type = SchemeType.CONSTRUCTION
+        school_streets.funding_programme = FundingProgramme.ATF4
         assert [_scheme_to_tuple(scheme) for scheme in schemes.get_all()] == [
             _scheme_to_tuple(wirral_package),
             _scheme_to_tuple(school_streets),
@@ -163,5 +165,5 @@ def _user_to_tuple(user: User | None) -> tuple[str, int] | None:
     return (user.email, user.authority_id) if user else None
 
 
-def _scheme_to_tuple(scheme: Scheme | None) -> tuple[int, str, int, SchemeType | None] | None:
-    return (scheme.id, scheme.name, scheme.authority_id, scheme.type) if scheme else None
+def _scheme_to_tuple(scheme: Scheme | None) -> tuple[int, str, int, SchemeType | None, FundingProgramme | None] | None:
+    return (scheme.id, scheme.name, scheme.authority_id, scheme.type, scheme.funding_programme) if scheme else None

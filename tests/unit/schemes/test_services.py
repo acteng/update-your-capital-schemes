@@ -6,8 +6,12 @@ from sqlalchemy import Engine, MetaData
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import DatabaseAuthorityRepository
 from schemes.authorities.services import add_tables as authorities_add_tables
-from schemes.schemes.domain import Scheme, SchemeType
-from schemes.schemes.services import DatabaseSchemeRepository, SchemeTypeMapper
+from schemes.schemes.domain import FundingProgramme, Scheme, SchemeType
+from schemes.schemes.services import (
+    DatabaseSchemeRepository,
+    FundingProgrammeMapper,
+    SchemeTypeMapper,
+)
 from schemes.schemes.services import add_tables as schemes_add_tables
 
 
@@ -91,17 +95,19 @@ class TestDatabaseSchemeRepository:
     def wirral_package() -> Scheme:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.type = SchemeType.DEVELOPMENT
+        scheme1.funding_programme = FundingProgramme.ATF3
         return scheme1
 
     @staticmethod
     def school_streets() -> Scheme:
         scheme2 = Scheme(id_=2, name="School Streets", authority_id=1)
         scheme2.type = SchemeType.CONSTRUCTION
+        scheme2.funding_programme = FundingProgramme.ATF4
         return scheme2
 
     @staticmethod
-    def _to_tuple(scheme: Scheme | None) -> tuple[int, str, int, SchemeType | None] | None:
-        return (scheme.id, scheme.name, scheme.authority_id, scheme.type) if scheme else None
+    def _to_tuple(scheme: Scheme | None) -> tuple[int, str, int, SchemeType | None, FundingProgramme | None] | None:
+        return (scheme.id, scheme.name, scheme.authority_id, scheme.type, scheme.funding_programme) if scheme else None
 
 
 class TestSchemeTypeMapper:
@@ -109,3 +115,22 @@ class TestSchemeTypeMapper:
     def test_mapper(self, type_: SchemeType, id_: int) -> None:
         mapper = SchemeTypeMapper()
         assert mapper.to_id(type_) == id_ and mapper.to_type(id_) == type_
+
+
+class TestFundingProgrammeMapper:
+    @pytest.mark.parametrize(
+        "funding_programme, id_",
+        [
+            (FundingProgramme.ATF2, 1),
+            (FundingProgramme.ATF3, 2),
+            (FundingProgramme.ATF4, 3),
+            (FundingProgramme.ATF4E, 4),
+            (FundingProgramme.ATF5, 5),
+            (FundingProgramme.MRN, 6),
+            (FundingProgramme.LUF, 7),
+            (FundingProgramme.CRSTS, 8),
+        ],
+    )
+    def test_mapper(self, funding_programme: FundingProgramme, id_: int) -> None:
+        mapper = FundingProgrammeMapper()
+        assert mapper.to_id(funding_programme) == id_ and mapper.to_funding_programme(id_) == funding_programme

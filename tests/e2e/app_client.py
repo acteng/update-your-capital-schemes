@@ -61,3 +61,4 @@ class SchemeRepr:  # pylint:disable=duplicate-code
     id: int
     name: str
     type: str | None = None
+    funding_programme: str | None = None

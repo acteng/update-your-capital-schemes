@@ -18,7 +18,7 @@ def clear(users: UserRepository) -> Response:
     return Response(status=204)
 
 
-@dataclass
+@dataclass(frozen=True)
 class UserRepr:
     email: str
 

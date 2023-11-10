@@ -31,7 +31,7 @@ def index(users: UserRepository, authorities: AuthorityRepository, schemes: Sche
     return render_template("schemes.html", **asdict(context))
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemesContext:
     authority_name: str
     schemes: list[SchemeRowContext]
@@ -44,7 +44,7 @@ class SchemesContext:
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemeRowContext:
     id: int
     reference: str
@@ -70,7 +70,7 @@ def get(schemes: SchemeRepository, scheme_id: int) -> str:
     return render_template("scheme.html", **asdict(context))
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemeContext:
     name: str
     reference: str
@@ -117,7 +117,7 @@ def clear(schemes: SchemeRepository) -> Response:
     return Response(status=204)
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemeRepr:  # pylint:disable=duplicate-code
     id: int
     name: str

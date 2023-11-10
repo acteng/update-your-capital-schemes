@@ -49,7 +49,7 @@ def clear(authorities: AuthorityRepository) -> Response:
     return Response(status=204)
 
 
-@dataclass
+@dataclass(frozen=True)
 class AuthorityRepr:
     id: int
     name: str

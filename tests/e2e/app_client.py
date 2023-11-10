@@ -45,18 +45,18 @@ class AppClient:
         assert response.status_code == 204
 
 
-@dataclass
+@dataclass(frozen=True)
 class AuthorityRepr:
     id: int
     name: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class UserRepr:
     email: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemeRepr:  # pylint:disable=duplicate-code
     id: int
     name: str

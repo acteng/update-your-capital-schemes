@@ -50,7 +50,7 @@ class TestSchemeContext:
 
 
 class TestSchemeRepr:
-    def test_create_from_domain(self) -> None:
+    def test_create_domain(self) -> None:
         scheme_repr = SchemeRepr(id=1, name="Wirral Package")
 
         scheme = scheme_repr.to_domain(2)

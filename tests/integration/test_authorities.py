@@ -101,21 +101,18 @@ class TestApiEnabled:
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
-                {"id": 1, "name": "Wirral Package", "type": "development", "funding_programme": "ATF3"},
-                {"id": 2, "name": "School Streets", "type": "construction", "funding_programme": "ATF4"},
+                {"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"},
+                {"id": 2, "name": "School Streets"},
             ],
         )
 
         assert response.status_code == 201
         wirral_package = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        wirral_package.type = SchemeType.DEVELOPMENT
-        wirral_package.funding_programme = FundingProgramme.ATF3
-        school_streets = Scheme(id_=2, name="School Streets", authority_id=1)
-        school_streets.type = SchemeType.CONSTRUCTION
-        school_streets.funding_programme = FundingProgramme.ATF4
+        wirral_package.type = SchemeType.CONSTRUCTION
+        wirral_package.funding_programme = FundingProgramme.ATF4
         assert [_scheme_to_tuple(scheme) for scheme in schemes.get_all()] == [
             _scheme_to_tuple(wirral_package),
-            _scheme_to_tuple(school_streets),
+            _scheme_to_tuple(Scheme(id_=2, name="School Streets", authority_id=1)),
         ]
 
     def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:

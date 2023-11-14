@@ -21,8 +21,15 @@
                 "value": {
                     "text": funding_programme | d("N/A", true)
                 }
+            },
+            {
+                "key": {
+                    "text": "Current milestone"
+                },
+                "value": {
+                    "text": current_milestone | d("N/A", true)
+                }
             }
-
         ]
     }) }}
 {% endblock %}

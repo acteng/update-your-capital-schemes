@@ -1,3 +1,5 @@
+from datetime import date
+
 import inject
 import pytest
 from flask import Flask
@@ -5,7 +7,14 @@ from flask.testing import FlaskClient
 
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
-from schemes.schemes.domain import FundingProgramme, Scheme, SchemeType
+from schemes.schemes.domain import (
+    FundingProgramme,
+    Milestone,
+    MilestoneRevision,
+    ObservationType,
+    Scheme,
+    SchemeType,
+)
 from schemes.schemes.services import SchemeRepository
 from schemes.users.domain import User
 from schemes.users.services import UserRepository
@@ -48,15 +57,32 @@ def test_scheme_shows_minimal_overview(schemes: SchemeRepository, client: FlaskC
 
     scheme_page = SchemePage(client).open(1)
 
-    assert scheme_page.scheme_type == "N/A" and scheme_page.funding_programme == "N/A"
+    assert (
+        scheme_page.scheme_type == "N/A"
+        and scheme_page.funding_programme == "N/A"
+        and scheme_page.current_milestone == "N/A"
+    )
 
 
 def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.type = SchemeType.CONSTRUCTION
     scheme.funding_programme = FundingProgramme.ATF4
+    scheme.update_milestone(
+        MilestoneRevision(
+            effective_date_from=date(2020, 1, 1),
+            effective_date_to=None,
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 1),
+        )
+    )
     schemes.add(scheme)
 
     scheme_page = SchemePage(client).open(1)
 
-    assert scheme_page.scheme_type == "Construction" and scheme_page.funding_programme == "ATF4"
+    assert (
+        scheme_page.scheme_type == "Construction"
+        and scheme_page.funding_programme == "ATF4"
+        and scheme_page.current_milestone == "Detailed design completed"
+    )

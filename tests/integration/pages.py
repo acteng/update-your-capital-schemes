@@ -149,3 +149,8 @@ class SchemePage:
     def funding_programme(self) -> str | None:
         definition = self._soup.select("main dd")[1]
         return definition.string.strip() if definition and definition.string else None
+
+    @property
+    def current_milestone(self) -> str | None:
+        definition = self._soup.select("main dd")[2]
+        return definition.string.strip() if definition and definition.string else None

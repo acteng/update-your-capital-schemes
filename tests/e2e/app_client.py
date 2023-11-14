@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 
 import requests
 
@@ -62,3 +62,13 @@ class SchemeRepr:
     name: str
     type: str | None = None
     funding_programme: str | None = None
+    milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class MilestoneRevisionRepr:
+    effective_date_from: str | None
+    effective_date_to: str | None
+    milestone: str
+    observation_type: str
+    status_date: str

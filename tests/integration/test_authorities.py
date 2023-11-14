@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Any, Mapping
 
 import inject
@@ -7,7 +8,14 @@ from flask.testing import FlaskClient
 
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
-from schemes.schemes.domain import FundingProgramme, Scheme, SchemeType
+from schemes.schemes.domain import (
+    FundingProgramme,
+    Milestone,
+    MilestoneRevision,
+    ObservationType,
+    Scheme,
+    SchemeType,
+)
 from schemes.schemes.services import SchemeRepository
 from schemes.users.domain import User
 from schemes.users.services import UserRepository
@@ -103,7 +111,21 @@ class TestApiEnabled:
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
-                {"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"},
+                {
+                    "id": 1,
+                    "name": "Wirral Package",
+                    "type": "construction",
+                    "funding_programme": "ATF4",
+                    "milestone_revisions": [
+                        {
+                            "effective_date_from": "2020-01-01",
+                            "effective_date_to": None,
+                            "milestone": "detailed design completed",
+                            "observation_type": "Actual",
+                            "status_date": "2020-01-01",
+                        }
+                    ],
+                },
                 {"id": 2, "name": "School Streets"},
             ],
         )
@@ -118,6 +140,16 @@ class TestApiEnabled:
             and scheme1.authority_id == 1
             and scheme1.type == SchemeType.CONSTRUCTION
             and scheme1.funding_programme == FundingProgramme.ATF4
+            and scheme1.milestone_revisions
+            == [
+                MilestoneRevision(
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=None,
+                    milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                    observation_type=ObservationType.ACTUAL,
+                    status_date=date(2020, 1, 1),
+                )
+            ]
         )
         assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme2.authority_id == 1
 

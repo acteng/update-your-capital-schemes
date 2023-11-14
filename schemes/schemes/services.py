@@ -16,7 +16,7 @@ from sqlalchemy import (
 from schemes.schemes.domain import FundingProgramme, Scheme, SchemeType
 
 
-class SchemeRepository:  # pylint:disable=duplicate-code
+class SchemeRepository:
     def add(self, *schemes: Scheme) -> None:
         raise NotImplementedError()
 

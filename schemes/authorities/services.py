@@ -4,7 +4,7 @@ from sqlalchemy import Column, Engine, Integer, MetaData, Table, Text, text
 from schemes.authorities.domain import Authority
 
 
-class AuthorityRepository:  # pylint:disable=duplicate-code
+class AuthorityRepository:
     def add(self, *authorities: Authority) -> None:
         raise NotImplementedError()
 

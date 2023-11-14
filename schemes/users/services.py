@@ -13,7 +13,7 @@ from sqlalchemy import (
 from schemes.users.domain import User
 
 
-class UserRepository:  # pylint:disable=duplicate-code
+class UserRepository:
     def add(self, *users: User) -> None:
         raise NotImplementedError()
 

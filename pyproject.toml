@@ -70,6 +70,7 @@ allow-reexport-from-package = true
 
 [tool.pylint.messages_control]
 disable = [
+    "duplicate-code",
     "missing-class-docstring",
     "missing-function-docstring",
     "missing-module-docstring",

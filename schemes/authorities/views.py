@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 import inject
+from dataclass_wizard import fromlist
 from flask import Blueprint, Response, request
 
 from schemes.auth.api_key import api_key_auth
@@ -18,7 +19,7 @@ bp = Blueprint("authorities", __name__)
 @api_key_auth
 @inject.autoparams()
 def add(authorities: AuthorityRepository) -> Response:
-    authorities_repr = [AuthorityRepr(**element) for element in request.get_json()]
+    authorities_repr = fromlist(AuthorityRepr, request.get_json())
     authorities.add(*[authority_repr.to_domain() for authority_repr in authorities_repr])
     return Response(status=201)
 
@@ -27,7 +28,7 @@ def add(authorities: AuthorityRepository) -> Response:
 @api_key_auth
 @inject.autoparams("users")
 def add_users(users: UserRepository, authority_id: int) -> Response:
-    users_repr = [UserRepr(**element) for element in request.get_json()]
+    users_repr = fromlist(UserRepr, request.get_json())
     users.add(*[user_repr.to_domain(authority_id) for user_repr in users_repr])
     return Response(status=201)
 
@@ -36,7 +37,7 @@ def add_users(users: UserRepository, authority_id: int) -> Response:
 @api_key_auth
 @inject.autoparams("schemes")
 def add_schemes(schemes: SchemeRepository, authority_id: int) -> Response:
-    schemes_repr = [SchemeRepr(**element) for element in request.get_json()]
+    schemes_repr = fromlist(SchemeRepr, request.get_json())
     schemes.add(*[scheme_repr.to_domain(authority_id) for scheme_repr in schemes_repr])
     return Response(status=201)
 

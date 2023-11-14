@@ -48,7 +48,7 @@ def test_scheme_shows_minimal_overview(schemes: SchemeRepository, client: FlaskC
 
     scheme_page = SchemePage(client).open(1)
 
-    assert scheme_page.scheme_type == "N/A"
+    assert scheme_page.scheme_type == "N/A" and scheme_page.funding_programme == "N/A"
 
 
 def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -> None:

@@ -1,5 +1,15 @@
 import inject
-from sqlalchemy import Column, Engine, Integer, MetaData, Table, Text, text
+from sqlalchemy import (
+    Column,
+    Engine,
+    Integer,
+    MetaData,
+    Table,
+    Text,
+    delete,
+    insert,
+    select,
+)
 
 from schemes.authorities.domain import Authority
 
@@ -31,31 +41,30 @@ class DatabaseAuthorityRepository(AuthorityRepository):
     @inject.autoparams()
     def __init__(self, engine: Engine):
         self._engine = engine
+        metadata = MetaData()
+        add_tables(metadata)
+        self._authority_table = metadata.tables["authority"]
 
     def add(self, *authorities: Authority) -> None:
         with self._engine.begin() as connection:
             for authority in authorities:
                 connection.execute(
-                    text(
-                        "INSERT INTO authority (authority_id, authority_name) VALUES (:authority_id, :authority_name)"
-                    ),
-                    {"authority_id": authority.id, "authority_name": authority.name},
+                    insert(self._authority_table).values(authority_id=authority.id, authority_name=authority.name)
                 )
 
     def clear(self) -> None:
         with self._engine.begin() as connection:
-            connection.execute(text("DELETE FROM authority"))
+            connection.execute(delete(self._authority_table))
 
     def get(self, id_: int) -> Authority | None:
         with self._engine.connect() as connection:
             result = connection.execute(
-                text("SELECT authority_id, authority_name FROM authority WHERE authority_id = :authority_id"),
-                {"authority_id": id_},
+                select(self._authority_table).where(self._authority_table.c.authority_id == id_)
             )
             row = result.one_or_none()
             return Authority(id_=row.authority_id, name=row.authority_name) if row else None
 
     def get_all(self) -> list[Authority]:
         with self._engine.connect() as connection:
-            result = connection.execute(text("SELECT authority_id, authority_name FROM authority"))
+            result = connection.execute(select(self._authority_table))
             return [Authority(id_=row.authority_id, name=row.authority_name) for row in result]

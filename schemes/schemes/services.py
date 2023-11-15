@@ -10,7 +10,9 @@ from sqlalchemy import (
     Row,
     Table,
     Text,
-    text,
+    delete,
+    insert,
+    select,
 )
 
 from schemes.schemes.domain import FundingProgramme, Scheme, SchemeType
@@ -53,60 +55,53 @@ class DatabaseSchemeRepository(SchemeRepository):
     @inject.autoparams()
     def __init__(self, engine: Engine):
         self._engine = engine
+        metadata = MetaData()
+        add_tables(metadata)
+        self._capital_scheme_table = metadata.tables["capital_scheme"]
         self._type_mapper = SchemeTypeMapper()
         self._funding_programme_mapper = FundingProgrammeMapper()
 
     def add(self, *schemes: Scheme) -> None:
-        sql = """
-            INSERT INTO capital_scheme (capital_scheme_id, scheme_name, bid_submitting_authority_id, scheme_type_id, funding_programme_id)
-            VALUES (:capital_scheme_id, :scheme_name, :bid_submitting_authority_id, :scheme_type_id, :funding_programme_id)
-        """
         with self._engine.begin() as connection:
             for scheme in schemes:
                 connection.execute(
-                    text(sql),
-                    {
-                        "capital_scheme_id": scheme.id,
-                        "scheme_name": scheme.name,
-                        "bid_submitting_authority_id": scheme.authority_id,
-                        "scheme_type_id": self._type_mapper.to_id(scheme.type) if scheme.type else None,
-                        "funding_programme_id": self._funding_programme_mapper.to_id(scheme.funding_programme)
+                    insert(self._capital_scheme_table).values(
+                        capital_scheme_id=scheme.id,
+                        scheme_name=scheme.name,
+                        bid_submitting_authority_id=scheme.authority_id,
+                        scheme_type_id=self._type_mapper.to_id(scheme.type) if scheme.type else None,
+                        funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme)
                         if scheme.funding_programme
                         else None,
-                    },
+                    )
                 )
 
     def clear(self) -> None:
         with self._engine.begin() as connection:
-            connection.execute(text("DELETE FROM capital_scheme"))
+            connection.execute(delete(self._capital_scheme_table))
 
     def get(self, id_: int) -> Scheme | None:
-        sql = """
-            SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id, scheme_type_id, funding_programme_id FROM capital_scheme
-            WHERE capital_scheme_id=:capital_scheme_id
-        """
         with self._engine.connect() as connection:
-            result = connection.execute(text(sql), {"capital_scheme_id": id_})
+            result = connection.execute(
+                select(self._capital_scheme_table).where(self._capital_scheme_table.c.capital_scheme_id == id_)
+            )
             row = result.one_or_none()
             return self._to_domain(row) if row else None
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
-        sql = """
-            SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id, scheme_type_id, funding_programme_id FROM capital_scheme
-            WHERE bid_submitting_authority_id=:bid_submitting_authority_id
-            ORDER BY capital_scheme_id
-        """
         with self._engine.connect() as connection:
-            result = connection.execute(text(sql), {"bid_submitting_authority_id": authority_id})
+            result = connection.execute(
+                select(self._capital_scheme_table)
+                .where(self._capital_scheme_table.c.bid_submitting_authority_id == authority_id)
+                .order_by(self._capital_scheme_table.c.capital_scheme_id)
+            )
             return [self._to_domain(row) for row in result]
 
     def get_all(self) -> list[Scheme]:
-        sql = """
-            SELECT capital_scheme_id, scheme_name, bid_submitting_authority_id, scheme_type_id, funding_programme_id FROM capital_scheme
-            ORDER BY capital_scheme_id
-        """
         with self._engine.connect() as connection:
-            result = connection.execute(text(sql))
+            result = connection.execute(
+                select(self._capital_scheme_table).order_by(self._capital_scheme_table.c.capital_scheme_id)
+            )
             return [self._to_domain(row) for row in result]
 
     def _to_domain(self, row: Row[Any]) -> Scheme:

@@ -111,8 +111,8 @@ class TestDatabaseSchemeRepository:
 
 
 class TestSchemeTypeMapper:
-    @pytest.mark.parametrize("type_, id_", [(SchemeType.DEVELOPMENT, 1), (SchemeType.CONSTRUCTION, 2)])
-    def test_mapper(self, type_: SchemeType, id_: int) -> None:
+    @pytest.mark.parametrize("type_, id_", [(SchemeType.DEVELOPMENT, 1), (SchemeType.CONSTRUCTION, 2), (None, None)])
+    def test_mapper(self, type_: SchemeType | None, id_: int | None) -> None:
         mapper = SchemeTypeMapper()
         assert mapper.to_id(type_) == id_ and mapper.to_type(id_) == type_
 
@@ -129,8 +129,9 @@ class TestFundingProgrammeMapper:
             (FundingProgramme.MRN, 6),
             (FundingProgramme.LUF, 7),
             (FundingProgramme.CRSTS, 8),
+            (None, None),
         ],
     )
-    def test_mapper(self, funding_programme: FundingProgramme, id_: int) -> None:
+    def test_mapper(self, funding_programme: FundingProgramme | None, id_: int | None) -> None:
         mapper = FundingProgrammeMapper()
         assert mapper.to_id(funding_programme) == id_ and mapper.to_funding_programme(id_) == funding_programme

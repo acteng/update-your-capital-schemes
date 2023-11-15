@@ -111,7 +111,7 @@ class TestApiEnabled:
         assert response.status_code == 201
         scheme1: Scheme
         scheme2: Scheme
-        (scheme1, scheme2) = schemes.get_all()
+        scheme1, scheme2 = schemes.get_all()
         assert (
             scheme1.id == 1
             and scheme1.name == "Wirral Package"

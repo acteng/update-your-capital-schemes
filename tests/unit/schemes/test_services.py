@@ -42,17 +42,40 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_add_schemes(self, schemes: DatabaseSchemeRepository) -> None:
-        schemes.add(self.wirral_package(), self.school_streets())
+        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1.type = SchemeType.DEVELOPMENT
+        scheme1.funding_programme = FundingProgramme.ATF3
+        schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
-        assert [self._to_tuple(scheme) for scheme in schemes.get_all()] == [
-            self._to_tuple(self.wirral_package()),
-            self._to_tuple(self.school_streets()),
-        ]
+        actual1: Scheme
+        actual2: Scheme
+        actual1, actual2 = schemes.get_all()
+
+        assert (
+            actual1.id == 1
+            and actual1.name == "Wirral Package"
+            and actual1.authority_id == 1
+            and actual1.type == SchemeType.DEVELOPMENT
+            and actual1.funding_programme == FundingProgramme.ATF3
+        )
+        assert actual2.id == 2 and actual2.name == "School Streets" and actual1.authority_id == 1
 
     def test_get_scheme(self, schemes: DatabaseSchemeRepository) -> None:
-        schemes.add(self.wirral_package())
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.type = SchemeType.DEVELOPMENT
+        scheme.funding_programme = FundingProgramme.ATF3
+        schemes.add(scheme)
 
-        assert self._to_tuple(schemes.get(1)) == self._to_tuple(self.wirral_package())
+        actual = schemes.get(1)
+
+        assert (
+            actual
+            and actual.id == 1
+            and actual.name == "Wirral Package"
+            and actual.authority_id == 1
+            and actual.type == SchemeType.DEVELOPMENT
+            and actual.funding_programme == FundingProgramme.ATF3
+        )
 
     def test_get_scheme_that_does_not_exist(self, schemes: DatabaseSchemeRepository) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
@@ -60,26 +83,46 @@ class TestDatabaseSchemeRepository:
         assert schemes.get(2) is None
 
     def test_get_all_schemes_by_authority(self, schemes: DatabaseSchemeRepository) -> None:
+        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1.type = SchemeType.DEVELOPMENT
+        scheme1.funding_programme = FundingProgramme.ATF3
         schemes.add(
-            self.school_streets(), self.wirral_package(), Scheme(id_=3, name="Hospital Fields Road", authority_id=2)
+            scheme1,
+            Scheme(id_=2, name="School Streets", authority_id=1),
+            Scheme(id_=3, name="Hospital Fields Road", authority_id=2),
         )
 
-        schemes_list = schemes.get_by_authority(1)
+        actual1: Scheme
+        actual2: Scheme
+        actual1, actual2 = schemes.get_by_authority(1)
 
-        assert [self._to_tuple(scheme) for scheme in schemes_list] == [
-            self._to_tuple(self.wirral_package()),
-            self._to_tuple(self.school_streets()),
-        ]
+        assert (
+            actual1.id == 1
+            and actual1.name == "Wirral Package"
+            and actual1.authority_id == 1
+            and actual1.type == SchemeType.DEVELOPMENT
+            and actual1.funding_programme == FundingProgramme.ATF3
+        )
+        assert actual2.id == 2 and actual2.name == "School Streets" and actual1.authority_id == 1
 
     def test_get_all_schemes(self, schemes: DatabaseSchemeRepository) -> None:
-        schemes.add(self.school_streets(), self.wirral_package())
+        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1.type = SchemeType.DEVELOPMENT
+        scheme1.funding_programme = FundingProgramme.ATF3
+        schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
-        schemes_list = schemes.get_all()
+        actual1: Scheme
+        actual2: Scheme
+        actual1, actual2 = schemes.get_all()
 
-        assert [self._to_tuple(scheme) for scheme in schemes_list] == [
-            self._to_tuple(self.wirral_package()),
-            self._to_tuple(self.school_streets()),
-        ]
+        assert (
+            actual1.id == 1
+            and actual1.name == "Wirral Package"
+            and actual1.authority_id == 1
+            and actual1.type == SchemeType.DEVELOPMENT
+            and actual1.funding_programme == FundingProgramme.ATF3
+        )
+        assert actual2.id == 2 and actual2.name == "School Streets" and actual1.authority_id == 1
 
     def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository) -> None:
         schemes.add(
@@ -90,24 +133,6 @@ class TestDatabaseSchemeRepository:
         schemes.clear()
 
         assert schemes.get_all() == []
-
-    @staticmethod
-    def wirral_package() -> Scheme:
-        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.type = SchemeType.DEVELOPMENT
-        scheme1.funding_programme = FundingProgramme.ATF3
-        return scheme1
-
-    @staticmethod
-    def school_streets() -> Scheme:
-        scheme2 = Scheme(id_=2, name="School Streets", authority_id=1)
-        scheme2.type = SchemeType.CONSTRUCTION
-        scheme2.funding_programme = FundingProgramme.ATF4
-        return scheme2
-
-    @staticmethod
-    def _to_tuple(scheme: Scheme | None) -> tuple[int, str, int, SchemeType | None, FundingProgramme | None] | None:
-        return (scheme.id, scheme.name, scheme.authority_id, scheme.type, scheme.funding_programme) if scheme else None
 
 
 class TestSchemeTypeMapper:

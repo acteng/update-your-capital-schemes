@@ -40,18 +40,20 @@ def authority_fixture(authorities: DatabaseAuthorityRepository) -> None:
 def test_add_users(users: DatabaseUserRepository) -> None:
     users.add(User(email="boardman@example.com", authority_id=1), User(email="obree@example.com", authority_id=1))
 
-    assert [_to_tuple(user) for user in users.get_all()] == [
-        _to_tuple(User(email="boardman@example.com", authority_id=1)),
-        _to_tuple(User(email="obree@example.com", authority_id=1)),
-    ]
+    user1: User
+    user2: User
+    user1, user2 = users.get_all()
+
+    assert user1.email == "boardman@example.com" and user1.authority_id == 1
+    assert user2.email == "obree@example.com" and user2.authority_id == 1
 
 
 def test_get_user_by_email(users: DatabaseUserRepository) -> None:
     users.add(User(email="boardman@example.com", authority_id=1))
 
-    assert _to_tuple(users.get_by_email("boardman@example.com")) == _to_tuple(
-        User("boardman@example.com", authority_id=1)
-    )
+    user = users.get_by_email("boardman@example.com")
+
+    assert user and user.email == "boardman@example.com" and user.authority_id == 1
 
 
 def test_get_user_by_email_who_does_not_exist(users: DatabaseUserRepository) -> None:
@@ -63,12 +65,12 @@ def test_get_user_by_email_who_does_not_exist(users: DatabaseUserRepository) -> 
 def test_get_all_users(users: DatabaseUserRepository) -> None:
     users.add(User(email="boardman@example.com", authority_id=1), User(email="obree@example.com", authority_id=1))
 
-    user_list = users.get_all()
+    user1: User
+    user2: User
+    user1, user2 = users.get_all()
 
-    assert [_to_tuple(user) for user in user_list] == [
-        _to_tuple(User(email="boardman@example.com", authority_id=1)),
-        _to_tuple(User(email="obree@example.com", authority_id=1)),
-    ]
+    assert user1.email == "boardman@example.com" and user1.authority_id == 1
+    assert user2.email == "obree@example.com" and user2.authority_id == 1
 
 
 def test_clear_all_users(users: DatabaseUserRepository) -> None:
@@ -77,7 +79,3 @@ def test_clear_all_users(users: DatabaseUserRepository) -> None:
     users.clear()
 
     assert users.get_all() == []
-
-
-def _to_tuple(user: User | None) -> tuple[str, int] | None:
-    return (user.email, user.authority_id) if user else None

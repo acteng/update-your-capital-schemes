@@ -111,8 +111,8 @@ class DatabaseSchemeRepository(SchemeRepository):
 
     def _to_domain(self, row: Row[Any]) -> Scheme:
         scheme = Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
-        scheme.type = self._type_mapper.to_type(row.scheme_type_id)
-        scheme.funding_programme = self._funding_programme_mapper.to_funding_programme(row.funding_programme_id)
+        scheme.type = self._type_mapper.to_domain(row.scheme_type_id)
+        scheme.funding_programme = self._funding_programme_mapper.to_domain(row.funding_programme_id)
         return scheme
 
 
@@ -125,7 +125,7 @@ class SchemeTypeMapper:
     def to_id(self, type_: SchemeType | None) -> int | None:
         return self._TYPE_IDS[type_] if type_ else None
 
-    def to_type(self, id_: int | None) -> SchemeType | None:
+    def to_domain(self, id_: int | None) -> SchemeType | None:
         return next(key for key, value in self._TYPE_IDS.items() if value == id_) if id_ else None
 
 
@@ -144,5 +144,5 @@ class FundingProgrammeMapper:
     def to_id(self, funding_programme: FundingProgramme | None) -> int | None:
         return self._FUNDING_PROGRAMME_IDS[funding_programme] if funding_programme else None
 
-    def to_funding_programme(self, id_: int | None) -> FundingProgramme | None:
+    def to_domain(self, id_: int | None) -> FundingProgramme | None:
         return next(key for key, value in self._FUNDING_PROGRAMME_IDS.items() if value == id_) if id_ else None

@@ -114,7 +114,7 @@ class TestSchemeTypeMapper:
     @pytest.mark.parametrize("type_, id_", [(SchemeType.DEVELOPMENT, 1), (SchemeType.CONSTRUCTION, 2), (None, None)])
     def test_mapper(self, type_: SchemeType | None, id_: int | None) -> None:
         mapper = SchemeTypeMapper()
-        assert mapper.to_id(type_) == id_ and mapper.to_type(id_) == type_
+        assert mapper.to_id(type_) == id_ and mapper.to_domain(id_) == type_
 
 
 class TestFundingProgrammeMapper:
@@ -134,4 +134,4 @@ class TestFundingProgrammeMapper:
     )
     def test_mapper(self, funding_programme: FundingProgramme | None, id_: int | None) -> None:
         mapper = FundingProgrammeMapper()
-        assert mapper.to_id(funding_programme) == id_ and mapper.to_funding_programme(id_) == funding_programme
+        assert mapper.to_id(funding_programme) == id_ and mapper.to_domain(id_) == funding_programme

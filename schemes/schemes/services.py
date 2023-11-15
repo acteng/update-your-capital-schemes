@@ -69,10 +69,8 @@ class DatabaseSchemeRepository(SchemeRepository):
                         capital_scheme_id=scheme.id,
                         scheme_name=scheme.name,
                         bid_submitting_authority_id=scheme.authority_id,
-                        scheme_type_id=self._type_mapper.to_id(scheme.type) if scheme.type else None,
-                        funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme)
-                        if scheme.funding_programme
-                        else None,
+                        scheme_type_id=self._type_mapper.to_id(scheme.type),
+                        funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
                     )
                 )
 

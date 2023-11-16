@@ -1,5 +1,3 @@
-from typing import Generator
-
 import pytest
 from sqlalchemy import Engine, MetaData
 
@@ -17,12 +15,12 @@ from schemes.schemes.services import add_tables as schemes_add_tables
 
 class TestDatabaseSchemeRepository:
     @pytest.fixture(name="engine")
-    def engine_fixture(self, engine: Engine) -> Generator[Engine, None, None]:
+    def engine_fixture(self, engine: Engine) -> Engine:
         metadata = MetaData()
         authorities_add_tables(metadata)
         schemes_add_tables(metadata)
         metadata.create_all(engine)
-        yield engine
+        return engine
 
     @pytest.fixture(name="authorities")
     def authorities_fixture(self, engine: Engine) -> DatabaseAuthorityRepository:

@@ -1,5 +1,5 @@
 import pytest
-from sqlalchemy import Engine, MetaData, insert, select
+from sqlalchemy import Engine, MetaData, func, insert, select
 
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import DatabaseAuthorityRepository
@@ -190,7 +190,10 @@ class TestDatabaseSchemeRepository:
 
         schemes.clear()
 
-        assert schemes.get_all() == []
+        with engine.connect() as connection:
+            # pylint:disable=not-callable
+            count = connection.execute(select(func.count("*")).select_from(capital_scheme_table)).scalar()
+        assert count == 0
 
 
 class TestSchemeTypeMapper:

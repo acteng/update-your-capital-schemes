@@ -111,21 +111,7 @@ class TestApiEnabled:
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
-                {
-                    "id": 1,
-                    "name": "Wirral Package",
-                    "type": "construction",
-                    "funding_programme": "ATF4",
-                    "milestone_revisions": [
-                        {
-                            "effective_date_from": "2020-01-01",
-                            "effective_date_to": None,
-                            "milestone": "detailed design completed",
-                            "observation_type": "Actual",
-                            "status_date": "2020-01-01",
-                        }
-                    ],
-                },
+                {"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"},
                 {"id": 2, "name": "School Streets"},
             ],
         )
@@ -140,18 +126,43 @@ class TestApiEnabled:
             and scheme1.authority_id == 1
             and scheme1.type == SchemeType.CONSTRUCTION
             and scheme1.funding_programme == FundingProgramme.ATF4
-            and scheme1.milestone_revisions
-            == [
-                MilestoneRevision(
-                    effective_date_from=date(2020, 1, 1),
-                    effective_date_to=None,
-                    milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                    observation_type=ObservationType.ACTUAL,
-                    status_date=date(2020, 1, 1),
-                )
-            ]
         )
         assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme2.authority_id == 1
+
+    def test_add_schemes_milestone_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        response = client.post(
+            "/authorities/1/schemes",
+            headers={"Authorization": "API-Key boardman"},
+            json=[
+                {
+                    "id": 1,
+                    "name": "Wirral Package",
+                    "milestone_revisions": [
+                        {
+                            "effective_date_from": "2020-01-01",
+                            "effective_date_to": None,
+                            "milestone": "detailed design completed",
+                            "observation_type": "Actual",
+                            "status_date": "2020-01-01",
+                        }
+                    ],
+                },
+            ],
+        )
+
+        assert response.status_code == 201
+        scheme1: Scheme
+        (scheme1,) = schemes.get_all()
+        assert scheme1.id == 1
+        assert scheme1.milestone_revisions == [
+            MilestoneRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 1),
+            )
+        ]
 
     def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
         authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))

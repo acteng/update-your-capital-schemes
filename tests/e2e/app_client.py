@@ -67,7 +67,7 @@ class SchemeRepr:
 
 @dataclass(frozen=True)
 class MilestoneRevisionRepr:
-    effective_date_from: str | None
+    effective_date_from: str
     effective_date_to: str | None
     milestone: str
     observation_type: str

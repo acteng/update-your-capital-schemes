@@ -386,6 +386,62 @@ class TestScheme:  # pylint: disable=too-many-public-methods
 
         assert scheme.change_control_adjustment is None
 
+    def test_get_allocation_still_to_spend(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("110000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.SPENT_TO_DATE,
+                amount=Decimal("50000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.allocation_still_to_spend == Decimal("60000")
+
+    def test_get_allocation_still_to_spend_when_no_funding_allocation(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.SPENT_TO_DATE,
+                amount=Decimal("50000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.allocation_still_to_spend == Decimal("-50000")
+
+    def test_get_allocation_still_to_spend_when_no_spend_to_date(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("110000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.allocation_still_to_spend == Decimal("110000")
+
+    def test_get_allocation_still_to_spend_when_no_revisions(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+
+        assert scheme.allocation_still_to_spend == Decimal("0")
+
 
 class TestMilestoneRevision:
     @pytest.mark.parametrize(

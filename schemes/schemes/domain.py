@@ -72,6 +72,16 @@ class Scheme:
         )
         return sum(amounts, Decimal(0)) if self._financial_revisions else None
 
+    @property
+    def allocation_still_to_spend(self) -> Decimal:
+        funding_allocation = self.funding_allocation
+        spend_to_date = self.spend_to_date
+        return (
+            funding_allocation - spend_to_date
+            if funding_allocation is not None and spend_to_date is not None
+            else Decimal(0)
+        )
+
 
 class SchemeType(Enum):
     DEVELOPMENT = auto()

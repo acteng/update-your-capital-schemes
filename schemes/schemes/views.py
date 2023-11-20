@@ -159,6 +159,7 @@ class SchemeFundingContext:
     funding_allocation: Decimal | None
     spend_to_date: Decimal | None
     change_control_adjustment: Decimal | None
+    allocation_still_to_spend: Decimal
 
     @staticmethod
     def for_domain(scheme: Scheme) -> SchemeFundingContext:
@@ -166,6 +167,7 @@ class SchemeFundingContext:
             funding_allocation=scheme.funding_allocation,
             spend_to_date=scheme.spend_to_date,
             change_control_adjustment=scheme.change_control_adjustment,
+            allocation_still_to_spend=scheme.allocation_still_to_spend,
         )
 
 

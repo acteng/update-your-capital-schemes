@@ -101,6 +101,7 @@ def test_scheme_shows_minimal_funding(schemes: SchemeRepository, client: FlaskCl
         scheme_page.funding.funding_allocation == "N/A"
         and scheme_page.funding.spend_to_date == "N/A"
         and scheme_page.funding.change_control_adjustment == "N/A"
+        and scheme_page.funding.allocation_still_to_spend == "£0"
     )
 
 
@@ -141,4 +142,5 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
         scheme_page.funding.funding_allocation == "£110,000"
         and scheme_page.funding.spend_to_date == "£50,000"
         and scheme_page.funding.change_control_adjustment == "£10,000"
+        and scheme_page.funding.allocation_still_to_spend == "£60,000"
     )

@@ -173,3 +173,7 @@ class SchemeFundingComponent:
         self.change_control_adjustment = (
             change_control_adjustment_tag.string.strip() if change_control_adjustment_tag.string else None
         )
+        allocation_still_to_spend_tag = tag.select("main dd")[3]
+        self.allocation_still_to_spend = (
+            allocation_still_to_spend_tag.string.strip() if allocation_still_to_spend_tag.string else None
+        )

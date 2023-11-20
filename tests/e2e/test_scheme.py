@@ -91,4 +91,5 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, app: Fla
         funding_component.funding_allocation == "£110,000"
         and funding_component.spend_to_date == "£50,000"
         and funding_component.change_control_adjustment == "£10,000"
+        and funding_component.allocation_still_to_spend == "£60,000"
     )

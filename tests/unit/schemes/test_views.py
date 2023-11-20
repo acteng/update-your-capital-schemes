@@ -164,6 +164,31 @@ class TestSchemeFundingContext:
 
         assert context.change_control_adjustment == Decimal("10000")
 
+    def test_set_allocation_still_to_spend(self) -> None:
+        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("110000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.SPENT_TO_DATE,
+                amount=Decimal("50000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        context = SchemeFundingContext.for_domain(scheme)
+
+        assert context.allocation_still_to_spend == Decimal("60000")
+
 
 class TestSchemeRepr:
     def test_create_domain(self) -> None:

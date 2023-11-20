@@ -24,6 +24,14 @@
             "value": {
                 "text": "£{:,}".format(funding.change_control_adjustment | round) if funding.change_control_adjustment else "N/A"
             }
+        },
+        {
+            "key": {
+                "text": "Allocation still to spend"
+            },
+            "value": {
+                "text": "£{:,}".format(funding.allocation_still_to_spend | round)
+            }
         }
     ]
 }) }}

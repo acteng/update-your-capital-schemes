@@ -180,6 +180,7 @@ class SchemeFundingComponent:
         self._funding_allocation = component.get_by_role("definition").nth(0)
         self._spend_to_date = component.get_by_role("definition").nth(1)
         self._change_control_adjustment = component.get_by_role("definition").nth(2)
+        self._allocation_still_to_spend = component.get_by_role("definition").nth(3)
 
     @property
     def funding_allocation(self) -> str | None:
@@ -194,6 +195,11 @@ class SchemeFundingComponent:
     @property
     def change_control_adjustment(self) -> str | None:
         text = self._change_control_adjustment.text_content()
+        return text.strip() if text else None
+
+    @property
+    def allocation_still_to_spend(self) -> str | None:
+        text = self._allocation_still_to_spend.text_content()
         return text.strip() if text else None
 
 

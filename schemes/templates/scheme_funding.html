@@ -8,6 +8,14 @@
             "value": {
                 "text": "£{:,}".format(funding.funding_allocation | round) if funding.funding_allocation else "N/A"
             }
+        },
+        {
+            "key": {
+                "text": "Spend to date"
+            },
+            "value": {
+                "text": "£{:,}".format(funding.spend_to_date | round) if funding.spend_to_date else "N/A"
+            }
         }
     ]
 }) }}

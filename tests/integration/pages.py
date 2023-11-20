@@ -167,3 +167,5 @@ class SchemeFundingComponent:
     def __init__(self, tag: Tag):
         funding_allocation_tag = tag.select("main dd")[0]
         self.funding_allocation = funding_allocation_tag.string.strip() if funding_allocation_tag.string else None
+        spend_to_date_tag = tag.select("main dd")[1]
+        self.spend_to_date = spend_to_date_tag.string.strip() if spend_to_date_tag.string else None

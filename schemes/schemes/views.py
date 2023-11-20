@@ -157,10 +157,11 @@ class SchemeOverviewContext:
 @dataclass(frozen=True)
 class SchemeFundingContext:
     funding_allocation: Decimal | None = None
+    spend_to_date: Decimal | None = None
 
     @staticmethod
     def for_domain(scheme: Scheme) -> SchemeFundingContext:
-        return SchemeFundingContext(funding_allocation=scheme.funding_allocation)
+        return SchemeFundingContext(funding_allocation=scheme.funding_allocation, spend_to_date=scheme.spend_to_date)
 
 
 @bp.delete("")

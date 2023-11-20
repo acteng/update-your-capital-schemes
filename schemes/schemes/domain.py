@@ -54,6 +54,15 @@ class Scheme:
         )
         return sum(amounts, Decimal(0)) if self._financial_revisions else None
 
+    @property
+    def spend_to_date(self) -> Decimal | None:
+        amounts = (
+            revision.amount
+            for revision in self._financial_revisions
+            if revision.type == FinancialType.SPENT_TO_DATE and revision.effective_date_to is None
+        )
+        return sum(amounts, Decimal(0)) if self._financial_revisions else None
+
 
 class SchemeType(Enum):
     DEVELOPMENT = auto()

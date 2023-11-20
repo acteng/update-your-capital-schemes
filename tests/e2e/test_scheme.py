@@ -65,7 +65,14 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, app: Fla
                     type="funding allocation",
                     amount="100000",
                     source="ATF4 Bid",
-                )
+                ),
+                FinancialRevisionRepr(
+                    effective_date_from="2020-01-01",
+                    effective_date_to=None,
+                    type="spent to date",
+                    amount="50000",
+                    source="ATF4 Bid",
+                ),
             ],
         ),
     )
@@ -73,4 +80,4 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, app: Fla
 
     funding_component = SchemePage(app, page).open(1).open_funding()
 
-    assert funding_component.funding_allocation == "£100,000"
+    assert funding_component.funding_allocation == "£100,000" and funding_component.spend_to_date == "£50,000"

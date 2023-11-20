@@ -132,6 +132,22 @@ class TestSchemeFundingContext:
 
         assert context.funding_allocation == Decimal("100000")
 
+    def test_set_spend_to_date(self) -> None:
+        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.SPENT_TO_DATE,
+                amount=Decimal("50000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        context = SchemeFundingContext.for_domain(scheme)
+
+        assert context.spend_to_date == Decimal("50000")
+
 
 class TestSchemeRepr:
     def test_create_domain(self) -> None:

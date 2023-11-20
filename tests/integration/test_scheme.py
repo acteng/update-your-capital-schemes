@@ -97,7 +97,7 @@ def test_scheme_shows_minimal_funding(schemes: SchemeRepository, client: FlaskCl
 
     scheme_page = SchemePage(client).open(1)
 
-    assert scheme_page.funding.funding_allocation == "N/A"
+    assert scheme_page.funding.funding_allocation == "N/A" and scheme_page.funding.spend_to_date == "N/A"
 
 
 def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -111,8 +111,17 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
             source=DataSource.ATF4_BID,
         )
     )
+    scheme.update_financial(
+        FinancialRevision(
+            effective_date_from=date(2020, 1, 1),
+            effective_date_to=None,
+            type=FinancialType.SPENT_TO_DATE,
+            amount=Decimal("50000"),
+            source=DataSource.ATF4_BID,
+        )
+    )
     schemes.add(scheme)
 
     scheme_page = SchemePage(client).open(1)
 
-    assert scheme_page.funding.funding_allocation == "£100,000"
+    assert scheme_page.funding.funding_allocation == "£100,000" and scheme_page.funding.spend_to_date == "£50,000"

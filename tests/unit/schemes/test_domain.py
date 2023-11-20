@@ -237,6 +237,80 @@ class TestScheme:
 
         assert scheme.funding_allocation is None
 
+    def test_get_spend_to_date_sums_amounts(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.SPENT_TO_DATE,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 2, 1),
+                effective_date_to=None,
+                type=FinancialType.SPENT_TO_DATE,
+                amount=Decimal("200000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
+
+        assert scheme.spend_to_date == Decimal("300000")
+
+    def test_get_spend_to_date_selects_financial_type(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.SPENT_TO_DATE,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.EXPECTED_COST,
+                amount=Decimal("200000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.spend_to_date == Decimal("100000")
+
+    def test_get_spend_to_date_selects_latest_revision(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=date(2020, 1, 31),
+                type=FinancialType.SPENT_TO_DATE,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 2, 1),
+                effective_date_to=None,
+                type=FinancialType.SPENT_TO_DATE,
+                amount=Decimal("200000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.spend_to_date == Decimal("200000")
+
+    def test_get_spend_to_date_when_no_revisions(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+
+        assert scheme.spend_to_date is None
+
 
 class TestMilestoneRevision:
     @pytest.mark.parametrize(

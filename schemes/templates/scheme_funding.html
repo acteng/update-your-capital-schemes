@@ -16,6 +16,14 @@
             "value": {
                 "text": "£{:,}".format(funding.spend_to_date | round) if funding.spend_to_date else "N/A"
             }
+        },
+        {
+            "key": {
+                "text": "Change control adjustment"
+            },
+            "value": {
+                "text": "£{:,}".format(funding.change_control_adjustment | round) if funding.change_control_adjustment else "N/A"
+            }
         }
     ]
 }) }}

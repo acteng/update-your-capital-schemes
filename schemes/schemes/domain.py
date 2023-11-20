@@ -63,6 +63,15 @@ class Scheme:
         )
         return sum(amounts, Decimal(0)) if self._financial_revisions else None
 
+    @property
+    def change_control_adjustment(self) -> Decimal | None:
+        amounts = (
+            revision.amount
+            for revision in self._financial_revisions
+            if revision.source == DataSource.CHANGE_CONTROL and revision.effective_date_to is None
+        )
+        return sum(amounts, Decimal(0)) if self._financial_revisions else None
+
 
 class SchemeType(Enum):
     DEVELOPMENT = auto()

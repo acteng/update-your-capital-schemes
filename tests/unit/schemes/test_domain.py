@@ -14,7 +14,8 @@ from schemes.schemes.domain import (
 )
 
 
-class TestScheme:
+# TODO: break up Scheme and tests into components
+class TestScheme:  # pylint: disable=too-many-public-methods
     def test_get_reference(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
 
@@ -310,6 +311,80 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
 
         assert scheme.spend_to_date is None
+
+    def test_get_change_control_adjustment_sums_amounts(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("10000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 2, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("20000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
+
+        assert scheme.change_control_adjustment == Decimal("30000")
+
+    def test_get_change_control_adjustment_selects_source(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("10000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("20000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.change_control_adjustment == Decimal("10000")
+
+    def test_get_change_control_adjustment_selects_latest_revision(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=date(2020, 1, 31),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("10000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 2, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("20000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
+
+        assert scheme.change_control_adjustment == Decimal("20000")
+
+    def test_get_change_control_adjustment_when_no_revisions(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+
+        assert scheme.change_control_adjustment is None
 
 
 class TestMilestoneRevision:

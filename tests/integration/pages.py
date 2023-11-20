@@ -169,3 +169,7 @@ class SchemeFundingComponent:
         self.funding_allocation = funding_allocation_tag.string.strip() if funding_allocation_tag.string else None
         spend_to_date_tag = tag.select("main dd")[1]
         self.spend_to_date = spend_to_date_tag.string.strip() if spend_to_date_tag.string else None
+        change_control_adjustment_tag = tag.select("main dd")[2]
+        self.change_control_adjustment = (
+            change_control_adjustment_tag.string.strip() if change_control_adjustment_tag.string else None
+        )

@@ -148,6 +148,22 @@ class TestSchemeFundingContext:
 
         assert context.spend_to_date == Decimal("50000")
 
+    def test_set_change_control_adjustment(self) -> None:
+        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("10000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
+
+        context = SchemeFundingContext.for_domain(scheme)
+
+        assert context.change_control_adjustment == Decimal("10000")
+
 
 class TestSchemeRepr:
     def test_create_domain(self) -> None:

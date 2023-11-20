@@ -1,8 +1,17 @@
 from datetime import date
+from decimal import Decimal
 
 import pytest
 
-from schemes.schemes.domain import Milestone, MilestoneRevision, ObservationType, Scheme
+from schemes.schemes.domain import (
+    DataSource,
+    FinancialRevision,
+    FinancialType,
+    Milestone,
+    MilestoneRevision,
+    ObservationType,
+    Scheme,
+)
 
 
 class TestScheme:
@@ -115,6 +124,119 @@ class TestScheme:
 
         assert scheme.current_milestone is None
 
+    def test_get_financial_revisions_is_copy(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        scheme.financial_revisions.clear()
+
+        assert scheme.financial_revisions
+
+    def test_update_financial(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.financial_revisions == [
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        ]
+
+    def test_get_funding_allocation_sums_amounts(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 2, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("200000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
+
+        assert scheme.funding_allocation == Decimal("300000")
+
+    def test_get_funding_allocation_selects_financial_type(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.EXPECTED_COST,
+                amount=Decimal("200000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.funding_allocation == Decimal("100000")
+
+    def test_get_funding_allocation_selects_latest_revision(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=date(2020, 1, 31),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 2, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("200000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.funding_allocation == Decimal("200000")
+
+    def test_get_funding_allocation_when_no_revisions(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+
+        assert scheme.funding_allocation is None
+
 
 class TestMilestoneRevision:
     @pytest.mark.parametrize(
@@ -142,4 +264,33 @@ class TestMilestoneRevision:
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
+            )
+
+
+class TestFinancialRevision:
+    @pytest.mark.parametrize(
+        "effective_date_from, effective_date_to",
+        [(date(2020, 1, 1), date(2020, 1, 31)), (date(2020, 1, 31), date(2020, 1, 31)), (date(2020, 1, 1), None)],
+    )
+    def test_effective_date_from_before_or_equal_to_effective_date_to(
+        self, effective_date_from: date, effective_date_to: date | None
+    ) -> None:
+        FinancialRevision(
+            effective_date_from=effective_date_from,
+            effective_date_to=effective_date_to,
+            type=FinancialType.FUNDING_ALLOCATION,
+            amount=Decimal("100000"),
+            source=DataSource.ATF4_BID,
+        )
+
+    def test_effective_date_from_after_effective_date_to_errors(self) -> None:
+        with pytest.raises(
+            ValueError, match="Effective date from '2020-01-01' must not be after effective date to '2019-12-31'"
+        ):
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=date(2019, 12, 31),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
             )

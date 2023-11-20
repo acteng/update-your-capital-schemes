@@ -9,6 +9,10 @@
         {% include "scheme_overview.html" %}
     {% endset -%}
 
+    {% set fundingHtml %}
+        {% include "scheme_funding.html" %}
+    {% endset -%}
+
     {{ govukTabs({
         "items": [
             {
@@ -16,6 +20,13 @@
                 "label": "Overview",
                 "panel": {
                     "html": overviewHtml
+                }
+            },
+            {
+                "id": "funding",
+                "label": "Funding",
+                "panel": {
+                    "html": fundingHtml
                 }
             }
         ]

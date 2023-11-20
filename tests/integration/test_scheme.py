@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 import inject
 import pytest
@@ -8,6 +9,9 @@ from flask.testing import FlaskClient
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
 from schemes.schemes.domain import (
+    DataSource,
+    FinancialRevision,
+    FinancialType,
     FundingProgramme,
     Milestone,
     MilestoneRevision,
@@ -86,3 +90,29 @@ def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -
         and scheme_page.overview.funding_programme == "ATF4"
         and scheme_page.overview.current_milestone == "Detailed design completed"
     )
+
+
+def test_scheme_shows_minimal_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    scheme_page = SchemePage(client).open(1)
+
+    assert scheme_page.funding.funding_allocation == "N/A"
+
+
+def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.update_financial(
+        FinancialRevision(
+            effective_date_from=date(2020, 1, 1),
+            effective_date_to=None,
+            type=FinancialType.FUNDING_ALLOCATION,
+            amount=Decimal("100000"),
+            source=DataSource.ATF4_BID,
+        )
+    )
+    schemes.add(scheme)
+
+    scheme_page = SchemePage(client).open(1)
+
+    assert scheme_page.funding.funding_allocation == "£100,000"

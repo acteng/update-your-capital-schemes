@@ -135,6 +135,8 @@ class SchemePage:
         self._main = page.get_by_role("main")
         self._reference_and_name = self._main.get_by_role("heading").nth(0)
         self.overview = SchemeOverviewComponent(self._main.get_by_role("tabpanel", name="Overview"))
+        self._funding_tab = self._main.get_by_role("tab", name="Funding")
+        self.funding = SchemeFundingComponent(self._main.get_by_role("tabpanel", name="Funding"))
 
     def open(self, id_: int) -> SchemePage:
         # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
@@ -145,6 +147,10 @@ class SchemePage:
     @property
     def reference_and_name(self) -> str | None:
         return self._reference_and_name.text_content()
+
+    def open_funding(self) -> SchemeFundingComponent:
+        self._funding_tab.click()
+        return self.funding
 
 
 class SchemeOverviewComponent:
@@ -166,6 +172,16 @@ class SchemeOverviewComponent:
     @property
     def current_milestone(self) -> str | None:
         text = self._current_milestone.text_content()
+        return text.strip() if text else None
+
+
+class SchemeFundingComponent:
+    def __init__(self, component: Locator):
+        self._funding_allocation = component.get_by_role("definition").nth(0)
+
+    @property
+    def funding_allocation(self) -> str | None:
+        text = self._funding_allocation.text_content()
         return text.strip() if text else None
 
 

@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 from typing import Any, Mapping
 
 import inject
@@ -9,6 +10,9 @@ from flask.testing import FlaskClient
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
 from schemes.schemes.domain import (
+    DataSource,
+    FinancialRevision,
+    FinancialType,
     FundingProgramme,
     Milestone,
     MilestoneRevision,
@@ -161,6 +165,41 @@ class TestApiEnabled:
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
+            )
+        ]
+
+    def test_add_schemes_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        response = client.post(
+            "/authorities/1/schemes",
+            headers={"Authorization": "API-Key boardman"},
+            json=[
+                {
+                    "id": 1,
+                    "name": "Wirral Package",
+                    "financial_revisions": [
+                        {
+                            "effective_date_from": "2020-01-01",
+                            "effective_date_to": None,
+                            "type": "funding allocation",
+                            "amount": 100_000,
+                            "source": "ATF4 Bid",
+                        }
+                    ],
+                },
+            ],
+        )
+
+        assert response.status_code == 201
+        scheme1: Scheme
+        (scheme1,) = schemes.get_all()
+        assert scheme1.id == 1
+        assert scheme1.financial_revisions == [
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
             )
         ]
 

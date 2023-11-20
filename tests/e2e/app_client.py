@@ -63,6 +63,7 @@ class SchemeRepr:
     type: str | None = None
     funding_programme: str | None = None
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
+    financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -72,3 +73,12 @@ class MilestoneRevisionRepr:
     milestone: str
     observation_type: str
     status_date: str
+
+
+@dataclass(frozen=True)
+class FinancialRevisionRepr:
+    effective_date_from: str
+    effective_date_to: str | None
+    type: str
+    amount: str
+    source: str

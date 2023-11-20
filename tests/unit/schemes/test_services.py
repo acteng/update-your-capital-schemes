@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 import pytest
 from sqlalchemy import Engine, MetaData, func, insert, select
@@ -7,6 +8,9 @@ from schemes.authorities.domain import Authority
 from schemes.authorities.services import DatabaseAuthorityRepository
 from schemes.authorities.services import add_tables as authorities_add_tables
 from schemes.schemes.domain import (
+    DataSource,
+    FinancialRevision,
+    FinancialType,
     FundingProgramme,
     Milestone,
     MilestoneRevision,
@@ -16,6 +20,8 @@ from schemes.schemes.domain import (
 )
 from schemes.schemes.services import (
     DatabaseSchemeRepository,
+    DataSourceMapper,
+    FinancialTypeMapper,
     FundingProgrammeMapper,
     MilestoneMapper,
     ObservationTypeMapper,
@@ -126,6 +132,55 @@ class TestDatabaseSchemeRepository:
             and row2.status_date == date(2020, 3, 1)
         )
 
+    def test_add_schemes_financial_revisions(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=date(2020, 1, 31),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        scheme1.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 2, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("200000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
+
+        capital_scheme_financial_table = metadata.tables["capital_scheme_financial"]
+        with engine.connect() as connection:
+            row1, row2 = connection.execute(
+                select(capital_scheme_financial_table).order_by(
+                    capital_scheme_financial_table.c.capital_scheme_financial_id
+                )
+            )
+        assert (
+            row1.capital_scheme_id == 1
+            and row1.effective_date_from == date(2020, 1, 1)
+            and row1.effective_date_to == date(2020, 1, 31)
+            and row1.financial_type_id == 3
+            and row1.amount == Decimal("100000")
+            and row1.data_source_id == 3
+        )
+        assert (
+            row2.capital_scheme_id == 1
+            and row2.effective_date_from == date(2020, 2, 1)
+            and row2.effective_date_to is None
+            and row2.financial_type_id == 3
+            and row2.amount == Decimal("200000")
+            and row2.data_source_id == 3
+        )
+
     def test_get_scheme(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
         with engine.begin() as connection:
             connection.execute(
@@ -200,6 +255,59 @@ class TestDatabaseSchemeRepository:
             and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
+        )
+
+    def test_get_scheme_financial_revisions(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        with engine.begin() as connection:
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=1,
+                    scheme_name="Wirral Package",
+                    bid_submitting_authority_id=1,
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme_financial"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=date(2020, 1, 31),
+                    financial_type_id=3,
+                    amount=Decimal("100000"),
+                    data_source_id=3,
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme_financial"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 2, 1),
+                    effective_date_to=None,
+                    financial_type_id=3,
+                    amount=Decimal("200000"),
+                    data_source_id=3,
+                )
+            )
+
+        actual = schemes.get(1)
+
+        assert actual
+        financial_revision1: FinancialRevision
+        financial_revision2: FinancialRevision
+        financial_revision1, financial_revision2 = actual.financial_revisions
+        assert (
+            financial_revision1.effective_date_from == date(2020, 1, 1)
+            and financial_revision1.effective_date_to == date(2020, 1, 31)
+            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision1.amount == Decimal("100000")
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
+        assert (
+            financial_revision2.effective_date_from == date(2020, 2, 1)
+            and financial_revision2.effective_date_to is None
+            and financial_revision2.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision2.amount == Decimal("200000")
+            and financial_revision2.source == DataSource.ATF4_BID
         )
 
     def test_get_scheme_that_does_not_exist(
@@ -329,6 +437,55 @@ class TestDatabaseSchemeRepository:
             and milestone_revision2.status_date == date(2020, 3, 1)
         )
 
+    def test_get_all_schemes_financial_revisions_by_authority(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        with engine.begin() as connection:
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme_financial"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=None,
+                    financial_type_id=3,
+                    amount=Decimal("100000"),
+                    data_source_id=3,
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=2
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme_financial"]).values(
+                    capital_scheme_id=2,
+                    effective_date_from=date(2020, 2, 1),
+                    effective_date_to=None,
+                    financial_type_id=3,
+                    amount=Decimal("200000"),
+                    data_source_id=3,
+                )
+            )
+
+        actual1: Scheme
+        (actual1,) = schemes.get_by_authority(1)
+
+        assert actual1.id == 1
+        financial_revision1: FinancialRevision
+        (financial_revision1,) = actual1.financial_revisions
+        assert (
+            financial_revision1.effective_date_from == date(2020, 1, 1)
+            and financial_revision1.effective_date_to is None
+            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision1.amount == Decimal("100000")
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
+
     def test_get_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
         capital_scheme_table = metadata.tables["capital_scheme"]
         with engine.begin() as connection:
@@ -420,6 +577,66 @@ class TestDatabaseSchemeRepository:
             and milestone_revision2.status_date == date(2020, 3, 1)
         )
 
+    def test_get_all_schemes_financial_revisions(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        with engine.begin() as connection:
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme_financial"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=None,
+                    financial_type_id=3,
+                    amount=Decimal("100000"),
+                    data_source_id=3,
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=1
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme_financial"]).values(
+                    capital_scheme_id=2,
+                    effective_date_from=date(2020, 2, 1),
+                    effective_date_to=None,
+                    financial_type_id=3,
+                    amount=Decimal("200000"),
+                    data_source_id=3,
+                )
+            )
+
+        actual1: Scheme
+        actual2: Scheme
+        actual1, actual2 = schemes.get_all()
+
+        assert actual1.id == 1
+        financial_revision1: FinancialRevision
+        (financial_revision1,) = actual1.financial_revisions
+        assert (
+            financial_revision1.effective_date_from == date(2020, 1, 1)
+            and financial_revision1.effective_date_to is None
+            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision1.amount == Decimal("100000")
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
+        assert actual2.id == 2
+        financial_revision2: FinancialRevision
+        (financial_revision2,) = actual2.financial_revisions
+        assert (
+            financial_revision2.effective_date_from == date(2020, 2, 1)
+            and financial_revision2.effective_date_to is None
+            and financial_revision2.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision2.amount == Decimal("200000")
+            and financial_revision2.source == DataSource.ATF4_BID
+        )
+
     def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
         capital_scheme_table = metadata.tables["capital_scheme"]
         with engine.begin() as connection:
@@ -436,6 +653,16 @@ class TestDatabaseSchemeRepository:
                     milestone_id=5,
                     observation_type_id=1,
                     status_date=date(2020, 2, 1),
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme_financial"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=None,
+                    financial_type_id=3,
+                    amount=Decimal("100000"),
+                    data_source_id=3,
                 )
             )
             connection.execute(
@@ -506,3 +733,42 @@ class TestObservationTypeMapper:
     def test_mapper(self, observation_type: ObservationType, id_: int) -> None:
         mapper = ObservationTypeMapper()
         assert mapper.to_id(observation_type) == id_ and mapper.to_domain(id_) == observation_type
+
+
+class TestFinancialTypeMapper:
+    @pytest.mark.parametrize(
+        "financial_type, id_",
+        [
+            (FinancialType.EXPECTED_COST, 1),
+            (FinancialType.ACTUAL_COST, 2),
+            (FinancialType.FUNDING_ALLOCATION, 3),
+            (FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION, 4),
+            (FinancialType.SPENT_TO_DATE, 5),
+            (FinancialType.FUNDING_REQUEST, 6),
+        ],
+    )
+    def test_mapper(self, financial_type: FinancialType, id_: int) -> None:
+        mapper = FinancialTypeMapper()
+        assert mapper.to_id(financial_type) == id_ and mapper.to_domain(id_) == financial_type
+
+
+class TestDataSourceMapper:
+    @pytest.mark.parametrize(
+        "data_source, id_",
+        [
+            (DataSource.PULSE_5, 1),
+            (DataSource.PULSE_6, 2),
+            (DataSource.ATF4_BID, 3),
+            (DataSource.ATF3_BID, 4),
+            (DataSource.INSPECTORATE_REVIEW, 5),
+            (DataSource.REGIONAL_ENGAGEMENT_MANAGER_REVIEW, 6),
+            (DataSource.ATE_PUBLISHED_DATA, 7),
+            (DataSource.CHANGE_CONTROL, 8),
+            (DataSource.ATF4E_BID, 9),
+            (DataSource.PULSE_2023_24_Q2, 10),
+            (DataSource.INITIAL_SCHEME_LIST, 11),
+        ],
+    )
+    def test_mapper(self, data_source: DataSource, id_: int) -> None:
+        mapper = DataSourceMapper()
+        assert mapper.to_id(data_source) == id_ and mapper.to_domain(id_) == data_source

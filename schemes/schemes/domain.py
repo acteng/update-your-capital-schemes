@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
+from decimal import Decimal
 from enum import Enum, IntEnum, auto
 
 
@@ -13,6 +14,7 @@ class Scheme:
         self.type: SchemeType | None = None
         self.funding_programme: FundingProgramme | None = None
         self._milestone_revisions: list[MilestoneRevision] = []
+        self._financial_revisions: list[FinancialRevision] = []
 
     @property
     def reference(self) -> str:
@@ -35,6 +37,22 @@ class Scheme:
         ]
         actual_milestones = [revision.milestone for revision in actual_milestone_revisions]
         return sorted(actual_milestones)[-1] if actual_milestones else None
+
+    @property
+    def financial_revisions(self) -> list[FinancialRevision]:
+        return list(self._financial_revisions)
+
+    def update_financial(self, financial_revision: FinancialRevision) -> None:
+        self._financial_revisions.append(financial_revision)
+
+    @property
+    def funding_allocation(self) -> Decimal | None:
+        amounts = (
+            revision.amount
+            for revision in self._financial_revisions
+            if revision.type == FinancialType.FUNDING_ALLOCATION and revision.effective_date_to is None
+        )
+        return sum(amounts, Decimal(0)) if self._financial_revisions else None
 
 
 class SchemeType(Enum):
@@ -86,3 +104,42 @@ class Milestone(IntEnum):
 class ObservationType(Enum):
     PLANNED = auto()
     ACTUAL = auto()
+
+
+@dataclass(frozen=True)
+class FinancialRevision:
+    effective_date_from: date
+    effective_date_to: date | None
+    type: FinancialType
+    amount: Decimal
+    source: DataSource
+
+    def __post_init__(self) -> None:
+        if not (self.effective_date_to is None or self.effective_date_from <= self.effective_date_to):
+            raise ValueError(
+                f"Effective date from '{self.effective_date_from}' must not "
+                f"be after effective date to '{self.effective_date_to}'"
+            )
+
+
+class FinancialType(Enum):
+    EXPECTED_COST = auto()
+    ACTUAL_COST = auto()
+    FUNDING_ALLOCATION = auto()
+    CHANGE_CONTROL_FUNDING_REALLOCATION = auto()
+    SPENT_TO_DATE = auto()
+    FUNDING_REQUEST = auto()
+
+
+class DataSource(Enum):
+    PULSE_5 = auto()
+    PULSE_6 = auto()
+    ATF4_BID = auto()
+    ATF3_BID = auto()
+    INSPECTORATE_REVIEW = auto()
+    REGIONAL_ENGAGEMENT_MANAGER_REVIEW = auto()
+    ATE_PUBLISHED_DATA = auto()
+    CHANGE_CONTROL = auto()
+    ATF4E_BID = auto()
+    PULSE_2023_24_Q2 = auto()
+    INITIAL_SCHEME_LIST = auto()

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from datetime import date
+from decimal import Decimal
 
 import inject
 from flask import Blueprint, Response, render_template, session
@@ -11,6 +12,9 @@ from schemes.auth.bearer import bearer_auth
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
 from schemes.schemes.domain import (
+    DataSource,
+    FinancialRevision,
+    FinancialType,
     FundingProgramme,
     Milestone,
     MilestoneRevision,
@@ -83,11 +87,15 @@ class SchemeContext:
     name: str
     reference: str
     overview: SchemeOverviewContext
+    funding: SchemeFundingContext
 
     @staticmethod
     def for_domain(scheme: Scheme) -> SchemeContext:
         return SchemeContext(
-            name=scheme.name, reference=scheme.reference, overview=SchemeOverviewContext.for_domain(scheme)
+            name=scheme.name,
+            reference=scheme.reference,
+            overview=SchemeOverviewContext.for_domain(scheme),
+            funding=SchemeFundingContext.for_domain(scheme),
         )
 
 
@@ -146,6 +154,15 @@ class SchemeOverviewContext:
         }[milestone]
 
 
+@dataclass(frozen=True)
+class SchemeFundingContext:
+    funding_allocation: Decimal | None = None
+
+    @staticmethod
+    def for_domain(scheme: Scheme) -> SchemeFundingContext:
+        return SchemeFundingContext(funding_allocation=scheme.funding_allocation)
+
+
 @bp.delete("")
 @api_key_auth
 @inject.autoparams()
@@ -161,6 +178,7 @@ class SchemeRepr:
     type: str | None = None
     funding_programme: str | None = None
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
+    financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
 
     def to_domain(self, authority_id: int) -> Scheme:
         scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
@@ -170,6 +188,9 @@ class SchemeRepr:
         )
         for milestone_revision_repr in self.milestone_revisions:
             scheme.update_milestone(milestone_revision_repr.to_domain())
+
+        for financial_revision_repr in self.financial_revisions:
+            scheme.update_financial(financial_revision_repr.to_domain())
         return scheme
 
     @staticmethod
@@ -232,3 +253,48 @@ class MilestoneRevisionRepr:
             "Planned": ObservationType.PLANNED,
             "Actual": ObservationType.ACTUAL,
         }[observation_type]
+
+
+@dataclass(frozen=True)
+class FinancialRevisionRepr:
+    effective_date_from: str
+    effective_date_to: str | None
+    type: str
+    amount: str
+    source: str
+
+    def to_domain(self) -> FinancialRevision:
+        return FinancialRevision(
+            effective_date_from=date.fromisoformat(self.effective_date_from),
+            effective_date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+            type=self._financial_type_to_domain(self.type),
+            amount=Decimal(self.amount),
+            source=self._data_source_to_domain(self.source),
+        )
+
+    @staticmethod
+    def _financial_type_to_domain(financial_type: str) -> FinancialType:
+        return {
+            "expected cost": FinancialType.EXPECTED_COST,
+            "actual cost": FinancialType.ACTUAL_COST,
+            "funding allocation": FinancialType.FUNDING_ALLOCATION,
+            "change control funding reallocation": FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+            "spent to date": FinancialType.SPENT_TO_DATE,
+            "funding request": FinancialType.FUNDING_REQUEST,
+        }[financial_type]
+
+    @staticmethod
+    def _data_source_to_domain(data_source: str) -> DataSource:
+        return {
+            "Pulse 5": DataSource.PULSE_5,
+            "Pulse 6": DataSource.PULSE_6,
+            "ATF4 Bid": DataSource.ATF4_BID,
+            "ATF3 Bid": DataSource.ATF3_BID,
+            "Inspectorate review": DataSource.INSPECTORATE_REVIEW,
+            "Regional Engagement Manager review": DataSource.REGIONAL_ENGAGEMENT_MANAGER_REVIEW,
+            "ATE published data": DataSource.ATE_PUBLISHED_DATA,
+            "change control": DataSource.CHANGE_CONTROL,
+            "ATF4e Bid": DataSource.ATF4E_BID,
+            "Pulse 2023/24 Q2": DataSource.PULSE_2023_24_Q2,
+            "Initial Scheme List": DataSource.INITIAL_SCHEME_LIST,
+        }[data_source]

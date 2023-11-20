@@ -1,0 +1,13 @@
+<h2 class="govuk-heading-l">Funding</h2>
+{{ govukSummaryList({
+    "rows": [
+        {
+            "key": {
+                "text": "Funding allocation"
+            },
+            "value": {
+                "text": "£{:,}".format(funding.funding_allocation | round) if funding.funding_allocation else "N/A"
+            }
+        }
+    ]
+}) }}

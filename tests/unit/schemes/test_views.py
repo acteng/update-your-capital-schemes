@@ -1,8 +1,12 @@
 from datetime import date
+from decimal import Decimal
 
 import pytest
 
 from schemes.schemes.domain import (
+    DataSource,
+    FinancialRevision,
+    FinancialType,
     FundingProgramme,
     Milestone,
     MilestoneRevision,
@@ -11,8 +15,10 @@ from schemes.schemes.domain import (
     SchemeType,
 )
 from schemes.schemes.views import (
+    FinancialRevisionRepr,
     MilestoneRevisionRepr,
     SchemeContext,
+    SchemeFundingContext,
     SchemeOverviewContext,
     SchemeRepr,
 )
@@ -25,7 +31,10 @@ class TestSchemeContext:
         context = SchemeContext.for_domain(scheme)
 
         assert context == SchemeContext(
-            reference="ATE00001", name="Wirral Package", overview=SchemeOverviewContext.for_domain(scheme)
+            reference="ATE00001",
+            name="Wirral Package",
+            overview=SchemeOverviewContext.for_domain(scheme),
+            funding=SchemeFundingContext.for_domain(scheme),
         )
 
 
@@ -104,6 +113,24 @@ class TestSchemeOverviewContext:
         context = SchemeOverviewContext.for_domain(scheme)
 
         assert context.current_milestone is None
+
+
+class TestSchemeFundingContext:
+    def test_set_funding_allocation(self) -> None:
+        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        context = SchemeFundingContext.for_domain(scheme)
+
+        assert context.funding_allocation == Decimal("100000")
 
 
 class TestSchemeRepr:
@@ -189,6 +216,47 @@ class TestSchemeRepr:
             ),
         ]
 
+    def test_set_financial_revisions(self) -> None:
+        scheme_repr = SchemeRepr(
+            id=0,
+            name="",
+            financial_revisions=[
+                FinancialRevisionRepr(
+                    effective_date_from="2020-01-01",
+                    effective_date_to=None,
+                    type="funding allocation",
+                    amount="100000",
+                    source="ATF4 Bid",
+                ),
+                FinancialRevisionRepr(
+                    effective_date_from="2020-01-01",
+                    effective_date_to=None,
+                    type="expected cost",
+                    amount="200000",
+                    source="Pulse 6",
+                ),
+            ],
+        )
+
+        scheme = scheme_repr.to_domain(0)
+
+        assert scheme.financial_revisions == [
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.EXPECTED_COST,
+                amount=Decimal("200000"),
+                source=DataSource.PULSE_6,
+            ),
+        ]
+
 
 class TestMilestoneRevisionRepr:
     def test_create_domain(self) -> None:
@@ -271,3 +339,90 @@ class TestMilestoneRevisionRepr:
         milestone_revision = milestone_revision_repr.to_domain()
 
         assert milestone_revision.observation_type == expected_observation_type
+
+
+class TestFinancialRevisionRepr:
+    def test_create_domain(self) -> None:
+        financial_revision_repr = FinancialRevisionRepr(
+            effective_date_from="2020-01-01",
+            effective_date_to="2020-01-31",
+            type="funding allocation",
+            amount="100000",
+            source="ATF4 Bid",
+        )
+
+        financial_revision = financial_revision_repr.to_domain()
+
+        assert financial_revision == FinancialRevision(
+            effective_date_from=date(2020, 1, 1),
+            effective_date_to=date(2020, 1, 31),
+            type=FinancialType.FUNDING_ALLOCATION,
+            amount=Decimal("100000"),
+            source=DataSource.ATF4_BID,
+        )
+
+    def test_set_effective_date_to_when_missing(self) -> None:
+        financial_revision_repr = FinancialRevisionRepr(
+            effective_date_from="2020-01-01",
+            effective_date_to=None,
+            type="funding allocation",
+            amount="100000",
+            source="ATF4 Bid",
+        )
+
+        financial_revision = financial_revision_repr.to_domain()
+
+        assert financial_revision.effective_date_to is None
+
+    @pytest.mark.parametrize(
+        "financial_type, expected_financial_type",
+        [
+            ("expected cost", FinancialType.EXPECTED_COST),
+            ("actual cost", FinancialType.ACTUAL_COST),
+            ("funding allocation", FinancialType.FUNDING_ALLOCATION),
+            ("change control funding reallocation", FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION),
+            ("spent to date", FinancialType.SPENT_TO_DATE),
+            ("funding request", FinancialType.FUNDING_REQUEST),
+        ],
+    )
+    def test_set_financial_type(self, financial_type: str, expected_financial_type: FinancialType) -> None:
+        financial_revision_repr = FinancialRevisionRepr(
+            effective_date_from="2020-01-01",
+            effective_date_to="2020-01-31",
+            type=financial_type,
+            amount="100000",
+            source="ATF4 Bid",
+        )
+
+        financial_revision = financial_revision_repr.to_domain()
+
+        assert financial_revision.type == expected_financial_type
+
+    @pytest.mark.parametrize(
+        "data_source, expected_data_source",
+        [
+            ("Pulse 5", DataSource.PULSE_5),
+            ("Pulse 6", DataSource.PULSE_6),
+            ("ATF4 Bid", DataSource.ATF4_BID),
+            ("ATF3 Bid", DataSource.ATF3_BID),
+            ("Inspectorate review", DataSource.INSPECTORATE_REVIEW),
+            ("Regional Engagement Manager review", DataSource.REGIONAL_ENGAGEMENT_MANAGER_REVIEW),
+            ("ATE published data", DataSource.ATE_PUBLISHED_DATA),
+            ("change control", DataSource.CHANGE_CONTROL),
+            ("ATF4e Bid", DataSource.ATF4E_BID),
+            ("Pulse 2023/24 Q2", DataSource.PULSE_2023_24_Q2),
+            ("Initial Scheme List", DataSource.INITIAL_SCHEME_LIST),
+        ],
+    )
+    def test_set_data_source(self, data_source: str, expected_data_source: DataSource) -> None:
+        financial_revision_repr = FinancialRevisionRepr(
+            effective_date_from="2020-01-01",
+            effective_date_to="2020-01-31",
+            type="funding allocation",
+            amount="100000",
+            source=data_source,
+        )
+
+        financial_revision = financial_revision_repr.to_domain()
+
+        assert financial_revision.source == expected_data_source

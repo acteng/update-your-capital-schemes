@@ -146,6 +146,12 @@ class SchemePage:
         assert panel
         return SchemeOverviewComponent(panel)
 
+    @property
+    def funding(self) -> SchemeFundingComponent:
+        panel = self._soup.select_one("#funding")
+        assert panel
+        return SchemeFundingComponent(panel)
+
 
 class SchemeOverviewComponent:
     def __init__(self, tag: Tag):
@@ -155,3 +161,9 @@ class SchemeOverviewComponent:
         self.funding_programme = funding_programme_tag.string.strip() if funding_programme_tag.string else None
         current_milestone_tag = tag.select("main dd")[2]
         self.current_milestone = current_milestone_tag.string.strip() if current_milestone_tag.string else None
+
+
+class SchemeFundingComponent:
+    def __init__(self, tag: Tag):
+        funding_allocation_tag = tag.select("main dd")[0]
+        self.funding_allocation = funding_allocation_tag.string.strip() if funding_allocation_tag.string else None

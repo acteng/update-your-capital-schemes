@@ -8,6 +8,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     MetaData,
+    Numeric,
     Row,
     Table,
     Text,
@@ -17,6 +18,9 @@ from sqlalchemy import (
 )
 
 from schemes.schemes.domain import (
+    DataSource,
+    FinancialRevision,
+    FinancialType,
     FundingProgramme,
     Milestone,
     MilestoneRevision,
@@ -75,6 +79,23 @@ def add_tables(metadata: MetaData) -> None:
         Column("effective_date_to", Date),
     )
 
+    Table(
+        "capital_scheme_financial",
+        metadata,
+        Column("capital_scheme_financial_id", Integer, primary_key=True),
+        Column(
+            "capital_scheme_id",
+            Integer,
+            ForeignKey("capital_scheme.capital_scheme_id", name="capital_scheme_financial_capital_scheme_id_fkey"),
+            nullable=False,
+        ),
+        Column("financial_type_id", Integer, nullable=False),
+        Column("amount", Numeric, nullable=False),
+        Column("effective_date_from", Date, nullable=False),
+        Column("effective_date_to", Date),
+        Column("data_source_id", Integer, nullable=False),
+    )
+
 
 class DatabaseSchemeRepository(SchemeRepository):
     @inject.autoparams()
@@ -84,6 +105,7 @@ class DatabaseSchemeRepository(SchemeRepository):
         add_tables(metadata)
         self._capital_scheme_table = metadata.tables["capital_scheme"]
         self._scheme_milestone_table = metadata.tables["scheme_milestone"]
+        self._capital_scheme_financial_table = metadata.tables["capital_scheme_financial"]
 
     def add(self, *schemes: Scheme) -> None:
         with self._engine.begin() as connection:
@@ -108,10 +130,22 @@ class DatabaseSchemeRepository(SchemeRepository):
                             status_date=milestone_revision.status_date,
                         )
                     )
+                for financial_revision in scheme.financial_revisions:
+                    connection.execute(
+                        insert(self._capital_scheme_financial_table).values(
+                            capital_scheme_id=scheme.id,
+                            effective_date_from=financial_revision.effective_date_from,
+                            effective_date_to=financial_revision.effective_date_to,
+                            financial_type_id=FINANCIAL_TYPE_MAPPER.to_id(financial_revision.type),
+                            amount=financial_revision.amount,
+                            data_source_id=DATA_SOURCE_MAPPER.to_id(financial_revision.source),
+                        )
+                    )
 
     def clear(self) -> None:
         with self._engine.begin() as connection:
             connection.execute(delete(self._scheme_milestone_table))
+            connection.execute(delete(self._capital_scheme_financial_table))
             connection.execute(delete(self._capital_scheme_table))
 
     def get(self, id_: int) -> Scheme | None:
@@ -121,12 +155,22 @@ class DatabaseSchemeRepository(SchemeRepository):
             )
             row = result.one_or_none()
             scheme = self._capital_scheme_to_domain(row) if row else None
+
             if scheme:
                 result = connection.execute(
                     select(self._scheme_milestone_table).where(self._scheme_milestone_table.c.capital_scheme_id == id_)
                 )
                 for row in result:
                     scheme.update_milestone(self._scheme_milestone_to_domain(row))
+
+                result = connection.execute(
+                    select(self._capital_scheme_financial_table).where(
+                        self._capital_scheme_financial_table.c.capital_scheme_id == id_
+                    )
+                )
+                for row in result:
+                    scheme.update_financial(self._capital_scheme_financial_to_domain(row))
+
             return scheme
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
@@ -137,6 +181,7 @@ class DatabaseSchemeRepository(SchemeRepository):
                 .order_by(self._capital_scheme_table.c.capital_scheme_id)
             )
             schemes = [self._capital_scheme_to_domain(row) for row in result]
+
             result = connection.execute(
                 select(self._scheme_milestone_table)
                 .join(self._capital_scheme_table)
@@ -145,6 +190,16 @@ class DatabaseSchemeRepository(SchemeRepository):
             for row in result:
                 scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
                 scheme.update_milestone(self._scheme_milestone_to_domain(row))
+
+            result = connection.execute(
+                select(self._capital_scheme_financial_table)
+                .join(self._capital_scheme_table)
+                .where(self._capital_scheme_table.c.bid_submitting_authority_id == authority_id)
+            )
+            for row in result:
+                scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
+                scheme.update_financial(self._capital_scheme_financial_to_domain(row))
+
             return schemes
 
     def get_all(self) -> list[Scheme]:
@@ -153,10 +208,17 @@ class DatabaseSchemeRepository(SchemeRepository):
                 select(self._capital_scheme_table).order_by(self._capital_scheme_table.c.capital_scheme_id)
             )
             schemes = [self._capital_scheme_to_domain(row) for row in result]
+
             result = connection.execute(select(self._scheme_milestone_table))
             for row in result:
                 scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
                 scheme.update_milestone(self._scheme_milestone_to_domain(row))
+
+            result = connection.execute(select(self._capital_scheme_financial_table))
+            for row in result:
+                scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
+                scheme.update_financial(self._capital_scheme_financial_to_domain(row))
+
             return schemes
 
     @staticmethod
@@ -174,6 +236,16 @@ class DatabaseSchemeRepository(SchemeRepository):
             milestone=MILESTONE_MAPPER.to_domain(row.milestone_id),
             observation_type=OBSERVATION_TYPE_MAPPER.to_domain(row.observation_type_id),
             status_date=row.status_date,
+        )
+
+    @staticmethod
+    def _capital_scheme_financial_to_domain(row: Row[Any]) -> FinancialRevision:
+        return FinancialRevision(
+            effective_date_from=row.effective_date_from,
+            effective_date_to=row.effective_date_to,
+            type=FINANCIAL_TYPE_MAPPER.to_domain(row.financial_type_id),
+            amount=row.amount,
+            source=DATA_SOURCE_MAPPER.to_domain(row.data_source_id),
         )
 
 
@@ -244,7 +316,48 @@ class ObservationTypeMapper:
         return next(key for key, value in self._OBSERVATION_TYPE_IDS.items() if value == id_)
 
 
+class FinancialTypeMapper:
+    _FINANCIAL_TYPE_IDS = {
+        FinancialType.EXPECTED_COST: 1,
+        FinancialType.ACTUAL_COST: 2,
+        FinancialType.FUNDING_ALLOCATION: 3,
+        FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION: 4,
+        FinancialType.SPENT_TO_DATE: 5,
+        FinancialType.FUNDING_REQUEST: 6,
+    }
+
+    def to_id(self, financial_type: FinancialType) -> int:
+        return self._FINANCIAL_TYPE_IDS[financial_type]
+
+    def to_domain(self, id_: int) -> FinancialType:
+        return next(key for key, value in self._FINANCIAL_TYPE_IDS.items() if value == id_)
+
+
+class DataSourceMapper:
+    _DATA_SOURCE_IDS = {
+        DataSource.PULSE_5: 1,
+        DataSource.PULSE_6: 2,
+        DataSource.ATF4_BID: 3,
+        DataSource.ATF3_BID: 4,
+        DataSource.INSPECTORATE_REVIEW: 5,
+        DataSource.REGIONAL_ENGAGEMENT_MANAGER_REVIEW: 6,
+        DataSource.ATE_PUBLISHED_DATA: 7,
+        DataSource.CHANGE_CONTROL: 8,
+        DataSource.ATF4E_BID: 9,
+        DataSource.PULSE_2023_24_Q2: 10,
+        DataSource.INITIAL_SCHEME_LIST: 11,
+    }
+
+    def to_id(self, data_source: DataSource) -> int:
+        return self._DATA_SOURCE_IDS[data_source]
+
+    def to_domain(self, id_: int) -> DataSource:
+        return next(key for key, value in self._DATA_SOURCE_IDS.items() if value == id_)
+
+
 SCHEME_TYPE_MAPPER = SchemeTypeMapper()
 FUNDING_PROGRAMME_MAPPER = FundingProgrammeMapper()
 MILESTONE_MAPPER = MilestoneMapper()
 OBSERVATION_TYPE_MAPPER = ObservationTypeMapper()
+FINANCIAL_TYPE_MAPPER = FinancialTypeMapper()
+DATA_SOURCE_MAPPER = DataSourceMapper()

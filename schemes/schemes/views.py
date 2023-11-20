@@ -101,9 +101,9 @@ class SchemeContext:
 
 @dataclass(frozen=True)
 class SchemeOverviewContext:
-    type: str | None = None
-    funding_programme: str | None = None
-    current_milestone: str | None = None
+    type: str | None
+    funding_programme: str | None
+    current_milestone: str | None
 
     @staticmethod
     def for_domain(scheme: Scheme) -> SchemeOverviewContext:
@@ -156,9 +156,9 @@ class SchemeOverviewContext:
 
 @dataclass(frozen=True)
 class SchemeFundingContext:
-    funding_allocation: Decimal | None = None
-    spend_to_date: Decimal | None = None
-    change_control_adjustment: Decimal | None = None
+    funding_allocation: Decimal | None
+    spend_to_date: Decimal | None
+    change_control_adjustment: Decimal | None
 
     @staticmethod
     def for_domain(scheme: Scheme) -> SchemeFundingContext:

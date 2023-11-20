@@ -303,6 +303,81 @@ class TestDatabaseSchemeRepository:
             and milestone_revision1.status_date == date(2020, 2, 1)
         )
 
+    def test_get_all_schemes_milestone_revisions_by_authority_has_correct_order(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        with engine.begin() as connection:
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=1
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["scheme_milestone"]).values(
+                    capital_scheme_id=2,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=None,
+                    milestone_id=5,
+                    observation_type_id=1,
+                    status_date=date(2020, 2, 1),
+                )
+            )
+
+            connection.execute(
+                insert(metadata.tables["scheme_milestone"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=date(2020, 1, 31),
+                    milestone_id=5,
+                    observation_type_id=1,
+                    status_date=date(2020, 2, 1),
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=3, scheme_name="School Streets", bid_submitting_authority_id=2
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["scheme_milestone"]).values(
+                    capital_scheme_id=3,
+                    effective_date_from=date(2020, 2, 1),
+                    effective_date_to=None,
+                    milestone_id=5,
+                    observation_type_id=1,
+                    status_date=date(2020, 3, 1),
+                )
+            )
+
+        actual1: Scheme
+        actual2: Scheme
+        (actual1, actual2) = schemes.get_by_authority(1)
+
+        assert actual1.id == 1
+        milestone_revision1: MilestoneRevision
+        milestone_revision2: MilestoneRevision
+        (milestone_revision1,) = actual1.milestone_revisions
+        (milestone_revision2,) = actual2.milestone_revisions
+        assert (
+            milestone_revision1.effective_date_from == date(2020, 1, 1)
+            and milestone_revision1.effective_date_to == date(2020, 1, 31)
+            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision1.observation_type == ObservationType.PLANNED
+            and milestone_revision1.status_date == date(2020, 2, 1)
+        )
+        assert (
+            milestone_revision2.effective_date_from == date(2020, 1, 1)
+            and milestone_revision2.effective_date_to is None
+            and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision2.observation_type == ObservationType.PLANNED
+            and milestone_revision2.status_date == date(2020, 2, 1)
+        )
+
     def test_get_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
         capital_scheme_table = metadata.tables["capital_scheme"]
         with engine.begin() as connection:

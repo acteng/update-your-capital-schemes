@@ -141,16 +141,17 @@ class SchemePage:
         return heading.string if heading else None
 
     @property
-    def scheme_type(self) -> str | None:
-        definition = self._soup.select("main dd")[0]
-        return definition.string.strip() if definition and definition.string else None
+    def overview(self) -> SchemeOverviewComponent:
+        panel = self._soup.select_one("#overview")
+        assert panel
+        return SchemeOverviewComponent(panel)
 
-    @property
-    def funding_programme(self) -> str | None:
-        definition = self._soup.select("main dd")[1]
-        return definition.string.strip() if definition and definition.string else None
 
-    @property
-    def current_milestone(self) -> str | None:
-        definition = self._soup.select("main dd")[2]
-        return definition.string.strip() if definition and definition.string else None
+class SchemeOverviewComponent:
+    def __init__(self, tag: Tag):
+        scheme_type_tag = tag.select("main dd")[0]
+        self.scheme_type = scheme_type_tag.string.strip() if scheme_type_tag.string else None
+        funding_programme_tag = tag.select("main dd")[1]
+        self.funding_programme = funding_programme_tag.string.strip() if funding_programme_tag.string else None
+        current_milestone_tag = tag.select("main dd")[2]
+        self.current_milestone = current_milestone_tag.string.strip() if current_milestone_tag.string else None

@@ -1,33 +1,21 @@
 {% extends "service_base.html" %}
 {% from "govuk_frontend_jinja/components/summary-list/macro.html" import govukSummaryList %}
+{% from "govuk_frontend_jinja/components/tabs/macro.html" import govukTabs %}
 
 {% block content %}
     <h1 class="govuk-heading-l">{{ reference }} - {{ name }}</h1>
 
-    {{ govukSummaryList({
-        "rows": [
+    {% set overviewHtml %}
+        {% include "scheme_overview.html" %}
+    {% endset -%}
+
+    {{ govukTabs({
+        "items": [
             {
-                "key": {
-                    "text": "Scheme type"
-                },
-                "value": {
-                    "text": type | d("N/A", true)
-                }
-            },
-            {
-                "key": {
-                    "text": "Funding programme"
-                },
-                "value": {
-                    "text": funding_programme | d("N/A", true)
-                }
-            },
-            {
-                "key": {
-                    "text": "Current milestone"
-                },
-                "value": {
-                    "text": current_milestone | d("N/A", true)
+                "id": "overview",
+                "label": "Overview",
+                "panel": {
+                    "html": overviewHtml
                 }
             }
         ]

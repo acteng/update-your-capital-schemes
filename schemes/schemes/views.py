@@ -82,20 +82,29 @@ def get(schemes: SchemeRepository, scheme_id: int) -> str:
 class SchemeContext:
     name: str
     reference: str
+    overview: SchemeOverviewContext
+
+    @staticmethod
+    def for_domain(scheme: Scheme) -> SchemeContext:
+        return SchemeContext(
+            name=scheme.name, reference=scheme.reference, overview=SchemeOverviewContext.for_domain(scheme)
+        )
+
+
+@dataclass(frozen=True)
+class SchemeOverviewContext:
     type: str | None = None
     funding_programme: str | None = None
     current_milestone: str | None = None
 
     @staticmethod
-    def for_domain(scheme: Scheme) -> SchemeContext:
-        return SchemeContext(
-            name=scheme.name,
-            reference=scheme.reference,
-            type=SchemeContext._type_to_name(scheme.type) if scheme.type else None,
-            funding_programme=SchemeContext._funding_programme_to_name(scheme.funding_programme)
+    def for_domain(scheme: Scheme) -> SchemeOverviewContext:
+        return SchemeOverviewContext(
+            type=SchemeOverviewContext._type_to_name(scheme.type) if scheme.type else None,
+            funding_programme=SchemeOverviewContext._funding_programme_to_name(scheme.funding_programme)
             if scheme.funding_programme
             else None,
-            current_milestone=SchemeContext._milestone_to_name(scheme.current_milestone)
+            current_milestone=SchemeOverviewContext._milestone_to_name(scheme.current_milestone)
             if scheme.current_milestone
             else None,
         )

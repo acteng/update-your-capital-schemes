@@ -58,9 +58,9 @@ def test_scheme_shows_minimal_overview(schemes: SchemeRepository, client: FlaskC
     scheme_page = SchemePage(client).open(1)
 
     assert (
-        scheme_page.scheme_type == "N/A"
-        and scheme_page.funding_programme == "N/A"
-        and scheme_page.current_milestone == "N/A"
+        scheme_page.overview.scheme_type == "N/A"
+        and scheme_page.overview.funding_programme == "N/A"
+        and scheme_page.overview.current_milestone == "N/A"
     )
 
 
@@ -82,7 +82,7 @@ def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -
     scheme_page = SchemePage(client).open(1)
 
     assert (
-        scheme_page.scheme_type == "Construction"
-        and scheme_page.funding_programme == "ATF4"
-        and scheme_page.current_milestone == "Detailed design completed"
+        scheme_page.overview.scheme_type == "Construction"
+        and scheme_page.overview.funding_programme == "ATF4"
+        and scheme_page.overview.current_milestone == "Detailed design completed"
     )

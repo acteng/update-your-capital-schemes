@@ -1,0 +1,29 @@
+<h2 class="govuk-heading-l">Overview</h2>
+{{ govukSummaryList({
+    "rows": [
+        {
+            "key": {
+                "text": "Scheme type"
+            },
+            "value": {
+                "text": overview.type | d("N/A", true)
+            }
+        },
+        {
+            "key": {
+                "text": "Funding programme"
+            },
+            "value": {
+                "text": overview.funding_programme | d("N/A", true)
+            }
+        },
+        {
+            "key": {
+                "text": "Current milestone"
+            },
+            "value": {
+                "text": overview.current_milestone | d("N/A", true)
+            }
+        }
+    ]
+}) }}

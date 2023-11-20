@@ -15,7 +15,7 @@ from tests.e2e.pages import SchemePage
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_scheme(app_client: AppClient, oidc_client: OidcClient, app: Flask, page: Page) -> None:
+def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, app: Flask, page: Page) -> None:
     app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
     app_client.add_users(1, UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
@@ -41,6 +41,6 @@ def test_scheme(app_client: AppClient, oidc_client: OidcClient, app: Flask, page
     scheme_page = SchemePage(app, page).open(1)
 
     assert scheme_page.reference_and_name == "ATE00001 - Wirral Package"
-    assert scheme_page.scheme_type == "Construction"
-    assert scheme_page.funding_programme == "ATF4"
-    assert scheme_page.current_milestone == "Detailed design completed"
+    assert scheme_page.overview.scheme_type == "Construction"
+    assert scheme_page.overview.funding_programme == "ATF4"
+    assert scheme_page.overview.current_milestone == "Detailed design completed"

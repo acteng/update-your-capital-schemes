@@ -10,7 +10,12 @@ from schemes.schemes.domain import (
     Scheme,
     SchemeType,
 )
-from schemes.schemes.views import MilestoneRevisionRepr, SchemeContext, SchemeRepr
+from schemes.schemes.views import (
+    MilestoneRevisionRepr,
+    SchemeContext,
+    SchemeOverviewContext,
+    SchemeRepr,
+)
 
 
 class TestSchemeContext:
@@ -19,8 +24,12 @@ class TestSchemeContext:
 
         context = SchemeContext.for_domain(scheme)
 
-        assert context == SchemeContext(reference="ATE00001", name="Wirral Package")
+        assert context == SchemeContext(
+            reference="ATE00001", name="Wirral Package", overview=SchemeOverviewContext.for_domain(scheme)
+        )
 
+
+class TestSchemeOverviewContext:
     @pytest.mark.parametrize(
         "type_, expected_type",
         [(SchemeType.DEVELOPMENT, "Development"), (SchemeType.CONSTRUCTION, "Construction"), (None, None)],
@@ -29,7 +38,7 @@ class TestSchemeContext:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.type = type_
 
-        context = SchemeContext.for_domain(scheme)
+        context = SchemeOverviewContext.for_domain(scheme)
 
         assert context.type == expected_type
 
@@ -53,7 +62,7 @@ class TestSchemeContext:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.funding_programme = funding_programme
 
-        context = SchemeContext.for_domain(scheme)
+        context = SchemeOverviewContext.for_domain(scheme)
 
         assert context.funding_programme == expected_funding_programme
 
@@ -85,14 +94,14 @@ class TestSchemeContext:
             )
         )
 
-        context = SchemeContext.for_domain(scheme)
+        context = SchemeOverviewContext.for_domain(scheme)
 
         assert context.current_milestone == expected_milestone
 
     def test_set_current_milestone_when_no_revisions(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
 
-        context = SchemeContext.for_domain(scheme)
+        context = SchemeOverviewContext.for_domain(scheme)
 
         assert context.current_milestone is None
 

@@ -133,10 +133,8 @@ class SchemePage:
         self._app = app
         self._page = page
         self._main = page.get_by_role("main")
-        self._reference_and_name = self._main.get_by_role("heading")
-        self._scheme_type = self._main.get_by_role("definition").nth(0)
-        self._funding_programme = self._main.get_by_role("definition").nth(1)
-        self._current_milestone = self._main.get_by_role("definition").nth(2)
+        self._reference_and_name = self._main.get_by_role("heading").nth(0)
+        self.overview = SchemeOverviewComponent(self._main.get_by_role("tabpanel", name="Overview"))
 
     def open(self, id_: int) -> SchemePage:
         # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
@@ -147,6 +145,13 @@ class SchemePage:
     @property
     def reference_and_name(self) -> str | None:
         return self._reference_and_name.text_content()
+
+
+class SchemeOverviewComponent:
+    def __init__(self, component: Locator):
+        self._scheme_type = component.get_by_role("definition").nth(0)
+        self._funding_programme = component.get_by_role("definition").nth(1)
+        self._current_milestone = component.get_by_role("definition").nth(2)
 
     @property
     def scheme_type(self) -> str | None:

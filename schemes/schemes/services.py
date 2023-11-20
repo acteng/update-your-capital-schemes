@@ -84,10 +84,6 @@ class DatabaseSchemeRepository(SchemeRepository):
         add_tables(metadata)
         self._capital_scheme_table = metadata.tables["capital_scheme"]
         self._scheme_milestone_table = metadata.tables["scheme_milestone"]
-        self._type_mapper = SchemeTypeMapper()
-        self._funding_programme_mapper = FundingProgrammeMapper()
-        self._milestone_mapper = MilestoneMapper()
-        self._observation_type_mapper = ObservationTypeMapper()
 
     def add(self, *schemes: Scheme) -> None:
         with self._engine.begin() as connection:
@@ -97,8 +93,8 @@ class DatabaseSchemeRepository(SchemeRepository):
                         capital_scheme_id=scheme.id,
                         scheme_name=scheme.name,
                         bid_submitting_authority_id=scheme.authority_id,
-                        scheme_type_id=self._type_mapper.to_id(scheme.type),
-                        funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
+                        scheme_type_id=SCHEME_TYPE_MAPPER.to_id(scheme.type),
+                        funding_programme_id=FUNDING_PROGRAMME_MAPPER.to_id(scheme.funding_programme),
                     )
                 )
                 for milestone_revision in scheme.milestone_revisions:
@@ -107,10 +103,8 @@ class DatabaseSchemeRepository(SchemeRepository):
                             capital_scheme_id=scheme.id,
                             effective_date_from=milestone_revision.effective_date_from,
                             effective_date_to=milestone_revision.effective_date_to,
-                            milestone_id=self._milestone_mapper.to_id(milestone_revision.milestone),
-                            observation_type_id=self._observation_type_mapper.to_id(
-                                milestone_revision.observation_type
-                            ),
+                            milestone_id=MILESTONE_MAPPER.to_id(milestone_revision.milestone),
+                            observation_type_id=OBSERVATION_TYPE_MAPPER.to_id(milestone_revision.observation_type),
                             status_date=milestone_revision.status_date,
                         )
                     )
@@ -165,18 +159,20 @@ class DatabaseSchemeRepository(SchemeRepository):
                 scheme.update_milestone(self._scheme_milestone_to_domain(row))
             return schemes
 
-    def _capital_scheme_to_domain(self, row: Row[Any]) -> Scheme:
+    @staticmethod
+    def _capital_scheme_to_domain(row: Row[Any]) -> Scheme:
         scheme = Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
-        scheme.type = self._type_mapper.to_domain(row.scheme_type_id)
-        scheme.funding_programme = self._funding_programme_mapper.to_domain(row.funding_programme_id)
+        scheme.type = SCHEME_TYPE_MAPPER.to_domain(row.scheme_type_id)
+        scheme.funding_programme = FUNDING_PROGRAMME_MAPPER.to_domain(row.funding_programme_id)
         return scheme
 
-    def _scheme_milestone_to_domain(self, row: Row[Any]) -> MilestoneRevision:
+    @staticmethod
+    def _scheme_milestone_to_domain(row: Row[Any]) -> MilestoneRevision:
         return MilestoneRevision(
             effective_date_from=row.effective_date_from,
             effective_date_to=row.effective_date_to,
-            milestone=self._milestone_mapper.to_domain(row.milestone_id),
-            observation_type=self._observation_type_mapper.to_domain(row.observation_type_id),
+            milestone=MILESTONE_MAPPER.to_domain(row.milestone_id),
+            observation_type=OBSERVATION_TYPE_MAPPER.to_domain(row.observation_type_id),
             status_date=row.status_date,
         )
 
@@ -246,3 +242,9 @@ class ObservationTypeMapper:
 
     def to_domain(self, id_: int) -> ObservationType:
         return next(key for key, value in self._OBSERVATION_TYPE_IDS.items() if value == id_)
+
+
+SCHEME_TYPE_MAPPER = SchemeTypeMapper()
+FUNDING_PROGRAMME_MAPPER = FundingProgrammeMapper()
+MILESTONE_MAPPER = MilestoneMapper()
+OBSERVATION_TYPE_MAPPER = ObservationTypeMapper()

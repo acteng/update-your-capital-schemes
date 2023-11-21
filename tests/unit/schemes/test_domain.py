@@ -233,6 +233,20 @@ class TestScheme:  # pylint: disable=too-many-public-methods
 
         assert scheme.funding_allocation == Decimal("200000")
 
+    def test_get_funding_allocation_when_no_matching_revisions(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.EXPECTED_COST,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.funding_allocation is None
+
     def test_get_funding_allocation_when_no_revisions(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
 
@@ -307,6 +321,20 @@ class TestScheme:  # pylint: disable=too-many-public-methods
 
         assert scheme.spend_to_date == Decimal("200000")
 
+    def test_get_spend_to_date_when_no_matching_revisions(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.EXPECTED_COST,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.spend_to_date is None
+
     def test_get_spend_to_date_when_no_revisions(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
 
@@ -380,6 +408,20 @@ class TestScheme:  # pylint: disable=too-many-public-methods
         )
 
         assert scheme.change_control_adjustment == Decimal("20000")
+
+    def test_get_change_control_adjustment_when_no_matching_revisions(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("10000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.change_control_adjustment is None
 
     def test_get_change_control_adjustment_when_no_revisions(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)

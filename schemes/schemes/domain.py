@@ -47,40 +47,36 @@ class Scheme:
 
     @property
     def funding_allocation(self) -> Decimal | None:
-        amounts = (
+        amounts = [
             revision.amount
             for revision in self._financial_revisions
             if revision.type == FinancialType.FUNDING_ALLOCATION and revision.effective_date_to is None
-        )
-        return sum(amounts, Decimal(0)) if self._financial_revisions else None
+        ]
+        return sum(amounts, Decimal(0)) if amounts else None
 
     @property
     def spend_to_date(self) -> Decimal | None:
-        amounts = (
+        amounts = [
             revision.amount
             for revision in self._financial_revisions
             if revision.type == FinancialType.SPENT_TO_DATE and revision.effective_date_to is None
-        )
-        return sum(amounts, Decimal(0)) if self._financial_revisions else None
+        ]
+        return sum(amounts, Decimal(0)) if amounts else None
 
     @property
     def change_control_adjustment(self) -> Decimal | None:
-        amounts = (
+        amounts = [
             revision.amount
             for revision in self._financial_revisions
             if revision.source == DataSource.CHANGE_CONTROL and revision.effective_date_to is None
-        )
-        return sum(amounts, Decimal(0)) if self._financial_revisions else None
+        ]
+        return sum(amounts, Decimal(0)) if amounts else None
 
     @property
     def allocation_still_to_spend(self) -> Decimal:
-        funding_allocation = self.funding_allocation
-        spend_to_date = self.spend_to_date
-        return (
-            funding_allocation - spend_to_date
-            if funding_allocation is not None and spend_to_date is not None
-            else Decimal(0)
-        )
+        funding_allocation = self.funding_allocation or Decimal(0)
+        spend_to_date = self.spend_to_date or Decimal(0)
+        return funding_allocation - spend_to_date
 
 
 class SchemeType(Enum):

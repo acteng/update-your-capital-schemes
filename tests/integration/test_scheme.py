@@ -144,3 +144,44 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
         and scheme_page.funding.change_control_adjustment == "£10,000"
         and scheme_page.funding.allocation_still_to_spend == "£60,000"
     )
+
+
+def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.update_financial(
+        FinancialRevision(
+            effective_date_from=date(2020, 1, 1),
+            effective_date_to=None,
+            type=FinancialType.FUNDING_ALLOCATION,
+            amount=Decimal("0"),
+            source=DataSource.ATF4_BID,
+        )
+    )
+    scheme.update_financial(
+        FinancialRevision(
+            effective_date_from=date(2020, 1, 1),
+            effective_date_to=None,
+            type=FinancialType.SPENT_TO_DATE,
+            amount=Decimal("0"),
+            source=DataSource.ATF4_BID,
+        )
+    )
+    scheme.update_financial(
+        FinancialRevision(
+            effective_date_from=date(2020, 1, 1),
+            effective_date_to=None,
+            type=FinancialType.FUNDING_ALLOCATION,
+            amount=Decimal("0"),
+            source=DataSource.CHANGE_CONTROL,
+        )
+    )
+    schemes.add(scheme)
+
+    scheme_page = SchemePage(client).open(1)
+
+    assert (
+        scheme_page.funding.funding_allocation == "£0"
+        and scheme_page.funding.spend_to_date == "£0"
+        and scheme_page.funding.change_control_adjustment == "£0"
+        and scheme_page.funding.allocation_still_to_spend == "£0"
+    )

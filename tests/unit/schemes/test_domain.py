@@ -181,7 +181,7 @@ class TestScheme:  # pylint: disable=too-many-public-methods
                 effective_date_to=None,
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("200000"),
-                source=DataSource.CHANGE_CONTROL,
+                source=DataSource.ATF4E_BID,
             )
         )
 
@@ -269,7 +269,7 @@ class TestScheme:  # pylint: disable=too-many-public-methods
                 effective_date_to=None,
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("200000"),
-                source=DataSource.CHANGE_CONTROL,
+                source=DataSource.ATF4E_BID,
             )
         )
 
@@ -346,7 +346,7 @@ class TestScheme:  # pylint: disable=too-many-public-methods
             FinancialRevision(
                 effective_date_from=date(2020, 1, 1),
                 effective_date_to=None,
-                type=FinancialType.FUNDING_ALLOCATION,
+                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -355,7 +355,7 @@ class TestScheme:  # pylint: disable=too-many-public-methods
             FinancialRevision(
                 effective_date_from=date(2020, 2, 1),
                 effective_date_to=None,
-                type=FinancialType.FUNDING_ALLOCATION,
+                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("20000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -369,7 +369,7 @@ class TestScheme:  # pylint: disable=too-many-public-methods
             FinancialRevision(
                 effective_date_from=date(2020, 1, 1),
                 effective_date_to=None,
-                type=FinancialType.FUNDING_ALLOCATION,
+                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -392,7 +392,7 @@ class TestScheme:  # pylint: disable=too-many-public-methods
             FinancialRevision(
                 effective_date_from=date(2020, 1, 1),
                 effective_date_to=date(2020, 1, 31),
-                type=FinancialType.FUNDING_ALLOCATION,
+                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -401,7 +401,7 @@ class TestScheme:  # pylint: disable=too-many-public-methods
             FinancialRevision(
                 effective_date_from=date(2020, 2, 1),
                 effective_date_to=None,
-                type=FinancialType.FUNDING_ALLOCATION,
+                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("20000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -435,7 +435,7 @@ class TestScheme:  # pylint: disable=too-many-public-methods
                 effective_date_from=date(2020, 1, 1),
                 effective_date_to=None,
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("110000"),
+                amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
             )
         )
@@ -446,6 +446,15 @@ class TestScheme:  # pylint: disable=too-many-public-methods
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("50000"),
                 source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                amount=Decimal("10000"),
+                source=DataSource.CHANGE_CONTROL,
             )
         )
 
@@ -462,8 +471,17 @@ class TestScheme:  # pylint: disable=too-many-public-methods
                 source=DataSource.ATF4_BID,
             )
         )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                amount=Decimal("10000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
 
-        assert scheme.allocation_still_to_spend == Decimal("-50000")
+        assert scheme.allocation_still_to_spend == Decimal("-40000")
 
     def test_get_allocation_still_to_spend_when_no_spend_to_date(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
@@ -472,12 +490,44 @@ class TestScheme:  # pylint: disable=too-many-public-methods
                 effective_date_from=date(2020, 1, 1),
                 effective_date_to=None,
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("110000"),
+                amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                amount=Decimal("10000"),
+                source=DataSource.CHANGE_CONTROL,
             )
         )
 
         assert scheme.allocation_still_to_spend == Decimal("110000")
+
+    def test_get_allocation_still_to_spend_when_no_change_control_adjustment(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective_date_from=date(2020, 1, 1),
+                effective_date_to=None,
+                type=FinancialType.SPENT_TO_DATE,
+                amount=Decimal("50000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.allocation_still_to_spend == Decimal("50000")
 
     def test_get_allocation_still_to_spend_when_no_revisions(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)

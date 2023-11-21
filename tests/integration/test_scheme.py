@@ -129,7 +129,7 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
         FinancialRevision(
             effective_date_from=date(2020, 1, 1),
             effective_date_to=None,
-            type=FinancialType.FUNDING_ALLOCATION,
+            type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
             amount=Decimal("10000"),
             source=DataSource.CHANGE_CONTROL,
         )
@@ -139,7 +139,7 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
     scheme_page = SchemePage(client).open(1)
 
     assert (
-        scheme_page.funding.funding_allocation == "£110,000"
+        scheme_page.funding.funding_allocation == "£100,000"
         and scheme_page.funding.spend_to_date == "£50,000"
         and scheme_page.funding.change_control_adjustment == "£10,000"
         and scheme_page.funding.allocation_still_to_spend == "£60,000"
@@ -170,7 +170,7 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
         FinancialRevision(
             effective_date_from=date(2020, 1, 1),
             effective_date_to=None,
-            type=FinancialType.FUNDING_ALLOCATION,
+            type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
             amount=Decimal("0"),
             source=DataSource.CHANGE_CONTROL,
         )

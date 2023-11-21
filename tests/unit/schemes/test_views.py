@@ -185,7 +185,7 @@ class TestSchemeFundingContext:
             FinancialRevision(
                 effective_date_from=date(2020, 1, 1),
                 effective_date_to=None,
-                type=FinancialType.FUNDING_ALLOCATION,
+                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
             )

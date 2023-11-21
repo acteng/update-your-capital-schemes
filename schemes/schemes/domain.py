@@ -76,7 +76,8 @@ class Scheme:
     def allocation_still_to_spend(self) -> Decimal:
         funding_allocation = self.funding_allocation or Decimal(0)
         spend_to_date = self.spend_to_date or Decimal(0)
-        return funding_allocation - spend_to_date
+        change_control_adjustment = self.change_control_adjustment or Decimal(0)
+        return funding_allocation + change_control_adjustment - spend_to_date
 
 
 class SchemeType(Enum):

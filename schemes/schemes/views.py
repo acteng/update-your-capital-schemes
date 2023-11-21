@@ -102,14 +102,14 @@ class SchemeContext:
 @dataclass(frozen=True)
 class SchemeOverviewContext:
     type: str | None
-    funding_programme: str | None
+    funding_programme: FundingProgrammeContext
     current_milestone: str | None
 
     @staticmethod
     def for_domain(scheme: Scheme) -> SchemeOverviewContext:
         return SchemeOverviewContext(
             type=SchemeOverviewContext._type_to_name(scheme.type),
-            funding_programme=SchemeOverviewContext._funding_programme_to_name(scheme.funding_programme),
+            funding_programme=FundingProgrammeContext.for_domain(scheme.funding_programme),
             current_milestone=SchemeOverviewContext._milestone_to_name(scheme.current_milestone),
         )
 
@@ -120,20 +120,6 @@ class SchemeOverviewContext:
             SchemeType.CONSTRUCTION: "Construction",
         }
         return type_names[type_] if type_ else None
-
-    @staticmethod
-    def _funding_programme_to_name(funding_programme: FundingProgramme | None) -> str | None:
-        funding_programme_names = {
-            FundingProgramme.ATF2: "ATF2",
-            FundingProgramme.ATF3: "ATF3",
-            FundingProgramme.ATF4: "ATF4",
-            FundingProgramme.ATF4E: "ATF4e",
-            FundingProgramme.ATF5: "ATF5",
-            FundingProgramme.MRN: "MRN",
-            FundingProgramme.LUF: "LUF",
-            FundingProgramme.CRSTS: "CRSTS",
-        }
-        return funding_programme_names[funding_programme] if funding_programme else None
 
     @staticmethod
     def _milestone_to_name(milestone: Milestone | None) -> str | None:
@@ -151,6 +137,25 @@ class SchemeOverviewContext:
             Milestone.REMOVED: "Removed",
         }
         return milestone_names[milestone] if milestone else None
+
+
+@dataclass(frozen=True)
+class FundingProgrammeContext:
+    name: str | None
+
+    @staticmethod
+    def for_domain(funding_programme: FundingProgramme | None) -> FundingProgrammeContext:
+        funding_programme_names = {
+            FundingProgramme.ATF2: "ATF2",
+            FundingProgramme.ATF3: "ATF3",
+            FundingProgramme.ATF4: "ATF4",
+            FundingProgramme.ATF4E: "ATF4e",
+            FundingProgramme.ATF5: "ATF5",
+            FundingProgramme.MRN: "MRN",
+            FundingProgramme.LUF: "LUF",
+            FundingProgramme.CRSTS: "CRSTS",
+        }
+        return FundingProgrammeContext(name=funding_programme_names[funding_programme] if funding_programme else None)
 
 
 @dataclass(frozen=True)

@@ -17,6 +17,7 @@ from schemes.schemes.domain import (
 )
 from schemes.schemes.views import (
     FinancialRevisionRepr,
+    FundingProgrammeContext,
     MilestoneRevisionRepr,
     SchemeContext,
     SchemeFundingContext,
@@ -82,29 +83,13 @@ class TestSchemeOverviewContext:
 
         assert context.type == expected_type
 
-    @pytest.mark.parametrize(
-        "funding_programme, expected_funding_programme",
-        [
-            (FundingProgramme.ATF2, "ATF2"),
-            (FundingProgramme.ATF3, "ATF3"),
-            (FundingProgramme.ATF4, "ATF4"),
-            (FundingProgramme.ATF4E, "ATF4e"),
-            (FundingProgramme.ATF5, "ATF5"),
-            (FundingProgramme.MRN, "MRN"),
-            (FundingProgramme.LUF, "LUF"),
-            (FundingProgramme.CRSTS, "CRSTS"),
-            (None, None),
-        ],
-    )
-    def test_set_funding_programme(
-        self, funding_programme: FundingProgramme | None, expected_funding_programme: str | None
-    ) -> None:
+    def test_set_funding_programme(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.funding_programme = funding_programme
+        scheme.funding_programme = FundingProgramme.ATF4
 
         context = SchemeOverviewContext.for_domain(scheme)
 
-        assert context.funding_programme == expected_funding_programme
+        assert context.funding_programme == FundingProgrammeContext.for_domain(FundingProgramme.ATF4)
 
     @pytest.mark.parametrize(
         "milestone, expected_milestone",
@@ -144,6 +129,27 @@ class TestSchemeOverviewContext:
         context = SchemeOverviewContext.for_domain(scheme)
 
         assert context.current_milestone is None
+
+
+class TestFundingProgrammeContext:
+    @pytest.mark.parametrize(
+        "funding_programme, expected_name",
+        [
+            (FundingProgramme.ATF2, "ATF2"),
+            (FundingProgramme.ATF3, "ATF3"),
+            (FundingProgramme.ATF4, "ATF4"),
+            (FundingProgramme.ATF4E, "ATF4e"),
+            (FundingProgramme.ATF5, "ATF5"),
+            (FundingProgramme.MRN, "MRN"),
+            (FundingProgramme.LUF, "LUF"),
+            (FundingProgramme.CRSTS, "CRSTS"),
+            (None, None),
+        ],
+    )
+    def test_set_name(self, funding_programme: FundingProgramme | None, expected_name: str | None) -> None:
+        context = FundingProgrammeContext.for_domain(funding_programme)
+
+        assert context.name == expected_name
 
 
 class TestSchemeFundingContext:

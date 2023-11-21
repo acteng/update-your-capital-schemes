@@ -108,25 +108,22 @@ class SchemeOverviewContext:
     @staticmethod
     def for_domain(scheme: Scheme) -> SchemeOverviewContext:
         return SchemeOverviewContext(
-            type=SchemeOverviewContext._type_to_name(scheme.type) if scheme.type else None,
-            funding_programme=SchemeOverviewContext._funding_programme_to_name(scheme.funding_programme)
-            if scheme.funding_programme
-            else None,
-            current_milestone=SchemeOverviewContext._milestone_to_name(scheme.current_milestone)
-            if scheme.current_milestone
-            else None,
+            type=SchemeOverviewContext._type_to_name(scheme.type),
+            funding_programme=SchemeOverviewContext._funding_programme_to_name(scheme.funding_programme),
+            current_milestone=SchemeOverviewContext._milestone_to_name(scheme.current_milestone),
         )
 
     @staticmethod
-    def _type_to_name(type_: SchemeType) -> str:
-        return {
+    def _type_to_name(type_: SchemeType | None) -> str | None:
+        type_names = {
             SchemeType.DEVELOPMENT: "Development",
             SchemeType.CONSTRUCTION: "Construction",
-        }[type_]
+        }
+        return type_names[type_] if type_ else None
 
     @staticmethod
-    def _funding_programme_to_name(funding_programme: FundingProgramme) -> str:
-        return {
+    def _funding_programme_to_name(funding_programme: FundingProgramme | None) -> str | None:
+        funding_programme_names = {
             FundingProgramme.ATF2: "ATF2",
             FundingProgramme.ATF3: "ATF3",
             FundingProgramme.ATF4: "ATF4",
@@ -135,11 +132,12 @@ class SchemeOverviewContext:
             FundingProgramme.MRN: "MRN",
             FundingProgramme.LUF: "LUF",
             FundingProgramme.CRSTS: "CRSTS",
-        }[funding_programme]
+        }
+        return funding_programme_names[funding_programme] if funding_programme else None
 
     @staticmethod
-    def _milestone_to_name(milestone: Milestone) -> str:
-        return {
+    def _milestone_to_name(milestone: Milestone | None) -> str | None:
+        milestone_names = {
             Milestone.PUBLIC_CONSULTATION_COMPLETED: "Public consultation completed",
             Milestone.FEASIBILITY_DESIGN_COMPLETED: "Feasibility design completed",
             Milestone.PRELIMINARY_DESIGN_COMPLETED: "Preliminary design completed",
@@ -151,7 +149,8 @@ class SchemeOverviewContext:
             Milestone.NOT_PROGRESSED: "Not progressed",
             Milestone.SUPERSEDED: "Superseded",
             Milestone.REMOVED: "Removed",
-        }[milestone]
+        }
+        return milestone_names[milestone] if milestone else None
 
 
 @dataclass(frozen=True)

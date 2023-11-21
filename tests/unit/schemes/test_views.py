@@ -3,6 +3,7 @@ from decimal import Decimal
 
 import pytest
 
+from schemes.authorities.domain import Authority
 from schemes.schemes.domain import (
     DataSource,
     FinancialRevision,
@@ -21,7 +22,37 @@ from schemes.schemes.views import (
     SchemeFundingContext,
     SchemeOverviewContext,
     SchemeRepr,
+    SchemeRowContext,
+    SchemesContext,
 )
+
+
+class TestSchemesContext:
+    def test_create_from_domain(self) -> None:
+        authority = Authority(id_=1, name="Liverpool City Region Combined Authority")
+        schemes = [
+            Scheme(id_=1, name="Wirral Package", authority_id=1),
+            Scheme(id_=2, name="School Streets", authority_id=1),
+        ]
+
+        context = SchemesContext.for_domain(authority, schemes)
+
+        assert context == SchemesContext(
+            authority_name="Liverpool City Region Combined Authority",
+            schemes=[
+                SchemeRowContext.for_domain(Scheme(id_=1, name="Wirral Package", authority_id=1)),
+                SchemeRowContext.for_domain(Scheme(id_=2, name="School Streets", authority_id=1)),
+            ],
+        )
+
+
+class TestSchemesRowContext:
+    def test_create_from_domain(self) -> None:
+        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+
+        context = SchemeRowContext.for_domain(scheme1)
+
+        assert context == SchemeRowContext(id=1, reference="ATE00001", name="Wirral Package")
 
 
 class TestSchemeContext:

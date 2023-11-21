@@ -60,6 +60,7 @@ class SchemesContext:
 class SchemeRowContext:
     id: int
     reference: str
+    funding_programme: FundingProgrammeContext
     name: str
 
     @staticmethod
@@ -67,6 +68,7 @@ class SchemeRowContext:
         return SchemeRowContext(
             id=scheme.id,
             reference=scheme.reference,
+            funding_programme=FundingProgrammeContext.for_domain(scheme.funding_programme),
             name=scheme.name,
         )
 

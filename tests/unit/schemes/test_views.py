@@ -49,11 +49,17 @@ class TestSchemesContext:
 
 class TestSchemesRowContext:
     def test_create_from_domain(self) -> None:
-        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding_programme = FundingProgramme.ATF4
 
-        context = SchemeRowContext.for_domain(scheme1)
+        context = SchemeRowContext.for_domain(scheme)
 
-        assert context == SchemeRowContext(id=1, reference="ATE00001", name="Wirral Package")
+        assert context == SchemeRowContext(
+            id=1,
+            reference="ATE00001",
+            funding_programme=FundingProgrammeContext.for_domain(FundingProgramme.ATF4),
+            name="Wirral Package",
+        )
 
 
 class TestSchemeContext:

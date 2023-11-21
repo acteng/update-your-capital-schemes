@@ -17,14 +17,18 @@ class TestAuthenticated:
     def test_schemes(self, app_client: AppClient, app: Flask, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
-        app_client.add_schemes(1, SchemeRepr(id=1, name="Wirral Package"), SchemeRepr(id=2, name="School Streets"))
+        app_client.add_schemes(
+            1,
+            SchemeRepr(id=1, name="Wirral Package", funding_programme="ATF3"),
+            SchemeRepr(id=2, name="School Streets", funding_programme="ATF4"),
+        )
 
         schemes_page = SchemesPage(app, page).open()
 
         assert schemes_page.authority == "Liverpool City Region Combined Authority"
         assert schemes_page.schemes.to_dicts() == [
-            {"reference": "ATE00001", "name": "Wirral Package"},
-            {"reference": "ATE00002", "name": "School Streets"},
+            {"reference": "ATE00001", "funding_programme": "ATF3", "name": "Wirral Package"},
+            {"reference": "ATE00002", "funding_programme": "ATF4", "name": "School Streets"},
         ]
 
     def test_schemes_when_unauthorized(self, app: Flask, page: Page) -> None:

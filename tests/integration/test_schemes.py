@@ -7,7 +7,7 @@ from flask.testing import FlaskClient
 
 from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
-from schemes.schemes.domain import Scheme
+from schemes.schemes.domain import FundingProgramme, Scheme
 from schemes.schemes.services import SchemeRepository
 from schemes.users.domain import User
 from schemes.users.services import UserRepository
@@ -67,9 +67,11 @@ def test_schemes_shows_authority(client: FlaskClient) -> None:
 
 
 def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -> None:
+    scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme1.funding_programme = FundingProgramme.ATF3
     schemes.add(
+        scheme1,
         Scheme(id_=2, name="School Streets", authority_id=1),
-        Scheme(id_=1, name="Wirral Package", authority_id=1),
         Scheme(id_=3, name="Hospital Fields Road", authority_id=2),
     )
 
@@ -77,8 +79,8 @@ def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -
 
     assert schemes_page.schemes
     assert schemes_page.schemes.to_dicts() == [
-        {"reference": "ATE00001", "name": "Wirral Package"},
-        {"reference": "ATE00002", "name": "School Streets"},
+        {"reference": "ATE00001", "funding_programme": "ATF3", "name": "Wirral Package"},
+        {"reference": "ATE00002", "funding_programme": "N/A", "name": "School Streets"},
     ]
     assert not schemes_page.is_no_schemes_message_visible
 

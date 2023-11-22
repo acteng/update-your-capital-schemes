@@ -48,6 +48,14 @@ def auth_fixture(authorities: AuthorityRepository, users: UserRepository, client
         session["user"] = {"email": "boardman@example.com"}
 
 
+def test_scheme_shows_back(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    scheme_page = SchemePage(client).open(1)
+
+    assert scheme_page.back_url == "/schemes"
+
+
 def test_scheme_shows_reference_and_name(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 

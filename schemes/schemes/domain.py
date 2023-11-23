@@ -32,7 +32,7 @@ class Scheme:
         actual_milestones = [
             revision.milestone
             for revision in self._milestone_revisions
-            if revision.observation_type == ObservationType.ACTUAL and revision.effective_date_to is None
+            if revision.observation_type == ObservationType.ACTUAL and revision.effective.date_to is None
         ]
         return sorted(actual_milestones)[-1] if actual_milestones else None
 
@@ -48,7 +48,7 @@ class Scheme:
         amounts = [
             revision.amount
             for revision in self._financial_revisions
-            if revision.type == FinancialType.FUNDING_ALLOCATION and revision.effective_date_to is None
+            if revision.type == FinancialType.FUNDING_ALLOCATION and revision.effective.date_to is None
         ]
         return sum(amounts, Decimal(0)) if amounts else None
 
@@ -57,7 +57,7 @@ class Scheme:
         amounts = [
             revision.amount
             for revision in self._financial_revisions
-            if revision.type == FinancialType.SPENT_TO_DATE and revision.effective_date_to is None
+            if revision.type == FinancialType.SPENT_TO_DATE and revision.effective.date_to is None
         ]
         return sum(amounts, Decimal(0)) if amounts else None
 
@@ -66,7 +66,7 @@ class Scheme:
         amounts = [
             revision.amount
             for revision in self._financial_revisions
-            if revision.source == DataSource.CHANGE_CONTROL and revision.effective_date_to is None
+            if revision.source == DataSource.CHANGE_CONTROL and revision.effective.date_to is None
         ]
         return sum(amounts, Decimal(0)) if amounts else None
 
@@ -96,18 +96,20 @@ class FundingProgramme(Enum):
 
 @dataclass(frozen=True)
 class MilestoneRevision:
-    effective_date_from: date
-    effective_date_to: date | None
+    effective: DateRange
     milestone: Milestone
     observation_type: ObservationType
     status_date: date
 
+
+@dataclass(frozen=True)
+class DateRange:
+    date_from: date
+    date_to: date | None
+
     def __post_init__(self) -> None:
-        if not (self.effective_date_to is None or self.effective_date_from <= self.effective_date_to):
-            raise ValueError(
-                f"Effective date from '{self.effective_date_from}' must not "
-                f"be after effective date to '{self.effective_date_to}'"
-            )
+        if not (self.date_to is None or self.date_from <= self.date_to):
+            raise ValueError(f"From date '{self.date_from}' must not be after to date '{self.date_to}'")
 
 
 class Milestone(IntEnum):
@@ -131,18 +133,10 @@ class ObservationType(Enum):
 
 @dataclass(frozen=True)
 class FinancialRevision:
-    effective_date_from: date
-    effective_date_to: date | None
+    effective: DateRange
     type: FinancialType
     amount: Decimal
     source: DataSource
-
-    def __post_init__(self) -> None:
-        if not (self.effective_date_to is None or self.effective_date_from <= self.effective_date_to):
-            raise ValueError(
-                f"Effective date from '{self.effective_date_from}' must not "
-                f"be after effective date to '{self.effective_date_to}'"
-            )
 
 
 class FinancialType(Enum):

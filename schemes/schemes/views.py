@@ -13,6 +13,7 @@ from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
 from schemes.schemes.domain import (
     DataSource,
+    DateRange,
     FinancialRevision,
     FinancialType,
     FundingProgramme,
@@ -238,8 +239,10 @@ class MilestoneRevisionRepr:
 
     def to_domain(self) -> MilestoneRevision:
         return MilestoneRevision(
-            effective_date_from=date.fromisoformat(self.effective_date_from),
-            effective_date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+            effective=DateRange(
+                date_from=date.fromisoformat(self.effective_date_from),
+                date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+            ),
             milestone=self._milestone_to_domain(self.milestone),
             observation_type=self._observation_type_to_domain(self.observation_type),
             status_date=date.fromisoformat(self.status_date),
@@ -279,8 +282,10 @@ class FinancialRevisionRepr:
 
     def to_domain(self) -> FinancialRevision:
         return FinancialRevision(
-            effective_date_from=date.fromisoformat(self.effective_date_from),
-            effective_date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+            effective=DateRange(
+                date_from=date.fromisoformat(self.effective_date_from),
+                date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+            ),
             type=self._financial_type_to_domain(self.type),
             amount=Decimal(self.amount),
             source=self._data_source_to_domain(self.source),

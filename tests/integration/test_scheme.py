@@ -10,6 +10,7 @@ from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
 from schemes.schemes.domain import (
     DataSource,
+    DateRange,
     FinancialRevision,
     FinancialType,
     FundingProgramme,
@@ -83,8 +84,7 @@ def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -
     scheme.funding_programme = FundingProgramme.ATF4
     scheme.update_milestone(
         MilestoneRevision(
-            effective_date_from=date(2020, 1, 1),
-            effective_date_to=None,
+            effective=DateRange(date(2020, 1, 1), None),
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
@@ -119,8 +119,7 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.update_financial(
         FinancialRevision(
-            effective_date_from=date(2020, 1, 1),
-            effective_date_to=None,
+            effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
             amount=Decimal("100000"),
             source=DataSource.ATF4_BID,
@@ -128,8 +127,7 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
     )
     scheme.update_financial(
         FinancialRevision(
-            effective_date_from=date(2020, 1, 1),
-            effective_date_to=None,
+            effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.SPENT_TO_DATE,
             amount=Decimal("50000"),
             source=DataSource.ATF4_BID,
@@ -137,8 +135,7 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
     )
     scheme.update_financial(
         FinancialRevision(
-            effective_date_from=date(2020, 1, 1),
-            effective_date_to=None,
+            effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
             amount=Decimal("10000"),
             source=DataSource.CHANGE_CONTROL,
@@ -160,8 +157,7 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.update_financial(
         FinancialRevision(
-            effective_date_from=date(2020, 1, 1),
-            effective_date_to=None,
+            effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
             amount=Decimal("0"),
             source=DataSource.ATF4_BID,
@@ -169,8 +165,7 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
     )
     scheme.update_financial(
         FinancialRevision(
-            effective_date_from=date(2020, 1, 1),
-            effective_date_to=None,
+            effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.SPENT_TO_DATE,
             amount=Decimal("0"),
             source=DataSource.ATF4_BID,
@@ -178,8 +173,7 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
     )
     scheme.update_financial(
         FinancialRevision(
-            effective_date_from=date(2020, 1, 1),
-            effective_date_to=None,
+            effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
             amount=Decimal("0"),
             source=DataSource.CHANGE_CONTROL,

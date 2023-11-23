@@ -11,6 +11,7 @@ from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
 from schemes.schemes.domain import (
     DataSource,
+    DateRange,
     FinancialRevision,
     FinancialType,
     FundingProgramme,
@@ -160,8 +161,7 @@ class TestApiEnabled:
         assert scheme1.id == 1
         assert scheme1.milestone_revisions == [
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -195,8 +195,7 @@ class TestApiEnabled:
         assert scheme1.id == 1
         assert scheme1.financial_revisions == [
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,

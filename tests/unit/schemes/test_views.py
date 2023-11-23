@@ -6,6 +6,7 @@ import pytest
 from schemes.authorities.domain import Authority
 from schemes.schemes.domain import (
     DataSource,
+    DateRange,
     FinancialRevision,
     FinancialType,
     FundingProgramme,
@@ -123,8 +124,7 @@ class TestSchemeOverviewContext:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.update_milestone(
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 milestone=milestone,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -169,8 +169,7 @@ class TestSchemeFundingContext:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -185,8 +184,7 @@ class TestSchemeFundingContext:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("50000"),
                 source=DataSource.ATF4_BID,
@@ -201,8 +199,7 @@ class TestSchemeFundingContext:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
@@ -217,8 +214,7 @@ class TestSchemeFundingContext:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("110000"),
                 source=DataSource.ATF4_BID,
@@ -226,8 +222,7 @@ class TestSchemeFundingContext:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("50000"),
                 source=DataSource.ATF4_BID,
@@ -307,15 +302,13 @@ class TestSchemeRepr:
 
         assert scheme.milestone_revisions == [
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
             ),
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 2, 1),
@@ -348,15 +341,13 @@ class TestSchemeRepr:
 
         assert scheme.financial_revisions == [
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
             ),
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.EXPECTED_COST,
                 amount=Decimal("200000"),
                 source=DataSource.PULSE_6,
@@ -377,8 +368,7 @@ class TestMilestoneRevisionRepr:
         milestone_revision = milestone_revision_repr.to_domain()
 
         assert milestone_revision == MilestoneRevision(
-            effective_date_from=date(2020, 1, 1),
-            effective_date_to=date(2020, 1, 31),
+            effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
@@ -395,7 +385,7 @@ class TestMilestoneRevisionRepr:
 
         milestone_revision = milestone_revision_repr.to_domain()
 
-        assert milestone_revision.effective_date_to is None
+        assert milestone_revision.effective.date_to is None
 
     @pytest.mark.parametrize(
         "milestone, expected_milestone",
@@ -460,8 +450,7 @@ class TestFinancialRevisionRepr:
         financial_revision = financial_revision_repr.to_domain()
 
         assert financial_revision == FinancialRevision(
-            effective_date_from=date(2020, 1, 1),
-            effective_date_to=date(2020, 1, 31),
+            effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
             type=FinancialType.FUNDING_ALLOCATION,
             amount=Decimal("100000"),
             source=DataSource.ATF4_BID,
@@ -478,7 +467,7 @@ class TestFinancialRevisionRepr:
 
         financial_revision = financial_revision_repr.to_domain()
 
-        assert financial_revision.effective_date_to is None
+        assert financial_revision.effective.date_to is None
 
     @pytest.mark.parametrize(
         "financial_type, expected_financial_type",

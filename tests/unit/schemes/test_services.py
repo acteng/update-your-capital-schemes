@@ -9,6 +9,7 @@ from schemes.authorities.services import DatabaseAuthorityRepository
 from schemes.authorities.services import add_tables as authorities_add_tables
 from schemes.schemes.domain import (
     DataSource,
+    DateRange,
     FinancialRevision,
     FinancialType,
     FundingProgramme,
@@ -91,8 +92,7 @@ class TestDatabaseSchemeRepository:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.update_milestone(
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=date(2020, 1, 31),
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
@@ -100,8 +100,7 @@ class TestDatabaseSchemeRepository:
         )
         scheme1.update_milestone(
             MilestoneRevision(
-                effective_date_from=date(2020, 2, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 2, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 3, 1),
@@ -138,8 +137,7 @@ class TestDatabaseSchemeRepository:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=date(2020, 1, 31),
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -147,8 +145,7 @@ class TestDatabaseSchemeRepository:
         )
         scheme1.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 2, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4_BID,
@@ -243,15 +240,15 @@ class TestDatabaseSchemeRepository:
         milestone_revision2: MilestoneRevision
         milestone_revision1, milestone_revision2 = actual.milestone_revisions
         assert (
-            milestone_revision1.effective_date_from == date(2020, 1, 1)
-            and milestone_revision1.effective_date_to == date(2020, 1, 31)
+            milestone_revision1.effective.date_from == date(2020, 1, 1)
+            and milestone_revision1.effective.date_to == date(2020, 1, 31)
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
         )
         assert (
-            milestone_revision2.effective_date_from == date(2020, 2, 1)
-            and milestone_revision2.effective_date_to is None
+            milestone_revision2.effective.date_from == date(2020, 2, 1)
+            and milestone_revision2.effective.date_to is None
             and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
@@ -296,15 +293,15 @@ class TestDatabaseSchemeRepository:
         financial_revision2: FinancialRevision
         financial_revision1, financial_revision2 = actual.financial_revisions
         assert (
-            financial_revision1.effective_date_from == date(2020, 1, 1)
-            and financial_revision1.effective_date_to == date(2020, 1, 31)
+            financial_revision1.effective.date_from == date(2020, 1, 1)
+            and financial_revision1.effective.date_to == date(2020, 1, 31)
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == Decimal("100000")
             and financial_revision1.source == DataSource.ATF4_BID
         )
         assert (
-            financial_revision2.effective_date_from == date(2020, 2, 1)
-            and financial_revision2.effective_date_to is None
+            financial_revision2.effective.date_from == date(2020, 2, 1)
+            and financial_revision2.effective.date_to is None
             and financial_revision2.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision2.amount == Decimal("200000")
             and financial_revision2.source == DataSource.ATF4_BID
@@ -420,8 +417,8 @@ class TestDatabaseSchemeRepository:
         milestone_revision1: MilestoneRevision
         (milestone_revision1,) = actual1.milestone_revisions
         assert (
-            milestone_revision1.effective_date_from == date(2020, 1, 1)
-            and milestone_revision1.effective_date_to is None
+            milestone_revision1.effective.date_from == date(2020, 1, 1)
+            and milestone_revision1.effective.date_to is None
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
@@ -430,8 +427,8 @@ class TestDatabaseSchemeRepository:
         milestone_revision2: MilestoneRevision
         (milestone_revision2,) = actual2.milestone_revisions
         assert (
-            milestone_revision2.effective_date_from == date(2020, 2, 1)
-            and milestone_revision2.effective_date_to is None
+            milestone_revision2.effective.date_from == date(2020, 2, 1)
+            and milestone_revision2.effective.date_to is None
             and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
@@ -479,8 +476,8 @@ class TestDatabaseSchemeRepository:
         financial_revision1: FinancialRevision
         (financial_revision1,) = actual1.financial_revisions
         assert (
-            financial_revision1.effective_date_from == date(2020, 1, 1)
-            and financial_revision1.effective_date_to is None
+            financial_revision1.effective.date_from == date(2020, 1, 1)
+            and financial_revision1.effective.date_to is None
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == Decimal("100000")
             and financial_revision1.source == DataSource.ATF4_BID
@@ -560,8 +557,8 @@ class TestDatabaseSchemeRepository:
         milestone_revision1: MilestoneRevision
         (milestone_revision1,) = actual1.milestone_revisions
         assert (
-            milestone_revision1.effective_date_from == date(2020, 1, 1)
-            and milestone_revision1.effective_date_to is None
+            milestone_revision1.effective.date_from == date(2020, 1, 1)
+            and milestone_revision1.effective.date_to is None
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
@@ -570,8 +567,8 @@ class TestDatabaseSchemeRepository:
         milestone_revision2: MilestoneRevision
         (milestone_revision2,) = actual2.milestone_revisions
         assert (
-            milestone_revision2.effective_date_from == date(2020, 2, 1)
-            and milestone_revision2.effective_date_to is None
+            milestone_revision2.effective.date_from == date(2020, 2, 1)
+            and milestone_revision2.effective.date_to is None
             and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
@@ -620,8 +617,8 @@ class TestDatabaseSchemeRepository:
         financial_revision1: FinancialRevision
         (financial_revision1,) = actual1.financial_revisions
         assert (
-            financial_revision1.effective_date_from == date(2020, 1, 1)
-            and financial_revision1.effective_date_to is None
+            financial_revision1.effective.date_from == date(2020, 1, 1)
+            and financial_revision1.effective.date_to is None
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == Decimal("100000")
             and financial_revision1.source == DataSource.ATF4_BID
@@ -630,8 +627,8 @@ class TestDatabaseSchemeRepository:
         financial_revision2: FinancialRevision
         (financial_revision2,) = actual2.financial_revisions
         assert (
-            financial_revision2.effective_date_from == date(2020, 2, 1)
-            and financial_revision2.effective_date_to is None
+            financial_revision2.effective.date_from == date(2020, 2, 1)
+            and financial_revision2.effective.date_to is None
             and financial_revision2.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision2.amount == Decimal("200000")
             and financial_revision2.source == DataSource.ATF4_BID

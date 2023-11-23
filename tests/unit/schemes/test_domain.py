@@ -5,6 +5,7 @@ import pytest
 
 from schemes.schemes.domain import (
     DataSource,
+    DateRange,
     FinancialRevision,
     FinancialType,
     Milestone,
@@ -24,8 +25,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_milestone(
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -41,8 +41,7 @@ class TestScheme:
 
         scheme.update_milestone(
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -51,8 +50,7 @@ class TestScheme:
 
         assert scheme.milestone_revisions == [
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -63,8 +61,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_milestone(
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 1, 1),
@@ -72,8 +69,7 @@ class TestScheme:
         )
         scheme.update_milestone(
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -86,8 +82,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_milestone(
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -95,8 +90,7 @@ class TestScheme:
         )
         scheme.update_milestone(
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -109,8 +103,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_milestone(
             MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=date(2020, 2, 1),
+                effective=DateRange(date(2020, 1, 1), date(2020, 2, 1)),
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -128,8 +121,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -145,8 +137,7 @@ class TestScheme:
 
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -155,8 +146,7 @@ class TestScheme:
 
         assert scheme.financial_revisions == [
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -167,8 +157,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -176,8 +165,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 2, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4E_BID,
@@ -190,8 +178,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -199,8 +186,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.EXPECTED_COST,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4_BID,
@@ -213,8 +199,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=date(2020, 1, 31),
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -222,8 +207,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 2, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4_BID,
@@ -236,8 +220,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.EXPECTED_COST,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -255,8 +238,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -264,8 +246,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 2, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4E_BID,
@@ -278,8 +259,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -287,8 +267,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.EXPECTED_COST,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4_BID,
@@ -301,8 +280,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=date(2020, 1, 31),
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -310,8 +288,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 2, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4_BID,
@@ -324,8 +301,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.EXPECTED_COST,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -343,8 +319,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
@@ -352,8 +327,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 2, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("20000"),
                 source=DataSource.CHANGE_CONTROL,
@@ -366,8 +340,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
@@ -375,8 +348,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("20000"),
                 source=DataSource.ATF4_BID,
@@ -389,8 +361,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=date(2020, 1, 31),
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
@@ -398,8 +369,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 2, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("20000"),
                 source=DataSource.CHANGE_CONTROL,
@@ -412,8 +382,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.ATF4_BID,
@@ -431,8 +400,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -440,8 +408,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("50000"),
                 source=DataSource.ATF4_BID,
@@ -449,8 +416,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
@@ -463,8 +429,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("50000"),
                 source=DataSource.ATF4_BID,
@@ -472,8 +437,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
@@ -486,8 +450,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -495,8 +458,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
@@ -509,8 +471,7 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
@@ -518,8 +479,7 @@ class TestScheme:
         )
         scheme.update_financial(
             FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=None,
+                effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("50000"),
                 source=DataSource.ATF4_BID,
@@ -534,59 +494,14 @@ class TestScheme:
         assert scheme.allocation_still_to_spend == Decimal("0")
 
 
-class TestMilestoneRevision:
+class TestDateRange:
     @pytest.mark.parametrize(
-        "effective_date_from, effective_date_to",
+        "date_from, date_to",
         [(date(2020, 1, 1), date(2020, 1, 31)), (date(2020, 1, 31), date(2020, 1, 31)), (date(2020, 1, 1), None)],
     )
-    def test_effective_date_from_before_or_equal_to_effective_date_to(
-        self, effective_date_from: date, effective_date_to: date | None
-    ) -> None:
-        MilestoneRevision(
-            effective_date_from=effective_date_from,
-            effective_date_to=effective_date_to,
-            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-            observation_type=ObservationType.ACTUAL,
-            status_date=date(2020, 1, 1),
-        )
+    def test_date_from_before_or_equal_to_date_to(self, date_from: date, date_to: date | None) -> None:
+        DateRange(date_from, date_to)
 
-    def test_effective_date_from_after_effective_date_to_errors(self) -> None:
-        with pytest.raises(
-            ValueError, match="Effective date from '2020-01-01' must not be after effective date to '2019-12-31'"
-        ):
-            MilestoneRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=date(2019, 12, 31),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2020, 1, 1),
-            )
-
-
-class TestFinancialRevision:
-    @pytest.mark.parametrize(
-        "effective_date_from, effective_date_to",
-        [(date(2020, 1, 1), date(2020, 1, 31)), (date(2020, 1, 31), date(2020, 1, 31)), (date(2020, 1, 1), None)],
-    )
-    def test_effective_date_from_before_or_equal_to_effective_date_to(
-        self, effective_date_from: date, effective_date_to: date | None
-    ) -> None:
-        FinancialRevision(
-            effective_date_from=effective_date_from,
-            effective_date_to=effective_date_to,
-            type=FinancialType.FUNDING_ALLOCATION,
-            amount=Decimal("100000"),
-            source=DataSource.ATF4_BID,
-        )
-
-    def test_effective_date_from_after_effective_date_to_errors(self) -> None:
-        with pytest.raises(
-            ValueError, match="Effective date from '2020-01-01' must not be after effective date to '2019-12-31'"
-        ):
-            FinancialRevision(
-                effective_date_from=date(2020, 1, 1),
-                effective_date_to=date(2019, 12, 31),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("100000"),
-                source=DataSource.ATF4_BID,
-            )
+    def test_date_from_after_date_to_errors(self) -> None:
+        with pytest.raises(ValueError, match="From date '2020-01-01' must not be after to date '2019-12-31'"):
+            DateRange(date(2020, 1, 1), date(2019, 12, 31))

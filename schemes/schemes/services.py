@@ -19,6 +19,7 @@ from sqlalchemy import (
 
 from schemes.schemes.domain import (
     DataSource,
+    DateRange,
     FinancialRevision,
     FinancialType,
     FundingProgramme,
@@ -123,8 +124,8 @@ class DatabaseSchemeRepository(SchemeRepository):
                     connection.execute(
                         insert(self._scheme_milestone_table).values(
                             capital_scheme_id=scheme.id,
-                            effective_date_from=milestone_revision.effective_date_from,
-                            effective_date_to=milestone_revision.effective_date_to,
+                            effective_date_from=milestone_revision.effective.date_from,
+                            effective_date_to=milestone_revision.effective.date_to,
                             milestone_id=MILESTONE_MAPPER.to_id(milestone_revision.milestone),
                             observation_type_id=OBSERVATION_TYPE_MAPPER.to_id(milestone_revision.observation_type),
                             status_date=milestone_revision.status_date,
@@ -134,8 +135,8 @@ class DatabaseSchemeRepository(SchemeRepository):
                     connection.execute(
                         insert(self._capital_scheme_financial_table).values(
                             capital_scheme_id=scheme.id,
-                            effective_date_from=financial_revision.effective_date_from,
-                            effective_date_to=financial_revision.effective_date_to,
+                            effective_date_from=financial_revision.effective.date_from,
+                            effective_date_to=financial_revision.effective.date_to,
                             financial_type_id=FINANCIAL_TYPE_MAPPER.to_id(financial_revision.type),
                             amount=financial_revision.amount,
                             data_source_id=DATA_SOURCE_MAPPER.to_id(financial_revision.source),
@@ -231,8 +232,7 @@ class DatabaseSchemeRepository(SchemeRepository):
     @staticmethod
     def _scheme_milestone_to_domain(row: Row[Any]) -> MilestoneRevision:
         return MilestoneRevision(
-            effective_date_from=row.effective_date_from,
-            effective_date_to=row.effective_date_to,
+            effective=DateRange(row.effective_date_from, row.effective_date_to),
             milestone=MILESTONE_MAPPER.to_domain(row.milestone_id),
             observation_type=OBSERVATION_TYPE_MAPPER.to_domain(row.observation_type_id),
             status_date=row.status_date,
@@ -241,8 +241,7 @@ class DatabaseSchemeRepository(SchemeRepository):
     @staticmethod
     def _capital_scheme_financial_to_domain(row: Row[Any]) -> FinancialRevision:
         return FinancialRevision(
-            effective_date_from=row.effective_date_from,
-            effective_date_to=row.effective_date_to,
+            effective=DateRange(row.effective_date_from, row.effective_date_to),
             type=FINANCIAL_TYPE_MAPPER.to_domain(row.financial_type_id),
             amount=row.amount,
             source=DATA_SOURCE_MAPPER.to_domain(row.data_source_id),

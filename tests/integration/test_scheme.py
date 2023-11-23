@@ -56,12 +56,12 @@ def test_scheme_shows_back(schemes: SchemeRepository, client: FlaskClient) -> No
     assert scheme_page.back_url == "/schemes"
 
 
-def test_scheme_shows_reference_and_name(schemes: SchemeRepository, client: FlaskClient) -> None:
+def test_scheme_shows_name(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
     scheme_page = SchemePage(client).open(1)
 
-    assert scheme_page.reference_and_name == "ATE00001 - Wirral Package"
+    assert scheme_page.name == "Wirral Package"
 
 
 def test_scheme_shows_minimal_overview(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -70,7 +70,8 @@ def test_scheme_shows_minimal_overview(schemes: SchemeRepository, client: FlaskC
     scheme_page = SchemePage(client).open(1)
 
     assert (
-        scheme_page.overview.scheme_type == "N/A"
+        scheme_page.overview.reference == "ATE00001"
+        and scheme_page.overview.scheme_type == "N/A"
         and scheme_page.overview.funding_programme == "N/A"
         and scheme_page.overview.current_milestone == "N/A"
     )
@@ -94,7 +95,8 @@ def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -
     scheme_page = SchemePage(client).open(1)
 
     assert (
-        scheme_page.overview.scheme_type == "Construction"
+        scheme_page.overview.reference == "ATE00001"
+        and scheme_page.overview.scheme_type == "Construction"
         and scheme_page.overview.funding_programme == "ATF4"
         and scheme_page.overview.current_milestone == "Detailed design completed"
     )

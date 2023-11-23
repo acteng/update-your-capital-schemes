@@ -42,7 +42,8 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, app: Fl
     scheme_page = SchemePage(app, page).open(1)
 
     assert (
-        scheme_page.reference_and_name == "ATE00001 - Wirral Package"
+        scheme_page.name == "Wirral Package"
+        and scheme_page.overview.reference == "ATE00001"
         and scheme_page.overview.scheme_type == "Construction"
         and scheme_page.overview.funding_programme == "ATF4"
         and scheme_page.overview.current_milestone == "Detailed design completed"

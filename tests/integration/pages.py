@@ -142,7 +142,7 @@ class SchemePage:
         return back["href"] if back else None
 
     @property
-    def reference_and_name(self) -> str | None:
+    def name(self) -> str | None:
         heading = self._soup.select_one("main h1")
         return heading.string if heading else None
 
@@ -161,11 +161,13 @@ class SchemePage:
 
 class SchemeOverviewComponent:
     def __init__(self, tag: Tag):
-        scheme_type_tag = tag.select("main dd")[0]
+        reference_tag = tag.select("main dd")[0]
+        self.reference = reference_tag.string.strip() if reference_tag.string else None
+        scheme_type_tag = tag.select("main dd")[1]
         self.scheme_type = scheme_type_tag.string.strip() if scheme_type_tag.string else None
-        funding_programme_tag = tag.select("main dd")[1]
+        funding_programme_tag = tag.select("main dd")[2]
         self.funding_programme = funding_programme_tag.string.strip() if funding_programme_tag.string else None
-        current_milestone_tag = tag.select("main dd")[2]
+        current_milestone_tag = tag.select("main dd")[3]
         self.current_milestone = current_milestone_tag.string.strip() if current_milestone_tag.string else None
 
 

@@ -69,7 +69,6 @@ class TestSchemeContext:
         context = SchemeContext.for_domain(scheme)
 
         assert context == SchemeContext(
-            reference="ATE00001",
             name="Wirral Package",
             overview=SchemeOverviewContext.for_domain(scheme),
             funding=SchemeFundingContext.for_domain(scheme),
@@ -77,6 +76,13 @@ class TestSchemeContext:
 
 
 class TestSchemeOverviewContext:
+    def test_reference(self) -> None:
+        scheme = Scheme(id_=1, name="", authority_id=0)
+
+        context = SchemeOverviewContext.for_domain(scheme)
+
+        assert context.reference == "ATE00001"
+
     @pytest.mark.parametrize(
         "type_, expected_type",
         [(SchemeType.DEVELOPMENT, "Development"), (SchemeType.CONSTRUCTION, "Construction"), (None, None)],

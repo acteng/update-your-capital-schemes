@@ -137,7 +137,7 @@ class SchemePage:
         self._app = app
         self._page = page
         self._main = page.get_by_role("main")
-        self._reference_and_name = self._main.get_by_role("heading").nth(0)
+        self._name = self._main.get_by_role("heading").nth(0)
         self.overview = SchemeOverviewComponent(self._main.get_by_role("tabpanel", name="Overview"))
         self._funding_tab = self._main.get_by_role("tab", name="Funding")
         self.funding = SchemeFundingComponent(self._main.get_by_role("tabpanel", name="Funding"))
@@ -149,8 +149,8 @@ class SchemePage:
         return self
 
     @property
-    def reference_and_name(self) -> str | None:
-        return self._reference_and_name.text_content()
+    def name(self) -> str | None:
+        return self._name.text_content()
 
     def open_funding(self) -> SchemeFundingComponent:
         self._funding_tab.click()
@@ -159,9 +159,15 @@ class SchemePage:
 
 class SchemeOverviewComponent:
     def __init__(self, component: Locator):
-        self._scheme_type = component.get_by_role("definition").nth(0)
-        self._funding_programme = component.get_by_role("definition").nth(1)
-        self._current_milestone = component.get_by_role("definition").nth(2)
+        self._reference = component.get_by_role("definition").nth(0)
+        self._scheme_type = component.get_by_role("definition").nth(1)
+        self._funding_programme = component.get_by_role("definition").nth(2)
+        self._current_milestone = component.get_by_role("definition").nth(3)
+
+    @property
+    def reference(self) -> str | None:
+        text = self._reference.text_content()
+        return text.strip() if text else None
 
     @property
     def scheme_type(self) -> str | None:

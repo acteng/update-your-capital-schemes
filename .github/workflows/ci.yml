@@ -30,11 +30,8 @@ jobs:
       - name: Check formatting
         run: make format-check
 
-      - name: Check types
-        run: make mypy
-
       - name: Lint
-        run: make pylint
+        run: make lint
 
       - name: Install browsers
         run: .venv/bin/playwright install --with-deps chromium

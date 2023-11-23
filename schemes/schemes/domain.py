@@ -29,13 +29,11 @@ class Scheme:
 
     @property
     def current_milestone(self) -> Milestone | None:
-        current_milestone_revisions = [
-            revision for revision in self._milestone_revisions if revision.effective_date_to is None
+        actual_milestones = [
+            revision.milestone
+            for revision in self._milestone_revisions
+            if revision.observation_type == ObservationType.ACTUAL and revision.effective_date_to is None
         ]
-        actual_milestone_revisions = [
-            revision for revision in current_milestone_revisions if revision.observation_type == ObservationType.ACTUAL
-        ]
-        actual_milestones = [revision.milestone for revision in actual_milestone_revisions]
         return sorted(actual_milestones)[-1] if actual_milestones else None
 
     @property

@@ -21,7 +21,6 @@ from schemes.authorities.services import (
 )
 from schemes.config import DevConfig
 from schemes.schemes.services import DatabaseSchemeRepository, SchemeRepository
-from schemes.users.domain import User
 from schemes.users.services import DatabaseUserRepository, UserRepository
 
 

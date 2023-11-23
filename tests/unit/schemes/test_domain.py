@@ -14,8 +14,7 @@ from schemes.schemes.domain import (
 )
 
 
-# TODO: break up Scheme and tests into components
-class TestScheme:  # pylint: disable=too-many-public-methods
+class TestScheme:
     def test_get_reference(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
 

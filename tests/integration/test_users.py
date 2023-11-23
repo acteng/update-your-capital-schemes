@@ -10,7 +10,7 @@ from schemes.users.services import UserRepository
 
 
 @pytest.fixture(name="users")
-def users_fixture(app: Flask) -> UserRepository:  # pylint: disable=unused-argument
+def users_fixture(app: Flask) -> UserRepository:
     return inject.instance(UserRepository)
 
 

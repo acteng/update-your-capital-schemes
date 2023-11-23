@@ -32,10 +32,15 @@ format: black isort terraform-fmt
 mypy:
 	$(bin)/mypy $(packages)
 
-pylint:
-	$(bin)/pylint $(packages)
+ruff:
+	$(bin)/ruff check $(packages)
 
-lint: mypy pylint
+lint: mypy ruff
+
+ruff-fix:
+	$(bin)/ruff check --fix $(packages)
+
+fix: ruff-fix
 
 test:
 	$(bin)/pytest

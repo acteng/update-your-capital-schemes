@@ -41,3 +41,8 @@ test:
 	$(bin)/pytest
 
 verify: format-check lint test
+
+migrate:
+	$(bin)/alembic upgrade head
+	$(bin)/alembic revision --autogenerate -m "test"
+	rm schemes.db

@@ -190,15 +190,15 @@ class TestDatabaseSchemeRepository:
                 )
             )
 
-        actual = schemes.get(1)
+        scheme = schemes.get(1)
 
         assert (
-            actual
-            and actual.id == 1
-            and actual.name == "Wirral Package"
-            and actual.authority_id == 1
-            and actual.type == SchemeType.DEVELOPMENT
-            and actual.funding_programme == FundingProgramme.ATF3
+            scheme
+            and scheme.id == 1
+            and scheme.name == "Wirral Package"
+            and scheme.authority_id == 1
+            and scheme.type == SchemeType.DEVELOPMENT
+            and scheme.funding_programme == FundingProgramme.ATF3
         )
 
     def test_get_scheme_milestone_revisions(
@@ -233,12 +233,12 @@ class TestDatabaseSchemeRepository:
                 )
             )
 
-        actual = schemes.get(1)
+        scheme = schemes.get(1)
 
-        assert actual
+        assert scheme
         milestone_revision1: MilestoneRevision
         milestone_revision2: MilestoneRevision
-        milestone_revision1, milestone_revision2 = actual.milestone_revisions
+        milestone_revision1, milestone_revision2 = scheme.milestone_revisions
         assert (
             milestone_revision1.effective.date_from == date(2020, 1, 1)
             and milestone_revision1.effective.date_to == date(2020, 1, 31)
@@ -286,12 +286,12 @@ class TestDatabaseSchemeRepository:
                 )
             )
 
-        actual = schemes.get(1)
+        scheme = schemes.get(1)
 
-        assert actual
+        assert scheme
         financial_revision1: FinancialRevision
         financial_revision2: FinancialRevision
-        financial_revision1, financial_revision2 = actual.financial_revisions
+        financial_revision1, financial_revision2 = scheme.financial_revisions
         assert (
             financial_revision1.effective.date_from == date(2020, 1, 1)
             and financial_revision1.effective.date_to == date(2020, 1, 31)
@@ -346,18 +346,18 @@ class TestDatabaseSchemeRepository:
                 )
             )
 
-        actual1: Scheme
-        actual2: Scheme
-        actual1, actual2 = schemes.get_by_authority(1)
+        scheme1: Scheme
+        scheme2: Scheme
+        scheme1, scheme2 = schemes.get_by_authority(1)
 
         assert (
-            actual1.id == 1
-            and actual1.name == "Wirral Package"
-            and actual1.authority_id == 1
-            and actual1.type == SchemeType.DEVELOPMENT
-            and actual1.funding_programme == FundingProgramme.ATF3
+            scheme1.id == 1
+            and scheme1.name == "Wirral Package"
+            and scheme1.authority_id == 1
+            and scheme1.type == SchemeType.DEVELOPMENT
+            and scheme1.funding_programme == FundingProgramme.ATF3
         )
-        assert actual2.id == 2 and actual2.name == "School Streets" and actual1.authority_id == 1
+        assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme1.authority_id == 1
 
     def test_get_all_schemes_milestone_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
@@ -409,13 +409,13 @@ class TestDatabaseSchemeRepository:
                 )
             )
 
-        actual1: Scheme
-        actual2: Scheme
-        actual1, actual2 = schemes.get_by_authority(1)
+        scheme1: Scheme
+        scheme2: Scheme
+        scheme1, scheme2 = schemes.get_by_authority(1)
 
-        assert actual1.id == 1
+        assert scheme1.id == 1
         milestone_revision1: MilestoneRevision
-        (milestone_revision1,) = actual1.milestone_revisions
+        (milestone_revision1,) = scheme1.milestone_revisions
         assert (
             milestone_revision1.effective.date_from == date(2020, 1, 1)
             and milestone_revision1.effective.date_to is None
@@ -423,9 +423,9 @@ class TestDatabaseSchemeRepository:
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
         )
-        assert actual2.id == 2
+        assert scheme2.id == 2
         milestone_revision2: MilestoneRevision
-        (milestone_revision2,) = actual2.milestone_revisions
+        (milestone_revision2,) = scheme2.milestone_revisions
         assert (
             milestone_revision2.effective.date_from == date(2020, 2, 1)
             and milestone_revision2.effective.date_to is None
@@ -469,12 +469,12 @@ class TestDatabaseSchemeRepository:
                 )
             )
 
-        actual1: Scheme
-        (actual1,) = schemes.get_by_authority(1)
+        scheme1: Scheme
+        (scheme1,) = schemes.get_by_authority(1)
 
-        assert actual1.id == 1
+        assert scheme1.id == 1
         financial_revision1: FinancialRevision
-        (financial_revision1,) = actual1.financial_revisions
+        (financial_revision1,) = scheme1.financial_revisions
         assert (
             financial_revision1.effective.date_from == date(2020, 1, 1)
             and financial_revision1.effective.date_to is None
@@ -501,18 +501,18 @@ class TestDatabaseSchemeRepository:
                 )
             )
 
-        actual1: Scheme
-        actual2: Scheme
-        actual1, actual2 = schemes.get_all()
+        scheme1: Scheme
+        scheme2: Scheme
+        scheme1, scheme2 = schemes.get_all()
 
         assert (
-            actual1.id == 1
-            and actual1.name == "Wirral Package"
-            and actual1.authority_id == 1
-            and actual1.type == SchemeType.DEVELOPMENT
-            and actual1.funding_programme == FundingProgramme.ATF3
+            scheme1.id == 1
+            and scheme1.name == "Wirral Package"
+            and scheme1.authority_id == 1
+            and scheme1.type == SchemeType.DEVELOPMENT
+            and scheme1.funding_programme == FundingProgramme.ATF3
         )
-        assert actual2.id == 2 and actual2.name == "School Streets" and actual1.authority_id == 1
+        assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme1.authority_id == 1
 
     def test_get_all_schemes_milestone_revisions(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
@@ -549,13 +549,13 @@ class TestDatabaseSchemeRepository:
                 )
             )
 
-        actual1: Scheme
-        actual2: Scheme
-        actual1, actual2 = schemes.get_all()
+        scheme1: Scheme
+        scheme2: Scheme
+        scheme1, scheme2 = schemes.get_all()
 
-        assert actual1.id == 1
+        assert scheme1.id == 1
         milestone_revision1: MilestoneRevision
-        (milestone_revision1,) = actual1.milestone_revisions
+        (milestone_revision1,) = scheme1.milestone_revisions
         assert (
             milestone_revision1.effective.date_from == date(2020, 1, 1)
             and milestone_revision1.effective.date_to is None
@@ -563,9 +563,9 @@ class TestDatabaseSchemeRepository:
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
         )
-        assert actual2.id == 2
+        assert scheme2.id == 2
         milestone_revision2: MilestoneRevision
-        (milestone_revision2,) = actual2.milestone_revisions
+        (milestone_revision2,) = scheme2.milestone_revisions
         assert (
             milestone_revision2.effective.date_from == date(2020, 2, 1)
             and milestone_revision2.effective.date_to is None
@@ -609,13 +609,13 @@ class TestDatabaseSchemeRepository:
                 )
             )
 
-        actual1: Scheme
-        actual2: Scheme
-        actual1, actual2 = schemes.get_all()
+        scheme1: Scheme
+        scheme2: Scheme
+        scheme1, scheme2 = schemes.get_all()
 
-        assert actual1.id == 1
+        assert scheme1.id == 1
         financial_revision1: FinancialRevision
-        (financial_revision1,) = actual1.financial_revisions
+        (financial_revision1,) = scheme1.financial_revisions
         assert (
             financial_revision1.effective.date_from == date(2020, 1, 1)
             and financial_revision1.effective.date_to is None
@@ -623,9 +623,9 @@ class TestDatabaseSchemeRepository:
             and financial_revision1.amount == Decimal("100000")
             and financial_revision1.source == DataSource.ATF4_BID
         )
-        assert actual2.id == 2
+        assert scheme2.id == 2
         financial_revision2: FinancialRevision
-        (financial_revision2,) = actual2.financial_revisions
+        (financial_revision2,) = scheme2.financial_revisions
         assert (
             financial_revision2.effective.date_from == date(2020, 2, 1)
             and financial_revision2.effective.date_to is None

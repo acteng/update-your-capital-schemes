@@ -200,7 +200,7 @@ class TestSchemeFundingContext:
         scheme.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -475,7 +475,6 @@ class TestFinancialRevisionRepr:
             ("expected cost", FinancialType.EXPECTED_COST),
             ("actual cost", FinancialType.ACTUAL_COST),
             ("funding allocation", FinancialType.FUNDING_ALLOCATION),
-            ("change control funding reallocation", FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION),
             ("spent to date", FinancialType.SPENT_TO_DATE),
             ("funding request", FinancialType.FUNDING_REQUEST),
         ],

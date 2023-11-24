@@ -77,7 +77,7 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, app: Fla
                 FinancialRevisionRepr(
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
-                    type="change control funding reallocation",
+                    type="funding allocation",
                     amount="10000",
                     source="change control",
                 ),

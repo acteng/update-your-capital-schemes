@@ -48,7 +48,9 @@ class Scheme:
         amounts = [
             revision.amount
             for revision in self._financial_revisions
-            if revision.type == FinancialType.FUNDING_ALLOCATION and revision.effective.date_to is None
+            if revision.type == FinancialType.FUNDING_ALLOCATION
+            and revision.source != DataSource.CHANGE_CONTROL
+            and revision.effective.date_to is None
         ]
         return sum(amounts, Decimal(0)) if amounts else None
 
@@ -66,7 +68,9 @@ class Scheme:
         amounts = [
             revision.amount
             for revision in self._financial_revisions
-            if revision.source == DataSource.CHANGE_CONTROL and revision.effective.date_to is None
+            if revision.type == FinancialType.FUNDING_ALLOCATION
+            and revision.source == DataSource.CHANGE_CONTROL
+            and revision.effective.date_to is None
         ]
         return sum(amounts, Decimal(0)) if amounts else None
 
@@ -143,7 +147,6 @@ class FinancialType(Enum):
     EXPECTED_COST = auto()
     ACTUAL_COST = auto()
     FUNDING_ALLOCATION = auto()
-    CHANGE_CONTROL_FUNDING_REALLOCATION = auto()
     SPENT_TO_DATE = auto()
     FUNDING_REQUEST = auto()
 

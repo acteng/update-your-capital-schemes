@@ -195,6 +195,27 @@ class TestScheme:
 
         assert scheme.funding_allocation == Decimal("100000")
 
+    def test_get_funding_allocation_selects_source(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("200000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
+
+        assert scheme.funding_allocation == Decimal("100000")
+
     def test_get_funding_allocation_selects_latest_revision(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
@@ -320,7 +341,7 @@ class TestScheme:
         scheme.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -328,7 +349,7 @@ class TestScheme:
         scheme.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 2, 1), None),
-                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("20000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -336,12 +357,33 @@ class TestScheme:
 
         assert scheme.change_control_adjustment == Decimal("30000")
 
+    def test_get_change_control_adjustment_selects_financial_type(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("10000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
+        scheme.update_financial(
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.EXPECTED_COST,
+                amount=Decimal("20000"),
+                source=DataSource.CHANGE_CONTROL,
+            )
+        )
+
+        assert scheme.change_control_adjustment == Decimal("10000")
+
     def test_get_change_control_adjustment_selects_source(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -362,7 +404,7 @@ class TestScheme:
         scheme.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
-                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -370,7 +412,7 @@ class TestScheme:
         scheme.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 2, 1), None),
-                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("20000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -417,7 +459,7 @@ class TestScheme:
         scheme.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -438,7 +480,7 @@ class TestScheme:
         scheme.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -459,7 +501,7 @@ class TestScheme:
         scheme.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+                type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
             )

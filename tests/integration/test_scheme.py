@@ -136,7 +136,7 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
     scheme.update_financial(
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
-            type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+            type=FinancialType.FUNDING_ALLOCATION,
             amount=Decimal("10000"),
             source=DataSource.CHANGE_CONTROL,
         )
@@ -174,7 +174,7 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
     scheme.update_financial(
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
-            type=FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION,
+            type=FinancialType.FUNDING_ALLOCATION,
             amount=Decimal("0"),
             source=DataSource.CHANGE_CONTROL,
         )

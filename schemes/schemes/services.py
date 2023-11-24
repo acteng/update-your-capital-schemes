@@ -320,9 +320,8 @@ class FinancialTypeMapper:
         FinancialType.EXPECTED_COST: 1,
         FinancialType.ACTUAL_COST: 2,
         FinancialType.FUNDING_ALLOCATION: 3,
-        FinancialType.CHANGE_CONTROL_FUNDING_REALLOCATION: 4,
-        FinancialType.SPENT_TO_DATE: 5,
-        FinancialType.FUNDING_REQUEST: 6,
+        FinancialType.SPENT_TO_DATE: 4,
+        FinancialType.FUNDING_REQUEST: 5,
     }
 
     def to_id(self, financial_type: FinancialType) -> int:

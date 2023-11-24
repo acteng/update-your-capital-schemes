@@ -7,8 +7,6 @@ from decimal import Decimal
 import inject
 from flask import Blueprint, Response, render_template, session
 
-from schemes.auth.api_key import api_key_auth
-from schemes.auth.bearer import bearer_auth
 from schemes.domain.authorities import Authority
 from schemes.domain.schemes import (
     DataSource,
@@ -25,6 +23,8 @@ from schemes.domain.schemes import (
 from schemes.services.authorities import AuthorityRepository
 from schemes.services.schemes import SchemeRepository
 from schemes.services.users import UserRepository
+from schemes.views.auth.api_key import api_key_auth
+from schemes.views.auth.bearer import bearer_auth
 
 bp = Blueprint("schemes", __name__)
 

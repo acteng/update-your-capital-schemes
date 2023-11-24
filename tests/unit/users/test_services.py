@@ -1,10 +1,10 @@
 import pytest
 from sqlalchemy import Engine, MetaData, insert, select
 
-from schemes.authorities.domain import Authority
 from schemes.authorities.services import DatabaseAuthorityRepository
 from schemes.authorities.services import add_tables as authorities_add_tables
-from schemes.users.domain import User
+from schemes.domain.authorities import Authority
+from schemes.domain.users import User
 from schemes.users.services import DatabaseUserRepository
 from schemes.users.services import add_tables as users_add_tables
 

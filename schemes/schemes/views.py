@@ -9,9 +9,9 @@ from flask import Blueprint, Response, render_template, session
 
 from schemes.auth.api_key import api_key_auth
 from schemes.auth.bearer import bearer_auth
-from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
-from schemes.schemes.domain import (
+from schemes.domain.authorities import Authority
+from schemes.domain.schemes import (
     DataSource,
     DateRange,
     FinancialRevision,

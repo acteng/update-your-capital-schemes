@@ -11,7 +11,7 @@ from sqlalchemy import (
     select,
 )
 
-from schemes.authorities.domain import Authority
+from schemes.domain.authorities import Authority
 
 
 class AuthorityRepository:

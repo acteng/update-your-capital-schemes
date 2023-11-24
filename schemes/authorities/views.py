@@ -5,8 +5,8 @@ from dataclass_wizard import fromlist
 from flask import Blueprint, Response, request
 
 from schemes.auth.api_key import api_key_auth
-from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
+from schemes.domain.authorities import Authority
 from schemes.schemes.services import SchemeRepository
 from schemes.schemes.views import SchemeRepr
 from schemes.users.services import UserRepository

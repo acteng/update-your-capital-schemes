@@ -3,8 +3,8 @@ from decimal import Decimal
 
 import pytest
 
-from schemes.authorities.domain import Authority
-from schemes.schemes.domain import (
+from schemes.domain.authorities import Authority
+from schemes.domain.schemes import (
     DataSource,
     DateRange,
     FinancialRevision,

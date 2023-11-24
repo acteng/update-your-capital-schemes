@@ -4,10 +4,10 @@ from decimal import Decimal
 import pytest
 from sqlalchemy import Engine, MetaData, func, insert, select
 
-from schemes.authorities.domain import Authority
 from schemes.authorities.services import DatabaseAuthorityRepository
 from schemes.authorities.services import add_tables as authorities_add_tables
-from schemes.schemes.domain import (
+from schemes.domain.authorities import Authority
+from schemes.domain.schemes import (
     DataSource,
     DateRange,
     FinancialRevision,

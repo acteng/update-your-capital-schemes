@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pytest
 
-from schemes.schemes.domain import (
+from schemes.domain.schemes import (
     DataSource,
     DateRange,
     FinancialRevision,

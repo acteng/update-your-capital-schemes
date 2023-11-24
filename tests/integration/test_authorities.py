@@ -7,9 +7,9 @@ import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 
-from schemes.authorities.domain import Authority
 from schemes.authorities.services import AuthorityRepository
-from schemes.schemes.domain import (
+from schemes.domain.authorities import Authority
+from schemes.domain.schemes import (
     DataSource,
     DateRange,
     FinancialRevision,
@@ -21,8 +21,8 @@ from schemes.schemes.domain import (
     Scheme,
     SchemeType,
 )
+from schemes.domain.users import User
 from schemes.schemes.services import SchemeRepository
-from schemes.users.domain import User
 from schemes.users.services import UserRepository
 
 

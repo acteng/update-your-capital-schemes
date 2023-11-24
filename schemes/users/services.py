@@ -12,7 +12,7 @@ from sqlalchemy import (
     select,
 )
 
-from schemes.users.domain import User
+from schemes.domain.users import User
 
 
 class UserRepository:

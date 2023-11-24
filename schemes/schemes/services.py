@@ -17,7 +17,7 @@ from sqlalchemy import (
     select,
 )
 
-from schemes.schemes.domain import (
+from schemes.domain.schemes import (
     DataSource,
     DateRange,
     FinancialRevision,

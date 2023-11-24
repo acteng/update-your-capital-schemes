@@ -1,4 +1,4 @@
-from schemes.users.views import UserRepr
+from schemes.views.users import UserRepr
 
 
 def test_create_domain() -> None:

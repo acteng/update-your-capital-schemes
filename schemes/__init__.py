@@ -14,7 +14,7 @@ from sqlalchemy.dialects.sqlite.base import SQLiteDialect
 from sqlalchemy.engine.interfaces import DBAPIConnection
 from sqlalchemy.pool import ConnectionPoolEntry
 
-from schemes import auth, authorities, schemes, start, users
+from schemes import auth, start
 from schemes.config import DevConfig
 from schemes.services.authorities import (
     AuthorityRepository,
@@ -22,6 +22,7 @@ from schemes.services.authorities import (
 )
 from schemes.services.schemes import DatabaseSchemeRepository, SchemeRepository
 from schemes.services.users import DatabaseUserRepository, UserRepository
+from schemes.views import authorities, schemes, users
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:

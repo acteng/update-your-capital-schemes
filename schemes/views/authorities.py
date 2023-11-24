@@ -6,11 +6,11 @@ from flask import Blueprint, Response, request
 
 from schemes.auth.api_key import api_key_auth
 from schemes.domain.authorities import Authority
-from schemes.schemes.views import SchemeRepr
 from schemes.services.authorities import AuthorityRepository
 from schemes.services.schemes import SchemeRepository
 from schemes.services.users import UserRepository
-from schemes.users.views import UserRepr
+from schemes.views.schemes import SchemeRepr
+from schemes.views.users import UserRepr
 
 bp = Blueprint("authorities", __name__)
 

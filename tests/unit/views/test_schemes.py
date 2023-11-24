@@ -16,7 +16,7 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeType,
 )
-from schemes.schemes.views import (
+from schemes.views.schemes import (
     FinancialRevisionRepr,
     FundingProgrammeContext,
     MilestoneRevisionRepr,

@@ -1,4 +1,4 @@
-from schemes.authorities.views import AuthorityRepr
+from schemes.views.authorities import AuthorityRepr
 
 
 def test_create_domain() -> None:

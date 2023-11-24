@@ -153,7 +153,7 @@ class TestScheme:
             )
         ]
 
-    def test_get_funding_allocation_sums_amounts(self) -> None:
+    def test_get_funding_allocation(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
@@ -163,16 +163,8 @@ class TestScheme:
                 source=DataSource.ATF4_BID,
             )
         )
-        scheme.update_financial(
-            FinancialRevision(
-                effective=DateRange(date(2020, 2, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("200000"),
-                source=DataSource.ATF4E_BID,
-            )
-        )
 
-        assert scheme.funding_allocation == Decimal("300000")
+        assert scheme.funding_allocation == Decimal("100000")
 
     def test_get_funding_allocation_selects_financial_type(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
@@ -255,7 +247,7 @@ class TestScheme:
 
         assert scheme.funding_allocation is None
 
-    def test_get_spend_to_date_sums_amounts(self) -> None:
+    def test_get_spend_to_date(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
             FinancialRevision(
@@ -265,16 +257,8 @@ class TestScheme:
                 source=DataSource.ATF4_BID,
             )
         )
-        scheme.update_financial(
-            FinancialRevision(
-                effective=DateRange(date(2020, 2, 1), None),
-                type=FinancialType.SPENT_TO_DATE,
-                amount=Decimal("200000"),
-                source=DataSource.ATF4E_BID,
-            )
-        )
 
-        assert scheme.spend_to_date == Decimal("300000")
+        assert scheme.spend_to_date == Decimal("100000")
 
     def test_get_spend_to_date_selects_financial_type(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)

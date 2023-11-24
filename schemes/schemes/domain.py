@@ -45,23 +45,23 @@ class Scheme:
 
     @property
     def funding_allocation(self) -> Decimal | None:
-        amounts = [
+        amounts = (
             revision.amount
             for revision in self._financial_revisions
             if revision.type == FinancialType.FUNDING_ALLOCATION
             and revision.source != DataSource.CHANGE_CONTROL
             and revision.effective.date_to is None
-        ]
-        return sum(amounts, Decimal(0)) if amounts else None
+        )
+        return next(amounts, None)
 
     @property
     def spend_to_date(self) -> Decimal | None:
-        amounts = [
+        amounts = (
             revision.amount
             for revision in self._financial_revisions
             if revision.type == FinancialType.SPENT_TO_DATE and revision.effective.date_to is None
-        ]
-        return sum(amounts, Decimal(0)) if amounts else None
+        )
+        return next(amounts, None)
 
     @property
     def change_control_adjustment(self) -> Decimal | None:

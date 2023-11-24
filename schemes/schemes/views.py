@@ -9,7 +9,6 @@ from flask import Blueprint, Response, render_template, session
 
 from schemes.auth.api_key import api_key_auth
 from schemes.auth.bearer import bearer_auth
-from schemes.authorities.services import AuthorityRepository
 from schemes.domain.authorities import Authority
 from schemes.domain.schemes import (
     DataSource,
@@ -23,8 +22,9 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeType,
 )
-from schemes.schemes.services import SchemeRepository
-from schemes.users.services import UserRepository
+from schemes.services.authorities import AuthorityRepository
+from schemes.services.schemes import SchemeRepository
+from schemes.services.users import UserRepository
 
 bp = Blueprint("schemes", __name__)
 

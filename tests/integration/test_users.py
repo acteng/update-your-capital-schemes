@@ -6,7 +6,7 @@ from flask import Flask
 from flask.testing import FlaskClient
 
 from schemes.domain.users import User
-from schemes.users.services import UserRepository
+from schemes.services.users import UserRepository
 
 
 @pytest.fixture(name="users")

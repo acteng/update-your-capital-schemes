@@ -7,9 +7,9 @@ from flask.testing import FlaskClient
 from inject import Binder
 
 from schemes import create_app, destroy_app
-from schemes.authorities.services import AuthorityRepository
-from schemes.schemes.services import SchemeRepository
-from schemes.users.services import UserRepository
+from schemes.services.authorities import AuthorityRepository
+from schemes.services.schemes import SchemeRepository
+from schemes.services.users import UserRepository
 from tests.integration.fakes import (
     MemoryAuthorityRepository,
     MemorySchemeRepository,

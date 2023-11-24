@@ -4,8 +4,6 @@ from decimal import Decimal
 import pytest
 from sqlalchemy import Engine, MetaData, func, insert, select
 
-from schemes.authorities.services import DatabaseAuthorityRepository
-from schemes.authorities.services import add_tables as authorities_add_tables
 from schemes.domain.authorities import Authority
 from schemes.domain.schemes import (
     DataSource,
@@ -19,7 +17,9 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeType,
 )
-from schemes.schemes.services import (
+from schemes.services.authorities import DatabaseAuthorityRepository
+from schemes.services.authorities import add_tables as authorities_add_tables
+from schemes.services.schemes import (
     DatabaseSchemeRepository,
     DataSourceMapper,
     FinancialTypeMapper,
@@ -28,7 +28,7 @@ from schemes.schemes.services import (
     ObservationTypeMapper,
     SchemeTypeMapper,
 )
-from schemes.schemes.services import add_tables as schemes_add_tables
+from schemes.services.schemes import add_tables as schemes_add_tables
 
 
 class TestDatabaseSchemeRepository:

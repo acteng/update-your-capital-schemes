@@ -1,9 +1,9 @@
 import pytest
 from sqlalchemy import Engine, MetaData, insert, select
 
-from schemes.authorities.services import DatabaseAuthorityRepository
-from schemes.authorities.services import add_tables as authorities_add_tables
 from schemes.domain.authorities import Authority
+from schemes.services.authorities import DatabaseAuthorityRepository
+from schemes.services.authorities import add_tables as authorities_add_tables
 
 
 @pytest.fixture(name="metadata")

@@ -15,13 +15,13 @@ from sqlalchemy.engine.interfaces import DBAPIConnection
 from sqlalchemy.pool import ConnectionPoolEntry
 
 from schemes import auth, authorities, schemes, start, users
-from schemes.authorities.services import (
+from schemes.config import DevConfig
+from schemes.services.authorities import (
     AuthorityRepository,
     DatabaseAuthorityRepository,
 )
-from schemes.config import DevConfig
-from schemes.schemes.services import DatabaseSchemeRepository, SchemeRepository
-from schemes.users.services import DatabaseUserRepository, UserRepository
+from schemes.services.schemes import DatabaseSchemeRepository, SchemeRepository
+from schemes.services.users import DatabaseUserRepository, UserRepository
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:

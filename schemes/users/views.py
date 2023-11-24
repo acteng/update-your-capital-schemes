@@ -5,7 +5,7 @@ from flask import Blueprint, Response
 
 from schemes.auth.api_key import api_key_auth
 from schemes.domain.users import User
-from schemes.users.services import UserRepository
+from schemes.services.users import UserRepository
 
 bp = Blueprint("users", __name__)
 

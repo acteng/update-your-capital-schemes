@@ -5,11 +5,11 @@ from dataclass_wizard import fromlist
 from flask import Blueprint, Response, request
 
 from schemes.auth.api_key import api_key_auth
-from schemes.authorities.services import AuthorityRepository
 from schemes.domain.authorities import Authority
-from schemes.schemes.services import SchemeRepository
 from schemes.schemes.views import SchemeRepr
-from schemes.users.services import UserRepository
+from schemes.services.authorities import AuthorityRepository
+from schemes.services.schemes import SchemeRepository
+from schemes.services.users import UserRepository
 from schemes.users.views import UserRepr
 
 bp = Blueprint("authorities", __name__)

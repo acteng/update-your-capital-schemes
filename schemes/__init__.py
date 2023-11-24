@@ -18,9 +18,9 @@ from schemes.config import DevConfig
 from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
-from schemes.services.authorities import DatabaseAuthorityRepository
-from schemes.services.schemes import DatabaseSchemeRepository
-from schemes.services.users import DatabaseUserRepository
+from schemes.infrastructure.authorities import DatabaseAuthorityRepository
+from schemes.infrastructure.schemes import DatabaseSchemeRepository
+from schemes.infrastructure.users import DatabaseUserRepository
 from schemes.views import auth, authorities, schemes, start, users
 
 

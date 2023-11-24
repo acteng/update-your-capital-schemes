@@ -17,9 +17,9 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeType,
 )
-from schemes.services.authorities import DatabaseAuthorityRepository
-from schemes.services.authorities import add_tables as authorities_add_tables
-from schemes.services.schemes import (
+from schemes.infrastructure.authorities import DatabaseAuthorityRepository
+from schemes.infrastructure.authorities import add_tables as authorities_add_tables
+from schemes.infrastructure.schemes import (
     DatabaseSchemeRepository,
     DataSourceMapper,
     FinancialTypeMapper,
@@ -28,7 +28,7 @@ from schemes.services.schemes import (
     ObservationTypeMapper,
     SchemeTypeMapper,
 )
-from schemes.services.schemes import add_tables as schemes_add_tables
+from schemes.infrastructure.schemes import add_tables as schemes_add_tables
 
 
 class TestDatabaseSchemeRepository:

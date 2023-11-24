@@ -44,6 +44,9 @@ class Scheme:
         if self._is_current_funding_allocation(financial_revision):
             self._ensure_no_current_funding_allocation()
 
+        if self._is_current_spent_to_date(financial_revision):
+            self._ensure_no_current_spent_to_date()
+
         self._financial_revisions.append(financial_revision)
 
     def _ensure_no_current_funding_allocation(self) -> None:
@@ -52,6 +55,13 @@ class Scheme:
         )
         if current_funding_allocation:
             raise ValueError(f"Current funding allocation already exists: {current_funding_allocation}")
+
+    def _ensure_no_current_spent_to_date(self) -> None:
+        current_spent_to_date = next(
+            (revision for revision in self._financial_revisions if self._is_current_spent_to_date(revision)), None
+        )
+        if current_spent_to_date:
+            raise ValueError(f"Current spent to date already exists: {current_spent_to_date}")
 
     @property
     def funding_allocation(self) -> Decimal | None:
@@ -71,11 +81,13 @@ class Scheme:
     @property
     def spend_to_date(self) -> Decimal | None:
         amounts = (
-            revision.amount
-            for revision in self._financial_revisions
-            if revision.type == FinancialType.SPENT_TO_DATE and revision.effective.date_to is None
+            revision.amount for revision in self._financial_revisions if self._is_current_spent_to_date(revision)
         )
         return next(amounts, None)
+
+    @staticmethod
+    def _is_current_spent_to_date(financial_revision: FinancialRevision) -> bool:
+        return financial_revision.type == FinancialType.SPENT_TO_DATE and financial_revision.effective.date_to is None
 
     @property
     def change_control_adjustment(self) -> Decimal | None:

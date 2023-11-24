@@ -176,6 +176,28 @@ class TestScheme:
                 )
             )
 
+    def test_cannot_update_financial_with_another_current_spent_to_date(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        financial_revision = FinancialRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            type=FinancialType.SPENT_TO_DATE,
+            amount=Decimal("100000"),
+            source=DataSource.ATF4_BID,
+        )
+        scheme.update_financial(financial_revision)
+
+        with pytest.raises(
+            ValueError, match=re.escape(f"Current spent to date already exists: {repr(financial_revision)}")
+        ):
+            scheme.update_financial(
+                FinancialRevision(
+                    effective=DateRange(date(2020, 1, 1), None),
+                    type=FinancialType.SPENT_TO_DATE,
+                    amount=Decimal("200000"),
+                    source=DataSource.ATF4_BID,
+                )
+            )
+
     def test_get_funding_allocation(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(

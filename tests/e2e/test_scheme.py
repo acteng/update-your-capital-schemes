@@ -16,7 +16,7 @@ from tests.e2e.pages import SchemePage
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, app: Flask, page: Page) -> None:
+def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
     app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
     app_client.add_users(1, UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
@@ -39,7 +39,7 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, app: Fl
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage(app, page).open(1)
+    scheme_page = SchemePage(page).open(1)
 
     assert (
         scheme_page.name == "Wirral Package"
@@ -86,7 +86,7 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, app: Fla
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    funding_component = SchemePage(app, page).open(1).open_funding()
+    funding_component = SchemePage(page).open(1).open_funding()
 
     assert (
         funding_component.funding_allocation == "£100,000"

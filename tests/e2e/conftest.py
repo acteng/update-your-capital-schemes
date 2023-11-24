@@ -102,6 +102,12 @@ def oidc_client_fixture(oidc_server: LiveServer) -> Generator[OidcClient, Any, A
     client.clear_users()
 
 
+@pytest.fixture(name="browser_context_args", scope="package")
+def browser_context_args_fixture(browser_context_args: dict[str, str], live_server: LiveServer) -> dict[str, str]:
+    browser_context_args["base_url"] = _get_url(live_server)
+    return browser_context_args
+
+
 def _get_url(live_server: LiveServer) -> str:
     return f"http://{live_server.host}:{live_server.port}"
 

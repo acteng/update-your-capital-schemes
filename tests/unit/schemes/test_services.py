@@ -235,24 +235,20 @@ class TestDatabaseSchemeRepository:
 
         scheme = schemes.get(1)
 
-        assert scheme
-        milestone_revision1: MilestoneRevision
-        milestone_revision2: MilestoneRevision
-        milestone_revision1, milestone_revision2 = scheme.milestone_revisions
-        assert (
-            milestone_revision1.effective.date_from == date(2020, 1, 1)
-            and milestone_revision1.effective.date_to == date(2020, 1, 31)
-            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision1.observation_type == ObservationType.PLANNED
-            and milestone_revision1.status_date == date(2020, 2, 1)
-        )
-        assert (
-            milestone_revision2.effective.date_from == date(2020, 2, 1)
-            and milestone_revision2.effective.date_to is None
-            and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision2.observation_type == ObservationType.PLANNED
-            and milestone_revision2.status_date == date(2020, 3, 1)
-        )
+        assert scheme and scheme.milestone_revisions == [
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 2, 1),
+            ),
+            MilestoneRevision(
+                effective=DateRange(date(2020, 2, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 3, 1),
+            ),
+        ]
 
     def test_get_scheme_financial_revisions(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
@@ -288,24 +284,20 @@ class TestDatabaseSchemeRepository:
 
         scheme = schemes.get(1)
 
-        assert scheme
-        financial_revision1: FinancialRevision
-        financial_revision2: FinancialRevision
-        financial_revision1, financial_revision2 = scheme.financial_revisions
-        assert (
-            financial_revision1.effective.date_from == date(2020, 1, 1)
-            and financial_revision1.effective.date_to == date(2020, 1, 31)
-            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
-            and financial_revision1.amount == Decimal("100000")
-            and financial_revision1.source == DataSource.ATF4_BID
-        )
-        assert (
-            financial_revision2.effective.date_from == date(2020, 2, 1)
-            and financial_revision2.effective.date_to is None
-            and financial_revision2.type == FinancialType.FUNDING_ALLOCATION
-            and financial_revision2.amount == Decimal("200000")
-            and financial_revision2.source == DataSource.ATF4_BID
-        )
+        assert scheme and scheme.financial_revisions == [
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                effective=DateRange(date(2020, 2, 1), None),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("200000"),
+                source=DataSource.ATF4_BID,
+            ),
+        ]
 
     def test_get_scheme_that_does_not_exist(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
@@ -413,26 +405,22 @@ class TestDatabaseSchemeRepository:
         scheme2: Scheme
         scheme1, scheme2 = schemes.get_by_authority(1)
 
-        assert scheme1.id == 1
-        milestone_revision1: MilestoneRevision
-        (milestone_revision1,) = scheme1.milestone_revisions
-        assert (
-            milestone_revision1.effective.date_from == date(2020, 1, 1)
-            and milestone_revision1.effective.date_to is None
-            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision1.observation_type == ObservationType.PLANNED
-            and milestone_revision1.status_date == date(2020, 2, 1)
-        )
-        assert scheme2.id == 2
-        milestone_revision2: MilestoneRevision
-        (milestone_revision2,) = scheme2.milestone_revisions
-        assert (
-            milestone_revision2.effective.date_from == date(2020, 2, 1)
-            and milestone_revision2.effective.date_to is None
-            and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision2.observation_type == ObservationType.PLANNED
-            and milestone_revision2.status_date == date(2020, 3, 1)
-        )
+        assert scheme1.id == 1 and scheme1.milestone_revisions == [
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 2, 1),
+            )
+        ]
+        assert scheme2.id == 2 and scheme2.milestone_revisions == [
+            MilestoneRevision(
+                effective=DateRange(date(2020, 2, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 3, 1),
+            )
+        ]
 
     def test_get_all_schemes_financial_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
@@ -472,16 +460,14 @@ class TestDatabaseSchemeRepository:
         scheme1: Scheme
         (scheme1,) = schemes.get_by_authority(1)
 
-        assert scheme1.id == 1
-        financial_revision1: FinancialRevision
-        (financial_revision1,) = scheme1.financial_revisions
-        assert (
-            financial_revision1.effective.date_from == date(2020, 1, 1)
-            and financial_revision1.effective.date_to is None
-            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
-            and financial_revision1.amount == Decimal("100000")
-            and financial_revision1.source == DataSource.ATF4_BID
-        )
+        assert scheme1.id == 1 and scheme1.financial_revisions == [
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            )
+        ]
 
     def test_get_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
         capital_scheme_table = metadata.tables["capital_scheme"]
@@ -553,26 +539,22 @@ class TestDatabaseSchemeRepository:
         scheme2: Scheme
         scheme1, scheme2 = schemes.get_all()
 
-        assert scheme1.id == 1
-        milestone_revision1: MilestoneRevision
-        (milestone_revision1,) = scheme1.milestone_revisions
-        assert (
-            milestone_revision1.effective.date_from == date(2020, 1, 1)
-            and milestone_revision1.effective.date_to is None
-            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision1.observation_type == ObservationType.PLANNED
-            and milestone_revision1.status_date == date(2020, 2, 1)
-        )
-        assert scheme2.id == 2
-        milestone_revision2: MilestoneRevision
-        (milestone_revision2,) = scheme2.milestone_revisions
-        assert (
-            milestone_revision2.effective.date_from == date(2020, 2, 1)
-            and milestone_revision2.effective.date_to is None
-            and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision2.observation_type == ObservationType.PLANNED
-            and milestone_revision2.status_date == date(2020, 3, 1)
-        )
+        assert scheme1.id == 1 and scheme1.milestone_revisions == [
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 2, 1),
+            )
+        ]
+        assert scheme2.id == 2 and scheme2.milestone_revisions == [
+            MilestoneRevision(
+                effective=DateRange(date(2020, 2, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 3, 1),
+            )
+        ]
 
     def test_get_all_schemes_financial_revisions(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
@@ -613,26 +595,22 @@ class TestDatabaseSchemeRepository:
         scheme2: Scheme
         scheme1, scheme2 = schemes.get_all()
 
-        assert scheme1.id == 1
-        financial_revision1: FinancialRevision
-        (financial_revision1,) = scheme1.financial_revisions
-        assert (
-            financial_revision1.effective.date_from == date(2020, 1, 1)
-            and financial_revision1.effective.date_to is None
-            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
-            and financial_revision1.amount == Decimal("100000")
-            and financial_revision1.source == DataSource.ATF4_BID
-        )
-        assert scheme2.id == 2
-        financial_revision2: FinancialRevision
-        (financial_revision2,) = scheme2.financial_revisions
-        assert (
-            financial_revision2.effective.date_from == date(2020, 2, 1)
-            and financial_revision2.effective.date_to is None
-            and financial_revision2.type == FinancialType.FUNDING_ALLOCATION
-            and financial_revision2.amount == Decimal("200000")
-            and financial_revision2.source == DataSource.ATF4_BID
-        )
+        assert scheme1.id == 1 and scheme1.financial_revisions == [
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            ),
+        ]
+        assert scheme2.id == 2 and scheme2.financial_revisions == [
+            FinancialRevision(
+                effective=DateRange(date(2020, 2, 1), None),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("200000"),
+                source=DataSource.ATF4_BID,
+            ),
+        ]
 
     def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
         capital_scheme_table = metadata.tables["capital_scheme"]

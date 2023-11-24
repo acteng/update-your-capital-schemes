@@ -12,21 +12,7 @@ from sqlalchemy import (
     select,
 )
 
-from schemes.domain.users import User
-
-
-class UserRepository:
-    def add(self, *users: User) -> None:
-        raise NotImplementedError()
-
-    def clear(self) -> None:
-        raise NotImplementedError()
-
-    def get_by_email(self, email: str) -> User | None:
-        raise NotImplementedError()
-
-    def get_all(self) -> list[User]:
-        raise NotImplementedError()
+from schemes.domain.users import User, UserRepository
 
 
 def add_tables(metadata: MetaData) -> None:

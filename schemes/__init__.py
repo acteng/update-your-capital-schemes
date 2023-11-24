@@ -15,12 +15,12 @@ from sqlalchemy.engine.interfaces import DBAPIConnection
 from sqlalchemy.pool import ConnectionPoolEntry
 
 from schemes.config import DevConfig
-from schemes.services.authorities import (
-    AuthorityRepository,
-    DatabaseAuthorityRepository,
-)
-from schemes.services.schemes import DatabaseSchemeRepository, SchemeRepository
-from schemes.services.users import DatabaseUserRepository, UserRepository
+from schemes.domain.authorities import AuthorityRepository
+from schemes.domain.schemes import SchemeRepository
+from schemes.domain.users import UserRepository
+from schemes.services.authorities import DatabaseAuthorityRepository
+from schemes.services.schemes import DatabaseSchemeRepository
+from schemes.services.users import DatabaseUserRepository
 from schemes.views import auth, authorities, schemes, start, users
 
 

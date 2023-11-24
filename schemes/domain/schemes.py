@@ -189,3 +189,20 @@ class DataSource(Enum):
     ATF4E_BID = auto()
     PULSE_2023_24_Q2 = auto()
     INITIAL_SCHEME_LIST = auto()
+
+
+class SchemeRepository:
+    def add(self, *schemes: Scheme) -> None:
+        raise NotImplementedError()
+
+    def clear(self) -> None:
+        raise NotImplementedError()
+
+    def get(self, id_: int) -> Scheme | None:
+        raise NotImplementedError()
+
+    def get_by_authority(self, authority_id: int) -> list[Scheme]:
+        raise NotImplementedError()
+
+    def get_all(self) -> list[Scheme]:
+        raise NotImplementedError()

@@ -4,10 +4,9 @@ import inject
 from dataclass_wizard import fromlist
 from flask import Blueprint, Response, request
 
-from schemes.domain.authorities import Authority
-from schemes.services.authorities import AuthorityRepository
-from schemes.services.schemes import SchemeRepository
-from schemes.services.users import UserRepository
+from schemes.domain.authorities import Authority, AuthorityRepository
+from schemes.domain.schemes import SchemeRepository
+from schemes.domain.users import UserRepository
 from schemes.views.auth.api_key import api_key_auth
 from schemes.views.schemes import SchemeRepr
 from schemes.views.users import UserRepr

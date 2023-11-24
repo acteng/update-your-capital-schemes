@@ -11,21 +11,7 @@ from sqlalchemy import (
     select,
 )
 
-from schemes.domain.authorities import Authority
-
-
-class AuthorityRepository:
-    def add(self, *authorities: Authority) -> None:
-        raise NotImplementedError()
-
-    def clear(self) -> None:
-        raise NotImplementedError()
-
-    def get(self, id_: int) -> Authority | None:
-        raise NotImplementedError()
-
-    def get_all(self) -> list[Authority]:
-        raise NotImplementedError()
+from schemes.domain.authorities import Authority, AuthorityRepository
 
 
 def add_tables(metadata: MetaData) -> None:

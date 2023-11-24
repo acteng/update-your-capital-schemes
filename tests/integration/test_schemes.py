@@ -5,12 +5,9 @@ import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 
-from schemes.domain.authorities import Authority
-from schemes.domain.schemes import FundingProgramme, Scheme
-from schemes.domain.users import User
-from schemes.services.authorities import AuthorityRepository
-from schemes.services.schemes import SchemeRepository
-from schemes.services.users import UserRepository
+from schemes.domain.authorities import Authority, AuthorityRepository
+from schemes.domain.schemes import FundingProgramme, Scheme, SchemeRepository
+from schemes.domain.users import User, UserRepository
 from tests.integration.pages import SchemesPage
 
 

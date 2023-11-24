@@ -3,8 +3,7 @@ from dataclasses import dataclass
 import inject
 from flask import Blueprint, Response
 
-from schemes.domain.users import User
-from schemes.services.users import UserRepository
+from schemes.domain.users import User, UserRepository
 from schemes.views.auth.api_key import api_key_auth
 
 bp = Blueprint("users", __name__)

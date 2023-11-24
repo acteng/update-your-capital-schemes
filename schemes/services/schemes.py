@@ -27,25 +27,9 @@ from schemes.domain.schemes import (
     MilestoneRevision,
     ObservationType,
     Scheme,
+    SchemeRepository,
     SchemeType,
 )
-
-
-class SchemeRepository:
-    def add(self, *schemes: Scheme) -> None:
-        raise NotImplementedError()
-
-    def clear(self) -> None:
-        raise NotImplementedError()
-
-    def get(self, id_: int) -> Scheme | None:
-        raise NotImplementedError()
-
-    def get_by_authority(self, authority_id: int) -> list[Scheme]:
-        raise NotImplementedError()
-
-    def get_all(self) -> list[Scheme]:
-        raise NotImplementedError()
 
 
 def add_tables(metadata: MetaData) -> None:

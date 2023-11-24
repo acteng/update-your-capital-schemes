@@ -1,9 +1,6 @@
-from schemes.domain.authorities import Authority
-from schemes.domain.schemes import Scheme
-from schemes.domain.users import User
-from schemes.services.authorities import AuthorityRepository
-from schemes.services.schemes import SchemeRepository
-from schemes.services.users import UserRepository
+from schemes.domain.authorities import Authority, AuthorityRepository
+from schemes.domain.schemes import Scheme, SchemeRepository
+from schemes.domain.users import User, UserRepository
 
 
 class MemoryAuthorityRepository(AuthorityRepository):

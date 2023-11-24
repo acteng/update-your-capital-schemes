@@ -7,7 +7,7 @@ import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 
-from schemes.domain.authorities import Authority
+from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import (
     DataSource,
     DateRange,
@@ -18,12 +18,10 @@ from schemes.domain.schemes import (
     MilestoneRevision,
     ObservationType,
     Scheme,
+    SchemeRepository,
     SchemeType,
 )
-from schemes.domain.users import User
-from schemes.services.authorities import AuthorityRepository
-from schemes.services.schemes import SchemeRepository
-from schemes.services.users import UserRepository
+from schemes.domain.users import User, UserRepository
 
 
 @pytest.fixture(name="authorities")

@@ -48,7 +48,7 @@ class Scheme:
         if financial_revision.is_current_funding_allocation:
             self._ensure_no_current_funding_allocation()
 
-        if self._is_current_spent_to_date(financial_revision):
+        if financial_revision.is_current_spent_to_date:
             self._ensure_no_current_spent_to_date()
 
         self._financial_revisions.append(financial_revision)
@@ -66,7 +66,7 @@ class Scheme:
 
     def _ensure_no_current_spent_to_date(self) -> None:
         current_spent_to_date = next(
-            (revision for revision in self._financial_revisions if self._is_current_spent_to_date(revision)), None
+            (revision for revision in self._financial_revisions if revision.is_current_spent_to_date), None
         )
         if current_spent_to_date:
             raise ValueError(f"Current spent to date already exists: {current_spent_to_date}")
@@ -78,14 +78,8 @@ class Scheme:
 
     @property
     def spend_to_date(self) -> Decimal | None:
-        amounts = (
-            revision.amount for revision in self._financial_revisions if self._is_current_spent_to_date(revision)
-        )
+        amounts = (revision.amount for revision in self._financial_revisions if revision.is_current_spent_to_date)
         return next(amounts, None)
-
-    @staticmethod
-    def _is_current_spent_to_date(financial_revision: FinancialRevision) -> bool:
-        return financial_revision.type == FinancialType.SPENT_TO_DATE and financial_revision.effective.date_to is None
 
     @property
     def change_control_adjustment(self) -> Decimal | None:
@@ -173,6 +167,10 @@ class FinancialRevision:
             and self.source != DataSource.CHANGE_CONTROL
             and self.effective.date_to is None
         )
+
+    @property
+    def is_current_spent_to_date(self) -> bool:
+        return self.type == FinancialType.SPENT_TO_DATE and self.effective.date_to is None
 
 
 class FinancialType(Enum):

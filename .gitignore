@@ -14,10 +14,10 @@ __pycache__/
 /node_modules/
 
 # GOV.UK Frontend
-/schemes/static/govuk-frontend/
+/schemes/views/static/govuk-frontend/
 
 # GOV.UK One Login Service header
-/schemes/static/govuk-one-login-service-header/
+/schemes/views/static/govuk-one-login-service-header/
 
 # Terraform
 .terraform/

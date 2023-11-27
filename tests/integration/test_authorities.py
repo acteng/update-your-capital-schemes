@@ -55,11 +55,10 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 201
-        authority1: Authority
-        authority2: Authority
-        (authority1, authority2) = authorities.get_all()
-        assert authority1.id == 1 and authority1.name == "Liverpool City Region Combined Authority"
-        assert authority2.id == 2 and authority2.name == "West Yorkshire Combined Authority"
+        authority1 = authorities.get(1)
+        authority2 = authorities.get(2)
+        assert authority1 and authority1.id == 1 and authority1.name == "Liverpool City Region Combined Authority"
+        assert authority2 and authority2.id == 2 and authority2.name == "West Yorkshire Combined Authority"
 
     def test_cannot_add_authorities_when_no_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
@@ -67,7 +66,7 @@ class TestApiEnabled:
         response = client.post("/authorities", json=[{"id": 1, "name": "Liverpool City Region Combined Authority"}])
 
         assert response.status_code == 401
-        assert not authorities.get_all()
+        assert not authorities.get(1)
 
     def test_cannot_add_authorities_when_incorrect_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
@@ -79,7 +78,7 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 401
-        assert not authorities.get_all()
+        assert not authorities.get(1)
 
     def test_add_users(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -206,7 +205,7 @@ class TestApiEnabled:
         response = client.delete("/authorities", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 204
-        assert not authorities.get_all()
+        assert not authorities.get(1)
 
     def test_cannot_clear_authorities_when_no_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
@@ -216,7 +215,7 @@ class TestApiEnabled:
         response = client.delete("/authorities")
 
         assert response.status_code == 401
-        assert [authority.id for authority in authorities.get_all()] == [1]
+        assert authorities.get(1)
 
     def test_cannot_clear_authorities_when_incorrect_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
@@ -226,7 +225,7 @@ class TestApiEnabled:
         response = client.delete("/authorities", headers={"Authorization": "API-Key obree"})
 
         assert response.status_code == 401
-        assert [authority.id for authority in authorities.get_all()] == [1]
+        assert authorities.get(1)
 
 
 class TestApiDisabled:
@@ -236,4 +235,4 @@ class TestApiDisabled:
         response = client.delete("/authorities", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 401
-        assert [authority.id for authority in authorities.get_all()] == [1]
+        assert authorities.get(1)

@@ -61,27 +61,6 @@ class TestDatabaseAuthorityRepository:
 
         assert authorities.get(2) is None
 
-    def test_get_all_authorities(
-        self, authorities: DatabaseAuthorityRepository, engine: Engine, metadata: MetaData
-    ) -> None:
-        authority_table = metadata.tables["authority"]
-        with engine.begin() as connection:
-            connection.execute(
-                insert(authority_table).values(
-                    authority_id=1, authority_name="Liverpool City Region Combined Authority"
-                )
-            )
-            connection.execute(
-                insert(authority_table).values(authority_id=2, authority_name="West Yorkshire Combined Authority")
-            )
-
-        authority1: Authority
-        authority2: Authority
-        authority1, authority2 = authorities.get_all()
-
-        assert authority1.id == 1 and authority1.name == "Liverpool City Region Combined Authority"
-        assert authority2.id == 2 and authority2.name == "West Yorkshire Combined Authority"
-
     def test_clear_all_authorities(
         self, authorities: DatabaseAuthorityRepository, engine: Engine, metadata: MetaData
     ) -> None:
@@ -98,4 +77,4 @@ class TestDatabaseAuthorityRepository:
 
         authorities.clear()
 
-        assert authorities.get_all() == []
+        assert not authorities.get(1)

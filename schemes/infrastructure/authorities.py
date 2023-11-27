@@ -49,8 +49,3 @@ class DatabaseAuthorityRepository(AuthorityRepository):
             )
             row = result.one_or_none()
             return Authority(id_=row.authority_id, name=row.authority_name) if row else None
-
-    def get_all(self) -> list[Authority]:
-        with self._engine.connect() as connection:
-            result = connection.execute(select(self._authority_table))
-            return [Authority(id_=row.authority_id, name=row.authority_name) for row in result]

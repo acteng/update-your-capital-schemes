@@ -17,9 +17,6 @@ class MemoryAuthorityRepository(AuthorityRepository):
     def get(self, id_: int) -> Authority | None:
         return self._authorities.get(id_)
 
-    def get_all(self) -> list[Authority]:
-        return list(self._authorities.values())
-
 
 class MemoryUserRepository(UserRepository):
     def __init__(self) -> None:

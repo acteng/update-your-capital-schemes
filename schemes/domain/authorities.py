@@ -13,6 +13,3 @@ class AuthorityRepository:
 
     def get(self, id_: int) -> Authority | None:
         raise NotImplementedError()
-
-    def get_all(self) -> list[Authority]:
-        raise NotImplementedError()

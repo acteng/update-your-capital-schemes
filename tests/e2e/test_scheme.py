@@ -1,5 +1,4 @@
 import pytest
-from flask import Flask
 from playwright.sync_api import Page
 
 from tests.e2e.app_client import (
@@ -51,7 +50,7 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: P
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, app: Flask, page: Page) -> None:
+def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
     app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
     app_client.add_users(1, UserRepr(email="boardman@example.com"))
     app_client.add_schemes(

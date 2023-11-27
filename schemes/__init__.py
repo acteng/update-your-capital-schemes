@@ -27,7 +27,7 @@ from schemes.views import auth, authorities, schemes, start, users
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     env = os.environ.get("FLASK_ENV", DevConfig.name)
 
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder="views/templates")
     app.config.from_object(f"schemes.config.{env.title()}Config")
     app.config.from_prefixed_env()
     app.config.from_mapping(test_config)

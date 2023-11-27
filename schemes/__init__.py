@@ -127,7 +127,7 @@ def _migrate_database() -> None:
     engine = inject.instance(Engine)
 
     alembic_config = alembic.config.Config()
-    alembic_config.set_main_option("script_location", "schemes:migrations")
+    alembic_config.set_main_option("script_location", "schemes:infrastructure/migrations")
 
     with engine.connect() as connection:
         alembic_config.attributes["connection"] = connection

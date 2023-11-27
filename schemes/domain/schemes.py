@@ -27,6 +27,10 @@ class Scheme:
     def update_milestone(self, milestone_revision: MilestoneRevision) -> None:
         self._milestone_revisions.append(milestone_revision)
 
+    def update_milestones(self, *milestone_revisions: MilestoneRevision) -> None:
+        for milestone_revision in milestone_revisions:
+            self.update_milestone(milestone_revision)
+
     @property
     def current_milestone(self) -> Milestone | None:
         actual_milestones = [

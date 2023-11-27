@@ -58,44 +58,73 @@ class TestScheme:
             )
         ]
 
-    def test_get_current_milestone_selects_actual_observation_type(self) -> None:
+    def test_update_milestones(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_milestone(
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                milestone=Milestone.CONSTRUCTION_STARTED,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 1, 1),
-            )
-        )
-        scheme.update_milestone(
+
+        scheme.update_milestones(
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
-            )
+            ),
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 2, 1),
+            ),
+        )
+
+        assert scheme.milestone_revisions == [
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 1),
+            ),
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 2, 1),
+            ),
+        ]
+
+    def test_get_current_milestone_selects_actual_observation_type(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_milestones(
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 1, 1),
+            ),
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 1),
+            ),
         )
 
         assert scheme.current_milestone == Milestone.DETAILED_DESIGN_COMPLETED
 
     def test_get_current_milestone_selects_latest_milestone(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_milestone(
+        scheme.update_milestones(
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
-            )
-        )
-        scheme.update_milestone(
+            ),
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
-            )
+            ),
         )
 
         assert scheme.current_milestone == Milestone.CONSTRUCTION_STARTED

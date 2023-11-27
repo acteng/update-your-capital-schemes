@@ -44,13 +44,10 @@ class MemorySchemeRepository(SchemeRepository):
         self._schemes.clear()
 
     def get(self, id_: int) -> Scheme | None:
-        return self._schemes[id_]
+        return self._schemes.get(id_)
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
         return sorted(
             [scheme for scheme in self._schemes.values() if scheme.authority_id == authority_id],
             key=lambda scheme: scheme.id,
         )
-
-    def get_all(self) -> list[Scheme]:
-        return sorted(list(self._schemes.values()), key=lambda scheme: scheme.id)

@@ -187,25 +187,6 @@ class DatabaseSchemeRepository(SchemeRepository):
 
             return schemes
 
-    def get_all(self) -> list[Scheme]:
-        with self._engine.connect() as connection:
-            result = connection.execute(
-                select(self._capital_scheme_table).order_by(self._capital_scheme_table.c.capital_scheme_id)
-            )
-            schemes = [self._capital_scheme_to_domain(row) for row in result]
-
-            result = connection.execute(select(self._scheme_milestone_table))
-            for row in result:
-                scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
-                scheme.update_milestone(self._scheme_milestone_to_domain(row))
-
-            result = connection.execute(select(self._capital_scheme_financial_table))
-            for row in result:
-                scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
-                scheme.update_financial(self._capital_scheme_financial_to_domain(row))
-
-            return schemes
-
     @staticmethod
     def _capital_scheme_to_domain(row: Row[Any]) -> Scheme:
         scheme = Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)

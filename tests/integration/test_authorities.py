@@ -17,7 +17,6 @@ from schemes.domain.schemes import (
     Milestone,
     MilestoneRevision,
     ObservationType,
-    Scheme,
     SchemeRepository,
     SchemeType,
 )
@@ -118,17 +117,17 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 201
-        scheme1: Scheme
-        scheme2: Scheme
-        scheme1, scheme2 = schemes.get_all()
+        scheme1 = schemes.get(1)
+        scheme2 = schemes.get(2)
         assert (
-            scheme1.id == 1
+            scheme1
+            and scheme1.id == 1
             and scheme1.name == "Wirral Package"
             and scheme1.authority_id == 1
             and scheme1.type == SchemeType.CONSTRUCTION
             and scheme1.funding_programme == FundingProgramme.ATF4
         )
-        assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme2.authority_id == 1
+        assert scheme2 and scheme2.id == 2 and scheme2.name == "School Streets" and scheme2.authority_id == 1
 
     def test_add_schemes_milestone_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -152,9 +151,8 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 201
-        scheme1: Scheme
-        (scheme1,) = schemes.get_all()
-        assert scheme1.id == 1
+        scheme1 = schemes.get(1)
+        assert scheme1 and scheme1.id == 1
         assert scheme1.milestone_revisions == [
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), None),
@@ -186,9 +184,8 @@ class TestApiEnabled:
         )
 
         assert response.status_code == 201
-        scheme1: Scheme
-        (scheme1,) = schemes.get_all()
-        assert scheme1.id == 1
+        scheme1 = schemes.get(1)
+        assert scheme1 and scheme1.id == 1
         assert scheme1.financial_revisions == [
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),

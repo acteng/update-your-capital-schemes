@@ -203,6 +203,3 @@ class SchemeRepository:
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
         raise NotImplementedError()
-
-    def get_all(self) -> list[Scheme]:
-        raise NotImplementedError()

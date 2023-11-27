@@ -119,19 +119,19 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
-            amount=Decimal("100000"),
+            amount=Decimal(100000),
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.SPENT_TO_DATE,
-            amount=Decimal("50000"),
+            amount=Decimal(50000),
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
-            amount=Decimal("10000"),
+            amount=Decimal(10000),
             source=DataSource.CHANGE_CONTROL,
         ),
     )
@@ -153,19 +153,19 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
-            amount=Decimal("0"),
+            amount=Decimal(0),
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.SPENT_TO_DATE,
-            amount=Decimal("0"),
+            amount=Decimal(0),
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
-            amount=Decimal("0"),
+            amount=Decimal(0),
             source=DataSource.CHANGE_CONTROL,
         ),
     )

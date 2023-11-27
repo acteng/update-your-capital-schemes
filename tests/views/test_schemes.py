@@ -171,14 +171,14 @@ class TestSchemeFundingContext:
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("100000"),
+                amount=Decimal(100000),
                 source=DataSource.ATF4_BID,
             )
         )
 
         context = SchemeFundingContext.for_domain(scheme)
 
-        assert context.funding_allocation == Decimal("100000")
+        assert context.funding_allocation == Decimal(100000)
 
     def test_set_spend_to_date(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
@@ -186,14 +186,14 @@ class TestSchemeFundingContext:
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
-                amount=Decimal("50000"),
+                amount=Decimal(50000),
                 source=DataSource.ATF4_BID,
             )
         )
 
         context = SchemeFundingContext.for_domain(scheme)
 
-        assert context.spend_to_date == Decimal("50000")
+        assert context.spend_to_date == Decimal(50000)
 
     def test_set_change_control_adjustment(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
@@ -201,14 +201,14 @@ class TestSchemeFundingContext:
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("10000"),
+                amount=Decimal(10000),
                 source=DataSource.CHANGE_CONTROL,
             )
         )
 
         context = SchemeFundingContext.for_domain(scheme)
 
-        assert context.change_control_adjustment == Decimal("10000")
+        assert context.change_control_adjustment == Decimal(10000)
 
     def test_set_allocation_still_to_spend(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
@@ -216,20 +216,20 @@ class TestSchemeFundingContext:
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("110000"),
+                amount=Decimal(110000),
                 source=DataSource.ATF4_BID,
             ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
-                amount=Decimal("50000"),
+                amount=Decimal(50000),
                 source=DataSource.ATF4_BID,
             ),
         )
 
         context = SchemeFundingContext.for_domain(scheme)
 
-        assert context.allocation_still_to_spend == Decimal("60000")
+        assert context.allocation_still_to_spend == Decimal(60000)
 
 
 class TestSchemeRepr:
@@ -341,13 +341,13 @@ class TestSchemeRepr:
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("100000"),
+                amount=Decimal(100000),
                 source=DataSource.ATF4_BID,
             ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.EXPECTED_COST,
-                amount=Decimal("200000"),
+                amount=Decimal(200000),
                 source=DataSource.PULSE_6,
             ),
         ]
@@ -450,7 +450,7 @@ class TestFinancialRevisionRepr:
         assert financial_revision == FinancialRevision(
             effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
             type=FinancialType.FUNDING_ALLOCATION,
-            amount=Decimal("100000"),
+            amount=Decimal(100000),
             source=DataSource.ATF4_BID,
         )
 

@@ -156,24 +156,20 @@ class SchemeOverviewComponent:
         self._current_milestone = component.get_by_role("definition").nth(3)
 
     @property
-    def reference(self) -> str | None:
-        text = self._reference.text_content()
-        return text.strip() if text else None
+    def reference(self) -> str:
+        return (self._reference.text_content() or "").strip()
 
     @property
-    def scheme_type(self) -> str | None:
-        text = self._scheme_type.text_content()
-        return text.strip() if text else None
+    def scheme_type(self) -> str:
+        return (self._scheme_type.text_content() or "").strip()
 
     @property
-    def funding_programme(self) -> str | None:
-        text = self._funding_programme.text_content()
-        return text.strip() if text else None
+    def funding_programme(self) -> str:
+        return (self._funding_programme.text_content() or "").strip()
 
     @property
-    def current_milestone(self) -> str | None:
-        text = self._current_milestone.text_content()
-        return text.strip() if text else None
+    def current_milestone(self) -> str:
+        return (self._current_milestone.text_content() or "").strip()
 
 
 class SchemeFundingComponent:
@@ -184,21 +180,17 @@ class SchemeFundingComponent:
         self._allocation_still_to_spend = component.get_by_role("definition").nth(3)
 
     @property
-    def funding_allocation(self) -> str | None:
-        text = self._funding_allocation.text_content()
-        return text.strip() if text else None
+    def funding_allocation(self) -> str:
+        return (self._funding_allocation.text_content() or "").strip()
 
     @property
-    def spend_to_date(self) -> str | None:
-        text = self._spend_to_date.text_content()
-        return text.strip() if text else None
+    def spend_to_date(self) -> str:
+        return (self._spend_to_date.text_content() or "").strip()
 
     @property
-    def change_control_adjustment(self) -> str | None:
-        text = self._change_control_adjustment.text_content()
-        return text.strip() if text else None
+    def change_control_adjustment(self) -> str:
+        return (self._change_control_adjustment.text_content() or "").strip()
 
     @property
-    def allocation_still_to_spend(self) -> str | None:
-        text = self._allocation_still_to_spend.text_content()
-        return text.strip() if text else None
+    def allocation_still_to_spend(self) -> str:
+        return (self._allocation_still_to_spend.text_content() or "").strip()

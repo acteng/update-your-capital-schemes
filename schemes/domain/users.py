@@ -13,6 +13,3 @@ class UserRepository:
 
     def get_by_email(self, email: str) -> User | None:
         raise NotImplementedError()
-
-    def get_all(self) -> list[User]:
-        raise NotImplementedError()

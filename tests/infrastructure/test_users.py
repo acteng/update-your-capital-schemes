@@ -61,19 +61,6 @@ class TestDatabaseUserRepository:
 
         assert users.get_by_email("obree@example.com") is None
 
-    def test_get_all_users(self, users: DatabaseUserRepository, engine: Engine, metadata: MetaData) -> None:
-        user_table = metadata.tables["user"]
-        with engine.begin() as connection:
-            connection.execute(insert(user_table).values(email="boardman@example.com", authority_id=1))
-            connection.execute(insert(user_table).values(email="obree@example.com", authority_id=1))
-
-        user1: User
-        user2: User
-        user1, user2 = users.get_all()
-
-        assert user1.email == "boardman@example.com" and user1.authority_id == 1
-        assert user2.email == "obree@example.com" and user2.authority_id == 1
-
     def test_clear_all_users(self, users: DatabaseUserRepository, engine: Engine, metadata: MetaData) -> None:
         user_table = metadata.tables["user"]
         with engine.begin() as connection:
@@ -82,4 +69,5 @@ class TestDatabaseUserRepository:
 
         users.clear()
 
-        assert users.get_all() == []
+        assert not users.get_by_email("boardman@example.com")
+        assert not users.get_by_email("obree@example.com")

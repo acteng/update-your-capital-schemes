@@ -49,8 +49,3 @@ class DatabaseUserRepository(UserRepository):
             result = connection.execute(select(self._user_table).where(self._user_table.c.email == email))
             row = result.one_or_none()
             return User(email=row.email, authority_id=row.authority_id) if row else None
-
-    def get_all(self) -> list[User]:
-        with self._engine.connect() as connection:
-            result = connection.execute(select(self._user_table))
-            return [User(email=row.email, authority_id=row.authority_id) for row in result]

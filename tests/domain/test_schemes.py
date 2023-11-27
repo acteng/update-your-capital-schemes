@@ -39,57 +39,35 @@ class TestScheme:
 
     def test_update_milestone(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-
-        scheme.update_milestone(
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2020, 1, 1),
-            )
+        milestone_revision = MilestoneRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 1),
         )
 
-        assert scheme.milestone_revisions == [
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2020, 1, 1),
-            )
-        ]
+        scheme.update_milestone(milestone_revision)
+
+        assert scheme.milestone_revisions == [milestone_revision]
 
     def test_update_milestones(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-
-        scheme.update_milestones(
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2020, 1, 1),
-            ),
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                milestone=Milestone.CONSTRUCTION_STARTED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2020, 2, 1),
-            ),
+        milestone_revision1 = MilestoneRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 1),
+        )
+        milestone_revision2 = MilestoneRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            milestone=Milestone.CONSTRUCTION_STARTED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 2, 1),
         )
 
-        assert scheme.milestone_revisions == [
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2020, 1, 1),
-            ),
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                milestone=Milestone.CONSTRUCTION_STARTED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2020, 2, 1),
-            ),
-        ]
+        scheme.update_milestones(milestone_revision1, milestone_revision2)
+
+        assert scheme.milestone_revisions == [milestone_revision1, milestone_revision2]
 
     def test_get_current_milestone_selects_actual_observation_type(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
@@ -164,24 +142,16 @@ class TestScheme:
 
     def test_update_financial(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-
-        scheme.update_financial(
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("100000"),
-                source=DataSource.ATF4_BID,
-            )
+        financial_revision = FinancialRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            type=FinancialType.FUNDING_ALLOCATION,
+            amount=Decimal("100000"),
+            source=DataSource.ATF4_BID,
         )
 
-        assert scheme.financial_revisions == [
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("100000"),
-                source=DataSource.ATF4_BID,
-            )
-        ]
+        scheme.update_financial(financial_revision)
+
+        assert scheme.financial_revisions == [financial_revision]
 
     def test_cannot_update_financial_with_another_current_funding_allocation(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
@@ -229,36 +199,22 @@ class TestScheme:
 
     def test_update_financials(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-
-        scheme.update_financials(
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("100000"),
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.EXPECTED_COST,
-                amount=Decimal("200000"),
-                source=DataSource.ATF4_BID,
-            ),
+        financial_revision1 = FinancialRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            type=FinancialType.FUNDING_ALLOCATION,
+            amount=Decimal("100000"),
+            source=DataSource.ATF4_BID,
+        )
+        financial_revision2 = FinancialRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            type=FinancialType.EXPECTED_COST,
+            amount=Decimal("200000"),
+            source=DataSource.ATF4_BID,
         )
 
-        assert scheme.financial_revisions == [
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal("100000"),
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.EXPECTED_COST,
-                amount=Decimal("200000"),
-                source=DataSource.ATF4_BID,
-            ),
-        ]
+        scheme.update_financials(financial_revision1, financial_revision2)
+
+        assert scheme.financial_revisions == [financial_revision1, financial_revision2]
 
     def test_get_funding_allocation(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)

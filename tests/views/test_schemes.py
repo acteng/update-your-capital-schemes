@@ -212,21 +212,19 @@ class TestSchemeFundingContext:
 
     def test_set_allocation_still_to_spend(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("110000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("50000"),
                 source=DataSource.ATF4_BID,
-            )
+            ),
         )
 
         context = SchemeFundingContext.for_domain(scheme)

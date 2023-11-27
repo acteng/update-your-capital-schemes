@@ -133,21 +133,19 @@ class TestDatabaseSchemeRepository:
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
     ) -> None:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.update_financial(
+        scheme1.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme1.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4_BID,
-            )
+            ),
         )
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))

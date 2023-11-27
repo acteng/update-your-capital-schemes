@@ -227,6 +227,39 @@ class TestScheme:
                 )
             )
 
+    def test_update_financials(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+
+        scheme.update_financials(
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.EXPECTED_COST,
+                amount=Decimal("200000"),
+                source=DataSource.ATF4_BID,
+            ),
+        )
+
+        assert scheme.financial_revisions == [
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal("100000"),
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.EXPECTED_COST,
+                amount=Decimal("200000"),
+                source=DataSource.ATF4_BID,
+            ),
+        ]
+
     def test_get_funding_allocation(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.update_financial(
@@ -242,63 +275,57 @@ class TestScheme:
 
     def test_get_funding_allocation_selects_financial_type(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.EXPECTED_COST,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4_BID,
-            )
+            ),
         )
 
         assert scheme.funding_allocation == Decimal("100000")
 
     def test_get_funding_allocation_selects_source(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("200000"),
                 source=DataSource.CHANGE_CONTROL,
-            )
+            ),
         )
 
         assert scheme.funding_allocation == Decimal("100000")
 
     def test_get_funding_allocation_selects_latest_revision(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4_BID,
-            )
+            ),
         )
 
         assert scheme.funding_allocation == Decimal("200000")
@@ -336,42 +363,38 @@ class TestScheme:
 
     def test_get_spend_to_date_selects_financial_type(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.EXPECTED_COST,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4_BID,
-            )
+            ),
         )
 
         assert scheme.spend_to_date == Decimal("100000")
 
     def test_get_spend_to_date_selects_latest_revision(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("200000"),
                 source=DataSource.ATF4_BID,
-            )
+            ),
         )
 
         assert scheme.spend_to_date == Decimal("200000")
@@ -396,84 +419,76 @@ class TestScheme:
 
     def test_get_change_control_adjustment_sums_amounts(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("20000"),
                 source=DataSource.CHANGE_CONTROL,
-            )
+            ),
         )
 
         assert scheme.change_control_adjustment == Decimal("30000")
 
     def test_get_change_control_adjustment_selects_financial_type(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.EXPECTED_COST,
                 amount=Decimal("20000"),
                 source=DataSource.CHANGE_CONTROL,
-            )
+            ),
         )
 
         assert scheme.change_control_adjustment == Decimal("10000")
 
     def test_get_change_control_adjustment_selects_source(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("20000"),
                 source=DataSource.ATF4_BID,
-            )
+            ),
         )
 
         assert scheme.change_control_adjustment == Decimal("10000")
 
     def test_get_change_control_adjustment_selects_latest_revision(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("20000"),
                 source=DataSource.CHANGE_CONTROL,
-            )
+            ),
         )
 
         assert scheme.change_control_adjustment == Decimal("20000")
@@ -498,92 +513,82 @@ class TestScheme:
 
     def test_get_allocation_still_to_spend(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("50000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
-            )
+            ),
         )
 
         assert scheme.allocation_still_to_spend == Decimal("60000")
 
     def test_get_allocation_still_to_spend_when_no_funding_allocation(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("50000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
-            )
+            ),
         )
 
         assert scheme.allocation_still_to_spend == Decimal("-40000")
 
     def test_get_allocation_still_to_spend_when_no_spend_to_date(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("10000"),
                 source=DataSource.CHANGE_CONTROL,
-            )
+            ),
         )
 
         assert scheme.allocation_still_to_spend == Decimal("110000")
 
     def test_get_allocation_still_to_spend_when_no_change_control_adjustment(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal("100000"),
                 source=DataSource.ATF4_BID,
-            )
-        )
-        scheme.update_financial(
+            ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
                 amount=Decimal("50000"),
                 source=DataSource.ATF4_BID,
-            )
+            ),
         )
 
         assert scheme.allocation_still_to_spend == Decimal("50000")

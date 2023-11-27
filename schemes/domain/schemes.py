@@ -53,6 +53,10 @@ class Scheme:
 
         self._financial_revisions.append(financial_revision)
 
+    def update_financials(self, *financial_revisions: FinancialRevision) -> None:
+        for financial_revision in financial_revisions:
+            self.update_financial(financial_revision)
+
     def _ensure_no_current_funding_allocation(self) -> None:
         current_funding_allocation = next(
             (revision for revision in self._financial_revisions if self._is_current_funding_allocation(revision)), None

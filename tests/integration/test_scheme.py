@@ -115,29 +115,25 @@ def test_scheme_shows_minimal_funding(schemes: SchemeRepository, client: FlaskCl
 
 def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.update_financial(
+    scheme.update_financials(
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
             amount=Decimal("100000"),
             source=DataSource.ATF4_BID,
-        )
-    )
-    scheme.update_financial(
+        ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.SPENT_TO_DATE,
             amount=Decimal("50000"),
             source=DataSource.ATF4_BID,
-        )
-    )
-    scheme.update_financial(
+        ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
             amount=Decimal("10000"),
             source=DataSource.CHANGE_CONTROL,
-        )
+        ),
     )
     schemes.add(scheme)
 
@@ -153,29 +149,25 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
 
 def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.update_financial(
+    scheme.update_financials(
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
             amount=Decimal("0"),
             source=DataSource.ATF4_BID,
-        )
-    )
-    scheme.update_financial(
+        ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.SPENT_TO_DATE,
             amount=Decimal("0"),
             source=DataSource.ATF4_BID,
-        )
-    )
-    scheme.update_financial(
+        ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
             amount=Decimal("0"),
             source=DataSource.CHANGE_CONTROL,
-        )
+        ),
     )
     schemes.add(scheme)
 

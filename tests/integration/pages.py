@@ -161,27 +161,15 @@ class SchemePage:
 
 class SchemeOverviewComponent:
     def __init__(self, tag: Tag):
-        reference_tag = tag.select("main dd")[0]
-        self.reference = reference_tag.string.strip() if reference_tag.string else None
-        scheme_type_tag = tag.select("main dd")[1]
-        self.scheme_type = scheme_type_tag.string.strip() if scheme_type_tag.string else None
-        funding_programme_tag = tag.select("main dd")[2]
-        self.funding_programme = funding_programme_tag.string.strip() if funding_programme_tag.string else None
-        current_milestone_tag = tag.select("main dd")[3]
-        self.current_milestone = current_milestone_tag.string.strip() if current_milestone_tag.string else None
+        self.reference = (tag.select("main dd")[0].string or "").strip()
+        self.scheme_type = (tag.select("main dd")[1].string or "").strip()
+        self.funding_programme = (tag.select("main dd")[2].string or "").strip()
+        self.current_milestone = (tag.select("main dd")[3].string or "").strip()
 
 
 class SchemeFundingComponent:
     def __init__(self, tag: Tag):
-        funding_allocation_tag = tag.select("main dd")[0]
-        self.funding_allocation = funding_allocation_tag.string.strip() if funding_allocation_tag.string else None
-        spend_to_date_tag = tag.select("main dd")[1]
-        self.spend_to_date = spend_to_date_tag.string.strip() if spend_to_date_tag.string else None
-        change_control_adjustment_tag = tag.select("main dd")[2]
-        self.change_control_adjustment = (
-            change_control_adjustment_tag.string.strip() if change_control_adjustment_tag.string else None
-        )
-        allocation_still_to_spend_tag = tag.select("main dd")[3]
-        self.allocation_still_to_spend = (
-            allocation_still_to_spend_tag.string.strip() if allocation_still_to_spend_tag.string else None
-        )
+        self.funding_allocation = (tag.select("main dd")[0].string or "").strip()
+        self.spend_to_date = (tag.select("main dd")[1].string or "").strip()
+        self.change_control_adjustment = (tag.select("main dd")[2].string or "").strip()
+        self.allocation_still_to_spend = (tag.select("main dd")[3].string or "").strip()

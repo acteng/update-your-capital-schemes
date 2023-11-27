@@ -45,7 +45,7 @@ class Scheme:
         return list(self._financial_revisions)
 
     def update_financial(self, financial_revision: FinancialRevision) -> None:
-        if self._is_current_funding_allocation(financial_revision):
+        if financial_revision.is_current_funding_allocation:
             self._ensure_no_current_funding_allocation()
 
         if self._is_current_spent_to_date(financial_revision):
@@ -59,7 +59,7 @@ class Scheme:
 
     def _ensure_no_current_funding_allocation(self) -> None:
         current_funding_allocation = next(
-            (revision for revision in self._financial_revisions if self._is_current_funding_allocation(revision)), None
+            (revision for revision in self._financial_revisions if revision.is_current_funding_allocation), None
         )
         if current_funding_allocation:
             raise ValueError(f"Current funding allocation already exists: {current_funding_allocation}")
@@ -73,18 +73,8 @@ class Scheme:
 
     @property
     def funding_allocation(self) -> Decimal | None:
-        amounts = (
-            revision.amount for revision in self._financial_revisions if self._is_current_funding_allocation(revision)
-        )
+        amounts = (revision.amount for revision in self._financial_revisions if revision.is_current_funding_allocation)
         return next(amounts, None)
-
-    @staticmethod
-    def _is_current_funding_allocation(financial_revision: FinancialRevision) -> bool:
-        return (
-            financial_revision.type == FinancialType.FUNDING_ALLOCATION
-            and financial_revision.source != DataSource.CHANGE_CONTROL
-            and financial_revision.effective.date_to is None
-        )
 
     @property
     def spend_to_date(self) -> Decimal | None:
@@ -175,6 +165,14 @@ class FinancialRevision:
     type: FinancialType
     amount: Decimal
     source: DataSource
+
+    @property
+    def is_current_funding_allocation(self) -> bool:
+        return (
+            self.type == FinancialType.FUNDING_ALLOCATION
+            and self.source != DataSource.CHANGE_CONTROL
+            and self.effective.date_to is None
+        )
 
 
 class FinancialType(Enum):

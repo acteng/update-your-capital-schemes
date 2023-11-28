@@ -39,8 +39,8 @@ class Scheme:
     def current_milestone(self) -> Milestone | None:
         actual_milestones = [
             revision.milestone
-            for revision in self._milestone_revisions
-            if revision.observation_type == ObservationType.ACTUAL and revision.effective.date_to is None
+            for revision in self.current_milestone_revisions
+            if revision.observation_type == ObservationType.ACTUAL
         ]
         return sorted(actual_milestones)[-1] if actual_milestones else None
 

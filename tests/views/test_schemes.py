@@ -19,6 +19,7 @@ from schemes.domain.schemes import (
 from schemes.views.schemes import (
     FinancialRevisionRepr,
     FundingProgrammeContext,
+    MilestoneContext,
     MilestoneRevisionRepr,
     SchemeContext,
     SchemeFundingContext,
@@ -104,28 +105,12 @@ class TestSchemeOverviewContext:
 
         assert context.funding_programme == FundingProgrammeContext.for_domain(FundingProgramme.ATF4)
 
-    @pytest.mark.parametrize(
-        "milestone, expected_milestone",
-        [
-            (Milestone.PUBLIC_CONSULTATION_COMPLETED, "Public consultation completed"),
-            (Milestone.FEASIBILITY_DESIGN_COMPLETED, "Feasibility design completed"),
-            (Milestone.PRELIMINARY_DESIGN_COMPLETED, "Preliminary design completed"),
-            (Milestone.OUTLINE_DESIGN_COMPLETED, "Outline design completed"),
-            (Milestone.DETAILED_DESIGN_COMPLETED, "Detailed design completed"),
-            (Milestone.CONSTRUCTION_STARTED, "Construction started"),
-            (Milestone.CONSTRUCTION_COMPLETED, "Construction completed"),
-            (Milestone.INSPECTION, "Inspection"),
-            (Milestone.NOT_PROGRESSED, "Not progressed"),
-            (Milestone.SUPERSEDED, "Superseded"),
-            (Milestone.REMOVED, "Removed"),
-        ],
-    )
-    def test_set_current_milestone(self, milestone: Milestone, expected_milestone: str) -> None:
+    def test_set_current_milestone(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.update_milestone(
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                milestone=milestone,
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
             )
@@ -133,14 +118,14 @@ class TestSchemeOverviewContext:
 
         context = SchemeOverviewContext.for_domain(scheme)
 
-        assert context.current_milestone == expected_milestone
+        assert context.current_milestone == MilestoneContext.for_domain(Milestone.DETAILED_DESIGN_COMPLETED)
 
     def test_set_current_milestone_when_no_revisions(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
 
         context = SchemeOverviewContext.for_domain(scheme)
 
-        assert context.current_milestone is None
+        assert context.current_milestone == MilestoneContext.for_domain(None)
 
 
 class TestFundingProgrammeContext:
@@ -160,6 +145,30 @@ class TestFundingProgrammeContext:
     )
     def test_set_name(self, funding_programme: FundingProgramme | None, expected_name: str | None) -> None:
         context = FundingProgrammeContext.for_domain(funding_programme)
+
+        assert context.name == expected_name
+
+
+class TestMilestoneContext:
+    @pytest.mark.parametrize(
+        "milestone, expected_name",
+        [
+            (Milestone.PUBLIC_CONSULTATION_COMPLETED, "Public consultation completed"),
+            (Milestone.FEASIBILITY_DESIGN_COMPLETED, "Feasibility design completed"),
+            (Milestone.PRELIMINARY_DESIGN_COMPLETED, "Preliminary design completed"),
+            (Milestone.OUTLINE_DESIGN_COMPLETED, "Outline design completed"),
+            (Milestone.DETAILED_DESIGN_COMPLETED, "Detailed design completed"),
+            (Milestone.CONSTRUCTION_STARTED, "Construction started"),
+            (Milestone.CONSTRUCTION_COMPLETED, "Construction completed"),
+            (Milestone.INSPECTION, "Inspection"),
+            (Milestone.NOT_PROGRESSED, "Not progressed"),
+            (Milestone.SUPERSEDED, "Superseded"),
+            (Milestone.REMOVED, "Removed"),
+            (None, None),
+        ],
+    )
+    def test_set_name(self, milestone: Milestone | None, expected_name: str | None) -> None:
+        context = MilestoneContext.for_domain(milestone)
 
         assert context.name == expected_name
 

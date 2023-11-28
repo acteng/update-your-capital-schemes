@@ -104,7 +104,7 @@ class SchemeOverviewContext:
     reference: str
     type: str | None
     funding_programme: FundingProgrammeContext
-    current_milestone: str | None
+    current_milestone: MilestoneContext
 
     @staticmethod
     def for_domain(scheme: Scheme) -> SchemeOverviewContext:
@@ -112,7 +112,7 @@ class SchemeOverviewContext:
             reference=scheme.reference,
             type=SchemeOverviewContext._type_to_name(scheme.type),
             funding_programme=FundingProgrammeContext.for_domain(scheme.funding_programme),
-            current_milestone=SchemeOverviewContext._milestone_to_name(scheme.current_milestone),
+            current_milestone=MilestoneContext.for_domain(scheme.current_milestone),
         )
 
     @staticmethod
@@ -122,23 +122,6 @@ class SchemeOverviewContext:
             SchemeType.CONSTRUCTION: "Construction",
         }
         return type_names[type_] if type_ else None
-
-    @staticmethod
-    def _milestone_to_name(milestone: Milestone | None) -> str | None:
-        milestone_names = {
-            Milestone.PUBLIC_CONSULTATION_COMPLETED: "Public consultation completed",
-            Milestone.FEASIBILITY_DESIGN_COMPLETED: "Feasibility design completed",
-            Milestone.PRELIMINARY_DESIGN_COMPLETED: "Preliminary design completed",
-            Milestone.OUTLINE_DESIGN_COMPLETED: "Outline design completed",
-            Milestone.DETAILED_DESIGN_COMPLETED: "Detailed design completed",
-            Milestone.CONSTRUCTION_STARTED: "Construction started",
-            Milestone.CONSTRUCTION_COMPLETED: "Construction completed",
-            Milestone.INSPECTION: "Inspection",
-            Milestone.NOT_PROGRESSED: "Not progressed",
-            Milestone.SUPERSEDED: "Superseded",
-            Milestone.REMOVED: "Removed",
-        }
-        return milestone_names[milestone] if milestone else None
 
 
 @dataclass(frozen=True)
@@ -158,6 +141,28 @@ class FundingProgrammeContext:
             FundingProgramme.CRSTS: "CRSTS",
         }
         return FundingProgrammeContext(name=funding_programme_names[funding_programme] if funding_programme else None)
+
+
+@dataclass(frozen=True)
+class MilestoneContext:
+    name: str | None
+
+    @staticmethod
+    def for_domain(milestone: Milestone | None) -> MilestoneContext:
+        milestone_names = {
+            Milestone.PUBLIC_CONSULTATION_COMPLETED: "Public consultation completed",
+            Milestone.FEASIBILITY_DESIGN_COMPLETED: "Feasibility design completed",
+            Milestone.PRELIMINARY_DESIGN_COMPLETED: "Preliminary design completed",
+            Milestone.OUTLINE_DESIGN_COMPLETED: "Outline design completed",
+            Milestone.DETAILED_DESIGN_COMPLETED: "Detailed design completed",
+            Milestone.CONSTRUCTION_STARTED: "Construction started",
+            Milestone.CONSTRUCTION_COMPLETED: "Construction completed",
+            Milestone.INSPECTION: "Inspection",
+            Milestone.NOT_PROGRESSED: "Not progressed",
+            Milestone.SUPERSEDED: "Superseded",
+            Milestone.REMOVED: "Removed",
+        }
+        return MilestoneContext(name=milestone_names[milestone] if milestone else None)
 
 
 @dataclass(frozen=True)

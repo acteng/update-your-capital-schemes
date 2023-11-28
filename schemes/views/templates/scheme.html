@@ -19,6 +19,10 @@
         {% include "scheme_funding.html" %}
     {% endset -%}
 
+    {% set milestonesHtml %}
+        {% include "scheme_milestones.html" %}
+    {% endset -%}
+
     {{ govukTabs({
         "items": [
             {
@@ -33,6 +37,13 @@
                 "label": "Funding",
                 "panel": {
                     "html": fundingHtml
+                }
+            },
+            {
+                "id": "milestones",
+                "label": "Milestones",
+                "panel": {
+                    "html": milestonesHtml
                 }
             }
         ]

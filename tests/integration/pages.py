@@ -158,6 +158,12 @@ class SchemePage:
         assert panel
         return SchemeFundingComponent(panel)
 
+    @property
+    def milestones(self) -> SchemeMilestonesComponent:
+        panel = self._soup.select_one("#milestones")
+        assert panel
+        return SchemeMilestonesComponent(panel)
+
 
 class SchemeOverviewComponent:
     def __init__(self, tag: Tag):
@@ -173,3 +179,33 @@ class SchemeFundingComponent:
         self.spend_to_date = (tag.select("main dd")[1].string or "").strip()
         self.change_control_adjustment = (tag.select("main dd")[2].string or "").strip()
         self.allocation_still_to_spend = (tag.select("main dd")[3].string or "").strip()
+
+
+class SchemeMilestonesComponent:
+    def __init__(self, tag: Tag):
+        milestones_table = tag.select_one("table")
+        assert milestones_table
+        self.milestones = SchemeMilestonesTableComponent(milestones_table)
+
+
+class SchemeMilestonesTableComponent:
+    def __init__(self, tag: Tag):
+        self._rows = tag.select("tbody tr")
+
+    def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
+        return iter([SchemeMilestoneRowComponent(row) for row in self._rows])
+
+    def to_dicts(self) -> list[dict[str, str | None]]:
+        return [milestone.to_dict() for milestone in self]
+
+
+class SchemeMilestoneRowComponent:
+    def __init__(self, tag: Tag):
+        milestone_tag = tag.select_one("th")
+        self.milestone = milestone_tag.string if milestone_tag else None
+        cells = tag.select("td")
+        self.planned = cells[0].string
+        self.actual = cells[1].string
+
+    def to_dict(self) -> dict[str, str | None]:
+        return {"milestone": self.milestone, "planned": self.planned, "actual": self.actual}

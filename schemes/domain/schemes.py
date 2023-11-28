@@ -24,6 +24,10 @@ class Scheme:
     def milestone_revisions(self) -> list[MilestoneRevision]:
         return list(self._milestone_revisions)
 
+    @property
+    def current_milestone_revisions(self) -> list[MilestoneRevision]:
+        return [revision for revision in self._milestone_revisions if revision.effective.date_to is None]
+
     def update_milestone(self, milestone_revision: MilestoneRevision) -> None:
         self._milestone_revisions.append(milestone_revision)
 

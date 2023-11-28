@@ -23,6 +23,8 @@ from schemes.views.schemes import (
     MilestoneRevisionRepr,
     SchemeContext,
     SchemeFundingContext,
+    SchemeMilestoneRowContext,
+    SchemeMilestonesContext,
     SchemeOverviewContext,
     SchemeRepr,
     SchemeRowContext,
@@ -74,6 +76,20 @@ class TestSchemeContext:
                 source=DataSource.ATF4_BID,
             )
         )
+        scheme.update_milestones(
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
+                milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 1, 1),
+            ),
+            MilestoneRevision(
+                effective=DateRange(date(2020, 2, 1), None),
+                milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 2, 1),
+            ),
+        )
 
         context = SchemeContext.for_domain(scheme)
 
@@ -81,6 +97,7 @@ class TestSchemeContext:
             context.name == "Wirral Package"
             and context.overview.reference == "ATE00001"
             and context.funding.funding_allocation == Decimal(100000)
+            and context.milestones.milestones[0].planned == date(2020, 2, 1)
         )
 
 
@@ -253,6 +270,81 @@ class TestSchemeFundingContext:
         context = SchemeFundingContext.for_domain(scheme)
 
         assert context.allocation_still_to_spend == Decimal(60000)
+
+
+class TestSchemeMilestonesContext:
+    def test_create_from_domain_returns_correct_milestones(self) -> None:
+        context = SchemeMilestonesContext.for_domain([])
+
+        assert [row.milestone for row in context.milestones] == [
+            MilestoneContext(name="Public consultation completed"),
+            MilestoneContext(name="Feasibility design completed"),
+            MilestoneContext(name="Preliminary design completed"),
+            MilestoneContext(name="Detailed design completed"),
+            MilestoneContext(name="Construction started"),
+            MilestoneContext(name="Construction completed"),
+        ]
+
+    @pytest.mark.parametrize(
+        "milestone, expected_milestone_name",
+        [
+            (Milestone.PUBLIC_CONSULTATION_COMPLETED, "Public consultation completed"),
+            (Milestone.FEASIBILITY_DESIGN_COMPLETED, "Feasibility design completed"),
+            (Milestone.PRELIMINARY_DESIGN_COMPLETED, "Preliminary design completed"),
+            (Milestone.DETAILED_DESIGN_COMPLETED, "Detailed design completed"),
+            (Milestone.CONSTRUCTION_STARTED, "Construction started"),
+            (Milestone.CONSTRUCTION_COMPLETED, "Construction completed"),
+        ],
+    )
+    def test_create_from_domain_returns_milestone_dates(
+        self, milestone: Milestone, expected_milestone_name: str
+    ) -> None:
+        milestone_revisions = [
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                milestone=milestone,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 2, 1),
+            ),
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                milestone=milestone,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 3, 1),
+            ),
+        ]
+
+        context = SchemeMilestonesContext.for_domain(milestone_revisions)
+
+        assert (
+            SchemeMilestoneRowContext(
+                milestone=MilestoneContext(name=expected_milestone_name),
+                planned=date(2020, 2, 1),
+                actual=date(2020, 3, 1),
+            )
+            in context.milestones
+        )
+
+    @pytest.mark.parametrize(
+        "expected_milestone_name",
+        [
+            "Public consultation completed",
+            "Feasibility design completed",
+            "Preliminary design completed",
+            "Detailed design completed",
+            "Construction started",
+            "Construction completed",
+        ],
+    )
+    def test_create_from_domain_returns_milestone_dates_when_no_revisions(self, expected_milestone_name: str) -> None:
+        context = SchemeMilestonesContext.for_domain([])
+
+        assert (
+            SchemeMilestoneRowContext(
+                milestone=MilestoneContext(name=expected_milestone_name), planned=None, actual=None
+            )
+            in context.milestones
+        )
 
 
 class TestSchemeRepr:

@@ -89,6 +89,7 @@ class SchemeContext:
     name: str
     overview: SchemeOverviewContext
     funding: SchemeFundingContext
+    milestones: SchemeMilestonesContext
 
     @staticmethod
     def for_domain(scheme: Scheme) -> SchemeContext:
@@ -96,6 +97,7 @@ class SchemeContext:
             name=scheme.name,
             overview=SchemeOverviewContext.for_domain(scheme),
             funding=SchemeFundingContext.for_domain(scheme),
+            milestones=SchemeMilestonesContext.for_domain(scheme.current_milestone_revisions),
         )
 
 
@@ -185,6 +187,46 @@ class SchemeFundingContext:
             change_control_adjustment=scheme.change_control_adjustment,
             allocation_still_to_spend=scheme.allocation_still_to_spend,
         )
+
+
+@dataclass(frozen=True)
+class SchemeMilestonesContext:
+    milestones: list[SchemeMilestoneRowContext]
+
+    @staticmethod
+    def for_domain(milestone_revisions: list[MilestoneRevision]) -> SchemeMilestonesContext:
+        def get_status_date(milestone: Milestone, observation_type: ObservationType) -> date | None:
+            revisions = (
+                revision.status_date
+                for revision in milestone_revisions
+                if revision.milestone == milestone and revision.observation_type == observation_type
+            )
+            return next(revisions, None)
+
+        return SchemeMilestonesContext(
+            milestones=[
+                SchemeMilestoneRowContext(
+                    milestone=MilestoneContext.for_domain(milestone),
+                    planned=get_status_date(milestone, ObservationType.PLANNED),
+                    actual=get_status_date(milestone, ObservationType.ACTUAL),
+                )
+                for milestone in [
+                    Milestone.PUBLIC_CONSULTATION_COMPLETED,
+                    Milestone.FEASIBILITY_DESIGN_COMPLETED,
+                    Milestone.PRELIMINARY_DESIGN_COMPLETED,
+                    Milestone.DETAILED_DESIGN_COMPLETED,
+                    Milestone.CONSTRUCTION_STARTED,
+                    Milestone.CONSTRUCTION_COMPLETED,
+                ]
+            ]
+        )
+
+
+@dataclass(frozen=True)
+class SchemeMilestoneRowContext:
+    milestone: MilestoneContext
+    planned: date | None
+    actual: date | None
 
 
 @bp.delete("")

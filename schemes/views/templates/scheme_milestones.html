@@ -1,0 +1,33 @@
+{% from "govuk_frontend_jinja/components/table/macro.html" import govukTable -%}
+
+<h2 class="govuk-heading-l">Milestones</h2>
+
+{% set rows = [] %}
+{% for milestone in milestones.milestones %}
+    {% do rows.append([
+        {
+            "text": milestone.milestone.name
+        },
+        {
+            "text": "{:%d/%m/%Y}".format(milestone.planned) if milestone.planned else "N/A"
+        },
+        {
+            "text": "{:%d/%m/%Y}".format(milestone.actual) if milestone.actual else "N/A"
+        }
+    ]) %}
+{% endfor %}
+{{ govukTable({
+    "firstCellIsHeader": true,
+    "head": [
+        {
+            "text": "Milestone"
+        },
+        {
+            "text": "Planned date"
+        },
+        {
+            "text": "Actual date"
+        }
+    ],
+    "rows": rows
+}) }}

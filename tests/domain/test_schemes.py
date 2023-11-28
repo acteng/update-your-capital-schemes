@@ -37,6 +37,24 @@ class TestScheme:
 
         assert scheme.milestone_revisions
 
+    def test_get_current_milestone_revisions(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        milestone_revision1 = MilestoneRevision(
+            effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
+            milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
+            observation_type=ObservationType.PLANNED,
+            status_date=date(2020, 1, 1),
+        )
+        milestone_revision2 = MilestoneRevision(
+            effective=DateRange(date(2020, 2, 1), None),
+            milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
+            observation_type=ObservationType.PLANNED,
+            status_date=date(2020, 2, 1),
+        )
+        scheme.update_milestones(milestone_revision1, milestone_revision2)
+
+        assert scheme.current_milestone_revisions == [milestone_revision2]
+
     def test_update_milestone(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         milestone_revision = MilestoneRevision(

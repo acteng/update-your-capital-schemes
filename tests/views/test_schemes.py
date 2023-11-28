@@ -41,12 +41,10 @@ class TestSchemesContext:
 
         context = SchemesContext.for_domain(authority, schemes)
 
-        assert context == SchemesContext(
-            authority_name="Liverpool City Region Combined Authority",
-            schemes=[
-                SchemeRowContext.for_domain(Scheme(id_=1, name="Wirral Package", authority_id=1)),
-                SchemeRowContext.for_domain(Scheme(id_=2, name="School Streets", authority_id=1)),
-            ],
+        assert (
+            context.authority_name == "Liverpool City Region Combined Authority"
+            and context.schemes[0].reference == "ATE00001"
+            and context.schemes[1].reference == "ATE00002"
         )
 
 
@@ -60,7 +58,7 @@ class TestSchemesRowContext:
         assert context == SchemeRowContext(
             id=1,
             reference="ATE00001",
-            funding_programme=FundingProgrammeContext.for_domain(FundingProgramme.ATF4),
+            funding_programme=FundingProgrammeContext(name="ATF4"),
             name="Wirral Package",
         )
 
@@ -68,13 +66,21 @@ class TestSchemesRowContext:
 class TestSchemeContext:
     def test_create_from_domain(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_financial(
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal(100000),
+                source=DataSource.ATF4_BID,
+            )
+        )
 
         context = SchemeContext.for_domain(scheme)
 
-        assert context == SchemeContext(
-            name="Wirral Package",
-            overview=SchemeOverviewContext.for_domain(scheme),
-            funding=SchemeFundingContext.for_domain(scheme),
+        assert (
+            context.name == "Wirral Package"
+            and context.overview.reference == "ATE00001"
+            and context.funding.funding_allocation == Decimal(100000)
         )
 
 
@@ -92,7 +98,7 @@ class TestSchemeOverviewContext:
 
         context = SchemeOverviewContext.for_domain(scheme)
 
-        assert context.type == SchemeTypeContext.for_domain(SchemeType.CONSTRUCTION)
+        assert context.type == SchemeTypeContext(name="Construction")
 
     def test_set_funding_programme(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
@@ -100,7 +106,7 @@ class TestSchemeOverviewContext:
 
         context = SchemeOverviewContext.for_domain(scheme)
 
-        assert context.funding_programme == FundingProgrammeContext.for_domain(FundingProgramme.ATF4)
+        assert context.funding_programme == FundingProgrammeContext(name="ATF4")
 
     def test_set_current_milestone(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
@@ -115,14 +121,14 @@ class TestSchemeOverviewContext:
 
         context = SchemeOverviewContext.for_domain(scheme)
 
-        assert context.current_milestone == MilestoneContext.for_domain(Milestone.DETAILED_DESIGN_COMPLETED)
+        assert context.current_milestone == MilestoneContext(name="Detailed design completed")
 
     def test_set_current_milestone_when_no_revisions(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
 
         context = SchemeOverviewContext.for_domain(scheme)
 
-        assert context.current_milestone == MilestoneContext.for_domain(None)
+        assert context.current_milestone == MilestoneContext(name=None)
 
 
 class TestSchemeTypeContext:

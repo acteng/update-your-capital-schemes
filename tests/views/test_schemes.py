@@ -27,6 +27,7 @@ from schemes.views.schemes import (
     SchemeRepr,
     SchemeRowContext,
     SchemesContext,
+    SchemeTypeContext,
 )
 
 
@@ -85,17 +86,13 @@ class TestSchemeOverviewContext:
 
         assert context.reference == "ATE00001"
 
-    @pytest.mark.parametrize(
-        "type_, expected_type",
-        [(SchemeType.DEVELOPMENT, "Development"), (SchemeType.CONSTRUCTION, "Construction"), (None, None)],
-    )
-    def test_set_type(self, type_: SchemeType | None, expected_type: str | None) -> None:
+    def test_set_type(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.type = type_
+        scheme.type = SchemeType.CONSTRUCTION
 
         context = SchemeOverviewContext.for_domain(scheme)
 
-        assert context.type == expected_type
+        assert context.type == SchemeTypeContext.for_domain(SchemeType.CONSTRUCTION)
 
     def test_set_funding_programme(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
@@ -126,6 +123,17 @@ class TestSchemeOverviewContext:
         context = SchemeOverviewContext.for_domain(scheme)
 
         assert context.current_milestone == MilestoneContext.for_domain(None)
+
+
+class TestSchemeTypeContext:
+    @pytest.mark.parametrize(
+        "type_, expected_name",
+        [(SchemeType.DEVELOPMENT, "Development"), (SchemeType.CONSTRUCTION, "Construction"), (None, None)],
+    )
+    def test_set_name(self, type_: SchemeType | None, expected_name: str | None) -> None:
+        context = SchemeTypeContext.for_domain(type_)
+
+        assert context.name == expected_name
 
 
 class TestFundingProgrammeContext:

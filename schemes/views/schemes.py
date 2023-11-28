@@ -102,7 +102,7 @@ class SchemeContext:
 @dataclass(frozen=True)
 class SchemeOverviewContext:
     reference: str
-    type: str | None
+    type: SchemeTypeContext
     funding_programme: FundingProgrammeContext
     current_milestone: MilestoneContext
 
@@ -110,18 +110,23 @@ class SchemeOverviewContext:
     def for_domain(scheme: Scheme) -> SchemeOverviewContext:
         return SchemeOverviewContext(
             reference=scheme.reference,
-            type=SchemeOverviewContext._type_to_name(scheme.type),
+            type=SchemeTypeContext.for_domain(scheme.type),
             funding_programme=FundingProgrammeContext.for_domain(scheme.funding_programme),
             current_milestone=MilestoneContext.for_domain(scheme.current_milestone),
         )
 
+
+@dataclass(frozen=True)
+class SchemeTypeContext:
+    name: str | None
+
     @staticmethod
-    def _type_to_name(type_: SchemeType | None) -> str | None:
+    def for_domain(type_: SchemeType | None) -> SchemeTypeContext:
         type_names = {
             SchemeType.DEVELOPMENT: "Development",
             SchemeType.CONSTRUCTION: "Construction",
         }
-        return type_names[type_] if type_ else None
+        return SchemeTypeContext(name=type_names[type_] if type_ else None)
 
 
 @dataclass(frozen=True)

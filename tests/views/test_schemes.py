@@ -77,7 +77,7 @@ class TestSchemeContext:
                 source=DataSource.ATF4_BID,
             )
         )
-        scheme.update_milestones(
+        scheme.milestones.update_milestones(
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
@@ -128,7 +128,7 @@ class TestSchemeOverviewContext:
 
     def test_set_current_milestone(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.update_milestone(
+        scheme.milestones.update_milestone(
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
@@ -414,7 +414,7 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain(0)
 
-        assert scheme.milestone_revisions == [
+        assert scheme.milestones.milestone_revisions == [
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,

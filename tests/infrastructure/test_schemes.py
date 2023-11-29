@@ -90,7 +90,7 @@ class TestDatabaseSchemeRepository:
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
     ) -> None:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.update_milestones(
+        scheme1.milestones.update_milestones(
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
@@ -231,7 +231,7 @@ class TestDatabaseSchemeRepository:
 
         scheme = schemes.get(1)
 
-        assert scheme and scheme.milestone_revisions == [
+        assert scheme and scheme.milestones.milestone_revisions == [
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
@@ -401,7 +401,7 @@ class TestDatabaseSchemeRepository:
         scheme2: Scheme
         scheme1, scheme2 = schemes.get_by_authority(1)
 
-        assert scheme1.id == 1 and scheme1.milestone_revisions == [
+        assert scheme1.id == 1 and scheme1.milestones.milestone_revisions == [
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
@@ -409,7 +409,7 @@ class TestDatabaseSchemeRepository:
                 status_date=date(2020, 2, 1),
             )
         ]
-        assert scheme2.id == 2 and scheme2.milestone_revisions == [
+        assert scheme2.id == 2 and scheme2.milestones.milestone_revisions == [
             MilestoneRevision(
                 effective=DateRange(date(2020, 2, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,

@@ -3,11 +3,7 @@ from __future__ import annotations
 from enum import Enum, auto
 
 from schemes.domain.schemes.funding import SchemeFunding
-from schemes.domain.schemes.milestones import (
-    Milestone,
-    MilestoneRevision,
-    ObservationType,
-)
+from schemes.domain.schemes.milestones import SchemeMilestones
 
 
 class Scheme:
@@ -18,7 +14,7 @@ class Scheme:
         self.type: SchemeType | None = None
         self.funding_programme: FundingProgramme | None = None
         self._funding = SchemeFunding()
-        self._milestone_revisions: list[MilestoneRevision] = []
+        self._milestones = SchemeMilestones()
 
     @property
     def reference(self) -> str:
@@ -29,28 +25,8 @@ class Scheme:
         return self._funding
 
     @property
-    def milestone_revisions(self) -> list[MilestoneRevision]:
-        return list(self._milestone_revisions)
-
-    @property
-    def current_milestone_revisions(self) -> list[MilestoneRevision]:
-        return [revision for revision in self._milestone_revisions if revision.effective.date_to is None]
-
-    def update_milestone(self, milestone_revision: MilestoneRevision) -> None:
-        self._milestone_revisions.append(milestone_revision)
-
-    def update_milestones(self, *milestone_revisions: MilestoneRevision) -> None:
-        for milestone_revision in milestone_revisions:
-            self.update_milestone(milestone_revision)
-
-    @property
-    def current_milestone(self) -> Milestone | None:
-        actual_milestones = [
-            revision.milestone
-            for revision in self.current_milestone_revisions
-            if revision.observation_type == ObservationType.ACTUAL
-        ]
-        return sorted(actual_milestones)[-1] if actual_milestones else None
+    def milestones(self) -> SchemeMilestones:
+        return self._milestones
 
 
 class SchemeType(Enum):

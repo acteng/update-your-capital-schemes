@@ -6,6 +6,7 @@ from schemes.domain.schemes.funding import SchemeFunding as SchemeFunding
 from schemes.domain.schemes.milestones import Milestone as Milestone
 from schemes.domain.schemes.milestones import MilestoneRevision as MilestoneRevision
 from schemes.domain.schemes.milestones import ObservationType as ObservationType
+from schemes.domain.schemes.milestones import SchemeMilestones as SchemeMilestones
 from schemes.domain.schemes.schemes import FundingProgramme as FundingProgramme
 from schemes.domain.schemes.schemes import Scheme as Scheme
 from schemes.domain.schemes.schemes import SchemeRepository as SchemeRepository

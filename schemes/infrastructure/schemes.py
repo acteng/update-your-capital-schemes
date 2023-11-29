@@ -104,7 +104,7 @@ class DatabaseSchemeRepository(SchemeRepository):
                         funding_programme_id=FUNDING_PROGRAMME_MAPPER.to_id(scheme.funding_programme),
                     )
                 )
-                for milestone_revision in scheme.milestone_revisions:
+                for milestone_revision in scheme.milestones.milestone_revisions:
                     connection.execute(
                         insert(self._scheme_milestone_table).values(
                             capital_scheme_id=scheme.id,
@@ -146,7 +146,7 @@ class DatabaseSchemeRepository(SchemeRepository):
                     select(self._scheme_milestone_table).where(self._scheme_milestone_table.c.capital_scheme_id == id_)
                 )
                 for row in result:
-                    scheme.update_milestone(self._scheme_milestone_to_domain(row))
+                    scheme.milestones.update_milestone(self._scheme_milestone_to_domain(row))
 
                 result = connection.execute(
                     select(self._capital_scheme_financial_table).where(
@@ -174,7 +174,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             )
             for row in result:
                 scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
-                scheme.update_milestone(self._scheme_milestone_to_domain(row))
+                scheme.milestones.update_milestone(self._scheme_milestone_to_domain(row))
 
             result = connection.execute(
                 select(self._capital_scheme_financial_table)

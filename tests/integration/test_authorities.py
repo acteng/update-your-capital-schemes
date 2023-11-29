@@ -153,7 +153,7 @@ class TestApiEnabled:
         assert response.status_code == 201
         scheme1 = schemes.get(1)
         assert scheme1 and scheme1.id == 1
-        assert scheme1.milestone_revisions == [
+        assert scheme1.milestones.milestone_revisions == [
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,

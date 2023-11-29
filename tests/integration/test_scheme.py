@@ -80,7 +80,7 @@ def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.type = SchemeType.CONSTRUCTION
     scheme.funding_programme = FundingProgramme.ATF4
-    scheme.update_milestone(
+    scheme.milestones.update_milestone(
         MilestoneRevision(
             effective=DateRange(date(2020, 1, 1), None),
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
@@ -199,7 +199,7 @@ def test_scheme_shows_minimal_milestones(schemes: SchemeRepository, client: Flas
 def test_scheme_shows_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     current = DateRange(date(2020, 1, 1), None)
-    scheme.update_milestones(
+    scheme.milestones.update_milestones(
         MilestoneRevision(current, Milestone.PUBLIC_CONSULTATION_COMPLETED, ObservationType.PLANNED, date(2020, 1, 1)),
         MilestoneRevision(current, Milestone.PUBLIC_CONSULTATION_COMPLETED, ObservationType.ACTUAL, date(2020, 1, 2)),
         MilestoneRevision(current, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 2, 1)),

@@ -98,7 +98,7 @@ class SchemeContext:
             name=scheme.name,
             overview=SchemeOverviewContext.for_domain(scheme),
             funding=SchemeFundingContext.for_domain(scheme.funding),
-            milestones=SchemeMilestonesContext.for_domain(scheme.current_milestone_revisions),
+            milestones=SchemeMilestonesContext.for_domain(scheme.milestones.current_milestone_revisions),
         )
 
 
@@ -115,7 +115,7 @@ class SchemeOverviewContext:
             reference=scheme.reference,
             type=SchemeTypeContext.for_domain(scheme.type),
             funding_programme=FundingProgrammeContext.for_domain(scheme.funding_programme),
-            current_milestone=MilestoneContext.for_domain(scheme.current_milestone),
+            current_milestone=MilestoneContext.for_domain(scheme.milestones.current_milestone),
         )
 
 
@@ -254,7 +254,7 @@ class SchemeRepr:
             self._funding_programme_to_domain(self.funding_programme) if self.funding_programme else None
         )
         for milestone_revision_repr in self.milestone_revisions:
-            scheme.update_milestone(milestone_revision_repr.to_domain())
+            scheme.milestones.update_milestone(milestone_revision_repr.to_domain())
 
         for financial_revision_repr in self.financial_revisions:
             scheme.funding.update_financial(financial_revision_repr.to_domain())

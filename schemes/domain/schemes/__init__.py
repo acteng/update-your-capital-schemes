@@ -1,7 +1,7 @@
 from schemes.domain.schemes.dates import DateRange as DateRange
-from schemes.domain.schemes.schemes import DataSource as DataSource
-from schemes.domain.schemes.schemes import FinancialRevision as FinancialRevision
-from schemes.domain.schemes.schemes import FinancialType as FinancialType
+from schemes.domain.schemes.funding import DataSource as DataSource
+from schemes.domain.schemes.funding import FinancialRevision as FinancialRevision
+from schemes.domain.schemes.funding import FinancialType as FinancialType
 from schemes.domain.schemes.schemes import FundingProgramme as FundingProgramme
 from schemes.domain.schemes.schemes import Milestone as Milestone
 from schemes.domain.schemes.schemes import MilestoneRevision as MilestoneRevision

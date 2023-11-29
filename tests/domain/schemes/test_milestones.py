@@ -1,4 +1,7 @@
+import re
 from datetime import date
+
+import pytest
 
 from schemes.domain.schemes import (
     DateRange,
@@ -55,6 +58,28 @@ class TestSchemeMilestones:
         milestones.update_milestone(milestone_revision)
 
         assert milestones.milestone_revisions == [milestone_revision]
+
+    def test_cannot_update_milestone_with_another_current_milestone(self) -> None:
+        milestones = SchemeMilestones()
+        milestone_revision = MilestoneRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2000, 1, 1),
+        )
+        milestones.update_milestone(milestone_revision)
+
+        with pytest.raises(
+            ValueError, match=re.escape(f"Current milestone already exists: {repr(milestone_revision)}")
+        ):
+            milestones.update_milestone(
+                MilestoneRevision(
+                    effective=DateRange(date(2020, 1, 1), None),
+                    milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                    observation_type=ObservationType.ACTUAL,
+                    status_date=date(2000, 2, 1),
+                )
+            )
 
     def test_update_milestones(self) -> None:
         milestones = SchemeMilestones()

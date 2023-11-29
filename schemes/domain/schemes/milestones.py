@@ -20,7 +20,24 @@ class SchemeMilestones:
         return [revision for revision in self._milestone_revisions if revision.effective.date_to is None]
 
     def update_milestone(self, milestone_revision: MilestoneRevision) -> None:
+        if milestone_revision.effective.date_to is None:
+            self._ensure_no_current_milestone_revision(
+                milestone_revision.milestone, milestone_revision.observation_type
+            )
+
         self._milestone_revisions.append(milestone_revision)
+
+    def _ensure_no_current_milestone_revision(self, milestone: Milestone, observation_type: ObservationType) -> None:
+        current_milestone_revision = next(
+            (
+                revision
+                for revision in self.current_milestone_revisions
+                if revision.milestone == milestone and revision.observation_type == observation_type
+            ),
+            None,
+        )
+        if current_milestone_revision:
+            raise ValueError(f"Current milestone already exists: {current_milestone_revision}")
 
     def update_milestones(self, *milestone_revisions: MilestoneRevision) -> None:
         for milestone_revision in milestone_revisions:

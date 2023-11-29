@@ -3,8 +3,12 @@ from datetime import date
 import pytest
 from _decimal import Decimal
 
-from schemes.domain.schemes.dates import DateRange
-from schemes.domain.schemes.funding import DataSource, FinancialRevision, FinancialType
+from schemes.domain.schemes import (
+    DataSource,
+    DateRange,
+    FinancialRevision,
+    FinancialType,
+)
 
 
 class TestFinancialRevision:

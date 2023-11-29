@@ -5,6 +5,8 @@ from datetime import date
 from decimal import Decimal
 from enum import Enum, IntEnum, auto
 
+from schemes.domain.schemes.dates import DateRange
+
 
 class Scheme:
     def __init__(self, id_: int, name: str, authority_id: int):
@@ -126,16 +128,6 @@ class MilestoneRevision:
     milestone: Milestone
     observation_type: ObservationType
     status_date: date
-
-
-@dataclass(frozen=True)
-class DateRange:
-    date_from: date
-    date_to: date | None
-
-    def __post_init__(self) -> None:
-        if not (self.date_to is None or self.date_from <= self.date_to):
-            raise ValueError(f"From date '{self.date_from}' must not be after to date '{self.date_to}'")
 
 
 class Milestone(IntEnum):

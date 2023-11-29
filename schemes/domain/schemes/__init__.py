@@ -2,6 +2,7 @@ from schemes.domain.schemes.dates import DateRange as DateRange
 from schemes.domain.schemes.funding import DataSource as DataSource
 from schemes.domain.schemes.funding import FinancialRevision as FinancialRevision
 from schemes.domain.schemes.funding import FinancialType as FinancialType
+from schemes.domain.schemes.funding import SchemeFunding as SchemeFunding
 from schemes.domain.schemes.milestones import Milestone as Milestone
 from schemes.domain.schemes.milestones import MilestoneRevision as MilestoneRevision
 from schemes.domain.schemes.milestones import ObservationType as ObservationType

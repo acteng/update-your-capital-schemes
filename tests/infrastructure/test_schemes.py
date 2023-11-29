@@ -133,7 +133,7 @@ class TestDatabaseSchemeRepository:
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
     ) -> None:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.update_financials(
+        scheme1.funding.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.FUNDING_ALLOCATION,
@@ -280,7 +280,7 @@ class TestDatabaseSchemeRepository:
 
         scheme = schemes.get(1)
 
-        assert scheme and scheme.financial_revisions == [
+        assert scheme and scheme.funding.financial_revisions == [
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.FUNDING_ALLOCATION,
@@ -456,7 +456,7 @@ class TestDatabaseSchemeRepository:
         scheme1: Scheme
         (scheme1,) = schemes.get_by_authority(1)
 
-        assert scheme1.id == 1 and scheme1.financial_revisions == [
+        assert scheme1.id == 1 and scheme1.funding.financial_revisions == [
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,

@@ -186,7 +186,7 @@ class TestApiEnabled:
         assert response.status_code == 201
         scheme1 = schemes.get(1)
         assert scheme1 and scheme1.id == 1
-        assert scheme1.financial_revisions == [
+        assert scheme1.funding.financial_revisions == [
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,

@@ -18,6 +18,7 @@ from schemes.domain.schemes import (
     MilestoneRevision,
     ObservationType,
     Scheme,
+    SchemeFunding,
     SchemeRepository,
     SchemeType,
 )
@@ -96,7 +97,7 @@ class SchemeContext:
         return SchemeContext(
             name=scheme.name,
             overview=SchemeOverviewContext.for_domain(scheme),
-            funding=SchemeFundingContext.for_domain(scheme),
+            funding=SchemeFundingContext.for_domain(scheme.funding),
             milestones=SchemeMilestonesContext.for_domain(scheme.current_milestone_revisions),
         )
 
@@ -180,12 +181,12 @@ class SchemeFundingContext:
     allocation_still_to_spend: Decimal
 
     @staticmethod
-    def for_domain(scheme: Scheme) -> SchemeFundingContext:
+    def for_domain(funding: SchemeFunding) -> SchemeFundingContext:
         return SchemeFundingContext(
-            funding_allocation=scheme.funding_allocation,
-            spend_to_date=scheme.spend_to_date,
-            change_control_adjustment=scheme.change_control_adjustment,
-            allocation_still_to_spend=scheme.allocation_still_to_spend,
+            funding_allocation=funding.funding_allocation,
+            spend_to_date=funding.spend_to_date,
+            change_control_adjustment=funding.change_control_adjustment,
+            allocation_still_to_spend=funding.allocation_still_to_spend,
         )
 
 
@@ -256,7 +257,7 @@ class SchemeRepr:
             scheme.update_milestone(milestone_revision_repr.to_domain())
 
         for financial_revision_repr in self.financial_revisions:
-            scheme.update_financial(financial_revision_repr.to_domain())
+            scheme.funding.update_financial(financial_revision_repr.to_domain())
         return scheme
 
     @staticmethod

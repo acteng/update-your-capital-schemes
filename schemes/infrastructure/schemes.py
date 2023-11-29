@@ -115,7 +115,7 @@ class DatabaseSchemeRepository(SchemeRepository):
                             status_date=milestone_revision.status_date,
                         )
                     )
-                for financial_revision in scheme.financial_revisions:
+                for financial_revision in scheme.funding.financial_revisions:
                     connection.execute(
                         insert(self._capital_scheme_financial_table).values(
                             capital_scheme_id=scheme.id,
@@ -154,7 +154,7 @@ class DatabaseSchemeRepository(SchemeRepository):
                     )
                 )
                 for row in result:
-                    scheme.update_financial(self._capital_scheme_financial_to_domain(row))
+                    scheme.funding.update_financial(self._capital_scheme_financial_to_domain(row))
 
             return scheme
 
@@ -183,7 +183,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             )
             for row in result:
                 scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
-                scheme.update_financial(self._capital_scheme_financial_to_domain(row))
+                scheme.funding.update_financial(self._capital_scheme_financial_to_domain(row))
 
             return schemes
 

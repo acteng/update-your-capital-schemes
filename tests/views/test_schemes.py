@@ -14,6 +14,7 @@ from schemes.domain.schemes import (
     MilestoneRevision,
     ObservationType,
     Scheme,
+    SchemeFunding,
     SchemeType,
 )
 from schemes.views.schemes import (
@@ -68,7 +69,7 @@ class TestSchemesRowContext:
 class TestSchemeContext:
     def test_create_from_domain(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_financial(
+        scheme.funding.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
@@ -206,8 +207,8 @@ class TestMilestoneContext:
 
 class TestSchemeFundingContext:
     def test_set_funding_allocation(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.update_financial(
+        funding = SchemeFunding()
+        funding.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
@@ -216,13 +217,13 @@ class TestSchemeFundingContext:
             )
         )
 
-        context = SchemeFundingContext.for_domain(scheme)
+        context = SchemeFundingContext.for_domain(funding)
 
         assert context.funding_allocation == Decimal(100000)
 
     def test_set_spend_to_date(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.update_financial(
+        funding = SchemeFunding()
+        funding.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.SPENT_TO_DATE,
@@ -231,13 +232,13 @@ class TestSchemeFundingContext:
             )
         )
 
-        context = SchemeFundingContext.for_domain(scheme)
+        context = SchemeFundingContext.for_domain(funding)
 
         assert context.spend_to_date == Decimal(50000)
 
     def test_set_change_control_adjustment(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.update_financial(
+        funding = SchemeFunding()
+        funding.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
@@ -246,13 +247,13 @@ class TestSchemeFundingContext:
             )
         )
 
-        context = SchemeFundingContext.for_domain(scheme)
+        context = SchemeFundingContext.for_domain(funding)
 
         assert context.change_control_adjustment == Decimal(10000)
 
     def test_set_allocation_still_to_spend(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.update_financials(
+        funding = SchemeFunding()
+        funding.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
@@ -267,7 +268,7 @@ class TestSchemeFundingContext:
             ),
         )
 
-        context = SchemeFundingContext.for_domain(scheme)
+        context = SchemeFundingContext.for_domain(funding)
 
         assert context.allocation_still_to_spend == Decimal(60000)
 
@@ -452,7 +453,7 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain(0)
 
-        assert scheme.financial_revisions == [
+        assert scheme.funding.financial_revisions == [
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,

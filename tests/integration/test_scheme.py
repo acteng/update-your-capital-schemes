@@ -115,7 +115,7 @@ def test_scheme_shows_minimal_funding(schemes: SchemeRepository, client: FlaskCl
 
 def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.update_financials(
+    scheme.funding.update_financials(
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
@@ -149,7 +149,7 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
 
 def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.update_financials(
+    scheme.funding.update_financials(
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
-from enum import Enum, IntEnum, auto
+from enum import IntEnum, auto
 
 from schemes.domain.schemes.dates import DateRange
+from schemes.domain.schemes.observations import ObservationType
 
 
 class SchemeMilestones:
@@ -73,8 +74,3 @@ class Milestone(IntEnum):
     NOT_PROGRESSED = auto()
     SUPERSEDED = auto()
     REMOVED = auto()
-
-
-class ObservationType(Enum):
-    PLANNED = auto()
-    ACTUAL = auto()

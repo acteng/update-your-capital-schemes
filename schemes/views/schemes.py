@@ -252,11 +252,13 @@ class SchemeRepr:
         scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
         scheme.type = self.type.to_domain() if self.type else None
         scheme.funding_programme = self.funding_programme.to_domain() if self.funding_programme else None
+
         for financial_revision_repr in self.financial_revisions:
             scheme.funding.update_financial(financial_revision_repr.to_domain())
 
         for milestone_revision_repr in self.milestone_revisions:
             scheme.milestones.update_milestone(milestone_revision_repr.to_domain())
+
         return scheme
 
 

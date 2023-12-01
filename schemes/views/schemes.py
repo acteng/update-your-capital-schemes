@@ -369,7 +369,7 @@ class MilestoneRevisionRepr:
     effective_date_from: str
     effective_date_to: str | None
     milestone: MilestoneRepr
-    observation_type: str
+    observation_type: ObservationTypeRepr
     status_date: str
 
     def to_domain(self) -> MilestoneRevision:
@@ -379,16 +379,9 @@ class MilestoneRevisionRepr:
                 date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
             ),
             milestone=self.milestone.to_domain(),
-            observation_type=self._observation_type_to_domain(self.observation_type),
+            observation_type=self.observation_type.to_domain(),
             status_date=date.fromisoformat(self.status_date),
         )
-
-    @staticmethod
-    def _observation_type_to_domain(observation_type: str) -> ObservationType:
-        return {
-            "Planned": ObservationType.PLANNED,
-            "Actual": ObservationType.ACTUAL,
-        }[observation_type]
 
 
 @unique
@@ -418,4 +411,16 @@ class MilestoneRepr(Enum):
             MilestoneRepr.NOT_PROGRESSED: Milestone.NOT_PROGRESSED,
             MilestoneRepr.SUPERSEDED: Milestone.SUPERSEDED,
             MilestoneRepr.REMOVED: Milestone.REMOVED,
+        }[self]
+
+
+@unique
+class ObservationTypeRepr(Enum):
+    PLANNED = "Planned"
+    ACTUAL = "Actual"
+
+    def to_domain(self) -> ObservationType:
+        return {
+            ObservationTypeRepr.PLANNED: ObservationType.PLANNED,
+            ObservationTypeRepr.ACTUAL: ObservationType.ACTUAL,
         }[self]

@@ -245,18 +245,18 @@ class SchemeRepr:
     name: str
     type: SchemeTypeRepr | None = None
     funding_programme: FundingProgrammeRepr | None = None
-    milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
+    milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
 
     def to_domain(self, authority_id: int) -> Scheme:
         scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
         scheme.type = self.type.to_domain() if self.type else None
         scheme.funding_programme = self.funding_programme.to_domain() if self.funding_programme else None
-        for milestone_revision_repr in self.milestone_revisions:
-            scheme.milestones.update_milestone(milestone_revision_repr.to_domain())
-
         for financial_revision_repr in self.financial_revisions:
             scheme.funding.update_financial(financial_revision_repr.to_domain())
+
+        for milestone_revision_repr in self.milestone_revisions:
+            scheme.milestones.update_milestone(milestone_revision_repr.to_domain())
         return scheme
 
 
@@ -294,49 +294,6 @@ class FundingProgrammeRepr(Enum):
             FundingProgrammeRepr.LUF: FundingProgramme.LUF,
             FundingProgrammeRepr.CRSTS: FundingProgramme.CRSTS,
         }[self]
-
-
-@dataclass(frozen=True)
-class MilestoneRevisionRepr:
-    effective_date_from: str
-    effective_date_to: str | None
-    milestone: str
-    observation_type: str
-    status_date: str
-
-    def to_domain(self) -> MilestoneRevision:
-        return MilestoneRevision(
-            effective=DateRange(
-                date_from=date.fromisoformat(self.effective_date_from),
-                date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
-            ),
-            milestone=self._milestone_to_domain(self.milestone),
-            observation_type=self._observation_type_to_domain(self.observation_type),
-            status_date=date.fromisoformat(self.status_date),
-        )
-
-    @staticmethod
-    def _milestone_to_domain(milestone: str) -> Milestone:
-        return {
-            "public consultation completed": Milestone.PUBLIC_CONSULTATION_COMPLETED,
-            "feasibility design completed": Milestone.FEASIBILITY_DESIGN_COMPLETED,
-            "preliminary design completed": Milestone.PRELIMINARY_DESIGN_COMPLETED,
-            "outline design completed": Milestone.OUTLINE_DESIGN_COMPLETED,
-            "detailed design completed": Milestone.DETAILED_DESIGN_COMPLETED,
-            "construction started": Milestone.CONSTRUCTION_STARTED,
-            "construction completed": Milestone.CONSTRUCTION_COMPLETED,
-            "inspection": Milestone.INSPECTION,
-            "not progressed": Milestone.NOT_PROGRESSED,
-            "superseded": Milestone.SUPERSEDED,
-            "removed": Milestone.REMOVED,
-        }[milestone]
-
-    @staticmethod
-    def _observation_type_to_domain(observation_type: str) -> ObservationType:
-        return {
-            "Planned": ObservationType.PLANNED,
-            "Actual": ObservationType.ACTUAL,
-        }[observation_type]
 
 
 @dataclass(frozen=True)
@@ -383,3 +340,46 @@ class FinancialRevisionRepr:
             "Pulse 2023/24 Q2": DataSource.PULSE_2023_24_Q2,
             "Initial Scheme List": DataSource.INITIAL_SCHEME_LIST,
         }[data_source]
+
+
+@dataclass(frozen=True)
+class MilestoneRevisionRepr:
+    effective_date_from: str
+    effective_date_to: str | None
+    milestone: str
+    observation_type: str
+    status_date: str
+
+    def to_domain(self) -> MilestoneRevision:
+        return MilestoneRevision(
+            effective=DateRange(
+                date_from=date.fromisoformat(self.effective_date_from),
+                date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+            ),
+            milestone=self._milestone_to_domain(self.milestone),
+            observation_type=self._observation_type_to_domain(self.observation_type),
+            status_date=date.fromisoformat(self.status_date),
+        )
+
+    @staticmethod
+    def _milestone_to_domain(milestone: str) -> Milestone:
+        return {
+            "public consultation completed": Milestone.PUBLIC_CONSULTATION_COMPLETED,
+            "feasibility design completed": Milestone.FEASIBILITY_DESIGN_COMPLETED,
+            "preliminary design completed": Milestone.PRELIMINARY_DESIGN_COMPLETED,
+            "outline design completed": Milestone.OUTLINE_DESIGN_COMPLETED,
+            "detailed design completed": Milestone.DETAILED_DESIGN_COMPLETED,
+            "construction started": Milestone.CONSTRUCTION_STARTED,
+            "construction completed": Milestone.CONSTRUCTION_COMPLETED,
+            "inspection": Milestone.INSPECTION,
+            "not progressed": Milestone.NOT_PROGRESSED,
+            "superseded": Milestone.SUPERSEDED,
+            "removed": Milestone.REMOVED,
+        }[milestone]
+
+    @staticmethod
+    def _observation_type_to_domain(observation_type: str) -> ObservationType:
+        return {
+            "Planned": ObservationType.PLANNED,
+            "Actual": ObservationType.ACTUAL,
+        }[observation_type]

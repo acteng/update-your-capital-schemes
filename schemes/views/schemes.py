@@ -368,7 +368,7 @@ class DataSourceRepr(Enum):
 class MilestoneRevisionRepr:
     effective_date_from: str
     effective_date_to: str | None
-    milestone: str
+    milestone: MilestoneRepr
     observation_type: str
     status_date: str
 
@@ -378,26 +378,10 @@ class MilestoneRevisionRepr:
                 date_from=date.fromisoformat(self.effective_date_from),
                 date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
             ),
-            milestone=self._milestone_to_domain(self.milestone),
+            milestone=self.milestone.to_domain(),
             observation_type=self._observation_type_to_domain(self.observation_type),
             status_date=date.fromisoformat(self.status_date),
         )
-
-    @staticmethod
-    def _milestone_to_domain(milestone: str) -> Milestone:
-        return {
-            "public consultation completed": Milestone.PUBLIC_CONSULTATION_COMPLETED,
-            "feasibility design completed": Milestone.FEASIBILITY_DESIGN_COMPLETED,
-            "preliminary design completed": Milestone.PRELIMINARY_DESIGN_COMPLETED,
-            "outline design completed": Milestone.OUTLINE_DESIGN_COMPLETED,
-            "detailed design completed": Milestone.DETAILED_DESIGN_COMPLETED,
-            "construction started": Milestone.CONSTRUCTION_STARTED,
-            "construction completed": Milestone.CONSTRUCTION_COMPLETED,
-            "inspection": Milestone.INSPECTION,
-            "not progressed": Milestone.NOT_PROGRESSED,
-            "superseded": Milestone.SUPERSEDED,
-            "removed": Milestone.REMOVED,
-        }[milestone]
 
     @staticmethod
     def _observation_type_to_domain(observation_type: str) -> ObservationType:
@@ -405,3 +389,33 @@ class MilestoneRevisionRepr:
             "Planned": ObservationType.PLANNED,
             "Actual": ObservationType.ACTUAL,
         }[observation_type]
+
+
+@unique
+class MilestoneRepr(Enum):
+    PUBLIC_CONSULTATION_COMPLETED = "public consultation completed"
+    FEASIBILITY_DESIGN_COMPLETED = "feasibility design completed"
+    PRELIMINARY_DESIGN_COMPLETED = "preliminary design completed"
+    OUTLINE_DESIGN_COMPLETED = "outline design completed"
+    DETAILED_DESIGN_COMPLETED = "detailed design completed"
+    CONSTRUCTION_STARTED = "construction started"
+    CONSTRUCTION_COMPLETED = "construction completed"
+    INSPECTION = "inspection"
+    NOT_PROGRESSED = "not progressed"
+    SUPERSEDED = "superseded"
+    REMOVED = "removed"
+
+    def to_domain(self) -> Milestone:
+        return {
+            MilestoneRepr.PUBLIC_CONSULTATION_COMPLETED: Milestone.PUBLIC_CONSULTATION_COMPLETED,
+            MilestoneRepr.FEASIBILITY_DESIGN_COMPLETED: Milestone.FEASIBILITY_DESIGN_COMPLETED,
+            MilestoneRepr.PRELIMINARY_DESIGN_COMPLETED: Milestone.PRELIMINARY_DESIGN_COMPLETED,
+            MilestoneRepr.OUTLINE_DESIGN_COMPLETED: Milestone.OUTLINE_DESIGN_COMPLETED,
+            MilestoneRepr.DETAILED_DESIGN_COMPLETED: Milestone.DETAILED_DESIGN_COMPLETED,
+            MilestoneRepr.CONSTRUCTION_STARTED: Milestone.CONSTRUCTION_STARTED,
+            MilestoneRepr.CONSTRUCTION_COMPLETED: Milestone.CONSTRUCTION_COMPLETED,
+            MilestoneRepr.INSPECTION: Milestone.INSPECTION,
+            MilestoneRepr.NOT_PROGRESSED: Milestone.NOT_PROGRESSED,
+            MilestoneRepr.SUPERSEDED: Milestone.SUPERSEDED,
+            MilestoneRepr.REMOVED: Milestone.REMOVED,
+        }[self]

@@ -24,6 +24,7 @@ from schemes.views.schemes import (
     FundingProgrammeContext,
     FundingProgrammeRepr,
     MilestoneContext,
+    MilestoneRepr,
     MilestoneRevisionRepr,
     SchemeContext,
     SchemeFundingContext,
@@ -428,14 +429,14 @@ class TestSchemeRepr:
                 MilestoneRevisionRepr(
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
-                    milestone="detailed design completed",
+                    milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
                     observation_type="Actual",
                     status_date="2020-01-01",
                 ),
                 MilestoneRevisionRepr(
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
-                    milestone="construction started",
+                    milestone=MilestoneRepr.CONSTRUCTION_STARTED,
                     observation_type="Actual",
                     status_date="2020-02-01",
                 ),
@@ -561,7 +562,7 @@ class TestMilestoneRevisionRepr:
         milestone_revision_repr = MilestoneRevisionRepr(
             effective_date_from="2020-01-01",
             effective_date_to="2020-01-31",
-            milestone="detailed design completed",
+            milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
             observation_type="Actual",
             status_date="2020-01-01",
         )
@@ -579,7 +580,7 @@ class TestMilestoneRevisionRepr:
         milestone_revision_repr = MilestoneRevisionRepr(
             effective_date_from="2020-01-01",
             effective_date_to=None,
-            milestone="detailed design completed",
+            milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
             observation_type="Actual",
             status_date="2020-01-01",
         )
@@ -588,6 +589,28 @@ class TestMilestoneRevisionRepr:
 
         assert milestone_revision.effective.date_to is None
 
+    @pytest.mark.parametrize(
+        "observation_type, expected_observation_type",
+        [
+            ("Planned", ObservationType.PLANNED),
+            ("Actual", ObservationType.ACTUAL),
+        ],
+    )
+    def test_set_observation_type(self, observation_type: str, expected_observation_type: ObservationType) -> None:
+        milestone_revision_repr = MilestoneRevisionRepr(
+            effective_date_from="2020-01-01",
+            effective_date_to="2020-01-31",
+            milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
+            observation_type=observation_type,
+            status_date="2020-01-01",
+        )
+
+        milestone_revision = milestone_revision_repr.to_domain()
+
+        assert milestone_revision.observation_type == expected_observation_type
+
+
+class TestMilestoneRepr:
     @pytest.mark.parametrize(
         "milestone, expected_milestone",
         [
@@ -604,35 +627,5 @@ class TestMilestoneRevisionRepr:
             ("removed", Milestone.REMOVED),
         ],
     )
-    def test_set_milestone(self, milestone: str, expected_milestone: Milestone) -> None:
-        milestone_revision_repr = MilestoneRevisionRepr(
-            effective_date_from="2020-01-01",
-            effective_date_to="2020-01-31",
-            milestone=milestone,
-            observation_type="Actual",
-            status_date="2020-01-01",
-        )
-
-        milestone_revision = milestone_revision_repr.to_domain()
-
-        assert milestone_revision.milestone == expected_milestone
-
-    @pytest.mark.parametrize(
-        "observation_type, expected_observation_type",
-        [
-            ("Planned", ObservationType.PLANNED),
-            ("Actual", ObservationType.ACTUAL),
-        ],
-    )
-    def test_set_observation_type(self, observation_type: str, expected_observation_type: ObservationType) -> None:
-        milestone_revision_repr = MilestoneRevisionRepr(
-            effective_date_from="2020-01-01",
-            effective_date_to="2020-01-31",
-            milestone="detailed design completed",
-            observation_type=observation_type,
-            status_date="2020-01-01",
-        )
-
-        milestone_revision = milestone_revision_repr.to_domain()
-
-        assert milestone_revision.observation_type == expected_observation_type
+    def test_to_domain(self, milestone: str, expected_milestone: Milestone) -> None:
+        assert MilestoneRepr(milestone).to_domain() == expected_milestone

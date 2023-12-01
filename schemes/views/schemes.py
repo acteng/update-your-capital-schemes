@@ -300,7 +300,7 @@ class FundingProgrammeRepr(Enum):
 class FinancialRevisionRepr:
     effective_date_from: str
     effective_date_to: str | None
-    type: str
+    type: FinancialTypeRepr
     amount: str
     source: str
 
@@ -310,20 +310,10 @@ class FinancialRevisionRepr:
                 date_from=date.fromisoformat(self.effective_date_from),
                 date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
             ),
-            type=self._financial_type_to_domain(self.type),
+            type=self.type.to_domain(),
             amount=Decimal(self.amount),
             source=self._data_source_to_domain(self.source),
         )
-
-    @staticmethod
-    def _financial_type_to_domain(financial_type: str) -> FinancialType:
-        return {
-            "expected cost": FinancialType.EXPECTED_COST,
-            "actual cost": FinancialType.ACTUAL_COST,
-            "funding allocation": FinancialType.FUNDING_ALLOCATION,
-            "spent to date": FinancialType.SPENT_TO_DATE,
-            "funding request": FinancialType.FUNDING_REQUEST,
-        }[financial_type]
 
     @staticmethod
     def _data_source_to_domain(data_source: str) -> DataSource:
@@ -340,6 +330,24 @@ class FinancialRevisionRepr:
             "Pulse 2023/24 Q2": DataSource.PULSE_2023_24_Q2,
             "Initial Scheme List": DataSource.INITIAL_SCHEME_LIST,
         }[data_source]
+
+
+@unique
+class FinancialTypeRepr(Enum):
+    EXPECTED_COST = "expected cost"
+    ACTUAL_COST = "actual cost"
+    FUNDING_ALLOCATION = "funding allocation"
+    SPENT_TO_DATE = "spent to date"
+    FUNDING_REQUEST = "funding request"
+
+    def to_domain(self) -> FinancialType:
+        return {
+            FinancialTypeRepr.EXPECTED_COST: FinancialType.EXPECTED_COST,
+            FinancialTypeRepr.ACTUAL_COST: FinancialType.ACTUAL_COST,
+            FinancialTypeRepr.FUNDING_ALLOCATION: FinancialType.FUNDING_ALLOCATION,
+            FinancialTypeRepr.SPENT_TO_DATE: FinancialType.SPENT_TO_DATE,
+            FinancialTypeRepr.FUNDING_REQUEST: FinancialType.FUNDING_REQUEST,
+        }[self]
 
 
 @dataclass(frozen=True)

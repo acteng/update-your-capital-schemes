@@ -19,6 +19,7 @@ from schemes.domain.schemes import (
 )
 from schemes.views.schemes import (
     FinancialRevisionRepr,
+    FinancialTypeRepr,
     FundingProgrammeContext,
     FundingProgrammeRepr,
     MilestoneContext,
@@ -387,14 +388,14 @@ class TestSchemeRepr:
                 FinancialRevisionRepr(
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
-                    type="funding allocation",
+                    type=FinancialTypeRepr.FUNDING_ALLOCATION,
                     amount="100000",
                     source="ATF4 Bid",
                 ),
                 FinancialRevisionRepr(
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
-                    type="expected cost",
+                    type=FinancialTypeRepr.EXPECTED_COST,
                     amount="200000",
                     source="Pulse 6",
                 ),
@@ -490,7 +491,7 @@ class TestFinancialRevisionRepr:
         financial_revision_repr = FinancialRevisionRepr(
             effective_date_from="2020-01-01",
             effective_date_to="2020-01-31",
-            type="funding allocation",
+            type=FinancialTypeRepr.FUNDING_ALLOCATION,
             amount="100000",
             source="ATF4 Bid",
         )
@@ -508,7 +509,7 @@ class TestFinancialRevisionRepr:
         financial_revision_repr = FinancialRevisionRepr(
             effective_date_from="2020-01-01",
             effective_date_to=None,
-            type="funding allocation",
+            type=FinancialTypeRepr.FUNDING_ALLOCATION,
             amount="100000",
             source="ATF4 Bid",
         )
@@ -516,29 +517,6 @@ class TestFinancialRevisionRepr:
         financial_revision = financial_revision_repr.to_domain()
 
         assert financial_revision.effective.date_to is None
-
-    @pytest.mark.parametrize(
-        "financial_type, expected_financial_type",
-        [
-            ("expected cost", FinancialType.EXPECTED_COST),
-            ("actual cost", FinancialType.ACTUAL_COST),
-            ("funding allocation", FinancialType.FUNDING_ALLOCATION),
-            ("spent to date", FinancialType.SPENT_TO_DATE),
-            ("funding request", FinancialType.FUNDING_REQUEST),
-        ],
-    )
-    def test_set_financial_type(self, financial_type: str, expected_financial_type: FinancialType) -> None:
-        financial_revision_repr = FinancialRevisionRepr(
-            effective_date_from="2020-01-01",
-            effective_date_to="2020-01-31",
-            type=financial_type,
-            amount="100000",
-            source="ATF4 Bid",
-        )
-
-        financial_revision = financial_revision_repr.to_domain()
-
-        assert financial_revision.type == expected_financial_type
 
     @pytest.mark.parametrize(
         "data_source, expected_data_source",
@@ -560,7 +538,7 @@ class TestFinancialRevisionRepr:
         financial_revision_repr = FinancialRevisionRepr(
             effective_date_from="2020-01-01",
             effective_date_to="2020-01-31",
-            type="funding allocation",
+            type=FinancialTypeRepr.FUNDING_ALLOCATION,
             amount="100000",
             source=data_source,
         )
@@ -568,6 +546,21 @@ class TestFinancialRevisionRepr:
         financial_revision = financial_revision_repr.to_domain()
 
         assert financial_revision.source == expected_data_source
+
+
+class TestFinancialTypeRepr:
+    @pytest.mark.parametrize(
+        "financial_type, expected_financial_type",
+        [
+            ("expected cost", FinancialType.EXPECTED_COST),
+            ("actual cost", FinancialType.ACTUAL_COST),
+            ("funding allocation", FinancialType.FUNDING_ALLOCATION),
+            ("spent to date", FinancialType.SPENT_TO_DATE),
+            ("funding request", FinancialType.FUNDING_REQUEST),
+        ],
+    )
+    def test_to_domain(self, financial_type: str, expected_financial_type: FinancialType) -> None:
+        assert FinancialTypeRepr(financial_type).to_domain() == expected_financial_type
 
 
 class TestMilestoneRevisionRepr:

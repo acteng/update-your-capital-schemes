@@ -18,6 +18,7 @@ from schemes.domain.schemes import (
     SchemeType,
 )
 from schemes.views.schemes import (
+    DataSourceRepr,
     FinancialRevisionRepr,
     FinancialTypeRepr,
     FundingProgrammeContext,
@@ -390,14 +391,14 @@ class TestSchemeRepr:
                     effective_date_to=None,
                     type=FinancialTypeRepr.FUNDING_ALLOCATION,
                     amount="100000",
-                    source="ATF4 Bid",
+                    source=DataSourceRepr.ATF4_BID,
                 ),
                 FinancialRevisionRepr(
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type=FinancialTypeRepr.EXPECTED_COST,
                     amount="200000",
-                    source="Pulse 6",
+                    source=DataSourceRepr.PULSE_6,
                 ),
             ],
         )
@@ -493,7 +494,7 @@ class TestFinancialRevisionRepr:
             effective_date_to="2020-01-31",
             type=FinancialTypeRepr.FUNDING_ALLOCATION,
             amount="100000",
-            source="ATF4 Bid",
+            source=DataSourceRepr.ATF4_BID,
         )
 
         financial_revision = financial_revision_repr.to_domain()
@@ -511,13 +512,30 @@ class TestFinancialRevisionRepr:
             effective_date_to=None,
             type=FinancialTypeRepr.FUNDING_ALLOCATION,
             amount="100000",
-            source="ATF4 Bid",
+            source=DataSourceRepr.ATF4_BID,
         )
 
         financial_revision = financial_revision_repr.to_domain()
 
         assert financial_revision.effective.date_to is None
 
+
+class TestFinancialTypeRepr:
+    @pytest.mark.parametrize(
+        "financial_type, expected_financial_type",
+        [
+            ("expected cost", FinancialType.EXPECTED_COST),
+            ("actual cost", FinancialType.ACTUAL_COST),
+            ("funding allocation", FinancialType.FUNDING_ALLOCATION),
+            ("spent to date", FinancialType.SPENT_TO_DATE),
+            ("funding request", FinancialType.FUNDING_REQUEST),
+        ],
+    )
+    def test_to_domain(self, financial_type: str, expected_financial_type: FinancialType) -> None:
+        assert FinancialTypeRepr(financial_type).to_domain() == expected_financial_type
+
+
+class TestDataSourceRepr:
     @pytest.mark.parametrize(
         "data_source, expected_data_source",
         [
@@ -534,33 +552,8 @@ class TestFinancialRevisionRepr:
             ("Initial Scheme List", DataSource.INITIAL_SCHEME_LIST),
         ],
     )
-    def test_set_data_source(self, data_source: str, expected_data_source: DataSource) -> None:
-        financial_revision_repr = FinancialRevisionRepr(
-            effective_date_from="2020-01-01",
-            effective_date_to="2020-01-31",
-            type=FinancialTypeRepr.FUNDING_ALLOCATION,
-            amount="100000",
-            source=data_source,
-        )
-
-        financial_revision = financial_revision_repr.to_domain()
-
-        assert financial_revision.source == expected_data_source
-
-
-class TestFinancialTypeRepr:
-    @pytest.mark.parametrize(
-        "financial_type, expected_financial_type",
-        [
-            ("expected cost", FinancialType.EXPECTED_COST),
-            ("actual cost", FinancialType.ACTUAL_COST),
-            ("funding allocation", FinancialType.FUNDING_ALLOCATION),
-            ("spent to date", FinancialType.SPENT_TO_DATE),
-            ("funding request", FinancialType.FUNDING_REQUEST),
-        ],
-    )
-    def test_to_domain(self, financial_type: str, expected_financial_type: FinancialType) -> None:
-        assert FinancialTypeRepr(financial_type).to_domain() == expected_financial_type
+    def test_to_domain(self, data_source: str, expected_data_source: DataSource) -> None:
+        assert DataSourceRepr(data_source).to_domain() == expected_data_source
 
 
 class TestMilestoneRevisionRepr:

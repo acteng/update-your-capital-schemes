@@ -31,6 +31,7 @@ from schemes.views.schemes import (
     SchemeRowContext,
     SchemesContext,
     SchemeTypeContext,
+    SchemeTypeRepr,
 )
 
 
@@ -350,22 +351,23 @@ class TestSchemeMilestonesContext:
 
 class TestSchemeRepr:
     def test_create_domain(self) -> None:
+        scheme_repr = SchemeRepr(id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION)
+
+        scheme = scheme_repr.to_domain(2)
+
+        assert (
+            scheme.id == 1
+            and scheme.name == "Wirral Package"
+            and scheme.authority_id == 2
+            and scheme.type == SchemeType.CONSTRUCTION
+        )
+
+    def test_create_minimal_domain(self) -> None:
         scheme_repr = SchemeRepr(id=1, name="Wirral Package")
 
         scheme = scheme_repr.to_domain(2)
 
-        assert scheme.id == 1 and scheme.name == "Wirral Package" and scheme.authority_id == 2
-
-    @pytest.mark.parametrize(
-        "type_, expected_type",
-        [("development", SchemeType.DEVELOPMENT), ("construction", SchemeType.CONSTRUCTION), (None, None)],
-    )
-    def test_set_type(self, type_: str | None, expected_type: SchemeType | None) -> None:
-        scheme_repr = SchemeRepr(id=0, name="", type=type_)
-
-        scheme = scheme_repr.to_domain(0)
-
-        assert scheme.type == expected_type
+        assert scheme.id == 1 and scheme.name == "Wirral Package" and scheme.authority_id == 2 and scheme.type is None
 
     @pytest.mark.parametrize(
         "funding_programme, expected_funding_programme",
@@ -467,6 +469,15 @@ class TestSchemeRepr:
                 source=DataSource.PULSE_6,
             ),
         ]
+
+
+class TestSchemeTypeRepr:
+    @pytest.mark.parametrize(
+        "type_, expected_type",
+        [("development", SchemeType.DEVELOPMENT), ("construction", SchemeType.CONSTRUCTION)],
+    )
+    def test_to_domain(self, type_: str, expected_type: SchemeType) -> None:
+        assert SchemeTypeRepr(type_).to_domain() == expected_type
 
 
 class TestMilestoneRevisionRepr:

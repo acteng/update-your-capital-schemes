@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from datetime import date
 from decimal import Decimal
+from enum import Enum, unique
 
 import inject
 from flask import Blueprint, Response, render_template, session
@@ -242,14 +243,14 @@ def clear(schemes: SchemeRepository) -> Response:
 class SchemeRepr:
     id: int
     name: str
-    type: str | None = None
+    type: SchemeTypeRepr | None = None
     funding_programme: str | None = None
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
 
     def to_domain(self, authority_id: int) -> Scheme:
         scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
-        scheme.type = self._type_to_domain(self.type) if self.type else None
+        scheme.type = self.type.to_domain() if self.type else None
         scheme.funding_programme = (
             self._funding_programme_to_domain(self.funding_programme) if self.funding_programme else None
         )
@@ -259,13 +260,6 @@ class SchemeRepr:
         for financial_revision_repr in self.financial_revisions:
             scheme.funding.update_financial(financial_revision_repr.to_domain())
         return scheme
-
-    @staticmethod
-    def _type_to_domain(type_: str) -> SchemeType:
-        return {
-            "development": SchemeType.DEVELOPMENT,
-            "construction": SchemeType.CONSTRUCTION,
-        }[type_]
 
     @staticmethod
     def _funding_programme_to_domain(funding_programme: str) -> FundingProgramme:
@@ -279,6 +273,18 @@ class SchemeRepr:
             "LUF": FundingProgramme.LUF,
             "CRSTS": FundingProgramme.CRSTS,
         }[funding_programme]
+
+
+@unique
+class SchemeTypeRepr(Enum):
+    DEVELOPMENT = "development"
+    CONSTRUCTION = "construction"
+
+    def to_domain(self) -> SchemeType:
+        return {
+            SchemeTypeRepr.DEVELOPMENT: SchemeType.DEVELOPMENT,
+            SchemeTypeRepr.CONSTRUCTION: SchemeType.CONSTRUCTION,
+        }[self]
 
 
 @dataclass(frozen=True)

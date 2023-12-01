@@ -244,35 +244,20 @@ class SchemeRepr:
     id: int
     name: str
     type: SchemeTypeRepr | None = None
-    funding_programme: str | None = None
+    funding_programme: FundingProgrammeRepr | None = None
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
 
     def to_domain(self, authority_id: int) -> Scheme:
         scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
         scheme.type = self.type.to_domain() if self.type else None
-        scheme.funding_programme = (
-            self._funding_programme_to_domain(self.funding_programme) if self.funding_programme else None
-        )
+        scheme.funding_programme = self.funding_programme.to_domain() if self.funding_programme else None
         for milestone_revision_repr in self.milestone_revisions:
             scheme.milestones.update_milestone(milestone_revision_repr.to_domain())
 
         for financial_revision_repr in self.financial_revisions:
             scheme.funding.update_financial(financial_revision_repr.to_domain())
         return scheme
-
-    @staticmethod
-    def _funding_programme_to_domain(funding_programme: str) -> FundingProgramme:
-        return {
-            "ATF2": FundingProgramme.ATF2,
-            "ATF3": FundingProgramme.ATF3,
-            "ATF4": FundingProgramme.ATF4,
-            "ATF4e": FundingProgramme.ATF4E,
-            "ATF5": FundingProgramme.ATF5,
-            "MRN": FundingProgramme.MRN,
-            "LUF": FundingProgramme.LUF,
-            "CRSTS": FundingProgramme.CRSTS,
-        }[funding_programme]
 
 
 @unique
@@ -284,6 +269,30 @@ class SchemeTypeRepr(Enum):
         return {
             SchemeTypeRepr.DEVELOPMENT: SchemeType.DEVELOPMENT,
             SchemeTypeRepr.CONSTRUCTION: SchemeType.CONSTRUCTION,
+        }[self]
+
+
+@unique
+class FundingProgrammeRepr(Enum):
+    ATF2 = "ATF2"
+    ATF3 = "ATF3"
+    ATF4 = "ATF4"
+    ATF4E = "ATF4e"
+    ATF5 = "ATF5"
+    MRN = "MRN"
+    LUF = "LUF"
+    CRSTS = "CRSTS"
+
+    def to_domain(self) -> FundingProgramme:
+        return {
+            FundingProgrammeRepr.ATF2: FundingProgramme.ATF2,
+            FundingProgrammeRepr.ATF3: FundingProgramme.ATF3,
+            FundingProgrammeRepr.ATF4: FundingProgramme.ATF4,
+            FundingProgrammeRepr.ATF4E: FundingProgramme.ATF4E,
+            FundingProgrammeRepr.ATF5: FundingProgramme.ATF5,
+            FundingProgrammeRepr.MRN: FundingProgramme.MRN,
+            FundingProgrammeRepr.LUF: FundingProgramme.LUF,
+            FundingProgrammeRepr.CRSTS: FundingProgramme.CRSTS,
         }[self]
 
 

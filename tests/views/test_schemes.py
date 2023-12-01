@@ -20,6 +20,7 @@ from schemes.domain.schemes import (
 from schemes.views.schemes import (
     FinancialRevisionRepr,
     FundingProgrammeContext,
+    FundingProgrammeRepr,
     MilestoneContext,
     MilestoneRevisionRepr,
     SchemeContext,
@@ -351,7 +352,9 @@ class TestSchemeMilestonesContext:
 
 class TestSchemeRepr:
     def test_create_domain(self) -> None:
-        scheme_repr = SchemeRepr(id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION)
+        scheme_repr = SchemeRepr(
+            id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION, funding_programme=FundingProgrammeRepr.ATF4
+        )
 
         scheme = scheme_repr.to_domain(2)
 
@@ -360,6 +363,7 @@ class TestSchemeRepr:
             and scheme.name == "Wirral Package"
             and scheme.authority_id == 2
             and scheme.type == SchemeType.CONSTRUCTION
+            and scheme.funding_programme == FundingProgramme.ATF4
         )
 
     def test_create_minimal_domain(self) -> None:
@@ -367,30 +371,13 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain(2)
 
-        assert scheme.id == 1 and scheme.name == "Wirral Package" and scheme.authority_id == 2 and scheme.type is None
-
-    @pytest.mark.parametrize(
-        "funding_programme, expected_funding_programme",
-        [
-            ("ATF2", FundingProgramme.ATF2),
-            ("ATF3", FundingProgramme.ATF3),
-            ("ATF4", FundingProgramme.ATF4),
-            ("ATF4e", FundingProgramme.ATF4E),
-            ("ATF5", FundingProgramme.ATF5),
-            ("MRN", FundingProgramme.MRN),
-            ("LUF", FundingProgramme.LUF),
-            ("CRSTS", FundingProgramme.CRSTS),
-            (None, None),
-        ],
-    )
-    def test_set_funding_programme(
-        self, funding_programme: str | None, expected_funding_programme: FundingProgramme | None
-    ) -> None:
-        scheme_repr = SchemeRepr(id=0, name="", funding_programme=funding_programme)
-
-        scheme = scheme_repr.to_domain(0)
-
-        assert scheme.funding_programme == expected_funding_programme
+        assert (
+            scheme.id == 1
+            and scheme.name == "Wirral Package"
+            and scheme.authority_id == 2
+            and scheme.type is None
+            and scheme.funding_programme is None
+        )
 
     def test_set_milestone_revisions(self) -> None:
         scheme_repr = SchemeRepr(
@@ -478,6 +465,24 @@ class TestSchemeTypeRepr:
     )
     def test_to_domain(self, type_: str, expected_type: SchemeType) -> None:
         assert SchemeTypeRepr(type_).to_domain() == expected_type
+
+
+class TestFundingProgrammeRepr:
+    @pytest.mark.parametrize(
+        "funding_programme, expected_funding_programme",
+        [
+            ("ATF2", FundingProgramme.ATF2),
+            ("ATF3", FundingProgramme.ATF3),
+            ("ATF4", FundingProgramme.ATF4),
+            ("ATF4e", FundingProgramme.ATF4E),
+            ("ATF5", FundingProgramme.ATF5),
+            ("MRN", FundingProgramme.MRN),
+            ("LUF", FundingProgramme.LUF),
+            ("CRSTS", FundingProgramme.CRSTS),
+        ],
+    )
+    def test_to_domain(self, funding_programme: str, expected_funding_programme: FundingProgramme) -> None:
+        assert FundingProgrammeRepr(funding_programme).to_domain() == expected_funding_programme
 
 
 class TestMilestoneRevisionRepr:

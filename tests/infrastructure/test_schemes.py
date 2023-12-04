@@ -86,49 +86,6 @@ class TestDatabaseSchemeRepository:
             and row2.bid_submitting_authority_id == 1
         )
 
-    def test_add_schemes_milestone_revisions(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
-        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.milestones.update_milestones(
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 2, 1),
-            ),
-            MilestoneRevision(
-                effective=DateRange(date(2020, 2, 1), None),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 3, 1),
-            ),
-        )
-
-        schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
-
-        scheme_milestone_table = metadata.tables["scheme_milestone"]
-        with engine.connect() as connection:
-            row1, row2 = connection.execute(
-                select(scheme_milestone_table).order_by(scheme_milestone_table.c.scheme_milestone_id)
-            )
-        assert (
-            row1.capital_scheme_id == 1
-            and row1.effective_date_from == date(2020, 1, 1)
-            and row1.effective_date_to == date(2020, 1, 31)
-            and row1.milestone_id == 5
-            and row1.observation_type_id == 1
-            and row1.status_date == date(2020, 2, 1)
-        )
-        assert (
-            row2.capital_scheme_id == 1
-            and row2.effective_date_from == date(2020, 2, 1)
-            and row2.effective_date_to is None
-            and row2.milestone_id == 5
-            and row2.observation_type_id == 1
-            and row2.status_date == date(2020, 3, 1)
-        )
-
     def test_add_schemes_financial_revisions(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
     ) -> None:
@@ -174,6 +131,49 @@ class TestDatabaseSchemeRepository:
             and row2.data_source_id == 3
         )
 
+    def test_add_schemes_milestone_revisions(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1.milestones.update_milestones(
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 2, 1),
+            ),
+            MilestoneRevision(
+                effective=DateRange(date(2020, 2, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 3, 1),
+            ),
+        )
+
+        schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
+
+        scheme_milestone_table = metadata.tables["scheme_milestone"]
+        with engine.connect() as connection:
+            row1, row2 = connection.execute(
+                select(scheme_milestone_table).order_by(scheme_milestone_table.c.scheme_milestone_id)
+            )
+        assert (
+            row1.capital_scheme_id == 1
+            and row1.effective_date_from == date(2020, 1, 1)
+            and row1.effective_date_to == date(2020, 1, 31)
+            and row1.milestone_id == 5
+            and row1.observation_type_id == 1
+            and row1.status_date == date(2020, 2, 1)
+        )
+        assert (
+            row2.capital_scheme_id == 1
+            and row2.effective_date_from == date(2020, 2, 1)
+            and row2.effective_date_to is None
+            and row2.milestone_id == 5
+            and row2.observation_type_id == 1
+            and row2.status_date == date(2020, 3, 1)
+        )
+
     def test_get_scheme(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
         with engine.begin() as connection:
             connection.execute(
@@ -196,55 +196,6 @@ class TestDatabaseSchemeRepository:
             and scheme.type == SchemeType.DEVELOPMENT
             and scheme.funding_programme == FundingProgramme.ATF3
         )
-
-    def test_get_scheme_milestone_revisions(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
-        with engine.begin() as connection:
-            connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
-                    capital_scheme_id=1,
-                    scheme_name="Wirral Package",
-                    bid_submitting_authority_id=1,
-                )
-            )
-            connection.execute(
-                insert(metadata.tables["scheme_milestone"]).values(
-                    capital_scheme_id=1,
-                    effective_date_from=date(2020, 1, 1),
-                    effective_date_to=date(2020, 1, 31),
-                    milestone_id=5,
-                    observation_type_id=1,
-                    status_date=date(2020, 2, 1),
-                )
-            )
-            connection.execute(
-                insert(metadata.tables["scheme_milestone"]).values(
-                    capital_scheme_id=1,
-                    effective_date_from=date(2020, 2, 1),
-                    effective_date_to=None,
-                    milestone_id=5,
-                    observation_type_id=1,
-                    status_date=date(2020, 3, 1),
-                )
-            )
-
-        scheme = schemes.get(1)
-
-        assert scheme and scheme.milestones.milestone_revisions == [
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 2, 1),
-            ),
-            MilestoneRevision(
-                effective=DateRange(date(2020, 2, 1), None),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 3, 1),
-            ),
-        ]
 
     def test_get_scheme_financial_revisions(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
@@ -292,6 +243,55 @@ class TestDatabaseSchemeRepository:
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal(200000),
                 source=DataSource.ATF4_BID,
+            ),
+        ]
+
+    def test_get_scheme_milestone_revisions(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        with engine.begin() as connection:
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=1,
+                    scheme_name="Wirral Package",
+                    bid_submitting_authority_id=1,
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["scheme_milestone"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=date(2020, 1, 31),
+                    milestone_id=5,
+                    observation_type_id=1,
+                    status_date=date(2020, 2, 1),
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["scheme_milestone"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 2, 1),
+                    effective_date_to=None,
+                    milestone_id=5,
+                    observation_type_id=1,
+                    status_date=date(2020, 3, 1),
+                )
+            )
+
+        scheme = schemes.get(1)
+
+        assert scheme and scheme.milestones.milestone_revisions == [
+            MilestoneRevision(
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 2, 1),
+            ),
+            MilestoneRevision(
+                effective=DateRange(date(2020, 2, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 3, 1),
             ),
         ]
 
@@ -346,6 +346,53 @@ class TestDatabaseSchemeRepository:
             and scheme1.funding_programme == FundingProgramme.ATF3
         )
         assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme1.authority_id == 1
+
+    def test_get_all_schemes_financial_revisions_by_authority(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        with engine.begin() as connection:
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme_financial"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=None,
+                    financial_type_id=3,
+                    amount=Decimal(100000),
+                    data_source_id=3,
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=2
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme_financial"]).values(
+                    capital_scheme_id=2,
+                    effective_date_from=date(2020, 2, 1),
+                    effective_date_to=None,
+                    financial_type_id=3,
+                    amount=Decimal(200000),
+                    data_source_id=3,
+                )
+            )
+
+        scheme1: Scheme
+        (scheme1,) = schemes.get_by_authority(1)
+
+        assert scheme1.id == 1 and scheme1.funding.financial_revisions == [
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.FUNDING_ALLOCATION,
+                amount=Decimal(100000),
+                source=DataSource.ATF4_BID,
+            )
+        ]
 
     def test_get_all_schemes_milestone_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
@@ -418,12 +465,11 @@ class TestDatabaseSchemeRepository:
             )
         ]
 
-    def test_get_all_schemes_financial_revisions_by_authority(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
+    def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
+        capital_scheme_table = metadata.tables["capital_scheme"]
         with engine.begin() as connection:
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
                 )
             )
@@ -435,42 +481,6 @@ class TestDatabaseSchemeRepository:
                     financial_type_id=3,
                     amount=Decimal(100000),
                     data_source_id=3,
-                )
-            )
-            connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
-                    capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=2
-                )
-            )
-            connection.execute(
-                insert(metadata.tables["capital_scheme_financial"]).values(
-                    capital_scheme_id=2,
-                    effective_date_from=date(2020, 2, 1),
-                    effective_date_to=None,
-                    financial_type_id=3,
-                    amount=Decimal(200000),
-                    data_source_id=3,
-                )
-            )
-
-        scheme1: Scheme
-        (scheme1,) = schemes.get_by_authority(1)
-
-        assert scheme1.id == 1 and scheme1.funding.financial_revisions == [
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal(100000),
-                source=DataSource.ATF4_BID,
-            )
-        ]
-
-    def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
-        capital_scheme_table = metadata.tables["capital_scheme"]
-        with engine.begin() as connection:
-            connection.execute(
-                insert(capital_scheme_table).values(
-                    capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
                 )
             )
             connection.execute(
@@ -481,16 +491,6 @@ class TestDatabaseSchemeRepository:
                     milestone_id=5,
                     observation_type_id=1,
                     status_date=date(2020, 2, 1),
-                )
-            )
-            connection.execute(
-                insert(metadata.tables["capital_scheme_financial"]).values(
-                    capital_scheme_id=1,
-                    effective_date_from=date(2020, 1, 1),
-                    effective_date_to=None,
-                    financial_type_id=3,
-                    amount=Decimal(100000),
-                    data_source_id=3,
                 )
             )
             connection.execute(

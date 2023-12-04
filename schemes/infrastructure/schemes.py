@@ -48,23 +48,6 @@ def add_tables(metadata: MetaData) -> None:
     )
 
     Table(
-        "scheme_milestone",
-        metadata,
-        Column("scheme_milestone_id", Integer, primary_key=True),
-        Column(
-            "capital_scheme_id",
-            Integer,
-            ForeignKey("capital_scheme.capital_scheme_id", name="scheme_milestone_capital_scheme_id_fkey"),
-            nullable=False,
-        ),
-        Column("milestone_id", Integer, nullable=False),
-        Column("status_date", Date, nullable=False),
-        Column("observation_type_id", Integer, nullable=False),
-        Column("effective_date_from", Date, nullable=False),
-        Column("effective_date_to", Date),
-    )
-
-    Table(
         "capital_scheme_financial",
         metadata,
         Column("capital_scheme_financial_id", Integer, primary_key=True),
@@ -81,6 +64,23 @@ def add_tables(metadata: MetaData) -> None:
         Column("data_source_id", Integer, nullable=False),
     )
 
+    Table(
+        "scheme_milestone",
+        metadata,
+        Column("scheme_milestone_id", Integer, primary_key=True),
+        Column(
+            "capital_scheme_id",
+            Integer,
+            ForeignKey("capital_scheme.capital_scheme_id", name="scheme_milestone_capital_scheme_id_fkey"),
+            nullable=False,
+        ),
+        Column("milestone_id", Integer, nullable=False),
+        Column("status_date", Date, nullable=False),
+        Column("observation_type_id", Integer, nullable=False),
+        Column("effective_date_from", Date, nullable=False),
+        Column("effective_date_to", Date),
+    )
+
 
 class DatabaseSchemeRepository(SchemeRepository):
     @inject.autoparams()
@@ -89,8 +89,8 @@ class DatabaseSchemeRepository(SchemeRepository):
         metadata = MetaData()
         add_tables(metadata)
         self._capital_scheme_table = metadata.tables["capital_scheme"]
-        self._scheme_milestone_table = metadata.tables["scheme_milestone"]
         self._capital_scheme_financial_table = metadata.tables["capital_scheme_financial"]
+        self._scheme_milestone_table = metadata.tables["scheme_milestone"]
 
     def add(self, *schemes: Scheme) -> None:
         with self._engine.begin() as connection:
@@ -104,17 +104,6 @@ class DatabaseSchemeRepository(SchemeRepository):
                         funding_programme_id=FUNDING_PROGRAMME_MAPPER.to_id(scheme.funding_programme),
                     )
                 )
-                for milestone_revision in scheme.milestones.milestone_revisions:
-                    connection.execute(
-                        insert(self._scheme_milestone_table).values(
-                            capital_scheme_id=scheme.id,
-                            effective_date_from=milestone_revision.effective.date_from,
-                            effective_date_to=milestone_revision.effective.date_to,
-                            milestone_id=MILESTONE_MAPPER.to_id(milestone_revision.milestone),
-                            observation_type_id=OBSERVATION_TYPE_MAPPER.to_id(milestone_revision.observation_type),
-                            status_date=milestone_revision.status_date,
-                        )
-                    )
                 for financial_revision in scheme.funding.financial_revisions:
                     connection.execute(
                         insert(self._capital_scheme_financial_table).values(
@@ -124,6 +113,17 @@ class DatabaseSchemeRepository(SchemeRepository):
                             financial_type_id=FINANCIAL_TYPE_MAPPER.to_id(financial_revision.type),
                             amount=financial_revision.amount,
                             data_source_id=DATA_SOURCE_MAPPER.to_id(financial_revision.source),
+                        )
+                    )
+                for milestone_revision in scheme.milestones.milestone_revisions:
+                    connection.execute(
+                        insert(self._scheme_milestone_table).values(
+                            capital_scheme_id=scheme.id,
+                            effective_date_from=milestone_revision.effective.date_from,
+                            effective_date_to=milestone_revision.effective.date_to,
+                            milestone_id=MILESTONE_MAPPER.to_id(milestone_revision.milestone),
+                            observation_type_id=OBSERVATION_TYPE_MAPPER.to_id(milestone_revision.observation_type),
+                            status_date=milestone_revision.status_date,
                         )
                     )
 
@@ -143,18 +143,18 @@ class DatabaseSchemeRepository(SchemeRepository):
 
             if scheme:
                 result = connection.execute(
-                    select(self._scheme_milestone_table).where(self._scheme_milestone_table.c.capital_scheme_id == id_)
-                )
-                for row in result:
-                    scheme.milestones.update_milestone(self._scheme_milestone_to_domain(row))
-
-                result = connection.execute(
                     select(self._capital_scheme_financial_table).where(
                         self._capital_scheme_financial_table.c.capital_scheme_id == id_
                     )
                 )
                 for row in result:
                     scheme.funding.update_financial(self._capital_scheme_financial_to_domain(row))
+
+                result = connection.execute(
+                    select(self._scheme_milestone_table).where(self._scheme_milestone_table.c.capital_scheme_id == id_)
+                )
+                for row in result:
+                    scheme.milestones.update_milestone(self._scheme_milestone_to_domain(row))
 
             return scheme
 
@@ -168,15 +168,6 @@ class DatabaseSchemeRepository(SchemeRepository):
             schemes = [self._capital_scheme_to_domain(row) for row in result]
 
             result = connection.execute(
-                select(self._scheme_milestone_table)
-                .join(self._capital_scheme_table)
-                .where(self._capital_scheme_table.c.bid_submitting_authority_id == authority_id)
-            )
-            for row in result:
-                scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
-                scheme.milestones.update_milestone(self._scheme_milestone_to_domain(row))
-
-            result = connection.execute(
                 select(self._capital_scheme_financial_table)
                 .join(self._capital_scheme_table)
                 .where(self._capital_scheme_table.c.bid_submitting_authority_id == authority_id)
@@ -184,6 +175,15 @@ class DatabaseSchemeRepository(SchemeRepository):
             for row in result:
                 scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
                 scheme.funding.update_financial(self._capital_scheme_financial_to_domain(row))
+
+            result = connection.execute(
+                select(self._scheme_milestone_table)
+                .join(self._capital_scheme_table)
+                .where(self._capital_scheme_table.c.bid_submitting_authority_id == authority_id)
+            )
+            for row in result:
+                scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
+                scheme.milestones.update_milestone(self._scheme_milestone_to_domain(row))
 
             return schemes
 
@@ -195,21 +195,21 @@ class DatabaseSchemeRepository(SchemeRepository):
         return scheme
 
     @staticmethod
-    def _scheme_milestone_to_domain(row: Row[Any]) -> MilestoneRevision:
-        return MilestoneRevision(
-            effective=DateRange(row.effective_date_from, row.effective_date_to),
-            milestone=MILESTONE_MAPPER.to_domain(row.milestone_id),
-            observation_type=OBSERVATION_TYPE_MAPPER.to_domain(row.observation_type_id),
-            status_date=row.status_date,
-        )
-
-    @staticmethod
     def _capital_scheme_financial_to_domain(row: Row[Any]) -> FinancialRevision:
         return FinancialRevision(
             effective=DateRange(row.effective_date_from, row.effective_date_to),
             type=FINANCIAL_TYPE_MAPPER.to_domain(row.financial_type_id),
             amount=row.amount,
             source=DATA_SOURCE_MAPPER.to_domain(row.data_source_id),
+        )
+
+    @staticmethod
+    def _scheme_milestone_to_domain(row: Row[Any]) -> MilestoneRevision:
+        return MilestoneRevision(
+            effective=DateRange(row.effective_date_from, row.effective_date_to),
+            milestone=MILESTONE_MAPPER.to_domain(row.milestone_id),
+            observation_type=OBSERVATION_TYPE_MAPPER.to_domain(row.observation_type_id),
+            status_date=row.status_date,
         )
 
 

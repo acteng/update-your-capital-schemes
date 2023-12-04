@@ -16,6 +16,8 @@ from schemes.domain.schemes import (
     Milestone,
     MilestoneRevision,
     ObservationType,
+    OutputRevision,
+    OutputTypeMeasure,
     Scheme,
     SchemeRepository,
     SchemeType,
@@ -225,3 +227,104 @@ def test_scheme_shows_milestones(schemes: SchemeRepository, client: FlaskClient)
         {"milestone": "Construction started", "planned": "01/05/2020", "actual": "02/05/2020"},
         {"milestone": "Construction completed", "planned": "01/06/2020", "actual": "02/06/2020"},
     ]
+
+
+def test_scheme_shows_minimal_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.outputs.update_outputs(
+        OutputRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
+            value=Decimal(1),
+            observation_type=ObservationType.ACTUAL,
+        ),
+        OutputRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+            value=Decimal(2),
+            observation_type=ObservationType.PLANNED,
+        ),
+    )
+    schemes.add(scheme)
+
+    scheme_page = SchemePage(client).open(1)
+
+    outputs = list(scheme_page.outputs.outputs)
+    assert outputs[0].planned == "N/A" and outputs[1].actual == "N/A"
+
+
+def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.outputs.update_outputs(
+        OutputRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES,
+            value=Decimal("3.000000"),
+            observation_type=ObservationType.PLANNED,
+        ),
+        OutputRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES,
+            value=Decimal("4.000000"),
+            observation_type=ObservationType.ACTUAL,
+        ),
+        OutputRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
+            value=Decimal("2.600000"),
+            observation_type=ObservationType.PLANNED,
+        ),
+        OutputRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
+            value=Decimal("2.700000"),
+            observation_type=ObservationType.ACTUAL,
+        ),
+    )
+    schemes.add(scheme)
+
+    scheme_page = SchemePage(client).open(1)
+
+    assert scheme_page.outputs.outputs.to_dicts() == [
+        {
+            "infrastructure": "New segregated cycling facility",
+            "measurement": "miles",
+            "planned": "3",
+            "actual": "4",
+        },
+        {
+            "infrastructure": "Improvements to make an existing walking/cycle route safer",
+            "measurement": "number of junctions",
+            "planned": "2.6",
+            "actual": "2.7",
+        },
+    ]
+
+
+@pytest.mark.parametrize(
+    "value, expected_value", [(Decimal("0.000000"), "0"), (Decimal("0.100000"), "0.1"), (Decimal("10.000000"), "10")]
+)
+def test_scheme_shows_formatted_outputs(
+    schemes: SchemeRepository, client: FlaskClient, value: Decimal, expected_value: str
+) -> None:
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.outputs.update_outputs(
+        OutputRevision(
+            effective=(DateRange(date(2020, 1, 1), None)),
+            type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
+            value=value,
+            observation_type=ObservationType.PLANNED,
+        ),
+        OutputRevision(
+            effective=(DateRange(date(2020, 1, 1), None)),
+            type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
+            value=value,
+            observation_type=ObservationType.ACTUAL,
+        ),
+    )
+    schemes.add(scheme)
+
+    scheme_page = SchemePage(client).open(1)
+
+    outputs = list(scheme_page.outputs.outputs)
+    assert outputs[0].planned == expected_value and outputs[0].actual == expected_value

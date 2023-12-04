@@ -17,6 +17,8 @@ from schemes.domain.schemes import (
     Milestone,
     MilestoneRevision,
     ObservationType,
+    OutputRevision,
+    OutputTypeMeasure,
     SchemeRepository,
     SchemeType,
 )
@@ -212,6 +214,40 @@ class TestApiEnabled:
                 type=FinancialType.FUNDING_ALLOCATION,
                 amount=Decimal(100000),
                 source=DataSource.ATF4_BID,
+            )
+        ]
+
+    def test_add_schemes_output_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        response = client.post(
+            "/authorities/1/schemes",
+            headers={"Authorization": "API-Key boardman"},
+            json=[
+                {
+                    "id": 1,
+                    "name": "Wirral Package",
+                    "output_revisions": [
+                        {
+                            "effective_date_from": "2020-01-01",
+                            "effective_date_to": None,
+                            "type": "Improvements to make an existing walking/cycle route safer",
+                            "measure": "miles",
+                            "value": "10",
+                            "observation_type": "Actual",
+                        }
+                    ],
+                },
+            ],
+        )
+
+        assert response.status_code == 201
+        scheme1 = schemes.get(1)
+        assert scheme1 and scheme1.id == 1
+        assert scheme1.outputs.output_revisions == [
+            OutputRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+                value=Decimal(10),
+                observation_type=ObservationType.ACTUAL,
             )
         ]
 

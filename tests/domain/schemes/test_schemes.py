@@ -1,4 +1,9 @@
-from schemes.domain.schemes import Scheme, SchemeFunding, SchemeMilestones
+from schemes.domain.schemes import (
+    Scheme,
+    SchemeFunding,
+    SchemeMilestones,
+    SchemeOutputs,
+)
 
 
 class TestScheme:
@@ -16,3 +21,8 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
 
         assert isinstance(scheme.milestones, SchemeMilestones)
+
+    def test_get_outputs(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+
+        assert isinstance(scheme.outputs, SchemeOutputs)

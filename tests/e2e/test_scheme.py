@@ -6,6 +6,7 @@ from tests.e2e.app_client import (
     AuthorityRepr,
     FinancialRevisionRepr,
     MilestoneRevisionRepr,
+    OutputRevisionRepr,
     SchemeRepr,
     UserRepr,
 )
@@ -154,4 +155,61 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
         {"milestone": "Detailed design completed", "planned": "N/A", "actual": "30/06/2022"},
         {"milestone": "Construction started", "planned": "05/06/2023", "actual": "N/A"},
         {"milestone": "Construction completed", "planned": "31/08/2023", "actual": "N/A"},
+    ]
+
+
+@pytest.mark.usefixtures("live_server", "oidc_server")
+def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
+    app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
+    app_client.add_users(1, UserRepr(email="boardman@example.com"))
+    app_client.add_schemes(
+        1,
+        SchemeRepr(
+            id=1,
+            name="Wirral Package",
+            output_revisions=[
+                OutputRevisionRepr(
+                    effective_date_from="2020-01-01",
+                    effective_date_to=None,
+                    type="New segregated cycling facility",
+                    measure="miles",
+                    value="3.000000",
+                    observation_type="Planned",
+                ),
+                OutputRevisionRepr(
+                    effective_date_from="2020-01-01",
+                    effective_date_to=None,
+                    type="New segregated cycling facility",
+                    measure="miles",
+                    value="4.000000",
+                    observation_type="Actual",
+                ),
+                OutputRevisionRepr(
+                    effective_date_from="2020-01-01",
+                    effective_date_to=None,
+                    type="Improvements to make an existing walking/cycle route safer",
+                    measure="number of junctions",
+                    value="2.600000",
+                    observation_type="Planned",
+                ),
+            ],
+        ),
+    )
+    oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
+
+    outputs_component = SchemePage(page).open(1).open_outputs()
+
+    assert outputs_component.outputs.to_dicts() == [
+        {
+            "infrastructure": "New segregated cycling facility",
+            "measurement": "miles",
+            "planned": "3",
+            "actual": "4",
+        },
+        {
+            "infrastructure": "Improvements to make an existing walking/cycle route safer",
+            "measurement": "number of junctions",
+            "planned": "2.6",
+            "actual": "N/A",
+        },
     ]

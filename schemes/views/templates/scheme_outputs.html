@@ -1,0 +1,38 @@
+{% from "govuk_frontend_jinja/components/table/macro.html" import govukTable -%}
+
+<h2 class="govuk-heading-l">Outputs</h2>
+
+{% set rows = [] %}
+{% for output in outputs.outputs %}
+    {% do rows.append([
+        {
+            "text": output.type.name
+        },
+        {
+            "text": output.measure.name
+        },
+        {
+            "text": output.planned | remove_exponent if output.planned is not none() else "N/A"
+        },
+        {
+            "text": output.actual | remove_exponent if output.actual is not none() else "N/A"
+        }
+    ]) %}
+{% endfor %}
+{{ govukTable({
+    "head": [
+        {
+            "text": "Infrastructure"
+        },
+        {
+            "text": "Measurement"
+        },
+        {
+            "text": "Planned"
+        },
+        {
+            "text": "Actual"
+        }
+    ],
+    "rows": rows
+}) }}

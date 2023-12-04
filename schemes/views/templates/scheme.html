@@ -23,6 +23,10 @@
         {% include "scheme_milestones.html" %}
     {% endset -%}
 
+    {% set outputsHtml %}
+        {% include "scheme_outputs.html" %}
+    {% endset -%}
+
     {{ govukTabs({
         "items": [
             {
@@ -44,6 +48,13 @@
                 "label": "Milestones",
                 "panel": {
                     "html": milestonesHtml
+                }
+            },
+            {
+                "id": "outputs",
+                "label": "Outputs",
+                "panel": {
+                    "html": outputsHtml
                 }
             }
         ]

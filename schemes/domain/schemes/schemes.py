@@ -4,6 +4,7 @@ from enum import Enum, auto
 
 from schemes.domain.schemes.funding import SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
+from schemes.domain.schemes.outputs import SchemeOutputs
 
 
 class Scheme:
@@ -15,6 +16,7 @@ class Scheme:
         self.funding_programme: FundingProgramme | None = None
         self._funding = SchemeFunding()
         self._milestones = SchemeMilestones()
+        self._outputs = SchemeOutputs()
 
     @property
     def reference(self) -> str:
@@ -27,6 +29,10 @@ class Scheme:
     @property
     def milestones(self) -> SchemeMilestones:
         return self._milestones
+
+    @property
+    def outputs(self) -> SchemeOutputs:
+        return self._outputs
 
 
 class SchemeType(Enum):

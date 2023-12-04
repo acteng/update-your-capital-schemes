@@ -164,6 +164,12 @@ class SchemePage:
         assert panel
         return SchemeMilestonesComponent(panel)
 
+    @property
+    def outputs(self) -> SchemeOutputsComponent:
+        panel = self._soup.select_one("#outputs")
+        assert panel
+        return SchemeOutputsComponent(panel)
+
 
 class SchemeOverviewComponent:
     def __init__(self, tag: Tag):
@@ -209,3 +215,38 @@ class SchemeMilestoneRowComponent:
 
     def to_dict(self) -> dict[str, str | None]:
         return {"milestone": self.milestone, "planned": self.planned, "actual": self.actual}
+
+
+class SchemeOutputsComponent:
+    def __init__(self, tag: Tag):
+        outputs_table = tag.select_one("table")
+        assert outputs_table
+        self.outputs = SchemeOutputsTableComponent(outputs_table)
+
+
+class SchemeOutputsTableComponent:
+    def __init__(self, tag: Tag):
+        self._rows = tag.select("tbody tr")
+
+    def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
+        return iter([SchemeOutputRowComponent(row) for row in self._rows])
+
+    def to_dicts(self) -> list[dict[str, str | None]]:
+        return [output.to_dict() for output in self]
+
+
+class SchemeOutputRowComponent:
+    def __init__(self, tag: Tag):
+        cells = tag.select("td")
+        self.infrastructure = cells[0].string
+        self.measurement = cells[1].string
+        self.planned = cells[2].string
+        self.actual = cells[3].string
+
+    def to_dict(self) -> dict[str, str | None]:
+        return {
+            "infrastructure": self.infrastructure,
+            "measurement": self.measurement,
+            "planned": self.planned,
+            "actual": self.actual,
+        }

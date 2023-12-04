@@ -14,6 +14,8 @@ from schemes.domain.schemes import (
     Milestone,
     MilestoneRevision,
     ObservationType,
+    OutputRevision,
+    OutputTypeMeasure,
     Scheme,
     SchemeType,
 )
@@ -26,6 +28,7 @@ from schemes.infrastructure.schemes import (
     FundingProgrammeMapper,
     MilestoneMapper,
     ObservationTypeMapper,
+    OutputTypeMeasureMapper,
     SchemeTypeMapper,
 )
 from schemes.infrastructure.schemes import add_tables as schemes_add_tables
@@ -174,6 +177,49 @@ class TestDatabaseSchemeRepository:
             and row2.status_date == date(2020, 3, 1)
         )
 
+    def test_add_schemes_output_revisions(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1.outputs.update_outputs(
+            OutputRevision(
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
+                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+                value=Decimal(10),
+                observation_type=ObservationType.PLANNED,
+            ),
+            OutputRevision(
+                effective=DateRange(date(2020, 2, 1), None),
+                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+                value=Decimal(20),
+                observation_type=ObservationType.PLANNED,
+            ),
+        )
+
+        schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
+
+        scheme_intervention_table = metadata.tables["scheme_intervention"]
+        with engine.connect() as connection:
+            row1, row2 = connection.execute(
+                select(scheme_intervention_table).order_by(scheme_intervention_table.c.scheme_intervention_id)
+            )
+        assert (
+            row1.capital_scheme_id == 1
+            and row1.effective_date_from == date(2020, 1, 1)
+            and row1.effective_date_to == date(2020, 1, 31)
+            and row1.intervention_type_measure_id == 4
+            and row1.intervention_value == Decimal(10)
+            and row1.observation_type_id == 1
+        )
+        assert (
+            row2.capital_scheme_id == 1
+            and row2.effective_date_from == date(2020, 2, 1)
+            and row2.effective_date_to is None
+            and row2.intervention_type_measure_id == 4
+            and row2.intervention_value == Decimal(20)
+            and row2.observation_type_id == 1
+        )
+
     def test_get_scheme(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
         with engine.begin() as connection:
             connection.execute(
@@ -294,6 +340,81 @@ class TestDatabaseSchemeRepository:
                 status_date=date(2020, 3, 1),
             ),
         ]
+
+    def test_get_scheme_output_revisions(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        with engine.begin() as connection:
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=1,
+                    scheme_name="Wirral Package",
+                    bid_submitting_authority_id=1,
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["scheme_intervention"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=date(2020, 1, 31),
+                    intervention_type_measure_id=4,
+                    intervention_value=Decimal(10),
+                    observation_type_id=1,
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["scheme_intervention"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 2, 1),
+                    effective_date_to=None,
+                    intervention_type_measure_id=4,
+                    intervention_value=Decimal(20),
+                    observation_type_id=1,
+                )
+            )
+
+        scheme = schemes.get(1)
+
+        assert scheme and scheme.outputs.output_revisions == [
+            OutputRevision(
+                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
+                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+                value=Decimal(10),
+                observation_type=ObservationType.PLANNED,
+            ),
+            OutputRevision(
+                effective=DateRange(date(2020, 2, 1), None),
+                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+                value=Decimal(20),
+                observation_type=ObservationType.PLANNED,
+            ),
+        ]
+
+    def test_get_scheme_output_revision_with_missing_value(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        with engine.begin() as connection:
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=1,
+                    scheme_name="Wirral Package",
+                    bid_submitting_authority_id=1,
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["scheme_intervention"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=date(2020, 1, 31),
+                    intervention_type_measure_id=4,
+                    intervention_value=None,
+                    observation_type_id=1,
+                )
+            )
+
+        scheme = schemes.get(1)
+
+        assert scheme and scheme.outputs.output_revisions[0].value == Decimal(0)
 
     def test_get_scheme_that_does_not_exist(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
@@ -465,6 +586,77 @@ class TestDatabaseSchemeRepository:
             )
         ]
 
+    def test_get_all_schemes_output_revisions_by_authority(
+        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+    ) -> None:
+        with engine.begin() as connection:
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["scheme_intervention"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=None,
+                    intervention_type_measure_id=4,
+                    intervention_value=Decimal(10),
+                    observation_type_id=1,
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=1
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["scheme_intervention"]).values(
+                    capital_scheme_id=2,
+                    effective_date_from=date(2020, 2, 1),
+                    effective_date_to=None,
+                    intervention_type_measure_id=4,
+                    intervention_value=Decimal(20),
+                    observation_type_id=1,
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["capital_scheme"]).values(
+                    capital_scheme_id=3, scheme_name="Hospital Fields Road", bid_submitting_authority_id=2
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["scheme_intervention"]).values(
+                    capital_scheme_id=3,
+                    effective_date_from=date(2020, 3, 1),
+                    effective_date_to=None,
+                    intervention_type_measure_id=4,
+                    intervention_value=Decimal(30),
+                    observation_type_id=1,
+                )
+            )
+
+        scheme1: Scheme
+        scheme2: Scheme
+        scheme1, scheme2 = schemes.get_by_authority(1)
+
+        assert scheme1.id == 1 and scheme1.outputs.output_revisions == [
+            OutputRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+                value=Decimal(10),
+                observation_type=ObservationType.PLANNED,
+            ),
+        ]
+        assert scheme2.id == 2 and scheme2.outputs.output_revisions == [
+            OutputRevision(
+                effective=DateRange(date(2020, 2, 1), None),
+                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+                value=Decimal(20),
+                observation_type=ObservationType.PLANNED,
+            ),
+        ]
+
     def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
         capital_scheme_table = metadata.tables["capital_scheme"]
         with engine.begin() as connection:
@@ -491,6 +683,16 @@ class TestDatabaseSchemeRepository:
                     milestone_id=5,
                     observation_type_id=1,
                     status_date=date(2020, 2, 1),
+                )
+            )
+            connection.execute(
+                insert(metadata.tables["scheme_intervention"]).values(
+                    capital_scheme_id=1,
+                    effective_date_from=date(2020, 1, 1),
+                    effective_date_to=None,
+                    intervention_type_measure_id=4,
+                    intervention_value=Decimal(10),
+                    observation_type_id=1,
                 )
             )
             connection.execute(
@@ -598,3 +800,41 @@ class TestDataSourceMapper:
     def test_mapper(self, data_source: DataSource, id_: int) -> None:
         mapper = DataSourceMapper()
         assert mapper.to_id(data_source) == id_ and mapper.to_domain(id_) == data_source
+
+
+class TestOutputTypeMeasureMapper:
+    @pytest.mark.parametrize(
+        "output_type_measure, id_",
+        [
+            (OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES, 1),
+            (OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_MILES, 2),
+            (OutputTypeMeasure.BUS_PRIORITY_MEASURES_MILES, 3),
+            (OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES, 4),
+            (OutputTypeMeasure.NEW_SHARED_USE_FACILITIES_WHEELING_MILES, 5),
+            (OutputTypeMeasure.NEW_SHARED_USE_FACILITIES_MILES, 6),
+            (OutputTypeMeasure.NEW_TEMPORARY_FOOTWAY_MILES, 7),
+            (OutputTypeMeasure.NEW_PERMANENT_FOOTWAY_MILES, 8),
+            (OutputTypeMeasure.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY_MILES, 9),
+            (OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES, 10),
+            (OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS, 11),
+            (OutputTypeMeasure.NEW_PERMANENT_FOOTWAY_NUMBER_OF_JUNCTIONS, 12),
+            (OutputTypeMeasure.NEW_JUNCTION_TREATMENT_NUMBER_OF_JUNCTIONS, 13),
+            (OutputTypeMeasure.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS, 14),
+            (OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS, 15),
+            (OutputTypeMeasure.AREA_WIDE_TRAFFIC_MANAGEMENT_SIZE_OF_AREA, 16),
+            (OutputTypeMeasure.PARK_AND_CYCLE_STRIDE_FACILITIES_NUMBER_OF_PARKING_SPACES, 17),
+            (OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES, 18),
+            (OutputTypeMeasure.SECURE_CYCLE_PARKING_NUMBER_OF_PARKING_SPACES, 19),
+            (OutputTypeMeasure.NEW_ROAD_CROSSINGS_NUMBER_OF_CROSSINGS, 20),
+            (OutputTypeMeasure.SCHOOL_STREETS_NUMBER_OF_SCHOOL_STREETS, 21),
+            (OutputTypeMeasure.E_SCOOTER_TRIALS_NUMBER_OF_TRIALS, 22),
+            (OutputTypeMeasure.BUS_PRIORITY_MEASURES_NUMBER_OF_BUS_GATES, 23),
+            (OutputTypeMeasure.UPGRADES_TO_EXISTING_FACILITIES_NUMBER_OF_UPGRADES, 24),
+            (OutputTypeMeasure.SCHOOL_STREETS_NUMBER_OF_CHILDREN_AFFECTED, 25),
+            (OutputTypeMeasure.OTHER_INTERVENTIONS_NUMBER_OF_MEASURES_PLANNED, 26),
+            (OutputTypeMeasure.TRAFFIC_CALMING_NUMBER_OF_MEASURES_PLANNED, 27),
+        ],
+    )
+    def test_mapper(self, output_type_measure: OutputTypeMeasure, id_: int) -> None:
+        mapper = OutputTypeMeasureMapper()
+        assert mapper.to_id(output_type_measure) == id_ and mapper.to_domain(id_) == output_type_measure

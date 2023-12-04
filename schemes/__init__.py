@@ -1,4 +1,5 @@
 import os
+from decimal import Decimal
 from typing import Any, Mapping
 
 import alembic.config
@@ -39,6 +40,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     inject.configure(bindings, bind_in_runtime=False)
 
     _configure_jinja(app)
+    _configure_jinja_filters(app)
     _configure_error_pages(app)
     _configure_govuk_frontend(app)
     _configure_oidc(app)
@@ -84,6 +86,12 @@ def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_
 
 def _configure_jinja(app: Flask) -> None:
     app.jinja_options["extensions"] = ["jinja2.ext.do"]
+
+
+def _configure_jinja_filters(app: Flask) -> None:
+    @app.template_filter()
+    def remove_exponent(d: Decimal) -> Decimal:
+        return d.quantize(Decimal(1)) if d == d.to_integral() else d.normalize()
 
 
 def _configure_error_pages(app: Flask) -> None:

@@ -134,6 +134,8 @@ class SchemePage:
         self.funding = SchemeFundingComponent(self._main.get_by_role("tabpanel", name="Funding"))
         self._milestones_tab = self._main.get_by_role("tab", name="Milestones")
         self.milestones = SchemeMilestonesComponent(self._main.get_by_role("tabpanel", name="Milestones"))
+        self._outputs_tab = self._main.get_by_role("tab", name="Outputs")
+        self.outputs = SchemeOutputsComponent(self._main.get_by_role("tabpanel", name="Outputs"))
 
     def open(self, id_: int) -> SchemePage:
         # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
@@ -152,6 +154,10 @@ class SchemePage:
     def open_milestones(self) -> SchemeMilestonesComponent:
         self._milestones_tab.click()
         return self.milestones
+
+    def open_outputs(self) -> SchemeOutputsComponent:
+        self._outputs_tab.click()
+        return self.outputs
 
 
 class SchemeOverviewComponent:
@@ -237,3 +243,48 @@ class SchemeMilestoneRowComponent:
 
     def to_dict(self) -> dict[str, str | None]:
         return {"milestone": self.milestone, "planned": self.planned, "actual": self.actual}
+
+
+class SchemeOutputsComponent:
+    def __init__(self, component: Locator):
+        self.outputs = SchemeOutputsTableComponent(component.get_by_role("table"))
+
+
+class SchemeOutputsTableComponent:
+    def __init__(self, component: Locator):
+        self._rows = component.get_by_role("row")
+
+    def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
+        return iter([SchemeOutputRowComponent(row) for row in self._rows.all()[1:]])
+
+    def to_dicts(self) -> list[dict[str, str | None]]:
+        return [output.to_dict() for output in self]
+
+
+class SchemeOutputRowComponent:
+    def __init__(self, component: Locator):
+        self._cells = component.get_by_role("cell")
+
+    @property
+    def infrastructure(self) -> str | None:
+        return self._cells.nth(0).text_content()
+
+    @property
+    def measurement(self) -> str | None:
+        return self._cells.nth(1).text_content()
+
+    @property
+    def planned(self) -> str | None:
+        return self._cells.nth(2).text_content()
+
+    @property
+    def actual(self) -> str | None:
+        return self._cells.nth(3).text_content()
+
+    def to_dict(self) -> dict[str, str | None]:
+        return {
+            "infrastructure": self.infrastructure,
+            "measurement": self.measurement,
+            "planned": self.planned,
+            "actual": self.actual,
+        }

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Any
 
 import inject
@@ -26,6 +27,8 @@ from schemes.domain.schemes import (
     Milestone,
     MilestoneRevision,
     ObservationType,
+    OutputRevision,
+    OutputTypeMeasure,
     Scheme,
     SchemeRepository,
     SchemeType,
@@ -81,6 +84,23 @@ def add_tables(metadata: MetaData) -> None:
         Column("effective_date_to", Date),
     )
 
+    Table(
+        "scheme_intervention",
+        metadata,
+        Column("scheme_intervention_id", Integer, primary_key=True),
+        Column("intervention_type_measure_id", Integer, nullable=False),
+        Column(
+            "capital_scheme_id",
+            Integer,
+            ForeignKey("capital_scheme.capital_scheme_id", name="scheme_intervention_capital_scheme_id_fkey"),
+            nullable=False,
+        ),
+        Column("intervention_value", Numeric(precision=15, scale=6)),
+        Column("observation_type_id", Integer, nullable=False),
+        Column("effective_date_from", Date, nullable=False),
+        Column("effective_date_to", Date),
+    )
+
 
 class DatabaseSchemeRepository(SchemeRepository):
     @inject.autoparams()
@@ -91,6 +111,7 @@ class DatabaseSchemeRepository(SchemeRepository):
         self._capital_scheme_table = metadata.tables["capital_scheme"]
         self._capital_scheme_financial_table = metadata.tables["capital_scheme_financial"]
         self._scheme_milestone_table = metadata.tables["scheme_milestone"]
+        self._scheme_intervention_table = metadata.tables["scheme_intervention"]
 
     def add(self, *schemes: Scheme) -> None:
         with self._engine.begin() as connection:
@@ -126,9 +147,21 @@ class DatabaseSchemeRepository(SchemeRepository):
                             status_date=milestone_revision.status_date,
                         )
                     )
+                for output_revision in scheme.outputs.output_revisions:
+                    connection.execute(
+                        insert(self._scheme_intervention_table).values(
+                            capital_scheme_id=scheme.id,
+                            effective_date_from=output_revision.effective.date_from,
+                            effective_date_to=output_revision.effective.date_to,
+                            intervention_type_measure_id=OUTPUT_TYPE_MEASURE_MAPPER.to_id(output_revision.type_measure),
+                            intervention_value=output_revision.value,
+                            observation_type_id=OBSERVATION_TYPE_MAPPER.to_id(output_revision.observation_type),
+                        )
+                    )
 
     def clear(self) -> None:
         with self._engine.begin() as connection:
+            connection.execute(delete(self._scheme_intervention_table))
             connection.execute(delete(self._scheme_milestone_table))
             connection.execute(delete(self._capital_scheme_financial_table))
             connection.execute(delete(self._capital_scheme_table))
@@ -155,6 +188,14 @@ class DatabaseSchemeRepository(SchemeRepository):
                 )
                 for row in result:
                     scheme.milestones.update_milestone(self._scheme_milestone_to_domain(row))
+
+                result = connection.execute(
+                    select(self._scheme_intervention_table).where(
+                        self._scheme_intervention_table.c.capital_scheme_id == id_
+                    )
+                )
+                for row in result:
+                    scheme.outputs.update_output(self._scheme_intervention_to_domain(row))
 
             return scheme
 
@@ -185,6 +226,15 @@ class DatabaseSchemeRepository(SchemeRepository):
                 scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
                 scheme.milestones.update_milestone(self._scheme_milestone_to_domain(row))
 
+            result = connection.execute(
+                select(self._scheme_intervention_table)
+                .join(self._capital_scheme_table)
+                .where(self._capital_scheme_table.c.bid_submitting_authority_id == authority_id)
+            )
+            for row in result:
+                scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
+                scheme.outputs.update_output(self._scheme_intervention_to_domain(row))
+
             return schemes
 
     @staticmethod
@@ -210,6 +260,15 @@ class DatabaseSchemeRepository(SchemeRepository):
             milestone=MILESTONE_MAPPER.to_domain(row.milestone_id),
             observation_type=OBSERVATION_TYPE_MAPPER.to_domain(row.observation_type_id),
             status_date=row.status_date,
+        )
+
+    @staticmethod
+    def _scheme_intervention_to_domain(row: Row[Any]) -> OutputRevision:
+        return OutputRevision(
+            effective=DateRange(row.effective_date_from, row.effective_date_to),
+            type_measure=OUTPUT_TYPE_MEASURE_MAPPER.to_domain(row.intervention_type_measure_id),
+            value=row.intervention_value or Decimal(0),
+            observation_type=OBSERVATION_TYPE_MAPPER.to_domain(row.observation_type_id),
         )
 
 
@@ -318,9 +377,48 @@ class DataSourceMapper:
         return next(key for key, value in self._DATA_SOURCE_IDS.items() if value == id_)
 
 
+class OutputTypeMeasureMapper:
+    _TYPE_MEASURE_IDS = {
+        OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES: 1,
+        OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_MILES: 2,
+        OutputTypeMeasure.BUS_PRIORITY_MEASURES_MILES: 3,
+        OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES: 4,
+        OutputTypeMeasure.NEW_SHARED_USE_FACILITIES_WHEELING_MILES: 5,
+        OutputTypeMeasure.NEW_SHARED_USE_FACILITIES_MILES: 6,
+        OutputTypeMeasure.NEW_TEMPORARY_FOOTWAY_MILES: 7,
+        OutputTypeMeasure.NEW_PERMANENT_FOOTWAY_MILES: 8,
+        OutputTypeMeasure.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY_MILES: 9,
+        OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES: 10,
+        OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS: 11,
+        OutputTypeMeasure.NEW_PERMANENT_FOOTWAY_NUMBER_OF_JUNCTIONS: 12,
+        OutputTypeMeasure.NEW_JUNCTION_TREATMENT_NUMBER_OF_JUNCTIONS: 13,
+        OutputTypeMeasure.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS: 14,
+        OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS: 15,
+        OutputTypeMeasure.AREA_WIDE_TRAFFIC_MANAGEMENT_SIZE_OF_AREA: 16,
+        OutputTypeMeasure.PARK_AND_CYCLE_STRIDE_FACILITIES_NUMBER_OF_PARKING_SPACES: 17,
+        OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES: 18,
+        OutputTypeMeasure.SECURE_CYCLE_PARKING_NUMBER_OF_PARKING_SPACES: 19,
+        OutputTypeMeasure.NEW_ROAD_CROSSINGS_NUMBER_OF_CROSSINGS: 20,
+        OutputTypeMeasure.SCHOOL_STREETS_NUMBER_OF_SCHOOL_STREETS: 21,
+        OutputTypeMeasure.E_SCOOTER_TRIALS_NUMBER_OF_TRIALS: 22,
+        OutputTypeMeasure.BUS_PRIORITY_MEASURES_NUMBER_OF_BUS_GATES: 23,
+        OutputTypeMeasure.UPGRADES_TO_EXISTING_FACILITIES_NUMBER_OF_UPGRADES: 24,
+        OutputTypeMeasure.SCHOOL_STREETS_NUMBER_OF_CHILDREN_AFFECTED: 25,
+        OutputTypeMeasure.OTHER_INTERVENTIONS_NUMBER_OF_MEASURES_PLANNED: 26,
+        OutputTypeMeasure.TRAFFIC_CALMING_NUMBER_OF_MEASURES_PLANNED: 27,
+    }
+
+    def to_id(self, output_type_measure: OutputTypeMeasure) -> int:
+        return self._TYPE_MEASURE_IDS[output_type_measure]
+
+    def to_domain(self, id_: int) -> OutputTypeMeasure:
+        return next(key for key, value in self._TYPE_MEASURE_IDS.items() if value == id_)
+
+
 SCHEME_TYPE_MAPPER = SchemeTypeMapper()
 FUNDING_PROGRAMME_MAPPER = FundingProgrammeMapper()
 MILESTONE_MAPPER = MilestoneMapper()
 OBSERVATION_TYPE_MAPPER = ObservationTypeMapper()
 FINANCIAL_TYPE_MAPPER = FinancialTypeMapper()
 DATA_SOURCE_MAPPER = DataSourceMapper()
+OUTPUT_TYPE_MEASURE_MAPPER = OutputTypeMeasureMapper()

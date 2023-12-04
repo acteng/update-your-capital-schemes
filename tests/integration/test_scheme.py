@@ -249,6 +249,7 @@ def test_scheme_shows_minimal_outputs(schemes: SchemeRepository, client: FlaskCl
 
     scheme_page = SchemePage(client).open(1)
 
+    assert scheme_page.outputs.outputs
     outputs = list(scheme_page.outputs.outputs)
     assert outputs[0].planned == "N/A" and outputs[1].actual == "N/A"
 
@@ -285,6 +286,7 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
 
     scheme_page = SchemePage(client).open(1)
 
+    assert scheme_page.outputs.outputs
     assert scheme_page.outputs.outputs.to_dicts() == [
         {
             "infrastructure": "New segregated cycling facility",
@@ -326,5 +328,15 @@ def test_scheme_shows_formatted_outputs(
 
     scheme_page = SchemePage(client).open(1)
 
+    assert scheme_page.outputs.outputs
     outputs = list(scheme_page.outputs.outputs)
     assert outputs[0].planned == expected_value and outputs[0].actual == expected_value
+
+
+def test_scheme_shows_message_when_no_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    scheme_page = SchemePage(client).open(1)
+
+    assert not scheme_page.outputs.outputs
+    assert scheme_page.outputs.is_no_outputs_message_visible

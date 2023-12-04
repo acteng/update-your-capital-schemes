@@ -220,8 +220,11 @@ class SchemeMilestoneRowComponent:
 class SchemeOutputsComponent:
     def __init__(self, tag: Tag):
         outputs_table = tag.select_one("table")
-        assert outputs_table
-        self.outputs = SchemeOutputsTableComponent(outputs_table)
+        self.outputs = SchemeOutputsTableComponent(outputs_table) if outputs_table else None
+        paragraph = tag.select_one("p")
+        self.is_no_outputs_message_visible = (
+            paragraph.string == "There are no outputs for this scheme." if paragraph else None
+        )
 
 
 class SchemeOutputsTableComponent:

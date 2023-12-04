@@ -285,6 +285,10 @@ class SchemeOutputRowComponent:
     def planned_outputs_not_yet_delivered(self) -> str | None:
         return self._cells.nth(4).text_content()
 
+    @property
+    def output_delivery_status(self) -> str | None:
+        return self._cells.nth(5).text_content()
+
     def to_dict(self) -> dict[str, str | None]:
         return {
             "infrastructure": self.infrastructure,
@@ -292,4 +296,5 @@ class SchemeOutputRowComponent:
             "planned": self.planned,
             "actual": self.actual,
             "planned_outputs_not_yet_delivered": self.planned_outputs_not_yet_delivered,
+            "output_delivery_status": self.output_delivery_status,
         }

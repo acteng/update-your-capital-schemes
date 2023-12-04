@@ -480,6 +480,30 @@ class TestSchemeOutputRowContext:
 
         assert context.planned_not_yet_delivered == expected_planned_not_yet_delivered
 
+    @pytest.mark.parametrize(
+        "planned, actual, expected_delivery_status",
+        [
+            (None, Decimal(0), "no outputs recorded"),
+            (Decimal(0), None, "no outputs recorded"),
+            (Decimal(10), None, "not started"),
+            (Decimal(10), Decimal(0), "not started"),
+            (Decimal(10), Decimal(5), "in progress"),
+            (Decimal(10), Decimal(10), "complete"),
+            (Decimal(10), Decimal(20), "more outputs than planned"),
+        ],
+    )
+    def test_set_delivery_status(
+        self, planned: Decimal | None, actual: Decimal | None, expected_delivery_status: str
+    ) -> None:
+        context = SchemeOutputRowContext(
+            type=OutputTypeContext(name="Improvements to make an existing walking/cycle route safer"),
+            measure=OutputMeasureContext(name="miles"),
+            planned=planned,
+            actual=actual,
+        )
+
+        assert context.delivery_status == expected_delivery_status
+
 
 class TestOutputTypeContext:
     @pytest.mark.parametrize(

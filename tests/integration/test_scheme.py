@@ -294,6 +294,7 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
             "planned": "3",
             "actual": "2",
             "planned_outputs_not_yet_delivered": "1",
+            "output_delivery_status": "in progress",
         },
         {
             "infrastructure": "Improvements to make an existing walking/cycle route safer",
@@ -301,6 +302,7 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
             "planned": "2.6",
             "actual": "2.5",
             "planned_outputs_not_yet_delivered": "0.1",
+            "output_delivery_status": "in progress",
         },
     ]
 

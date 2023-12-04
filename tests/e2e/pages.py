@@ -281,10 +281,15 @@ class SchemeOutputRowComponent:
     def actual(self) -> str | None:
         return self._cells.nth(3).text_content()
 
+    @property
+    def planned_outputs_not_yet_delivered(self) -> str | None:
+        return self._cells.nth(4).text_content()
+
     def to_dict(self) -> dict[str, str | None]:
         return {
             "infrastructure": self.infrastructure,
             "measurement": self.measurement,
             "planned": self.planned,
             "actual": self.actual,
+            "planned_outputs_not_yet_delivered": self.planned_outputs_not_yet_delivered,
         }

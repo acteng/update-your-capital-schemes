@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from datetime import date
 from decimal import Decimal
 from enum import Enum, unique
 from itertools import groupby
-from typing import Iterator
+from typing import Any, Iterator
 
 import inject
 from flask import Blueprint, Response, render_template, session
@@ -89,7 +89,11 @@ def get(schemes: SchemeRepository, scheme_id: int) -> str:
     assert scheme
 
     context = SchemeContext.for_domain(scheme)
-    return render_template("scheme.html", **asdict(context))
+    return render_template("scheme.html", **_as_shallow_dict(context))
+
+
+def _as_shallow_dict(obj: Any) -> dict[str, Any]:
+    return dict((field_.name, getattr(obj, field_.name)) for field_ in fields(obj))
 
 
 @dataclass(frozen=True)
@@ -276,6 +280,12 @@ class SchemeOutputRowContext:
     measure: OutputMeasureContext
     planned: Decimal | None
     actual: Decimal | None
+
+    @property
+    def planned_not_yet_delivered(self) -> Decimal:
+        planned = self.planned or Decimal(0)
+        actual = self.actual or Decimal(0)
+        return planned - actual
 
 
 @dataclass(frozen=True)

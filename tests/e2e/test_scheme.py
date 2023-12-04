@@ -181,7 +181,7 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
                     effective_date_to=None,
                     type="New segregated cycling facility",
                     measure="miles",
-                    value="4.000000",
+                    value="2.000000",
                     observation_type="Actual",
                 ),
                 OutputRevisionRepr(
@@ -204,12 +204,14 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
             "infrastructure": "New segregated cycling facility",
             "measurement": "Miles",
             "planned": "3",
-            "actual": "4",
+            "actual": "2",
+            "planned_outputs_not_yet_delivered": "1",
         },
         {
             "infrastructure": "Improvements to make an existing walking/cycle route safer",
             "measurement": "Number of junctions",
             "planned": "2.6",
             "actual": "N/A",
+            "planned_outputs_not_yet_delivered": "2.6",
         },
     ]

@@ -463,6 +463,24 @@ class TestSchemeOutputsContext:
         assert context.outputs[0].actual is None
 
 
+class TestSchemeOutputRowContext:
+    @pytest.mark.parametrize(
+        "planned, actual, expected_planned_not_yet_delivered",
+        [(Decimal(20), Decimal(15), Decimal(5)), (Decimal(20), None, Decimal(20)), (None, Decimal(15), Decimal(-15))],
+    )
+    def test_set_planned_not_yet_delivered(
+        self, planned: Decimal | None, actual: Decimal | None, expected_planned_not_yet_delivered: Decimal | None
+    ) -> None:
+        context = SchemeOutputRowContext(
+            type=OutputTypeContext(name="Improvements to make an existing walking/cycle route safer"),
+            measure=OutputMeasureContext(name="miles"),
+            planned=planned,
+            actual=actual,
+        )
+
+        assert context.planned_not_yet_delivered == expected_planned_not_yet_delivered
+
+
 class TestOutputTypeContext:
     @pytest.mark.parametrize(
         "type_, expected_name",

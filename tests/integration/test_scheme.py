@@ -266,7 +266,7 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
         OutputRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES,
-            value=Decimal("4.000000"),
+            value=Decimal("2.000000"),
             observation_type=ObservationType.ACTUAL,
         ),
         OutputRevision(
@@ -278,7 +278,7 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
         OutputRevision(
             effective=DateRange(date(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
-            value=Decimal("2.700000"),
+            value=Decimal("2.500000"),
             observation_type=ObservationType.ACTUAL,
         ),
     )
@@ -292,13 +292,15 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
             "infrastructure": "New segregated cycling facility",
             "measurement": "Miles",
             "planned": "3",
-            "actual": "4",
+            "actual": "2",
+            "planned_outputs_not_yet_delivered": "1",
         },
         {
             "infrastructure": "Improvements to make an existing walking/cycle route safer",
             "measurement": "Number of junctions",
             "planned": "2.6",
-            "actual": "2.7",
+            "actual": "2.5",
+            "planned_outputs_not_yet_delivered": "0.1",
         },
     ]
 

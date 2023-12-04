@@ -206,7 +206,7 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
             "planned": "3",
             "actual": "2",
             "planned_outputs_not_yet_delivered": "1",
-            "output_delivery_status": "in progress",
+            "output_delivery_status": "In progress",
         },
         {
             "infrastructure": "Improvements to make an existing walking/cycle route safer",
@@ -214,6 +214,6 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
             "planned": "2.6",
             "actual": "N/A",
             "planned_outputs_not_yet_delivered": "2.6",
-            "output_delivery_status": "not started",
+            "output_delivery_status": "Not started",
         },
     ]

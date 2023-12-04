@@ -293,14 +293,14 @@ class SchemeOutputRowContext:
         actual = self.actual or Decimal(0)
         match (planned, actual):
             case (0, _):
-                return "no outputs recorded"
+                return "No outputs recorded"
             case (_, 0):
-                return "not started"
+                return "Not started"
             case (planned, actual) if planned > actual:
-                return "in progress"
+                return "In progress"
             case (planned, actual) if planned == actual:
-                return "complete"
-        return "more outputs than planned"
+                return "Complete"
+        return "More outputs than planned"
 
 
 @dataclass(frozen=True)

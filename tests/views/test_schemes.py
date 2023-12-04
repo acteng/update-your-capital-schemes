@@ -483,13 +483,13 @@ class TestSchemeOutputRowContext:
     @pytest.mark.parametrize(
         "planned, actual, expected_delivery_status",
         [
-            (None, Decimal(0), "no outputs recorded"),
-            (Decimal(0), None, "no outputs recorded"),
-            (Decimal(10), None, "not started"),
-            (Decimal(10), Decimal(0), "not started"),
-            (Decimal(10), Decimal(5), "in progress"),
-            (Decimal(10), Decimal(10), "complete"),
-            (Decimal(10), Decimal(20), "more outputs than planned"),
+            (None, Decimal(0), "No outputs recorded"),
+            (Decimal(0), None, "No outputs recorded"),
+            (Decimal(10), None, "Not started"),
+            (Decimal(10), Decimal(0), "Not started"),
+            (Decimal(10), Decimal(5), "In progress"),
+            (Decimal(10), Decimal(10), "Complete"),
+            (Decimal(10), Decimal(20), "More outputs than planned"),
         ],
     )
     def test_set_delivery_status(

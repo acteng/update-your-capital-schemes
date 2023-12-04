@@ -316,17 +316,17 @@ class OutputMeasureContext:
     @staticmethod
     def for_domain(measure: OutputMeasure) -> OutputMeasureContext:
         measure_names = {
-            OutputMeasure.MILES: "miles",
-            OutputMeasure.NUMBER_OF_JUNCTIONS: "number of junctions",
-            OutputMeasure.SIZE_OF_AREA: "size of area",
-            OutputMeasure.NUMBER_OF_PARKING_SPACES: "number of parking spaces",
-            OutputMeasure.NUMBER_OF_CROSSINGS: "number of crossings",
-            OutputMeasure.NUMBER_OF_SCHOOL_STREETS: "number of school streets",
-            OutputMeasure.NUMBER_OF_TRIALS: "number of trials",
-            OutputMeasure.NUMBER_OF_BUS_GATES: "number of bus gates",
-            OutputMeasure.NUMBER_OF_UPGRADES: "number of upgrades",
-            OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED: "number of children affected",
-            OutputMeasure.NUMBER_OF_MEASURES_PLANNED: "number of measures planned",
+            OutputMeasure.MILES: "Miles",
+            OutputMeasure.NUMBER_OF_JUNCTIONS: "Number of junctions",
+            OutputMeasure.SIZE_OF_AREA: "Size of area",
+            OutputMeasure.NUMBER_OF_PARKING_SPACES: "Number of parking spaces",
+            OutputMeasure.NUMBER_OF_CROSSINGS: "Number of crossings",
+            OutputMeasure.NUMBER_OF_SCHOOL_STREETS: "Number of school streets",
+            OutputMeasure.NUMBER_OF_TRIALS: "Number of trials",
+            OutputMeasure.NUMBER_OF_BUS_GATES: "Number of bus gates",
+            OutputMeasure.NUMBER_OF_UPGRADES: "Number of upgrades",
+            OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED: "Number of children affected",
+            OutputMeasure.NUMBER_OF_MEASURES_PLANNED: "Number of measures planned",
         }
         return OutputMeasureContext(name=measure_names[measure])
 

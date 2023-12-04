@@ -288,13 +288,13 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
     assert scheme_page.outputs.outputs.to_dicts() == [
         {
             "infrastructure": "New segregated cycling facility",
-            "measurement": "miles",
+            "measurement": "Miles",
             "planned": "3",
             "actual": "4",
         },
         {
             "infrastructure": "Improvements to make an existing walking/cycle route safer",
-            "measurement": "number of junctions",
+            "measurement": "Number of junctions",
             "planned": "2.6",
             "actual": "2.7",
         },

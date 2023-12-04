@@ -202,13 +202,13 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
     assert outputs_component.outputs.to_dicts() == [
         {
             "infrastructure": "New segregated cycling facility",
-            "measurement": "miles",
+            "measurement": "Miles",
             "planned": "3",
             "actual": "4",
         },
         {
             "infrastructure": "Improvements to make an existing walking/cycle route safer",
-            "measurement": "number of junctions",
+            "measurement": "Number of junctions",
             "planned": "2.6",
             "actual": "N/A",
         },

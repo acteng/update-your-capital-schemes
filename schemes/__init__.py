@@ -1,5 +1,4 @@
 import os
-from decimal import Decimal
 from typing import Any, Mapping
 
 import alembic.config
@@ -23,6 +22,7 @@ from schemes.infrastructure.authorities import DatabaseAuthorityRepository
 from schemes.infrastructure.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.users import DatabaseUserRepository
 from schemes.views import auth, authorities, schemes, start, users
+from schemes.views.filters import remove_exponent
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -89,9 +89,7 @@ def _configure_jinja(app: Flask) -> None:
 
 
 def _configure_jinja_filters(app: Flask) -> None:
-    @app.template_filter()
-    def remove_exponent(d: Decimal) -> Decimal:
-        return d.quantize(Decimal(1)) if d == d.to_integral() else d.normalize()
+    app.jinja_env.filters[remove_exponent.__name__] = remove_exponent
 
 
 def _configure_error_pages(app: Flask) -> None:

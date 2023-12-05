@@ -307,24 +307,19 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
     ]
 
 
-@pytest.mark.parametrize(
-    "value, expected_value", [(Decimal("0.000000"), "0"), (Decimal("0.100000"), "0.1"), (Decimal("10.000000"), "10")]
-)
-def test_scheme_shows_formatted_outputs(
-    schemes: SchemeRepository, client: FlaskClient, value: Decimal, expected_value: str
-) -> None:
+def test_scheme_shows_zero_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.outputs.update_outputs(
         OutputRevision(
             effective=(DateRange(date(2020, 1, 1), None)),
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
-            value=value,
+            value=Decimal("0.000000"),
             observation_type=ObservationType.PLANNED,
         ),
         OutputRevision(
             effective=(DateRange(date(2020, 1, 1), None)),
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
-            value=value,
+            value=Decimal("0.000000"),
             observation_type=ObservationType.ACTUAL,
         ),
     )
@@ -334,7 +329,7 @@ def test_scheme_shows_formatted_outputs(
 
     assert scheme_page.outputs.outputs
     outputs = list(scheme_page.outputs.outputs)
-    assert outputs[0].planned == expected_value and outputs[0].actual == expected_value
+    assert outputs[0].planned == "0" and outputs[0].actual == "0"
 
 
 def test_scheme_shows_message_when_no_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:

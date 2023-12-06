@@ -56,9 +56,9 @@ class SchemesContext:
     authority_name: str
     schemes: list[SchemeRowContext]
 
-    @staticmethod
-    def for_domain(authority: Authority, schemes: list[Scheme]) -> SchemesContext:
-        return SchemesContext(
+    @classmethod
+    def for_domain(cls, authority: Authority, schemes: list[Scheme]) -> SchemesContext:
+        return cls(
             authority_name=authority.name,
             schemes=[SchemeRowContext.for_domain(scheme) for scheme in schemes],
         )
@@ -71,9 +71,9 @@ class SchemeRowContext:
     funding_programme: FundingProgrammeContext
     name: str
 
-    @staticmethod
-    def for_domain(scheme: Scheme) -> SchemeRowContext:
-        return SchemeRowContext(
+    @classmethod
+    def for_domain(cls, scheme: Scheme) -> SchemeRowContext:
+        return cls(
             id=scheme.id,
             reference=scheme.reference,
             funding_programme=FundingProgrammeContext.for_domain(scheme.funding_programme),
@@ -104,9 +104,9 @@ class SchemeContext:
     milestones: SchemeMilestonesContext
     outputs: SchemeOutputsContext
 
-    @staticmethod
-    def for_domain(scheme: Scheme) -> SchemeContext:
-        return SchemeContext(
+    @classmethod
+    def for_domain(cls, scheme: Scheme) -> SchemeContext:
+        return cls(
             name=scheme.name,
             overview=SchemeOverviewContext.for_domain(scheme),
             funding=SchemeFundingContext.for_domain(scheme.funding),
@@ -122,9 +122,9 @@ class SchemeOverviewContext:
     funding_programme: FundingProgrammeContext
     current_milestone: MilestoneContext
 
-    @staticmethod
-    def for_domain(scheme: Scheme) -> SchemeOverviewContext:
-        return SchemeOverviewContext(
+    @classmethod
+    def for_domain(cls, scheme: Scheme) -> SchemeOverviewContext:
+        return cls(
             reference=scheme.reference,
             type=SchemeTypeContext.for_domain(scheme.type),
             funding_programme=FundingProgrammeContext.for_domain(scheme.funding_programme),
@@ -136,21 +136,21 @@ class SchemeOverviewContext:
 class SchemeTypeContext:
     name: str | None
 
-    @staticmethod
-    def for_domain(type_: SchemeType | None) -> SchemeTypeContext:
+    @classmethod
+    def for_domain(cls, type_: SchemeType | None) -> SchemeTypeContext:
         type_names = {
             SchemeType.DEVELOPMENT: "Development",
             SchemeType.CONSTRUCTION: "Construction",
         }
-        return SchemeTypeContext(name=type_names[type_] if type_ else None)
+        return cls(name=type_names[type_] if type_ else None)
 
 
 @dataclass(frozen=True)
 class FundingProgrammeContext:
     name: str | None
 
-    @staticmethod
-    def for_domain(funding_programme: FundingProgramme | None) -> FundingProgrammeContext:
+    @classmethod
+    def for_domain(cls, funding_programme: FundingProgramme | None) -> FundingProgrammeContext:
         funding_programme_names = {
             FundingProgramme.ATF2: "ATF2",
             FundingProgramme.ATF3: "ATF3",
@@ -161,15 +161,15 @@ class FundingProgrammeContext:
             FundingProgramme.LUF: "LUF",
             FundingProgramme.CRSTS: "CRSTS",
         }
-        return FundingProgrammeContext(name=funding_programme_names[funding_programme] if funding_programme else None)
+        return cls(name=funding_programme_names[funding_programme] if funding_programme else None)
 
 
 @dataclass(frozen=True)
 class MilestoneContext:
     name: str | None
 
-    @staticmethod
-    def for_domain(milestone: Milestone | None) -> MilestoneContext:
+    @classmethod
+    def for_domain(cls, milestone: Milestone | None) -> MilestoneContext:
         milestone_names = {
             Milestone.PUBLIC_CONSULTATION_COMPLETED: "Public consultation completed",
             Milestone.FEASIBILITY_DESIGN_COMPLETED: "Feasibility design completed",
@@ -183,7 +183,7 @@ class MilestoneContext:
             Milestone.SUPERSEDED: "Superseded",
             Milestone.REMOVED: "Removed",
         }
-        return MilestoneContext(name=milestone_names[milestone] if milestone else None)
+        return cls(name=milestone_names[milestone] if milestone else None)
 
 
 @dataclass(frozen=True)
@@ -193,9 +193,9 @@ class SchemeFundingContext:
     change_control_adjustment: Decimal | None
     allocation_still_to_spend: Decimal
 
-    @staticmethod
-    def for_domain(funding: SchemeFunding) -> SchemeFundingContext:
-        return SchemeFundingContext(
+    @classmethod
+    def for_domain(cls, funding: SchemeFunding) -> SchemeFundingContext:
+        return cls(
             funding_allocation=funding.funding_allocation,
             spend_to_date=funding.spend_to_date,
             change_control_adjustment=funding.change_control_adjustment,
@@ -207,8 +207,8 @@ class SchemeFundingContext:
 class SchemeMilestonesContext:
     milestones: list[SchemeMilestoneRowContext]
 
-    @staticmethod
-    def for_domain(milestone_revisions: list[MilestoneRevision]) -> SchemeMilestonesContext:
+    @classmethod
+    def for_domain(cls, milestone_revisions: list[MilestoneRevision]) -> SchemeMilestonesContext:
         def get_status_date(milestone: Milestone, observation_type: ObservationType) -> date | None:
             revisions = (
                 revision.status_date
@@ -217,7 +217,7 @@ class SchemeMilestonesContext:
             )
             return next(revisions, None)
 
-        return SchemeMilestonesContext(
+        return cls(
             milestones=[
                 SchemeMilestoneRowContext(
                     milestone=MilestoneContext.for_domain(milestone),
@@ -247,19 +247,19 @@ class SchemeMilestoneRowContext:
 class SchemeOutputsContext:
     outputs: list[SchemeOutputRowContext]
 
-    @staticmethod
-    def for_domain(output_revisions: list[OutputRevision]) -> SchemeOutputsContext:
-        return SchemeOutputsContext(
+    @classmethod
+    def for_domain(cls, output_revisions: list[OutputRevision]) -> SchemeOutputsContext:
+        return cls(
             outputs=[
                 SchemeOutputRowContext(
                     type=OutputTypeContext.for_domain(type_),
                     measure=OutputMeasureContext.for_domain(measure),
-                    planned=SchemeOutputsContext._get_value(group, ObservationType.PLANNED),
-                    actual=SchemeOutputsContext._get_value(group, ObservationType.ACTUAL),
+                    planned=cls._get_value(group, ObservationType.PLANNED),
+                    actual=cls._get_value(group, ObservationType.ACTUAL),
                 )
                 for (type_, measure), group in groupby(
                     sorted(output_revisions, key=SchemeOutputsContext._by_type_and_measure),
-                    SchemeOutputsContext._by_type_and_measure,
+                    cls._by_type_and_measure,
                 )
             ]
         )
@@ -307,8 +307,8 @@ class SchemeOutputRowContext:
 class OutputTypeContext:
     name: str
 
-    @staticmethod
-    def for_domain(type_: OutputType) -> OutputTypeContext:
+    @classmethod
+    def for_domain(cls, type_: OutputType) -> OutputTypeContext:
         type_names = {
             OutputType.NEW_SEGREGATED_CYCLING_FACILITY: "New segregated cycling facility",
             OutputType.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY: "New temporary segregated cycling facility",
@@ -331,15 +331,15 @@ class OutputTypeContext:
             OutputType.WIDENING_EXISTING_FOOTWAY: "Widening existing footway",
             OutputType.OTHER_INTERVENTIONS: "Other interventions",
         }
-        return OutputTypeContext(name=type_names[type_])
+        return cls(name=type_names[type_])
 
 
 @dataclass(frozen=True)
 class OutputMeasureContext:
     name: str
 
-    @staticmethod
-    def for_domain(measure: OutputMeasure) -> OutputMeasureContext:
+    @classmethod
+    def for_domain(cls, measure: OutputMeasure) -> OutputMeasureContext:
         measure_names = {
             OutputMeasure.MILES: "Miles",
             OutputMeasure.NUMBER_OF_JUNCTIONS: "Number of junctions",
@@ -353,7 +353,7 @@ class OutputMeasureContext:
             OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED: "Number of children affected",
             OutputMeasure.NUMBER_OF_MEASURES_PLANNED: "Number of measures planned",
         }
-        return OutputMeasureContext(name=measure_names[measure])
+        return cls(name=measure_names[measure])
 
 
 @bp.delete("")

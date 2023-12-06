@@ -286,7 +286,7 @@ class SchemeTypeMapper:
 
 
 class FundingProgrammeMapper:
-    _FUNDING_PROGRAMME_IDS = {
+    _IDS = {
         FundingProgramme.ATF2: 1,
         FundingProgramme.ATF3: 2,
         FundingProgramme.ATF4: 3,
@@ -298,14 +298,14 @@ class FundingProgrammeMapper:
     }
 
     def to_id(self, funding_programme: FundingProgramme | None) -> int | None:
-        return self._FUNDING_PROGRAMME_IDS[funding_programme] if funding_programme else None
+        return self._IDS[funding_programme] if funding_programme else None
 
     def to_domain(self, id_: int | None) -> FundingProgramme | None:
-        return next(key for key, value in self._FUNDING_PROGRAMME_IDS.items() if value == id_) if id_ else None
+        return next(key for key, value in self._IDS.items() if value == id_) if id_ else None
 
 
 class MilestoneMapper:
-    _MILESTONE_IDS = {
+    _IDS = {
         Milestone.PUBLIC_CONSULTATION_COMPLETED: 1,
         Milestone.FEASIBILITY_DESIGN_COMPLETED: 2,
         Milestone.PRELIMINARY_DESIGN_COMPLETED: 3,
@@ -320,27 +320,27 @@ class MilestoneMapper:
     }
 
     def to_id(self, milestone: Milestone) -> int:
-        return self._MILESTONE_IDS[milestone]
+        return self._IDS[milestone]
 
     def to_domain(self, id_: int) -> Milestone:
-        return next(key for key, value in self._MILESTONE_IDS.items() if value == id_)
+        return next(key for key, value in self._IDS.items() if value == id_)
 
 
 class ObservationTypeMapper:
-    _OBSERVATION_TYPE_IDS = {
+    _IDS = {
         ObservationType.PLANNED: 1,
         ObservationType.ACTUAL: 2,
     }
 
     def to_id(self, observation_type: ObservationType) -> int:
-        return self._OBSERVATION_TYPE_IDS[observation_type]
+        return self._IDS[observation_type]
 
     def to_domain(self, id_: int) -> ObservationType:
-        return next(key for key, value in self._OBSERVATION_TYPE_IDS.items() if value == id_)
+        return next(key for key, value in self._IDS.items() if value == id_)
 
 
 class FinancialTypeMapper:
-    _FINANCIAL_TYPE_IDS = {
+    _IDS = {
         FinancialType.EXPECTED_COST: 1,
         FinancialType.ACTUAL_COST: 2,
         FinancialType.FUNDING_ALLOCATION: 3,
@@ -349,14 +349,14 @@ class FinancialTypeMapper:
     }
 
     def to_id(self, financial_type: FinancialType) -> int:
-        return self._FINANCIAL_TYPE_IDS[financial_type]
+        return self._IDS[financial_type]
 
     def to_domain(self, id_: int) -> FinancialType:
-        return next(key for key, value in self._FINANCIAL_TYPE_IDS.items() if value == id_)
+        return next(key for key, value in self._IDS.items() if value == id_)
 
 
 class DataSourceMapper:
-    _DATA_SOURCE_IDS = {
+    _IDS = {
         DataSource.PULSE_5: 1,
         DataSource.PULSE_6: 2,
         DataSource.ATF4_BID: 3,
@@ -371,14 +371,14 @@ class DataSourceMapper:
     }
 
     def to_id(self, data_source: DataSource) -> int:
-        return self._DATA_SOURCE_IDS[data_source]
+        return self._IDS[data_source]
 
     def to_domain(self, id_: int) -> DataSource:
-        return next(key for key, value in self._DATA_SOURCE_IDS.items() if value == id_)
+        return next(key for key, value in self._IDS.items() if value == id_)
 
 
 class OutputTypeMeasureMapper:
-    _TYPE_MEASURE_IDS = {
+    _IDS = {
         OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES: 1,
         OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_MILES: 2,
         OutputTypeMeasure.BUS_PRIORITY_MEASURES_MILES: 3,
@@ -409,10 +409,10 @@ class OutputTypeMeasureMapper:
     }
 
     def to_id(self, output_type_measure: OutputTypeMeasure) -> int:
-        return self._TYPE_MEASURE_IDS[output_type_measure]
+        return self._IDS[output_type_measure]
 
     def to_domain(self, id_: int) -> OutputTypeMeasure:
-        return next(key for key, value in self._TYPE_MEASURE_IDS.items() if value == id_)
+        return next(key for key, value in self._IDS.items() if value == id_)
 
 
 SCHEME_TYPE_MAPPER = SchemeTypeMapper()

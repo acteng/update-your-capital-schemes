@@ -59,7 +59,7 @@ class TestSchemesContext:
             Scheme(id_=2, name="School Streets", authority_id=1),
         ]
 
-        context = SchemesContext.for_domain(authority, schemes)
+        context = SchemesContext.from_domain(authority, schemes)
 
         assert (
             context.authority_name == "Liverpool City Region Combined Authority"
@@ -73,7 +73,7 @@ class TestSchemesRowContext:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding_programme = FundingProgramme.ATF4
 
-        context = SchemeRowContext.for_domain(scheme)
+        context = SchemeRowContext.from_domain(scheme)
 
         assert context == SchemeRowContext(
             id=1,
@@ -123,7 +123,7 @@ class TestSchemeContext:
             ),
         )
 
-        context = SchemeContext.for_domain(scheme)
+        context = SchemeContext.from_domain(scheme)
 
         assert (
             context.name == "Wirral Package"
@@ -138,7 +138,7 @@ class TestSchemeOverviewContext:
     def test_reference(self) -> None:
         scheme = Scheme(id_=1, name="", authority_id=0)
 
-        context = SchemeOverviewContext.for_domain(scheme)
+        context = SchemeOverviewContext.from_domain(scheme)
 
         assert context.reference == "ATE00001"
 
@@ -146,7 +146,7 @@ class TestSchemeOverviewContext:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.type = SchemeType.CONSTRUCTION
 
-        context = SchemeOverviewContext.for_domain(scheme)
+        context = SchemeOverviewContext.from_domain(scheme)
 
         assert context.type == SchemeTypeContext(name="Construction")
 
@@ -154,7 +154,7 @@ class TestSchemeOverviewContext:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.funding_programme = FundingProgramme.ATF4
 
-        context = SchemeOverviewContext.for_domain(scheme)
+        context = SchemeOverviewContext.from_domain(scheme)
 
         assert context.funding_programme == FundingProgrammeContext(name="ATF4")
 
@@ -169,14 +169,14 @@ class TestSchemeOverviewContext:
             )
         )
 
-        context = SchemeOverviewContext.for_domain(scheme)
+        context = SchemeOverviewContext.from_domain(scheme)
 
         assert context.current_milestone == MilestoneContext(name="Detailed design completed")
 
     def test_set_current_milestone_when_no_revisions(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
 
-        context = SchemeOverviewContext.for_domain(scheme)
+        context = SchemeOverviewContext.from_domain(scheme)
 
         assert context.current_milestone == MilestoneContext(name=None)
 
@@ -187,7 +187,7 @@ class TestSchemeTypeContext:
         [(SchemeType.DEVELOPMENT, "Development"), (SchemeType.CONSTRUCTION, "Construction"), (None, None)],
     )
     def test_set_name(self, type_: SchemeType | None, expected_name: str | None) -> None:
-        context = SchemeTypeContext.for_domain(type_)
+        context = SchemeTypeContext.from_domain(type_)
 
         assert context.name == expected_name
 
@@ -208,7 +208,7 @@ class TestFundingProgrammeContext:
         ],
     )
     def test_set_name(self, funding_programme: FundingProgramme | None, expected_name: str | None) -> None:
-        context = FundingProgrammeContext.for_domain(funding_programme)
+        context = FundingProgrammeContext.from_domain(funding_programme)
 
         assert context.name == expected_name
 
@@ -232,7 +232,7 @@ class TestMilestoneContext:
         ],
     )
     def test_set_name(self, milestone: Milestone | None, expected_name: str | None) -> None:
-        context = MilestoneContext.for_domain(milestone)
+        context = MilestoneContext.from_domain(milestone)
 
         assert context.name == expected_name
 
@@ -249,7 +249,7 @@ class TestSchemeFundingContext:
             )
         )
 
-        context = SchemeFundingContext.for_domain(funding)
+        context = SchemeFundingContext.from_domain(funding)
 
         assert context.funding_allocation == Decimal(100000)
 
@@ -264,7 +264,7 @@ class TestSchemeFundingContext:
             )
         )
 
-        context = SchemeFundingContext.for_domain(funding)
+        context = SchemeFundingContext.from_domain(funding)
 
         assert context.spend_to_date == Decimal(50000)
 
@@ -279,7 +279,7 @@ class TestSchemeFundingContext:
             )
         )
 
-        context = SchemeFundingContext.for_domain(funding)
+        context = SchemeFundingContext.from_domain(funding)
 
         assert context.change_control_adjustment == Decimal(10000)
 
@@ -300,14 +300,14 @@ class TestSchemeFundingContext:
             ),
         )
 
-        context = SchemeFundingContext.for_domain(funding)
+        context = SchemeFundingContext.from_domain(funding)
 
         assert context.allocation_still_to_spend == Decimal(60000)
 
 
 class TestSchemeMilestonesContext:
     def test_create_from_domain_returns_correct_milestones(self) -> None:
-        context = SchemeMilestonesContext.for_domain([])
+        context = SchemeMilestonesContext.from_domain([])
 
         assert [row.milestone for row in context.milestones] == [
             MilestoneContext(name="Public consultation completed"),
@@ -347,7 +347,7 @@ class TestSchemeMilestonesContext:
             ),
         ]
 
-        context = SchemeMilestonesContext.for_domain(milestone_revisions)
+        context = SchemeMilestonesContext.from_domain(milestone_revisions)
 
         assert (
             SchemeMilestoneRowContext(
@@ -370,7 +370,7 @@ class TestSchemeMilestonesContext:
         ],
     )
     def test_create_from_domain_returns_milestone_dates_when_no_revisions(self, expected_milestone_name: str) -> None:
-        context = SchemeMilestonesContext.for_domain([])
+        context = SchemeMilestonesContext.from_domain([])
 
         assert (
             SchemeMilestoneRowContext(
@@ -403,7 +403,7 @@ class TestSchemeOutputsContext:
             ),
         ]
 
-        context = SchemeOutputsContext.for_domain(output_revisions)
+        context = SchemeOutputsContext.from_domain(output_revisions)
 
         assert [output.planned for output in context.outputs] == [Decimal(10), Decimal(20), Decimal(30)]
 
@@ -423,7 +423,7 @@ class TestSchemeOutputsContext:
             ),
         ]
 
-        context = SchemeOutputsContext.for_domain(output_revisions)
+        context = SchemeOutputsContext.from_domain(output_revisions)
 
         assert context.outputs == [
             SchemeOutputRowContext(
@@ -444,7 +444,7 @@ class TestSchemeOutputsContext:
             ),
         ]
 
-        context = SchemeOutputsContext.for_domain(output_revisions)
+        context = SchemeOutputsContext.from_domain(output_revisions)
 
         assert context.outputs[0].planned is None
 
@@ -458,7 +458,7 @@ class TestSchemeOutputsContext:
             ),
         ]
 
-        context = SchemeOutputsContext.for_domain(output_revisions)
+        context = SchemeOutputsContext.from_domain(output_revisions)
 
         assert context.outputs[0].actual is None
 
@@ -544,7 +544,7 @@ class TestOutputTypeContext:
         ],
     )
     def test_set_name(self, type_: OutputType, expected_name: str) -> None:
-        context = OutputTypeContext.for_domain(type_)
+        context = OutputTypeContext.from_domain(type_)
 
         assert context.name == expected_name
 
@@ -567,7 +567,7 @@ class TestOutputMeasureContext:
         ],
     )
     def test_set_name(self, measure: OutputMeasure, expected_name: str) -> None:
-        context = OutputMeasureContext.for_domain(measure)
+        context = OutputMeasureContext.from_domain(measure)
 
         assert context.name == expected_name
 

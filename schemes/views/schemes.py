@@ -47,7 +47,7 @@ def index(users: UserRepository, authorities: AuthorityRepository, schemes: Sche
     assert authority
     authority_schemes = schemes.get_by_authority(authority.id)
 
-    context = SchemesContext.for_domain(authority, authority_schemes)
+    context = SchemesContext.from_domain(authority, authority_schemes)
     return render_template("schemes.html", **asdict(context))
 
 
@@ -57,10 +57,10 @@ class SchemesContext:
     schemes: list[SchemeRowContext]
 
     @classmethod
-    def for_domain(cls, authority: Authority, schemes: list[Scheme]) -> SchemesContext:
+    def from_domain(cls, authority: Authority, schemes: list[Scheme]) -> SchemesContext:
         return cls(
             authority_name=authority.name,
-            schemes=[SchemeRowContext.for_domain(scheme) for scheme in schemes],
+            schemes=[SchemeRowContext.from_domain(scheme) for scheme in schemes],
         )
 
 
@@ -72,11 +72,11 @@ class SchemeRowContext:
     name: str
 
     @classmethod
-    def for_domain(cls, scheme: Scheme) -> SchemeRowContext:
+    def from_domain(cls, scheme: Scheme) -> SchemeRowContext:
         return cls(
             id=scheme.id,
             reference=scheme.reference,
-            funding_programme=FundingProgrammeContext.for_domain(scheme.funding_programme),
+            funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
             name=scheme.name,
         )
 
@@ -88,7 +88,7 @@ def get(schemes: SchemeRepository, scheme_id: int) -> str:
     scheme = schemes.get(scheme_id)
     assert scheme
 
-    context = SchemeContext.for_domain(scheme)
+    context = SchemeContext.from_domain(scheme)
     return render_template("scheme.html", **_as_shallow_dict(context))
 
 
@@ -105,13 +105,13 @@ class SchemeContext:
     outputs: SchemeOutputsContext
 
     @classmethod
-    def for_domain(cls, scheme: Scheme) -> SchemeContext:
+    def from_domain(cls, scheme: Scheme) -> SchemeContext:
         return cls(
             name=scheme.name,
-            overview=SchemeOverviewContext.for_domain(scheme),
-            funding=SchemeFundingContext.for_domain(scheme.funding),
-            milestones=SchemeMilestonesContext.for_domain(scheme.milestones.current_milestone_revisions),
-            outputs=SchemeOutputsContext.for_domain(scheme.outputs.current_output_revisions),
+            overview=SchemeOverviewContext.from_domain(scheme),
+            funding=SchemeFundingContext.from_domain(scheme.funding),
+            milestones=SchemeMilestonesContext.from_domain(scheme.milestones.current_milestone_revisions),
+            outputs=SchemeOutputsContext.from_domain(scheme.outputs.current_output_revisions),
         )
 
 
@@ -123,12 +123,12 @@ class SchemeOverviewContext:
     current_milestone: MilestoneContext
 
     @classmethod
-    def for_domain(cls, scheme: Scheme) -> SchemeOverviewContext:
+    def from_domain(cls, scheme: Scheme) -> SchemeOverviewContext:
         return cls(
             reference=scheme.reference,
-            type=SchemeTypeContext.for_domain(scheme.type),
-            funding_programme=FundingProgrammeContext.for_domain(scheme.funding_programme),
-            current_milestone=MilestoneContext.for_domain(scheme.milestones.current_milestone),
+            type=SchemeTypeContext.from_domain(scheme.type),
+            funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
+            current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
         )
 
 
@@ -137,7 +137,7 @@ class SchemeTypeContext:
     name: str | None
 
     @classmethod
-    def for_domain(cls, type_: SchemeType | None) -> SchemeTypeContext:
+    def from_domain(cls, type_: SchemeType | None) -> SchemeTypeContext:
         type_names = {
             SchemeType.DEVELOPMENT: "Development",
             SchemeType.CONSTRUCTION: "Construction",
@@ -150,7 +150,7 @@ class FundingProgrammeContext:
     name: str | None
 
     @classmethod
-    def for_domain(cls, funding_programme: FundingProgramme | None) -> FundingProgrammeContext:
+    def from_domain(cls, funding_programme: FundingProgramme | None) -> FundingProgrammeContext:
         funding_programme_names = {
             FundingProgramme.ATF2: "ATF2",
             FundingProgramme.ATF3: "ATF3",
@@ -169,7 +169,7 @@ class MilestoneContext:
     name: str | None
 
     @classmethod
-    def for_domain(cls, milestone: Milestone | None) -> MilestoneContext:
+    def from_domain(cls, milestone: Milestone | None) -> MilestoneContext:
         milestone_names = {
             Milestone.PUBLIC_CONSULTATION_COMPLETED: "Public consultation completed",
             Milestone.FEASIBILITY_DESIGN_COMPLETED: "Feasibility design completed",
@@ -194,7 +194,7 @@ class SchemeFundingContext:
     allocation_still_to_spend: Decimal
 
     @classmethod
-    def for_domain(cls, funding: SchemeFunding) -> SchemeFundingContext:
+    def from_domain(cls, funding: SchemeFunding) -> SchemeFundingContext:
         return cls(
             funding_allocation=funding.funding_allocation,
             spend_to_date=funding.spend_to_date,
@@ -208,7 +208,7 @@ class SchemeMilestonesContext:
     milestones: list[SchemeMilestoneRowContext]
 
     @classmethod
-    def for_domain(cls, milestone_revisions: list[MilestoneRevision]) -> SchemeMilestonesContext:
+    def from_domain(cls, milestone_revisions: list[MilestoneRevision]) -> SchemeMilestonesContext:
         def get_status_date(milestone: Milestone, observation_type: ObservationType) -> date | None:
             revisions = (
                 revision.status_date
@@ -220,7 +220,7 @@ class SchemeMilestonesContext:
         return cls(
             milestones=[
                 SchemeMilestoneRowContext(
-                    milestone=MilestoneContext.for_domain(milestone),
+                    milestone=MilestoneContext.from_domain(milestone),
                     planned=get_status_date(milestone, ObservationType.PLANNED),
                     actual=get_status_date(milestone, ObservationType.ACTUAL),
                 )
@@ -248,12 +248,12 @@ class SchemeOutputsContext:
     outputs: list[SchemeOutputRowContext]
 
     @classmethod
-    def for_domain(cls, output_revisions: list[OutputRevision]) -> SchemeOutputsContext:
+    def from_domain(cls, output_revisions: list[OutputRevision]) -> SchemeOutputsContext:
         return cls(
             outputs=[
                 SchemeOutputRowContext(
-                    type=OutputTypeContext.for_domain(type_),
-                    measure=OutputMeasureContext.for_domain(measure),
+                    type=OutputTypeContext.from_domain(type_),
+                    measure=OutputMeasureContext.from_domain(measure),
                     planned=cls._get_value(group, ObservationType.PLANNED),
                     actual=cls._get_value(group, ObservationType.ACTUAL),
                 )
@@ -308,7 +308,7 @@ class OutputTypeContext:
     name: str
 
     @classmethod
-    def for_domain(cls, type_: OutputType) -> OutputTypeContext:
+    def from_domain(cls, type_: OutputType) -> OutputTypeContext:
         type_names = {
             OutputType.NEW_SEGREGATED_CYCLING_FACILITY: "New segregated cycling facility",
             OutputType.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY: "New temporary segregated cycling facility",
@@ -339,7 +339,7 @@ class OutputMeasureContext:
     name: str
 
     @classmethod
-    def for_domain(cls, measure: OutputMeasure) -> OutputMeasureContext:
+    def from_domain(cls, measure: OutputMeasure) -> OutputMeasureContext:
         measure_names = {
             OutputMeasure.MILES: "Miles",
             OutputMeasure.NUMBER_OF_JUNCTIONS: "Number of junctions",

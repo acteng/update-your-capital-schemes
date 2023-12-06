@@ -22,7 +22,6 @@ from schemes.domain.schemes import (
     DateRange,
     FinancialRevision,
     FundingProgramme,
-    Milestone,
     MilestoneRevision,
     ObservationType,
     OutputRevision,
@@ -32,6 +31,7 @@ from schemes.domain.schemes import (
     SchemeType,
 )
 from schemes.infrastructure.schemes.funding import DataSourceMapper, FinancialTypeMapper
+from schemes.infrastructure.schemes.milestones import MilestoneMapper
 
 
 def add_tables(metadata: MetaData) -> None:
@@ -308,28 +308,6 @@ class FundingProgrammeMapper:
 
     def to_domain(self, id_: int | None) -> FundingProgramme | None:
         return next(key for key, value in self._IDS.items() if value == id_) if id_ else None
-
-
-class MilestoneMapper:
-    _IDS = {
-        Milestone.PUBLIC_CONSULTATION_COMPLETED: 1,
-        Milestone.FEASIBILITY_DESIGN_COMPLETED: 2,
-        Milestone.PRELIMINARY_DESIGN_COMPLETED: 3,
-        Milestone.OUTLINE_DESIGN_COMPLETED: 4,
-        Milestone.DETAILED_DESIGN_COMPLETED: 5,
-        Milestone.CONSTRUCTION_STARTED: 6,
-        Milestone.CONSTRUCTION_COMPLETED: 7,
-        Milestone.INSPECTION: 8,
-        Milestone.NOT_PROGRESSED: 9,
-        Milestone.SUPERSEDED: 10,
-        Milestone.REMOVED: 11,
-    }
-
-    def to_id(self, milestone: Milestone) -> int:
-        return self._IDS[milestone]
-
-    def to_domain(self, id_: int) -> Milestone:
-        return next(key for key, value in self._IDS.items() if value == id_)
 
 
 class ObservationTypeMapper:

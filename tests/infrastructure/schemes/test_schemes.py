@@ -25,7 +25,6 @@ from schemes.infrastructure.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.schemes import add_tables as schemes_add_tables
 from schemes.infrastructure.schemes.schemes import (
     FundingProgrammeMapper,
-    MilestoneMapper,
     ObservationTypeMapper,
     OutputTypeMeasureMapper,
     SchemeTypeMapper,
@@ -731,28 +730,6 @@ class TestFundingProgrammeMapper:
     def test_mapper(self, funding_programme: FundingProgramme | None, id_: int | None) -> None:
         mapper = FundingProgrammeMapper()
         assert mapper.to_id(funding_programme) == id_ and mapper.to_domain(id_) == funding_programme
-
-
-class TestMilestoneMapper:
-    @pytest.mark.parametrize(
-        "milestone, id_",
-        [
-            (Milestone.PUBLIC_CONSULTATION_COMPLETED, 1),
-            (Milestone.FEASIBILITY_DESIGN_COMPLETED, 2),
-            (Milestone.PRELIMINARY_DESIGN_COMPLETED, 3),
-            (Milestone.OUTLINE_DESIGN_COMPLETED, 4),
-            (Milestone.DETAILED_DESIGN_COMPLETED, 5),
-            (Milestone.CONSTRUCTION_STARTED, 6),
-            (Milestone.CONSTRUCTION_COMPLETED, 7),
-            (Milestone.INSPECTION, 8),
-            (Milestone.NOT_PROGRESSED, 9),
-            (Milestone.SUPERSEDED, 10),
-            (Milestone.REMOVED, 11),
-        ],
-    )
-    def test_mapper(self, milestone: Milestone, id_: int) -> None:
-        mapper = MilestoneMapper()
-        assert mapper.to_id(milestone) == id_ and mapper.to_domain(id_) == milestone
 
 
 class TestObservationTypeMapper:

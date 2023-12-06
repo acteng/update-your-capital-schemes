@@ -112,6 +112,13 @@ class DatabaseSchemeRepository(SchemeRepository):
         self._capital_scheme_financial_table = metadata.tables["capital_scheme_financial"]
         self._scheme_milestone_table = metadata.tables["scheme_milestone"]
         self._scheme_intervention_table = metadata.tables["scheme_intervention"]
+        self._scheme_type_mapper = SchemeTypeMapper()
+        self._funding_programme_mapper = FundingProgrammeMapper()
+        self._milestone_mapper = MilestoneMapper()
+        self._observation_type_mapper = ObservationTypeMapper()
+        self._financial_type_mapper = FinancialTypeMapper()
+        self._data_source_mapper = DataSourceMapper()
+        self._output_type_measure_mapper = OutputTypeMeasureMapper()
 
     def add(self, *schemes: Scheme) -> None:
         with self._engine.begin() as connection:
@@ -121,8 +128,8 @@ class DatabaseSchemeRepository(SchemeRepository):
                         capital_scheme_id=scheme.id,
                         scheme_name=scheme.name,
                         bid_submitting_authority_id=scheme.authority_id,
-                        scheme_type_id=SCHEME_TYPE_MAPPER.to_id(scheme.type),
-                        funding_programme_id=FUNDING_PROGRAMME_MAPPER.to_id(scheme.funding_programme),
+                        scheme_type_id=self._scheme_type_mapper.to_id(scheme.type),
+                        funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
                     )
                 )
                 for financial_revision in scheme.funding.financial_revisions:
@@ -131,9 +138,9 @@ class DatabaseSchemeRepository(SchemeRepository):
                             capital_scheme_id=scheme.id,
                             effective_date_from=financial_revision.effective.date_from,
                             effective_date_to=financial_revision.effective.date_to,
-                            financial_type_id=FINANCIAL_TYPE_MAPPER.to_id(financial_revision.type),
+                            financial_type_id=self._financial_type_mapper.to_id(financial_revision.type),
                             amount=financial_revision.amount,
-                            data_source_id=DATA_SOURCE_MAPPER.to_id(financial_revision.source),
+                            data_source_id=self._data_source_mapper.to_id(financial_revision.source),
                         )
                     )
                 for milestone_revision in scheme.milestones.milestone_revisions:
@@ -142,8 +149,10 @@ class DatabaseSchemeRepository(SchemeRepository):
                             capital_scheme_id=scheme.id,
                             effective_date_from=milestone_revision.effective.date_from,
                             effective_date_to=milestone_revision.effective.date_to,
-                            milestone_id=MILESTONE_MAPPER.to_id(milestone_revision.milestone),
-                            observation_type_id=OBSERVATION_TYPE_MAPPER.to_id(milestone_revision.observation_type),
+                            milestone_id=self._milestone_mapper.to_id(milestone_revision.milestone),
+                            observation_type_id=self._observation_type_mapper.to_id(
+                                milestone_revision.observation_type
+                            ),
                             status_date=milestone_revision.status_date,
                         )
                     )
@@ -153,9 +162,11 @@ class DatabaseSchemeRepository(SchemeRepository):
                             capital_scheme_id=scheme.id,
                             effective_date_from=output_revision.effective.date_from,
                             effective_date_to=output_revision.effective.date_to,
-                            intervention_type_measure_id=OUTPUT_TYPE_MEASURE_MAPPER.to_id(output_revision.type_measure),
+                            intervention_type_measure_id=self._output_type_measure_mapper.to_id(
+                                output_revision.type_measure
+                            ),
                             intervention_value=output_revision.value,
-                            observation_type_id=OBSERVATION_TYPE_MAPPER.to_id(output_revision.observation_type),
+                            observation_type_id=self._observation_type_mapper.to_id(output_revision.observation_type),
                         )
                     )
 
@@ -237,38 +248,34 @@ class DatabaseSchemeRepository(SchemeRepository):
 
             return schemes
 
-    @staticmethod
-    def _capital_scheme_to_domain(row: Row[Any]) -> Scheme:
+    def _capital_scheme_to_domain(self, row: Row[Any]) -> Scheme:
         scheme = Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
-        scheme.type = SCHEME_TYPE_MAPPER.to_domain(row.scheme_type_id)
-        scheme.funding_programme = FUNDING_PROGRAMME_MAPPER.to_domain(row.funding_programme_id)
+        scheme.type = self._scheme_type_mapper.to_domain(row.scheme_type_id)
+        scheme.funding_programme = self._funding_programme_mapper.to_domain(row.funding_programme_id)
         return scheme
 
-    @staticmethod
-    def _capital_scheme_financial_to_domain(row: Row[Any]) -> FinancialRevision:
+    def _capital_scheme_financial_to_domain(self, row: Row[Any]) -> FinancialRevision:
         return FinancialRevision(
             effective=DateRange(row.effective_date_from, row.effective_date_to),
-            type=FINANCIAL_TYPE_MAPPER.to_domain(row.financial_type_id),
+            type=self._financial_type_mapper.to_domain(row.financial_type_id),
             amount=row.amount,
-            source=DATA_SOURCE_MAPPER.to_domain(row.data_source_id),
+            source=self._data_source_mapper.to_domain(row.data_source_id),
         )
 
-    @staticmethod
-    def _scheme_milestone_to_domain(row: Row[Any]) -> MilestoneRevision:
+    def _scheme_milestone_to_domain(self, row: Row[Any]) -> MilestoneRevision:
         return MilestoneRevision(
             effective=DateRange(row.effective_date_from, row.effective_date_to),
-            milestone=MILESTONE_MAPPER.to_domain(row.milestone_id),
-            observation_type=OBSERVATION_TYPE_MAPPER.to_domain(row.observation_type_id),
+            milestone=self._milestone_mapper.to_domain(row.milestone_id),
+            observation_type=self._observation_type_mapper.to_domain(row.observation_type_id),
             status_date=row.status_date,
         )
 
-    @staticmethod
-    def _scheme_intervention_to_domain(row: Row[Any]) -> OutputRevision:
+    def _scheme_intervention_to_domain(self, row: Row[Any]) -> OutputRevision:
         return OutputRevision(
             effective=DateRange(row.effective_date_from, row.effective_date_to),
-            type_measure=OUTPUT_TYPE_MEASURE_MAPPER.to_domain(row.intervention_type_measure_id),
+            type_measure=self._output_type_measure_mapper.to_domain(row.intervention_type_measure_id),
             value=row.intervention_value or Decimal(0),
-            observation_type=OBSERVATION_TYPE_MAPPER.to_domain(row.observation_type_id),
+            observation_type=self._observation_type_mapper.to_domain(row.observation_type_id),
         )
 
 
@@ -413,12 +420,3 @@ class OutputTypeMeasureMapper:
 
     def to_domain(self, id_: int) -> OutputTypeMeasure:
         return next(key for key, value in self._IDS.items() if value == id_)
-
-
-SCHEME_TYPE_MAPPER = SchemeTypeMapper()
-FUNDING_PROGRAMME_MAPPER = FundingProgrammeMapper()
-MILESTONE_MAPPER = MilestoneMapper()
-OBSERVATION_TYPE_MAPPER = ObservationTypeMapper()
-FINANCIAL_TYPE_MAPPER = FinancialTypeMapper()
-DATA_SOURCE_MAPPER = DataSourceMapper()
-OUTPUT_TYPE_MEASURE_MAPPER = OutputTypeMeasureMapper()

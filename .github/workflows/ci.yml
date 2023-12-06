@@ -18,6 +18,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Create virtual environment
         run: python3 -m venv .venv
 

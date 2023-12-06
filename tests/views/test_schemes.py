@@ -186,10 +186,10 @@ class TestSchemeTypeContext:
         "type_, expected_name",
         [(SchemeType.DEVELOPMENT, "Development"), (SchemeType.CONSTRUCTION, "Construction"), (None, None)],
     )
-    def test_from_domain_sets_name(self, type_: SchemeType | None, expected_name: str | None) -> None:
+    def test_from_domain(self, type_: SchemeType | None, expected_name: str | None) -> None:
         context = SchemeTypeContext.from_domain(type_)
 
-        assert context.name == expected_name
+        assert context == SchemeTypeContext(name=expected_name)
 
 
 class TestFundingProgrammeContext:
@@ -207,10 +207,10 @@ class TestFundingProgrammeContext:
             (None, None),
         ],
     )
-    def test_from_domain_sets_name(self, funding_programme: FundingProgramme | None, expected_name: str | None) -> None:
+    def test_from_domain(self, funding_programme: FundingProgramme | None, expected_name: str | None) -> None:
         context = FundingProgrammeContext.from_domain(funding_programme)
 
-        assert context.name == expected_name
+        assert context == FundingProgrammeContext(name=expected_name)
 
 
 class TestMilestoneContext:
@@ -231,10 +231,10 @@ class TestMilestoneContext:
             (None, None),
         ],
     )
-    def test_from_domain_sets_name(self, milestone: Milestone | None, expected_name: str | None) -> None:
+    def test_from_domain(self, milestone: Milestone | None, expected_name: str | None) -> None:
         context = MilestoneContext.from_domain(milestone)
 
-        assert context.name == expected_name
+        assert context == MilestoneContext(name=expected_name)
 
 
 class TestSchemeFundingContext:
@@ -541,10 +541,10 @@ class TestOutputTypeContext:
             (OutputType.OTHER_INTERVENTIONS, "Other interventions"),
         ],
     )
-    def test_from_domain_sets_name(self, type_: OutputType, expected_name: str) -> None:
+    def test_from_domain(self, type_: OutputType, expected_name: str) -> None:
         context = OutputTypeContext.from_domain(type_)
 
-        assert context.name == expected_name
+        assert context == OutputTypeContext(name=expected_name)
 
 
 class TestOutputMeasureContext:
@@ -564,10 +564,10 @@ class TestOutputMeasureContext:
             (OutputMeasure.NUMBER_OF_MEASURES_PLANNED, "Number of measures planned"),
         ],
     )
-    def test_from_domain_sets_name(self, measure: OutputMeasure, expected_name: str) -> None:
+    def test_from_domain(self, measure: OutputMeasure, expected_name: str) -> None:
         context = OutputMeasureContext.from_domain(measure)
 
-        assert context.name == expected_name
+        assert context == OutputMeasureContext(name=expected_name)
 
 
 class TestSchemeRepr:

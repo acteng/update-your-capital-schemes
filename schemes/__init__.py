@@ -22,7 +22,7 @@ from schemes.infrastructure.authorities import DatabaseAuthorityRepository
 from schemes.infrastructure.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.users import DatabaseUserRepository
 from schemes.views import auth, authorities, schemes, start, users
-from schemes.views.filters import remove_exponent
+from schemes.views.filters import pounds, remove_exponent
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -89,6 +89,7 @@ def _configure_jinja(app: Flask) -> None:
 
 
 def _configure_jinja_filters(app: Flask) -> None:
+    app.jinja_env.filters[pounds.__name__] = pounds
     app.jinja_env.filters[remove_exponent.__name__] = remove_exponent
 
 

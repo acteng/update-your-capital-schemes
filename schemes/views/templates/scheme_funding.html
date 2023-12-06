@@ -9,7 +9,7 @@
                 "text": "Funding allocation"
             },
             "value": {
-                "text": "£{:,}".format(funding.funding_allocation | round) if funding.funding_allocation is not none() else "N/A"
+                "text": funding.funding_allocation | pounds if funding.funding_allocation is not none() else "N/A"
             }
         },
         {
@@ -17,7 +17,7 @@
                 "text": "Spend to date"
             },
             "value": {
-                "text": "£{:,}".format(funding.spend_to_date | round) if funding.spend_to_date is not none() else "N/A"
+                "text": funding.spend_to_date | pounds if funding.spend_to_date is not none() else "N/A"
             }
         },
         {
@@ -25,7 +25,7 @@
                 "text": "Change control adjustment"
             },
             "value": {
-                "text": "£{:,}".format(funding.change_control_adjustment | round) if funding.change_control_adjustment is not none() else "N/A"
+                "text": funding.change_control_adjustment | pounds if funding.change_control_adjustment is not none() else "N/A"
             }
         },
         {
@@ -33,7 +33,7 @@
                 "text": "Allocation still to spend"
             },
             "value": {
-                "text": "£{:,}".format(funding.allocation_still_to_spend | round)
+                "text": funding.allocation_still_to_spend | pounds
             }
         }
     ]

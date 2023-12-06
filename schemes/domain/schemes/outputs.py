@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from enum import Enum, IntEnum, auto
+from enum import Enum, IntEnum, auto, unique
 
 from schemes.domain.schemes.dates import DateRange
 from schemes.domain.schemes.observations import ObservationType
@@ -73,6 +73,7 @@ class OutputMeasure(IntEnum):
     NUMBER_OF_MEASURES_PLANNED = auto()
 
 
+@unique
 class OutputTypeMeasure(Enum):
     NEW_SEGREGATED_CYCLING_FACILITY_MILES = (OutputType.NEW_SEGREGATED_CYCLING_FACILITY, OutputMeasure.MILES)
     NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS = (

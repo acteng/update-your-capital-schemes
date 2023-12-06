@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enum import Enum, auto
+from enum import Enum, auto, unique
 
 from schemes.domain.schemes.funding import SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
@@ -35,11 +35,13 @@ class Scheme:
         return self._outputs
 
 
+@unique
 class SchemeType(Enum):
     DEVELOPMENT = auto()
     CONSTRUCTION = auto()
 
 
+@unique
 class FundingProgramme(Enum):
     ATF2 = auto()
     ATF3 = auto()

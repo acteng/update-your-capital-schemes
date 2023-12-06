@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum, auto
+from enum import Enum, auto, unique
 
 from _decimal import Decimal
 
@@ -92,6 +92,7 @@ class FinancialRevision:
         return self.type == FinancialType.SPENT_TO_DATE and self.effective.date_to is None
 
 
+@unique
 class FinancialType(Enum):
     EXPECTED_COST = auto()
     ACTUAL_COST = auto()
@@ -100,6 +101,7 @@ class FinancialType(Enum):
     FUNDING_REQUEST = auto()
 
 
+@unique
 class DataSource(Enum):
     PULSE_5 = auto()
     PULSE_6 = auto()

@@ -135,55 +135,55 @@ class SchemeOverviewContext:
 @dataclass(frozen=True)
 class SchemeTypeContext:
     name: str | None
+    _NAMES = {
+        SchemeType.DEVELOPMENT: "Development",
+        SchemeType.CONSTRUCTION: "Construction",
+    }
 
     @classmethod
     def from_domain(cls, type_: SchemeType | None) -> SchemeTypeContext:
-        type_names = {
-            SchemeType.DEVELOPMENT: "Development",
-            SchemeType.CONSTRUCTION: "Construction",
-        }
-        return cls(name=type_names[type_] if type_ else None)
+        return cls(name=cls._NAMES[type_] if type_ else None)
 
 
 @dataclass(frozen=True)
 class FundingProgrammeContext:
     name: str | None
+    _NAMES = {
+        FundingProgramme.ATF2: "ATF2",
+        FundingProgramme.ATF3: "ATF3",
+        FundingProgramme.ATF4: "ATF4",
+        FundingProgramme.ATF4E: "ATF4e",
+        FundingProgramme.ATF5: "ATF5",
+        FundingProgramme.MRN: "MRN",
+        FundingProgramme.LUF: "LUF",
+        FundingProgramme.CRSTS: "CRSTS",
+    }
 
     @classmethod
     def from_domain(cls, funding_programme: FundingProgramme | None) -> FundingProgrammeContext:
-        funding_programme_names = {
-            FundingProgramme.ATF2: "ATF2",
-            FundingProgramme.ATF3: "ATF3",
-            FundingProgramme.ATF4: "ATF4",
-            FundingProgramme.ATF4E: "ATF4e",
-            FundingProgramme.ATF5: "ATF5",
-            FundingProgramme.MRN: "MRN",
-            FundingProgramme.LUF: "LUF",
-            FundingProgramme.CRSTS: "CRSTS",
-        }
-        return cls(name=funding_programme_names[funding_programme] if funding_programme else None)
+        return cls(name=cls._NAMES[funding_programme] if funding_programme else None)
 
 
 @dataclass(frozen=True)
 class MilestoneContext:
     name: str | None
+    _NAMES = {
+        Milestone.PUBLIC_CONSULTATION_COMPLETED: "Public consultation completed",
+        Milestone.FEASIBILITY_DESIGN_COMPLETED: "Feasibility design completed",
+        Milestone.PRELIMINARY_DESIGN_COMPLETED: "Preliminary design completed",
+        Milestone.OUTLINE_DESIGN_COMPLETED: "Outline design completed",
+        Milestone.DETAILED_DESIGN_COMPLETED: "Detailed design completed",
+        Milestone.CONSTRUCTION_STARTED: "Construction started",
+        Milestone.CONSTRUCTION_COMPLETED: "Construction completed",
+        Milestone.INSPECTION: "Inspection",
+        Milestone.NOT_PROGRESSED: "Not progressed",
+        Milestone.SUPERSEDED: "Superseded",
+        Milestone.REMOVED: "Removed",
+    }
 
     @classmethod
     def from_domain(cls, milestone: Milestone | None) -> MilestoneContext:
-        milestone_names = {
-            Milestone.PUBLIC_CONSULTATION_COMPLETED: "Public consultation completed",
-            Milestone.FEASIBILITY_DESIGN_COMPLETED: "Feasibility design completed",
-            Milestone.PRELIMINARY_DESIGN_COMPLETED: "Preliminary design completed",
-            Milestone.OUTLINE_DESIGN_COMPLETED: "Outline design completed",
-            Milestone.DETAILED_DESIGN_COMPLETED: "Detailed design completed",
-            Milestone.CONSTRUCTION_STARTED: "Construction started",
-            Milestone.CONSTRUCTION_COMPLETED: "Construction completed",
-            Milestone.INSPECTION: "Inspection",
-            Milestone.NOT_PROGRESSED: "Not progressed",
-            Milestone.SUPERSEDED: "Superseded",
-            Milestone.REMOVED: "Removed",
-        }
-        return cls(name=milestone_names[milestone] if milestone else None)
+        return cls(name=cls._NAMES[milestone] if milestone else None)
 
 
 @dataclass(frozen=True)
@@ -306,54 +306,54 @@ class SchemeOutputRowContext:
 @dataclass(frozen=True)
 class OutputTypeContext:
     name: str
+    _NAMES = {
+        OutputType.NEW_SEGREGATED_CYCLING_FACILITY: "New segregated cycling facility",
+        OutputType.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY: "New temporary segregated cycling facility",
+        OutputType.NEW_JUNCTION_TREATMENT: "New junction treatment",
+        OutputType.NEW_PERMANENT_FOOTWAY: "New permanent footway",
+        OutputType.NEW_TEMPORARY_FOOTWAY: "New temporary footway",
+        OutputType.NEW_SHARED_USE_FACILITIES: "New shared use (walking and cycling) facilities",
+        OutputType.NEW_SHARED_USE_FACILITIES_WHEELING: "New shared use (walking, wheeling & cycling) facilities",
+        OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE: "Improvements to make an existing walking/cycle route safer",
+        OutputType.AREA_WIDE_TRAFFIC_MANAGEMENT: "Area-wide traffic management (including by TROs (both permanent and experimental))",
+        OutputType.BUS_PRIORITY_MEASURES: "Bus priority measures that also enable active travel (for example, bus gates)",
+        OutputType.SECURE_CYCLE_PARKING: "Provision of secure cycle parking facilities",
+        OutputType.NEW_ROAD_CROSSINGS: "New road crossings",
+        OutputType.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY: "Restriction or reduction of car parking availability",
+        OutputType.SCHOOL_STREETS: "School streets",
+        OutputType.UPGRADES_TO_EXISTING_FACILITIES: "Upgrades to existing facilities (e.g. surfacing, signage, signals)",
+        OutputType.E_SCOOTER_TRIALS: "E-scooter trials",
+        OutputType.PARK_AND_CYCLE_STRIDE_FACILITIES: "Park and cycle/stride facilities",
+        OutputType.TRAFFIC_CALMING: "Traffic calming (e.g. lane closures, reducing speed limits)",
+        OutputType.WIDENING_EXISTING_FOOTWAY: "Widening existing footway",
+        OutputType.OTHER_INTERVENTIONS: "Other interventions",
+    }
 
     @classmethod
     def from_domain(cls, type_: OutputType) -> OutputTypeContext:
-        type_names = {
-            OutputType.NEW_SEGREGATED_CYCLING_FACILITY: "New segregated cycling facility",
-            OutputType.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY: "New temporary segregated cycling facility",
-            OutputType.NEW_JUNCTION_TREATMENT: "New junction treatment",
-            OutputType.NEW_PERMANENT_FOOTWAY: "New permanent footway",
-            OutputType.NEW_TEMPORARY_FOOTWAY: "New temporary footway",
-            OutputType.NEW_SHARED_USE_FACILITIES: "New shared use (walking and cycling) facilities",
-            OutputType.NEW_SHARED_USE_FACILITIES_WHEELING: "New shared use (walking, wheeling & cycling) facilities",
-            OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE: "Improvements to make an existing walking/cycle route safer",
-            OutputType.AREA_WIDE_TRAFFIC_MANAGEMENT: "Area-wide traffic management (including by TROs (both permanent and experimental))",
-            OutputType.BUS_PRIORITY_MEASURES: "Bus priority measures that also enable active travel (for example, bus gates)",
-            OutputType.SECURE_CYCLE_PARKING: "Provision of secure cycle parking facilities",
-            OutputType.NEW_ROAD_CROSSINGS: "New road crossings",
-            OutputType.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY: "Restriction or reduction of car parking availability",
-            OutputType.SCHOOL_STREETS: "School streets",
-            OutputType.UPGRADES_TO_EXISTING_FACILITIES: "Upgrades to existing facilities (e.g. surfacing, signage, signals)",
-            OutputType.E_SCOOTER_TRIALS: "E-scooter trials",
-            OutputType.PARK_AND_CYCLE_STRIDE_FACILITIES: "Park and cycle/stride facilities",
-            OutputType.TRAFFIC_CALMING: "Traffic calming (e.g. lane closures, reducing speed limits)",
-            OutputType.WIDENING_EXISTING_FOOTWAY: "Widening existing footway",
-            OutputType.OTHER_INTERVENTIONS: "Other interventions",
-        }
-        return cls(name=type_names[type_])
+        return cls(name=cls._NAMES[type_])
 
 
 @dataclass(frozen=True)
 class OutputMeasureContext:
     name: str
+    _NAMES = {
+        OutputMeasure.MILES: "Miles",
+        OutputMeasure.NUMBER_OF_JUNCTIONS: "Number of junctions",
+        OutputMeasure.SIZE_OF_AREA: "Size of area",
+        OutputMeasure.NUMBER_OF_PARKING_SPACES: "Number of parking spaces",
+        OutputMeasure.NUMBER_OF_CROSSINGS: "Number of crossings",
+        OutputMeasure.NUMBER_OF_SCHOOL_STREETS: "Number of school streets",
+        OutputMeasure.NUMBER_OF_TRIALS: "Number of trials",
+        OutputMeasure.NUMBER_OF_BUS_GATES: "Number of bus gates",
+        OutputMeasure.NUMBER_OF_UPGRADES: "Number of upgrades",
+        OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED: "Number of children affected",
+        OutputMeasure.NUMBER_OF_MEASURES_PLANNED: "Number of measures planned",
+    }
 
     @classmethod
     def from_domain(cls, measure: OutputMeasure) -> OutputMeasureContext:
-        measure_names = {
-            OutputMeasure.MILES: "Miles",
-            OutputMeasure.NUMBER_OF_JUNCTIONS: "Number of junctions",
-            OutputMeasure.SIZE_OF_AREA: "Size of area",
-            OutputMeasure.NUMBER_OF_PARKING_SPACES: "Number of parking spaces",
-            OutputMeasure.NUMBER_OF_CROSSINGS: "Number of crossings",
-            OutputMeasure.NUMBER_OF_SCHOOL_STREETS: "Number of school streets",
-            OutputMeasure.NUMBER_OF_TRIALS: "Number of trials",
-            OutputMeasure.NUMBER_OF_BUS_GATES: "Number of bus gates",
-            OutputMeasure.NUMBER_OF_UPGRADES: "Number of upgrades",
-            OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED: "Number of children affected",
-            OutputMeasure.NUMBER_OF_MEASURES_PLANNED: "Number of measures planned",
-        }
-        return cls(name=measure_names[measure])
+        return cls(name=cls._NAMES[measure])
 
 
 @bp.delete("")
@@ -397,10 +397,11 @@ class SchemeTypeRepr(Enum):
     CONSTRUCTION = "construction"
 
     def to_domain(self) -> SchemeType:
-        return {
+        members = {
             SchemeTypeRepr.DEVELOPMENT: SchemeType.DEVELOPMENT,
             SchemeTypeRepr.CONSTRUCTION: SchemeType.CONSTRUCTION,
-        }[self]
+        }
+        return members[self]
 
 
 @unique
@@ -415,7 +416,7 @@ class FundingProgrammeRepr(Enum):
     CRSTS = "CRSTS"
 
     def to_domain(self) -> FundingProgramme:
-        return {
+        members = {
             FundingProgrammeRepr.ATF2: FundingProgramme.ATF2,
             FundingProgrammeRepr.ATF3: FundingProgramme.ATF3,
             FundingProgrammeRepr.ATF4: FundingProgramme.ATF4,
@@ -424,7 +425,8 @@ class FundingProgrammeRepr(Enum):
             FundingProgrammeRepr.MRN: FundingProgramme.MRN,
             FundingProgrammeRepr.LUF: FundingProgramme.LUF,
             FundingProgrammeRepr.CRSTS: FundingProgramme.CRSTS,
-        }[self]
+        }
+        return members[self]
 
 
 @dataclass(frozen=True)
@@ -456,13 +458,14 @@ class FinancialTypeRepr(Enum):
     FUNDING_REQUEST = "funding request"
 
     def to_domain(self) -> FinancialType:
-        return {
+        members = {
             FinancialTypeRepr.EXPECTED_COST: FinancialType.EXPECTED_COST,
             FinancialTypeRepr.ACTUAL_COST: FinancialType.ACTUAL_COST,
             FinancialTypeRepr.FUNDING_ALLOCATION: FinancialType.FUNDING_ALLOCATION,
             FinancialTypeRepr.SPENT_TO_DATE: FinancialType.SPENT_TO_DATE,
             FinancialTypeRepr.FUNDING_REQUEST: FinancialType.FUNDING_REQUEST,
-        }[self]
+        }
+        return members[self]
 
 
 @unique
@@ -480,7 +483,7 @@ class DataSourceRepr(Enum):
     INITIAL_SCHEME_LIST = "Initial Scheme List"
 
     def to_domain(self) -> DataSource:
-        return {
+        members = {
             DataSourceRepr.PULSE_5: DataSource.PULSE_5,
             DataSourceRepr.PULSE_6: DataSource.PULSE_6,
             DataSourceRepr.ATF4_BID: DataSource.ATF4_BID,
@@ -492,7 +495,8 @@ class DataSourceRepr(Enum):
             DataSourceRepr.ATF4E_BID: DataSource.ATF4E_BID,
             DataSourceRepr.PULSE_2023_24_Q2: DataSource.PULSE_2023_24_Q2,
             DataSourceRepr.INITIAL_SCHEME_LIST: DataSource.INITIAL_SCHEME_LIST,
-        }[self]
+        }
+        return members[self]
 
 
 @dataclass(frozen=True)
@@ -530,7 +534,7 @@ class MilestoneRepr(Enum):
     REMOVED = "removed"
 
     def to_domain(self) -> Milestone:
-        return {
+        members = {
             MilestoneRepr.PUBLIC_CONSULTATION_COMPLETED: Milestone.PUBLIC_CONSULTATION_COMPLETED,
             MilestoneRepr.FEASIBILITY_DESIGN_COMPLETED: Milestone.FEASIBILITY_DESIGN_COMPLETED,
             MilestoneRepr.PRELIMINARY_DESIGN_COMPLETED: Milestone.PRELIMINARY_DESIGN_COMPLETED,
@@ -542,7 +546,8 @@ class MilestoneRepr(Enum):
             MilestoneRepr.NOT_PROGRESSED: Milestone.NOT_PROGRESSED,
             MilestoneRepr.SUPERSEDED: Milestone.SUPERSEDED,
             MilestoneRepr.REMOVED: Milestone.REMOVED,
-        }[self]
+        }
+        return members[self]
 
 
 @unique
@@ -551,10 +556,11 @@ class ObservationTypeRepr(Enum):
     ACTUAL = "Actual"
 
     def to_domain(self) -> ObservationType:
-        return {
+        members = {
             ObservationTypeRepr.PLANNED: ObservationType.PLANNED,
             ObservationTypeRepr.ACTUAL: ObservationType.ACTUAL,
-        }[self]
+        }
+        return members[self]
 
 
 @dataclass(frozen=True)
@@ -602,7 +608,7 @@ class OutputTypeRepr(Enum):
     OTHER_INTERVENTIONS = "Other interventions"
 
     def to_domain(self) -> OutputType:
-        return {
+        members = {
             OutputTypeRepr.NEW_SEGREGATED_CYCLING_FACILITY: OutputType.NEW_SEGREGATED_CYCLING_FACILITY,
             OutputTypeRepr.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY: OutputType.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY,
             OutputTypeRepr.NEW_JUNCTION_TREATMENT: OutputType.NEW_JUNCTION_TREATMENT,
@@ -623,7 +629,8 @@ class OutputTypeRepr(Enum):
             OutputTypeRepr.TRAFFIC_CALMING: OutputType.TRAFFIC_CALMING,
             OutputTypeRepr.WIDENING_EXISTING_FOOTWAY: OutputType.WIDENING_EXISTING_FOOTWAY,
             OutputTypeRepr.OTHER_INTERVENTIONS: OutputType.OTHER_INTERVENTIONS,
-        }[self]
+        }
+        return members[self]
 
 
 @unique
@@ -641,7 +648,7 @@ class OutputMeasureRepr(Enum):
     NUMBER_OF_MEASURES_PLANNED = "number of measures planned"
 
     def to_domain(self) -> OutputMeasure:
-        return {
+        members = {
             OutputMeasureRepr.MILES: OutputMeasure.MILES,
             OutputMeasureRepr.NUMBER_OF_JUNCTIONS: OutputMeasure.NUMBER_OF_JUNCTIONS,
             OutputMeasureRepr.SIZE_OF_AREA: OutputMeasure.SIZE_OF_AREA,
@@ -653,4 +660,5 @@ class OutputMeasureRepr(Enum):
             OutputMeasureRepr.NUMBER_OF_UPGRADES: OutputMeasure.NUMBER_OF_UPGRADES,
             OutputMeasureRepr.NUMBER_OF_CHILDREN_AFFECTED: OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED,
             OutputMeasureRepr.NUMBER_OF_MEASURES_PLANNED: OutputMeasure.NUMBER_OF_MEASURES_PLANNED,
-        }[self]
+        }
+        return members[self]

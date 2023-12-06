@@ -390,7 +390,7 @@ class TestDatabaseSchemeRepository:
             ),
         ]
 
-    def test_get_scheme_output_revision_with_missing_value(
+    def test_get_scheme_output_revision_with_no_value(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
     ) -> None:
         with engine.begin() as connection:

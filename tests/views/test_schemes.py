@@ -52,7 +52,7 @@ from schemes.views.schemes import (
 
 
 class TestSchemesContext:
-    def test_create_from_domain(self) -> None:
+    def test_from_domain(self) -> None:
         authority = Authority(id_=1, name="Liverpool City Region Combined Authority")
         schemes = [
             Scheme(id_=1, name="Wirral Package", authority_id=1),
@@ -69,7 +69,7 @@ class TestSchemesContext:
 
 
 class TestSchemesRowContext:
-    def test_create_from_domain(self) -> None:
+    def test_from_domain(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding_programme = FundingProgramme.ATF4
 
@@ -84,7 +84,7 @@ class TestSchemesRowContext:
 
 
 class TestSchemeContext:
-    def test_create_from_domain(self) -> None:
+    def test_from_domain(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.funding.update_financial(
             FinancialRevision(
@@ -135,14 +135,14 @@ class TestSchemeContext:
 
 
 class TestSchemeOverviewContext:
-    def test_reference(self) -> None:
+    def test_from_domain_sets_reference(self) -> None:
         scheme = Scheme(id_=1, name="", authority_id=0)
 
         context = SchemeOverviewContext.from_domain(scheme)
 
         assert context.reference == "ATE00001"
 
-    def test_set_type(self) -> None:
+    def test_from_domain_sets_type(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.type = SchemeType.CONSTRUCTION
 
@@ -150,7 +150,7 @@ class TestSchemeOverviewContext:
 
         assert context.type == SchemeTypeContext(name="Construction")
 
-    def test_set_funding_programme(self) -> None:
+    def test_from_domain_sets_funding_programme(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.funding_programme = FundingProgramme.ATF4
 
@@ -158,7 +158,7 @@ class TestSchemeOverviewContext:
 
         assert context.funding_programme == FundingProgrammeContext(name="ATF4")
 
-    def test_set_current_milestone(self) -> None:
+    def test_from_domain_sets_current_milestone(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.milestones.update_milestone(
             MilestoneRevision(
@@ -173,7 +173,7 @@ class TestSchemeOverviewContext:
 
         assert context.current_milestone == MilestoneContext(name="Detailed design completed")
 
-    def test_set_current_milestone_when_no_revisions(self) -> None:
+    def test_from_domain_sets_current_milestone_when_no_revisions(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
 
         context = SchemeOverviewContext.from_domain(scheme)
@@ -186,7 +186,7 @@ class TestSchemeTypeContext:
         "type_, expected_name",
         [(SchemeType.DEVELOPMENT, "Development"), (SchemeType.CONSTRUCTION, "Construction"), (None, None)],
     )
-    def test_set_name(self, type_: SchemeType | None, expected_name: str | None) -> None:
+    def test_from_domain_sets_name(self, type_: SchemeType | None, expected_name: str | None) -> None:
         context = SchemeTypeContext.from_domain(type_)
 
         assert context.name == expected_name
@@ -207,7 +207,7 @@ class TestFundingProgrammeContext:
             (None, None),
         ],
     )
-    def test_set_name(self, funding_programme: FundingProgramme | None, expected_name: str | None) -> None:
+    def test_from_domain_sets_name(self, funding_programme: FundingProgramme | None, expected_name: str | None) -> None:
         context = FundingProgrammeContext.from_domain(funding_programme)
 
         assert context.name == expected_name
@@ -231,14 +231,14 @@ class TestMilestoneContext:
             (None, None),
         ],
     )
-    def test_set_name(self, milestone: Milestone | None, expected_name: str | None) -> None:
+    def test_from_domain_sets_name(self, milestone: Milestone | None, expected_name: str | None) -> None:
         context = MilestoneContext.from_domain(milestone)
 
         assert context.name == expected_name
 
 
 class TestSchemeFundingContext:
-    def test_set_funding_allocation(self) -> None:
+    def test_from_domain_sets_funding_allocation(self) -> None:
         funding = SchemeFunding()
         funding.update_financial(
             FinancialRevision(
@@ -253,7 +253,7 @@ class TestSchemeFundingContext:
 
         assert context.funding_allocation == Decimal(100000)
 
-    def test_set_spend_to_date(self) -> None:
+    def test_from_domain_sets_spend_to_date(self) -> None:
         funding = SchemeFunding()
         funding.update_financial(
             FinancialRevision(
@@ -268,7 +268,7 @@ class TestSchemeFundingContext:
 
         assert context.spend_to_date == Decimal(50000)
 
-    def test_set_change_control_adjustment(self) -> None:
+    def test_from_domain_sets_change_control_adjustment(self) -> None:
         funding = SchemeFunding()
         funding.update_financial(
             FinancialRevision(
@@ -283,7 +283,7 @@ class TestSchemeFundingContext:
 
         assert context.change_control_adjustment == Decimal(10000)
 
-    def test_set_allocation_still_to_spend(self) -> None:
+    def test_from_domain_sets_allocation_still_to_spend(self) -> None:
         funding = SchemeFunding()
         funding.update_financials(
             FinancialRevision(
@@ -306,7 +306,7 @@ class TestSchemeFundingContext:
 
 
 class TestSchemeMilestonesContext:
-    def test_create_from_domain_returns_correct_milestones(self) -> None:
+    def test_from_domain_sets_milestones(self) -> None:
         context = SchemeMilestonesContext.from_domain([])
 
         assert [row.milestone for row in context.milestones] == [
@@ -329,9 +329,7 @@ class TestSchemeMilestonesContext:
             (Milestone.CONSTRUCTION_COMPLETED, "Construction completed"),
         ],
     )
-    def test_create_from_domain_returns_milestone_dates(
-        self, milestone: Milestone, expected_milestone_name: str
-    ) -> None:
+    def test_from_domain_sets_milestone_dates(self, milestone: Milestone, expected_milestone_name: str) -> None:
         milestone_revisions = [
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), None),
@@ -369,7 +367,7 @@ class TestSchemeMilestonesContext:
             "Construction completed",
         ],
     )
-    def test_create_from_domain_returns_milestone_dates_when_no_revisions(self, expected_milestone_name: str) -> None:
+    def test_from_domain_sets_milestone_dates_when_no_revisions(self, expected_milestone_name: str) -> None:
         context = SchemeMilestonesContext.from_domain([])
 
         assert (
@@ -381,7 +379,7 @@ class TestSchemeMilestonesContext:
 
 
 class TestSchemeOutputsContext:
-    def test_create_from_domain_is_ordered_by_type_then_measure(self) -> None:
+    def test_from_domain_orders_by_type_then_measure(self) -> None:
         output_revisions = [
             OutputRevision(
                 effective=DateRange(date(2020, 1, 1), None),
@@ -407,7 +405,7 @@ class TestSchemeOutputsContext:
 
         assert [output.planned for output in context.outputs] == [Decimal(10), Decimal(20), Decimal(30)]
 
-    def test_create_from_domain_groups_by_type_measure(self) -> None:
+    def test_from_domain_groups_by_type_measure(self) -> None:
         output_revisions = [
             OutputRevision(
                 effective=DateRange(date(2020, 1, 1), None),
@@ -434,7 +432,7 @@ class TestSchemeOutputsContext:
             )
         ]
 
-    def test_create_from_domain_when_no_planned(self) -> None:
+    def test_from_domain_when_no_planned(self) -> None:
         output_revisions = [
             OutputRevision(
                 effective=DateRange(date(2020, 1, 1), None),
@@ -448,7 +446,7 @@ class TestSchemeOutputsContext:
 
         assert context.outputs[0].planned is None
 
-    def test_create_from_domain_when_no_actual(self) -> None:
+    def test_from_domain_when_no_actual(self) -> None:
         output_revisions = [
             OutputRevision(
                 effective=DateRange(date(2020, 1, 1), None),
@@ -468,7 +466,7 @@ class TestSchemeOutputRowContext:
         "planned, actual, expected_planned_not_yet_delivered",
         [(Decimal(20), Decimal(15), Decimal(5)), (Decimal(20), None, Decimal(20)), (None, Decimal(15), Decimal(-15))],
     )
-    def test_set_planned_not_yet_delivered(
+    def test_planned_not_yet_delivered(
         self, planned: Decimal | None, actual: Decimal | None, expected_planned_not_yet_delivered: Decimal | None
     ) -> None:
         context = SchemeOutputRowContext(
@@ -492,7 +490,7 @@ class TestSchemeOutputRowContext:
             (Decimal(10), Decimal(20), "More outputs than planned"),
         ],
     )
-    def test_set_delivery_status(
+    def test_delivery_status(
         self, planned: Decimal | None, actual: Decimal | None, expected_delivery_status: str
     ) -> None:
         context = SchemeOutputRowContext(
@@ -543,7 +541,7 @@ class TestOutputTypeContext:
             (OutputType.OTHER_INTERVENTIONS, "Other interventions"),
         ],
     )
-    def test_set_name(self, type_: OutputType, expected_name: str) -> None:
+    def test_from_domain_sets_name(self, type_: OutputType, expected_name: str) -> None:
         context = OutputTypeContext.from_domain(type_)
 
         assert context.name == expected_name
@@ -566,14 +564,14 @@ class TestOutputMeasureContext:
             (OutputMeasure.NUMBER_OF_MEASURES_PLANNED, "Number of measures planned"),
         ],
     )
-    def test_set_name(self, measure: OutputMeasure, expected_name: str) -> None:
+    def test_from_domain_sets_name(self, measure: OutputMeasure, expected_name: str) -> None:
         context = OutputMeasureContext.from_domain(measure)
 
         assert context.name == expected_name
 
 
 class TestSchemeRepr:
-    def test_create_domain(self) -> None:
+    def test_to_domain(self) -> None:
         scheme_repr = SchemeRepr(
             id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION, funding_programme=FundingProgrammeRepr.ATF4
         )
@@ -588,7 +586,7 @@ class TestSchemeRepr:
             and scheme.funding_programme == FundingProgramme.ATF4
         )
 
-    def test_create_minimal_domain(self) -> None:
+    def test_to_domain_when_minimal(self) -> None:
         scheme_repr = SchemeRepr(id=1, name="Wirral Package")
 
         scheme = scheme_repr.to_domain(2)
@@ -601,7 +599,7 @@ class TestSchemeRepr:
             and scheme.funding_programme is None
         )
 
-    def test_set_financial_revisions(self) -> None:
+    def test_to_domain_sets_financial_revisions(self) -> None:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
@@ -640,7 +638,7 @@ class TestSchemeRepr:
             ),
         ]
 
-    def test_set_milestone_revisions(self) -> None:
+    def test_to_domain_sets_milestone_revisions(self) -> None:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
@@ -679,7 +677,7 @@ class TestSchemeRepr:
             ),
         ]
 
-    def test_set_output_revisions(self) -> None:
+    def test_to_domain_sets_output_revisions(self) -> None:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
@@ -749,7 +747,7 @@ class TestFundingProgrammeRepr:
 
 
 class TestFinancialRevisionRepr:
-    def test_create_domain(self) -> None:
+    def test_to_domain(self) -> None:
         financial_revision_repr = FinancialRevisionRepr(
             effective_date_from="2020-01-01",
             effective_date_to="2020-01-31",
@@ -767,7 +765,7 @@ class TestFinancialRevisionRepr:
             source=DataSource.ATF4_BID,
         )
 
-    def test_set_effective_date_to_when_missing(self) -> None:
+    def test_to_domain_when_no_effective_date_to(self) -> None:
         financial_revision_repr = FinancialRevisionRepr(
             effective_date_from="2020-01-01",
             effective_date_to=None,
@@ -818,7 +816,7 @@ class TestDataSourceRepr:
 
 
 class TestMilestoneRevisionRepr:
-    def test_create_domain(self) -> None:
+    def test_to_domain(self) -> None:
         milestone_revision_repr = MilestoneRevisionRepr(
             effective_date_from="2020-01-01",
             effective_date_to="2020-01-31",
@@ -836,7 +834,7 @@ class TestMilestoneRevisionRepr:
             status_date=date(2020, 1, 1),
         )
 
-    def test_set_effective_date_to_when_missing(self) -> None:
+    def test_to_domain_when_no_effective_date_to(self) -> None:
         milestone_revision_repr = MilestoneRevisionRepr(
             effective_date_from="2020-01-01",
             effective_date_to=None,
@@ -884,7 +882,7 @@ class TestObservationTypeRepr:
 
 
 class TestOutputRevisionRepr:
-    def test_create_domain(self) -> None:
+    def test_to_domain(self) -> None:
         output_revision_repr = OutputRevisionRepr(
             effective_date_from="2020-01-01",
             effective_date_to="2020-01-31",
@@ -903,7 +901,7 @@ class TestOutputRevisionRepr:
             observation_type=ObservationType.ACTUAL,
         )
 
-    def test_set_effective_date_to_when_missing(self) -> None:
+    def test_to_domain_when_no_effective_date_to(self) -> None:
         output_revision_repr = OutputRevisionRepr(
             effective_date_from="2020-01-01",
             effective_date_to=None,

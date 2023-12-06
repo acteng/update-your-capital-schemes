@@ -25,7 +25,6 @@ from schemes.infrastructure.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.schemes import add_tables as schemes_add_tables
 from schemes.infrastructure.schemes.schemes import (
     FundingProgrammeMapper,
-    ObservationTypeMapper,
     OutputTypeMeasureMapper,
     SchemeTypeMapper,
 )
@@ -730,13 +729,6 @@ class TestFundingProgrammeMapper:
     def test_mapper(self, funding_programme: FundingProgramme | None, id_: int | None) -> None:
         mapper = FundingProgrammeMapper()
         assert mapper.to_id(funding_programme) == id_ and mapper.to_domain(id_) == funding_programme
-
-
-class TestObservationTypeMapper:
-    @pytest.mark.parametrize("observation_type, id_", [(ObservationType.PLANNED, 1), (ObservationType.ACTUAL, 2)])
-    def test_mapper(self, observation_type: ObservationType, id_: int) -> None:
-        mapper = ObservationTypeMapper()
-        assert mapper.to_id(observation_type) == id_ and mapper.to_domain(id_) == observation_type
 
 
 class TestOutputTypeMeasureMapper:

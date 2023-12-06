@@ -23,7 +23,6 @@ from schemes.domain.schemes import (
     FinancialRevision,
     FundingProgramme,
     MilestoneRevision,
-    ObservationType,
     OutputRevision,
     OutputTypeMeasure,
     Scheme,
@@ -32,6 +31,7 @@ from schemes.domain.schemes import (
 )
 from schemes.infrastructure.schemes.funding import DataSourceMapper, FinancialTypeMapper
 from schemes.infrastructure.schemes.milestones import MilestoneMapper
+from schemes.infrastructure.schemes.observations import ObservationTypeMapper
 
 
 def add_tables(metadata: MetaData) -> None:
@@ -308,19 +308,6 @@ class FundingProgrammeMapper:
 
     def to_domain(self, id_: int | None) -> FundingProgramme | None:
         return next(key for key, value in self._IDS.items() if value == id_) if id_ else None
-
-
-class ObservationTypeMapper:
-    _IDS = {
-        ObservationType.PLANNED: 1,
-        ObservationType.ACTUAL: 2,
-    }
-
-    def to_id(self, observation_type: ObservationType) -> int:
-        return self._IDS[observation_type]
-
-    def to_domain(self, id_: int) -> ObservationType:
-        return next(key for key, value in self._IDS.items() if value == id_)
 
 
 class OutputTypeMeasureMapper:

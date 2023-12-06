@@ -5,7 +5,7 @@
 ## Prerequisites
 
 1. Install Python 3.11
-1. Install Node 18
+1. Install Node 20
 1. Install Docker and Compose plugin
 1. Install Google Cloud CLI and authenticate using ADCs:
    ```bash

@@ -21,7 +21,8 @@ from schemes.domain.schemes import (
     SchemeFunding,
     SchemeType,
 )
-from schemes.views.schemes import (
+from schemes.views.schemes import SchemeRepr
+from schemes.views.schemes.schemes import (
     DataSourceRepr,
     FinancialRevisionRepr,
     FinancialTypeRepr,
@@ -43,7 +44,6 @@ from schemes.views.schemes import (
     SchemeOutputRowContext,
     SchemeOutputsContext,
     SchemeOverviewContext,
-    SchemeRepr,
     SchemeRowContext,
     SchemesContext,
     SchemeTypeContext,

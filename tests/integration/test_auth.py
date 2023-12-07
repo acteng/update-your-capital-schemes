@@ -1,7 +1,6 @@
 from typing import Any, Mapping
 from unittest.mock import Mock
 
-import inject
 import pytest
 from authlib.integrations.flask_client import OAuth
 from authlib.oidc.core import UserInfo
@@ -15,11 +14,6 @@ from tests.integration.pages import UnauthorizedPage
 @pytest.fixture(name="config")
 def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
     return config | {"GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
-
-
-@pytest.fixture(name="users")
-def users_fixture() -> UserRepository:
-    return inject.instance(UserRepository)
 
 
 def test_callback_logs_in(users: UserRepository, client: FlaskClient) -> None:

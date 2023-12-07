@@ -44,6 +44,21 @@ def client_fixture(app: Flask) -> FlaskClient:
     return app.test_client()
 
 
+@pytest.fixture(name="authorities")
+def authorities_fixture(app: Flask) -> AuthorityRepository:
+    return inject.instance(AuthorityRepository)
+
+
+@pytest.fixture(name="users")
+def users_fixture(app: Flask) -> UserRepository:
+    return inject.instance(UserRepository)
+
+
+@pytest.fixture(name="schemes")
+def schemes_fixture(app: Flask) -> SchemeRepository:
+    return inject.instance(SchemeRepository)
+
+
 def _bindings(binder: Binder) -> None:
     binder.bind(AuthorityRepository, MemoryAuthorityRepository())
     binder.bind(UserRepository, MemoryUserRepository())

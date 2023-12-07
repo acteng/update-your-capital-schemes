@@ -2,9 +2,7 @@ from datetime import date
 from decimal import Decimal
 from typing import Any, Mapping
 
-import inject
 import pytest
-from flask import Flask
 from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
@@ -23,21 +21,6 @@ from schemes.domain.schemes import (
     SchemeType,
 )
 from schemes.domain.users import UserRepository
-
-
-@pytest.fixture(name="authorities")
-def authorities_fixture(app: Flask) -> AuthorityRepository:
-    return inject.instance(AuthorityRepository)
-
-
-@pytest.fixture(name="users")
-def users_fixture(app: Flask) -> UserRepository:
-    return inject.instance(UserRepository)
-
-
-@pytest.fixture(name="schemes")
-def schemes_fixture(app: Flask) -> SchemeRepository:
-    return inject.instance(SchemeRepository)
 
 
 class TestApiEnabled:

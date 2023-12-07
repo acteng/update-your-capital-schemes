@@ -1,16 +1,9 @@
 from typing import Any, Mapping
 
-import inject
 import pytest
-from flask import Flask
 from flask.testing import FlaskClient
 
 from schemes.domain.users import User, UserRepository
-
-
-@pytest.fixture(name="users")
-def users_fixture(app: Flask) -> UserRepository:
-    return inject.instance(UserRepository)
 
 
 class TestApiEnabled:

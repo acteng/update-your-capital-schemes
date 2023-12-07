@@ -1,9 +1,7 @@
 from datetime import date
 from decimal import Decimal
 
-import inject
 import pytest
-from flask import Flask
 from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
@@ -24,21 +22,6 @@ from schemes.domain.schemes import (
 )
 from schemes.domain.users import User, UserRepository
 from tests.integration.pages import SchemePage
-
-
-@pytest.fixture(name="users")
-def users_fixture(app: Flask) -> UserRepository:
-    return inject.instance(UserRepository)
-
-
-@pytest.fixture(name="authorities")
-def authorities_fixture(app: Flask) -> AuthorityRepository:
-    return inject.instance(AuthorityRepository)
-
-
-@pytest.fixture(name="schemes")
-def schemes_fixture(app: Flask) -> SchemeRepository:
-    return inject.instance(SchemeRepository)
 
 
 @pytest.fixture(name="auth", autouse=True)

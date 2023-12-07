@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "sass": "^1.69.0",
-    "terser": "^5.19.4"
+    "terser": "^5.26.0"
   },
   "engines": {
     "node": "20",

@@ -23,7 +23,6 @@ class TestSchemeMilestonesContext:
         context = SchemeMilestonesContext.from_domain([])
 
         assert [row.milestone for row in context.milestones] == [
-            MilestoneContext(name="Public consultation completed"),
             MilestoneContext(name="Feasibility design completed"),
             MilestoneContext(name="Preliminary design completed"),
             MilestoneContext(name="Detailed design completed"),
@@ -34,7 +33,6 @@ class TestSchemeMilestonesContext:
     @pytest.mark.parametrize(
         "milestone, expected_milestone_name",
         [
-            (Milestone.PUBLIC_CONSULTATION_COMPLETED, "Public consultation completed"),
             (Milestone.FEASIBILITY_DESIGN_COMPLETED, "Feasibility design completed"),
             (Milestone.PRELIMINARY_DESIGN_COMPLETED, "Preliminary design completed"),
             (Milestone.DETAILED_DESIGN_COMPLETED, "Detailed design completed"),
@@ -72,7 +70,6 @@ class TestSchemeMilestonesContext:
     @pytest.mark.parametrize(
         "expected_milestone_name",
         [
-            "Public consultation completed",
             "Feasibility design completed",
             "Preliminary design completed",
             "Detailed design completed",

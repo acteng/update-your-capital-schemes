@@ -189,7 +189,6 @@ def test_scheme_shows_minimal_milestones(schemes: SchemeRepository, client: Flas
     scheme_page = SchemePage(client).open(1)
 
     assert scheme_page.milestones.milestones.to_dicts() == [
-        {"milestone": "Public consultation completed", "planned": "N/A", "actual": "N/A"},
         {"milestone": "Feasibility design completed", "planned": "N/A", "actual": "N/A"},
         {"milestone": "Preliminary design completed", "planned": "N/A", "actual": "N/A"},
         {"milestone": "Detailed design completed", "planned": "N/A", "actual": "N/A"},
@@ -202,8 +201,6 @@ def test_scheme_shows_milestones(schemes: SchemeRepository, client: FlaskClient)
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     current = DateRange(date(2020, 1, 1), None)
     scheme.milestones.update_milestones(
-        MilestoneRevision(current, Milestone.PUBLIC_CONSULTATION_COMPLETED, ObservationType.PLANNED, date(2020, 1, 1)),
-        MilestoneRevision(current, Milestone.PUBLIC_CONSULTATION_COMPLETED, ObservationType.ACTUAL, date(2020, 1, 2)),
         MilestoneRevision(current, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 2, 1)),
         MilestoneRevision(current, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL, date(2020, 2, 2)),
         MilestoneRevision(current, Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 3, 1)),
@@ -220,7 +217,6 @@ def test_scheme_shows_milestones(schemes: SchemeRepository, client: FlaskClient)
     scheme_page = SchemePage(client).open(1)
 
     assert scheme_page.milestones.milestones.to_dicts() == [
-        {"milestone": "Public consultation completed", "planned": "01/01/2020", "actual": "02/01/2020"},
         {"milestone": "Feasibility design completed", "planned": "01/02/2020", "actual": "02/02/2020"},
         {"milestone": "Preliminary design completed", "planned": "01/03/2020", "actual": "02/03/2020"},
         {"milestone": "Detailed design completed", "planned": "01/04/2020", "actual": "02/04/2020"},

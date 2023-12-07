@@ -149,7 +149,6 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
     milestones_component = SchemePage(page).open(1).open_milestones()
 
     assert milestones_component.milestones.to_dicts() == [
-        {"milestone": "Public consultation completed", "planned": "N/A", "actual": "N/A"},
         {"milestone": "Feasibility design completed", "planned": "N/A", "actual": "30/11/2020"},
         {"milestone": "Preliminary design completed", "planned": "N/A", "actual": "30/06/2022"},
         {"milestone": "Detailed design completed", "planned": "N/A", "actual": "30/06/2022"},

@@ -93,13 +93,13 @@ class TestSchemeContext:
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
-                milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
+                milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 1, 1),
             ),
             MilestoneRevision(
                 effective=DateRange(date(2020, 2, 1), None),
-                milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
+                milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
             ),

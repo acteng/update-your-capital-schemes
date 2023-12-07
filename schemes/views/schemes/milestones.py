@@ -35,7 +35,6 @@ class SchemeMilestonesContext:
                     actual=get_status_date(milestone, ObservationType.ACTUAL),
                 )
                 for milestone in [
-                    Milestone.PUBLIC_CONSULTATION_COMPLETED,
                     Milestone.FEASIBILITY_DESIGN_COMPLETED,
                     Milestone.PRELIMINARY_DESIGN_COMPLETED,
                     Milestone.DETAILED_DESIGN_COMPLETED,

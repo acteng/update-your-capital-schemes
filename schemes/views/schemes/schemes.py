@@ -29,6 +29,7 @@ from schemes.domain.users import UserRepository
 from schemes.views.auth.api_key import api_key_auth
 from schemes.views.auth.bearer import bearer_auth
 from schemes.views.schemes.funding import FinancialRevisionRepr, SchemeFundingContext
+from schemes.views.schemes.observations import ObservationTypeRepr
 
 bp = Blueprint("schemes", __name__)
 
@@ -456,19 +457,6 @@ class MilestoneRepr(Enum):
             MilestoneRepr.NOT_PROGRESSED: Milestone.NOT_PROGRESSED,
             MilestoneRepr.SUPERSEDED: Milestone.SUPERSEDED,
             MilestoneRepr.REMOVED: Milestone.REMOVED,
-        }
-        return members[self]
-
-
-@unique
-class ObservationTypeRepr(Enum):
-    PLANNED = "Planned"
-    ACTUAL = "Actual"
-
-    def to_domain(self) -> ObservationType:
-        members = {
-            ObservationTypeRepr.PLANNED: ObservationType.PLANNED,
-            ObservationTypeRepr.ACTUAL: ObservationType.ACTUAL,
         }
         return members[self]
 

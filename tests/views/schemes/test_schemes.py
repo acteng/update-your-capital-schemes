@@ -26,13 +26,13 @@ from schemes.views.schemes.funding import (
     FinancialRevisionRepr,
     FinancialTypeRepr,
 )
+from schemes.views.schemes.observations import ObservationTypeRepr
 from schemes.views.schemes.schemes import (
     FundingProgrammeContext,
     FundingProgrammeRepr,
     MilestoneContext,
     MilestoneRepr,
     MilestoneRevisionRepr,
-    ObservationTypeRepr,
     OutputMeasureContext,
     OutputMeasureRepr,
     OutputRevisionRepr,
@@ -730,18 +730,6 @@ class TestMilestoneRepr:
     )
     def test_to_domain(self, milestone: str, expected_milestone: Milestone) -> None:
         assert MilestoneRepr(milestone).to_domain() == expected_milestone
-
-
-class TestObservationTypeRepr:
-    @pytest.mark.parametrize(
-        "observation_type, expected_observation_type",
-        [
-            ("Planned", ObservationType.PLANNED),
-            ("Actual", ObservationType.ACTUAL),
-        ],
-    )
-    def test_to_domain(self, observation_type: str, expected_observation_type: ObservationType) -> None:
-        assert ObservationTypeRepr(observation_type).to_domain() == expected_observation_type
 
 
 class TestOutputRevisionRepr:

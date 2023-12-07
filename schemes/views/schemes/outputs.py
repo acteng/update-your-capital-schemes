@@ -62,21 +62,6 @@ class SchemeOutputRowContext:
         actual = self.actual or Decimal(0)
         return planned - actual
 
-    @property
-    def delivery_status(self) -> str:
-        planned = self.planned or Decimal(0)
-        actual = self.actual or Decimal(0)
-        match (planned, actual):
-            case (0, _):
-                return "No outputs recorded"
-            case (_, 0):
-                return "Not started"
-            case (planned, actual) if planned > actual:
-                return "In progress"
-            case (planned, actual) if planned == actual:
-                return "Complete"
-        return "More outputs than planned"
-
 
 @dataclass(frozen=True)
 class OutputTypeContext:

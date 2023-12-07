@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field, fields
+from dataclasses import asdict, dataclass, field
 from enum import Enum, unique
-from typing import Any
 
 import inject
 from flask import Blueprint, Response, render_template, session
@@ -81,11 +80,7 @@ def get(schemes: SchemeRepository, scheme_id: int) -> str:
     assert scheme
 
     context = SchemeContext.from_domain(scheme)
-    return render_template("scheme.html", **_as_shallow_dict(context))
-
-
-def _as_shallow_dict(obj: Any) -> dict[str, Any]:
-    return dict((field_.name, getattr(obj, field_.name)) for field_ in fields(obj))
+    return render_template("scheme.html", **asdict(context))
 
 
 @dataclass(frozen=True)

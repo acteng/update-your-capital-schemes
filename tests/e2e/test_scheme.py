@@ -204,13 +204,11 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
             "measurement": "Miles",
             "planned": "3",
             "actual": "2",
-            "planned_outputs_not_yet_delivered": "1",
         },
         {
             "infrastructure": "Improvements to make an existing walking/cycle route safer",
             "measurement": "Number of junctions",
             "planned": "2.6",
             "actual": "N/A",
-            "planned_outputs_not_yet_delivered": "2.6",
         },
     ]

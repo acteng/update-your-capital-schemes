@@ -17,9 +17,6 @@
             },
             {
                 "text": output.actual | remove_exponent if output.actual is not none() else "N/A"
-            },
-            {
-                "text": output.planned_not_yet_delivered | remove_exponent
             }
         ]) %}
     {% endfor %}
@@ -36,9 +33,6 @@
             },
             {
                 "text": "Actual"
-            },
-            {
-                "text": "Planned outputs not yet delivered"
             }
         ],
         "rows": rows

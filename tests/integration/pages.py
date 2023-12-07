@@ -245,7 +245,6 @@ class SchemeOutputRowComponent:
         self.measurement = cells[1].string
         self.planned = cells[2].string
         self.actual = cells[3].string
-        self.planned_outputs_not_yet_delivered = cells[4].string
 
     def to_dict(self) -> dict[str, str | None]:
         return {
@@ -253,5 +252,4 @@ class SchemeOutputRowComponent:
             "measurement": self.measurement,
             "planned": self.planned,
             "actual": self.actual,
-            "planned_outputs_not_yet_delivered": self.planned_outputs_not_yet_delivered,
         }

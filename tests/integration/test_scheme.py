@@ -289,14 +289,12 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
             "measurement": "Miles",
             "planned": "3",
             "actual": "2",
-            "planned_outputs_not_yet_delivered": "1",
         },
         {
             "infrastructure": "Improvements to make an existing walking/cycle route safer",
             "measurement": "Number of junctions",
             "planned": "2.6",
             "actual": "2.5",
-            "planned_outputs_not_yet_delivered": "0.1",
         },
     ]
 

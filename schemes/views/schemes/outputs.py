@@ -56,12 +56,6 @@ class SchemeOutputRowContext:
     planned: Decimal | None
     actual: Decimal | None
 
-    @property
-    def planned_not_yet_delivered(self) -> Decimal:
-        planned = self.planned or Decimal(0)
-        actual = self.actual or Decimal(0)
-        return planned - actual
-
 
 @dataclass(frozen=True)
 class OutputTypeContext:

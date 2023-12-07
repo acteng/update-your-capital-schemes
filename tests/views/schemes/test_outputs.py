@@ -57,13 +57,7 @@ class TestSchemeOutputsContext:
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.PLANNED,
-            ),
-            OutputRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-                value=Decimal(20),
-                observation_type=ObservationType.ACTUAL,
-            ),
+            )
         ]
 
         context = SchemeOutputsContext.from_domain(output_revisions)
@@ -73,7 +67,6 @@ class TestSchemeOutputsContext:
                 type=OutputTypeContext(name="Improvements to make an existing walking/cycle route safer"),
                 measure=OutputMeasureContext(name="Miles"),
                 planned=Decimal(10),
-                actual=Decimal(20),
             )
         ]
 
@@ -90,20 +83,6 @@ class TestSchemeOutputsContext:
         context = SchemeOutputsContext.from_domain(output_revisions)
 
         assert context.outputs[0].planned is None
-
-    def test_from_domain_when_no_actual(self) -> None:
-        output_revisions = [
-            OutputRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-                value=Decimal(10),
-                observation_type=ObservationType.PLANNED,
-            ),
-        ]
-
-        context = SchemeOutputsContext.from_domain(output_revisions)
-
-        assert context.outputs[0].actual is None
 
 
 class TestOutputTypeContext:

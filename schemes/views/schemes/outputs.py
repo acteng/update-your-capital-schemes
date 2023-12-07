@@ -30,7 +30,6 @@ class SchemeOutputsContext:
                     type=OutputTypeContext.from_domain(type_),
                     measure=OutputMeasureContext.from_domain(measure),
                     planned=cls._get_value(group, ObservationType.PLANNED),
-                    actual=cls._get_value(group, ObservationType.ACTUAL),
                 )
                 for (type_, measure), group in groupby(
                     sorted(output_revisions, key=SchemeOutputsContext._by_type_and_measure),
@@ -54,7 +53,6 @@ class SchemeOutputRowContext:
     type: OutputTypeContext
     measure: OutputMeasureContext
     planned: Decimal | None
-    actual: Decimal | None
 
 
 @dataclass(frozen=True)

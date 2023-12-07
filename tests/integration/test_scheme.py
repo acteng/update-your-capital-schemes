@@ -233,13 +233,7 @@ def test_scheme_shows_minimal_outputs(schemes: SchemeRepository, client: FlaskCl
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
             value=Decimal(1),
             observation_type=ObservationType.ACTUAL,
-        ),
-        OutputRevision(
-            effective=DateRange(date(2020, 1, 1), None),
-            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-            value=Decimal(2),
-            observation_type=ObservationType.PLANNED,
-        ),
+        )
     )
     schemes.add(scheme)
 
@@ -247,7 +241,7 @@ def test_scheme_shows_minimal_outputs(schemes: SchemeRepository, client: FlaskCl
 
     assert scheme_page.outputs.outputs
     outputs = list(scheme_page.outputs.outputs)
-    assert outputs[0].planned == "N/A" and outputs[1].actual == "N/A"
+    assert outputs[0].planned == "N/A"
 
 
 def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -261,21 +255,9 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
         ),
         OutputRevision(
             effective=DateRange(date(2020, 1, 1), None),
-            type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES,
-            value=Decimal("2.000000"),
-            observation_type=ObservationType.ACTUAL,
-        ),
-        OutputRevision(
-            effective=DateRange(date(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
             value=Decimal("2.600000"),
             observation_type=ObservationType.PLANNED,
-        ),
-        OutputRevision(
-            effective=DateRange(date(2020, 1, 1), None),
-            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
-            value=Decimal("2.500000"),
-            observation_type=ObservationType.ACTUAL,
         ),
     )
     schemes.add(scheme)
@@ -288,13 +270,11 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
             "infrastructure": "New segregated cycling facility",
             "measurement": "Miles",
             "planned": "3",
-            "actual": "2",
         },
         {
             "infrastructure": "Improvements to make an existing walking/cycle route safer",
             "measurement": "Number of junctions",
             "planned": "2.6",
-            "actual": "2.5",
         },
     ]
 
@@ -307,13 +287,7 @@ def test_scheme_shows_zero_outputs(schemes: SchemeRepository, client: FlaskClien
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
             value=Decimal("0.000000"),
             observation_type=ObservationType.PLANNED,
-        ),
-        OutputRevision(
-            effective=(DateRange(date(2020, 1, 1), None)),
-            type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
-            value=Decimal("0.000000"),
-            observation_type=ObservationType.ACTUAL,
-        ),
+        )
     )
     schemes.add(scheme)
 
@@ -321,7 +295,7 @@ def test_scheme_shows_zero_outputs(schemes: SchemeRepository, client: FlaskClien
 
     assert scheme_page.outputs.outputs
     outputs = list(scheme_page.outputs.outputs)
-    assert outputs[0].planned == "0" and outputs[0].actual == "0"
+    assert outputs[0].planned == "0"
 
 
 def test_scheme_shows_message_when_no_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:

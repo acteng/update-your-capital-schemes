@@ -14,9 +14,6 @@
             },
             {
                 "text": output.planned | remove_exponent if output.planned is not none() else "N/A"
-            },
-            {
-                "text": output.actual | remove_exponent if output.actual is not none() else "N/A"
             }
         ]) %}
     {% endfor %}
@@ -30,9 +27,6 @@
             },
             {
                 "text": "Planned"
-            },
-            {
-                "text": "Actual"
             }
         ],
         "rows": rows

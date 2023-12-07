@@ -277,14 +277,9 @@ class SchemeOutputRowComponent:
     def planned(self) -> str | None:
         return self._cells.nth(2).text_content()
 
-    @property
-    def actual(self) -> str | None:
-        return self._cells.nth(3).text_content()
-
     def to_dict(self) -> dict[str, str | None]:
         return {
             "infrastructure": self.infrastructure,
             "measurement": self.measurement,
             "planned": self.planned,
-            "actual": self.actual,
         }

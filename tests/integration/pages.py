@@ -244,12 +244,10 @@ class SchemeOutputRowComponent:
         self.infrastructure = cells[0].string
         self.measurement = cells[1].string
         self.planned = cells[2].string
-        self.actual = cells[3].string
 
     def to_dict(self) -> dict[str, str | None]:
         return {
             "infrastructure": self.infrastructure,
             "measurement": self.measurement,
             "planned": self.planned,
-            "actual": self.actual,
         }

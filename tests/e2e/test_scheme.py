@@ -39,7 +39,7 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: P
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, 1)
+    scheme_page = SchemePage.open(page, id_=1)
 
     assert (
         scheme_page.name == "Wirral Package"
@@ -86,7 +86,7 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Pa
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    funding_component = SchemePage.open(page, 1).open_funding()
+    funding_component = SchemePage.open(page, id_=1).open_funding()
 
     assert (
         funding_component.funding_allocation == "£100,000"
@@ -146,7 +146,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    milestones_component = SchemePage.open(page, 1).open_milestones()
+    milestones_component = SchemePage.open(page, id_=1).open_milestones()
 
     assert milestones_component.milestones.to_dicts() == [
         {"milestone": "Feasibility design completed", "planned": "N/A", "actual": "30/11/2020"},
@@ -188,7 +188,7 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    outputs_component = SchemePage.open(page, 1).open_outputs()
+    outputs_component = SchemePage.open(page, id_=1).open_outputs()
 
     assert outputs_component.outputs.to_dicts() == [
         {

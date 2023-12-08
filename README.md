@@ -247,6 +247,17 @@ and execute the script. Then repeat the previous step.
 
 1. Open the output `url`
 
+### Redeploying the service
+
+To manually redeploy the Cloud Run service using the latest image in the Docker repository:
+
+```bash
+gcloud run deploy schemes \
+    --project dft-ate-schemes-$ENVIRONMENT \
+    --region europe-west1 \
+    --image europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes
+```
+
 ## Authentication
 
 We have [registered](https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/) the following two services with [GOV.UK One Login](https://www.sign-in.service.gov.uk/):

@@ -5,15 +5,7 @@ from urllib.parse import urlencode, urlparse
 import inject
 from authlib.integrations.flask_client import OAuth
 from authlib.oidc.core import UserInfo
-from flask import (
-    Blueprint,
-    Response,
-    current_app,
-    redirect,
-    render_template,
-    session,
-    url_for,
-)
+from flask import Blueprint, Response, abort, current_app, redirect, session, url_for
 from werkzeug.wrappers import Response as BaseResponse
 
 from schemes.domain.users import UserRepository
@@ -29,16 +21,11 @@ def callback(users: UserRepository) -> BaseResponse:
     user = oauth.govuk.userinfo(token=token)
 
     if not _is_authorized(users, user):
-        return redirect(url_for("auth.unauthorized"))
+        abort(403)
 
     session["user"] = user
     session["id_token"] = token["id_token"]
     return redirect(url_for("schemes.index"))
-
-
-@bp.get("/unauthorized")
-def unauthorized() -> Response:
-    return Response(render_template("unauthorized.html"), status=401)
 
 
 @bp.get("/logout")

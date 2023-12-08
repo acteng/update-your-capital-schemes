@@ -8,7 +8,6 @@ from flask import current_app, session
 from flask.testing import FlaskClient
 
 from schemes.domain.users import User, UserRepository
-from tests.integration.pages import UnauthorizedPage
 
 
 @pytest.fixture(name="config")
@@ -37,20 +36,14 @@ def test_callback_redirects_to_schemes(users: UserRepository, client: FlaskClien
     assert response.status_code == 302 and response.location == "/schemes"
 
 
-def test_callback_when_unauthorized_redirects_to_unauthorized(users: UserRepository, client: FlaskClient) -> None:
+def test_callback_when_unauthorized_returns_forbidden(users: UserRepository, client: FlaskClient) -> None:
     users.add(User("boardman@example.com", authority_id=1))
     _given_oidc_returns_token_response({"id_token": "jwt"})
     _given_oidc_returns_user_info(UserInfo({"email": "obree@example.com"}))
 
     response = client.get("/auth")
 
-    assert response.status_code == 302 and response.location == "/auth/unauthorized"
-
-
-def test_unauthorized(client: FlaskClient) -> None:
-    unauthorized_page = UnauthorizedPage(client).open()
-
-    assert unauthorized_page.is_visible and unauthorized_page.is_unauthorized
+    assert response.status_code == 403
 
 
 def test_logout_logs_out_from_oidc(client: FlaskClient) -> None:

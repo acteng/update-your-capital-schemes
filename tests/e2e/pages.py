@@ -40,13 +40,13 @@ class LoginPage:
         return self._page.get_by_role("heading", name="Login").is_visible()
 
 
-class UnauthorizedPage:
+class ForbiddenPage:
     def __init__(self, page: Page):
         self._page = page
 
     @property
     def is_visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Unauthorised").is_visible()
+        return self._page.get_by_role("heading", name="Forbidden").is_visible()
 
 
 class SchemesPage:
@@ -65,9 +65,9 @@ class SchemesPage:
         self.open()
         return LoginPage(self._page)
 
-    def open_when_unauthorized(self) -> UnauthorizedPage:
+    def open_when_unauthorized(self) -> ForbiddenPage:
         self.open()
-        return UnauthorizedPage(self._page)
+        return ForbiddenPage(self._page)
 
     @property
     def authority(self) -> str | None:

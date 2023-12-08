@@ -4,7 +4,6 @@ from typing import Iterator
 
 from bs4 import BeautifulSoup, Tag
 from flask.testing import FlaskClient
-from werkzeug import Response as BaseResponse
 from werkzeug.test import TestResponse
 
 
@@ -36,25 +35,19 @@ class HeaderComponent:
         self.home_url = home["href"] if home else None
 
 
-class UnauthorizedPage:
-    def __init__(self, client: FlaskClient):
-        self._client = client
-        self._response = BaseResponse()
-        self._soup = BeautifulSoup()
-
-    def open(self) -> UnauthorizedPage:
-        self._response = self._client.get("/auth/unauthorized")
+class ForbiddenPage:
+    def __init__(self, response: TestResponse):
+        self._response = response
         self._soup = BeautifulSoup(self._response.text, "html.parser")
-        return self
 
     @property
     def is_visible(self) -> bool:
         heading = self._soup.select_one("main h1")
-        return heading.string == "Unauthorised" if heading else False
+        return heading.string == "Forbidden" if heading else False
 
     @property
-    def is_unauthorized(self) -> bool:
-        return self._response.status_code == 401
+    def is_forbidden(self) -> bool:
+        return self._response.status_code == 403
 
 
 class SchemesPage:
@@ -256,18 +249,3 @@ class SchemeOutputRowComponent:
             "measurement": self.measurement,
             "planned": self.planned,
         }
-
-
-class ForbiddenPage:
-    def __init__(self, response: TestResponse):
-        self._response = response
-        self._soup = BeautifulSoup(self._response.text, "html.parser")
-
-    @property
-    def is_visible(self) -> bool:
-        heading = self._soup.select_one("main h1")
-        return heading.string == "Forbidden" if heading else False
-
-    @property
-    def is_forbidden(self) -> bool:
-        return self._response.status_code == 403

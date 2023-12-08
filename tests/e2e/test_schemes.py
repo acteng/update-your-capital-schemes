@@ -31,9 +31,9 @@ class TestAuthenticated:
         ]
 
     def test_schemes_when_unauthorized(self, page: Page) -> None:
-        unauthorized_page = SchemesPage(page).open_when_unauthorized()
+        forbidden_page = SchemesPage(page).open_when_unauthorized()
 
-        assert unauthorized_page.is_visible
+        assert forbidden_page.is_visible
 
     def test_scheme_shows_scheme(self, app_client: AppClient, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))

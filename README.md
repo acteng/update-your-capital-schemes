@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-1. Install Python 3.11
+1. Install Python 3.12
 1. Install Node 20
 1. Install Docker and Compose plugin
 1. Install Google Cloud CLI and authenticate using ADCs:
@@ -39,7 +39,7 @@ The application can also be configured with the following environment variables:
 1. Create a virtual environment:
 
     ```bash
-    python3.11 -m venv --prompt . .venv
+    python3.12 -m venv --prompt . .venv
     ```
 
 1. Activate the virtual environment:

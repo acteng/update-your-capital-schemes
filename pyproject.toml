@@ -2,7 +2,7 @@
 name = "schemes"
 version = "1.0.0"
 description = "ATE Schemes App."
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "alembic~=1.13.0",
     "authlib~=1.2.0",

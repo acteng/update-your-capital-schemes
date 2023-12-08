@@ -7,11 +7,13 @@ from flask.testing import FlaskClient
 from werkzeug.test import TestResponse
 
 
-class StartPage:
+class PageObject:
     def __init__(self, response: TestResponse):
         self._response = response
         self._soup = BeautifulSoup(response.text, "html.parser")
 
+
+class StartPage(PageObject):
     @classmethod
     def open(cls, client: FlaskClient) -> StartPage:
         response = client.get("/")
@@ -35,11 +37,7 @@ class HeaderComponent:
         self.home_url = home["href"] if home else None
 
 
-class ForbiddenPage:
-    def __init__(self, response: TestResponse):
-        self._response = response
-        self._soup = BeautifulSoup(self._response.text, "html.parser")
-
+class ForbiddenPage(PageObject):
     @property
     def is_visible(self) -> bool:
         heading = self._soup.select_one("main h1")
@@ -50,11 +48,7 @@ class ForbiddenPage:
         return self._response.status_code == 403
 
 
-class SchemesPage:
-    def __init__(self, response: TestResponse):
-        self._response = response
-        self._soup = BeautifulSoup(response.text, "html.parser")
-
+class SchemesPage(PageObject):
     @classmethod
     def open(cls, client: FlaskClient) -> SchemesPage:
         response = client.get("/schemes")
@@ -120,11 +114,7 @@ class SchemeRowComponent:
         return {"reference": self.reference, "funding_programme": self.funding_programme, "name": self.name}
 
 
-class SchemePage:
-    def __init__(self, response: TestResponse):
-        self._response = response
-        self._soup = BeautifulSoup(response.text, "html.parser")
-
+class SchemePage(PageObject):
     @classmethod
     def open(cls, client: FlaskClient, id_: int) -> SchemePage:
         response = client.get(f"/schemes/{id_}")

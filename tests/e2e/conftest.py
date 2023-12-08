@@ -72,12 +72,23 @@ def app_fixture(api_key: str, oidc_server: LiveServer) -> Generator[Flask, Any, 
 
 
 @pytest.fixture(name="app_client")
-def app_client_fixture(live_server: LiveServer, api_key: str) -> Generator[AppClient, Any, Any]:
-    client = AppClient(_get_url(live_server), api_key)
+def app_client_fixture(base_url: str, api_key: str) -> Generator[AppClient, Any, Any]:
+    client = AppClient(base_url, api_key)
     yield client
     client.clear_schemes()
     client.clear_users()
     client.clear_authorities()
+
+
+@pytest.fixture(name="base_url", scope="package")
+def base_url_fixture(live_server: LiveServer) -> str | None:
+    return _get_url(live_server)
+
+
+# TODO: this narrows pytest-base-url's _verify_url fixture from session to package scope -- fix upstream
+@pytest.fixture(scope="package", autouse=True)
+def _verify_url(request: FixtureRequest, base_url: str | None) -> None:
+    pass
 
 
 @pytest.fixture(name="oidc_server_app", scope="package")
@@ -102,10 +113,13 @@ def oidc_client_fixture(oidc_server: LiveServer) -> Generator[OidcClient, Any, A
     client.clear_users()
 
 
+# TODO: this narrows pytest-playwright's browser_context_args fixture from session to package scope -- fix upstream
 @pytest.fixture(name="browser_context_args", scope="package")
-def browser_context_args_fixture(browser_context_args: dict[str, str], live_server: LiveServer) -> dict[str, str]:
-    browser_context_args["base_url"] = _get_url(live_server)
-    return browser_context_args
+def browser_context_args_fixture(base_url: str | None) -> dict[str, str]:
+    context_args = {}
+    if base_url:
+        context_args["base_url"] = base_url
+    return context_args
 
 
 def _get_url(live_server: LiveServer) -> str:

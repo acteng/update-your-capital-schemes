@@ -9,8 +9,6 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.40.0-jammy
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,6 +37,9 @@ jobs:
 
       - name: Lint
         run: make lint
+
+      - name: Install browsers
+        run: .venv/bin/playwright install --with-deps chromium
 
       - name: Test
         run: make test

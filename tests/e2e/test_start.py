@@ -10,13 +10,13 @@ from tests.e2e.pages import StartPage
 @pytest.mark.usefixtures("live_server")
 class TestUnauthenticated:
     def test_start(self, page: Page) -> None:
-        start_page = StartPage(page).open()
+        start_page = StartPage.open(page)
 
         assert start_page.is_visible
 
     @pytest.mark.usefixtures("oidc_server")
     def test_start_shows_login(self, page: Page) -> None:
-        start_page = StartPage(page).open()
+        start_page = StartPage.open(page)
 
         login_page = start_page.start_when_unauthenticated()
 
@@ -29,9 +29,9 @@ class TestAuthenticated:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
-        start_page = StartPage(page).open()
+        start_page = StartPage.open(page)
         start_page.start()
 
-        schemes_page = start_page.open_when_authenticated()
+        schemes_page = StartPage.open_when_authenticated(page)
 
         assert schemes_page.authority == "Liverpool City Region Combined Authority"

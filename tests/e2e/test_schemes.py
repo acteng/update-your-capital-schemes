@@ -22,7 +22,7 @@ class TestAuthenticated:
             SchemeRepr(id=2, name="School Streets", funding_programme="ATF4"),
         )
 
-        schemes_page = SchemesPage(page).open()
+        schemes_page = SchemesPage.open(page)
 
         assert schemes_page.authority == "Liverpool City Region Combined Authority"
         assert schemes_page.schemes.to_dicts() == [
@@ -31,7 +31,7 @@ class TestAuthenticated:
         ]
 
     def test_schemes_when_unauthorized(self, page: Page) -> None:
-        forbidden_page = SchemesPage(page).open_when_unauthorized()
+        forbidden_page = SchemesPage.open_when_unauthorized(page)
 
         assert forbidden_page.is_visible
 
@@ -40,14 +40,14 @@ class TestAuthenticated:
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
         app_client.add_schemes(1, SchemeRepr(id=1, name="Wirral Package"))
 
-        scheme_page = SchemesPage(page).open().schemes["ATE00001"].open()
+        scheme_page = SchemesPage.open(page).schemes["ATE00001"].open()
 
         assert scheme_page.name == "Wirral Package"
 
     def test_header_sign_out(self, app_client: AppClient, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
-        schemes_page = SchemesPage(page).open()
+        schemes_page = SchemesPage.open(page)
 
         start_page = schemes_page.header.sign_out()
 
@@ -57,6 +57,6 @@ class TestAuthenticated:
 @pytest.mark.usefixtures("live_server", "oidc_server")
 class TestUnauthenticated:
     def test_schemes_when_unauthenticated(self, page: Page) -> None:
-        login_page = SchemesPage(page).open_when_unauthenticated()
+        login_page = SchemesPage.open_when_unauthenticated(page)
 
         assert login_page.is_visible

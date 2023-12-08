@@ -10,13 +10,15 @@ class StartPage:
         self._page = page
         self._start = page.get_by_role("button")
 
-    def open(self) -> StartPage:
-        self._page.goto("/")
-        return self
+    @classmethod
+    def open(cls, page: Page) -> StartPage:
+        page.goto("/")
+        return cls(page)
 
-    def open_when_authenticated(self) -> SchemesPage:
-        self.open()
-        return SchemesPage(self._page)
+    @classmethod
+    def open_when_authenticated(cls, page: Page) -> SchemesPage:
+        cls.open(page)
+        return SchemesPage(page)
 
     @property
     def is_visible(self) -> bool:
@@ -57,17 +59,20 @@ class SchemesPage:
         self._authority = self._main.get_by_role("heading")
         self.schemes = SchemesTableComponent(page, self._main.get_by_role("table"))
 
-    def open(self) -> SchemesPage:
-        self._page.goto("/schemes")
-        return self
+    @classmethod
+    def open(cls, page: Page) -> SchemesPage:
+        page.goto("/schemes")
+        return cls(page)
 
-    def open_when_unauthenticated(self) -> LoginPage:
-        self.open()
-        return LoginPage(self._page)
+    @classmethod
+    def open_when_unauthenticated(cls, page: Page) -> LoginPage:
+        cls.open(page)
+        return LoginPage(page)
 
-    def open_when_unauthorized(self) -> ForbiddenPage:
-        self.open()
-        return ForbiddenPage(self._page)
+    @classmethod
+    def open_when_unauthorized(cls, page: Page) -> ForbiddenPage:
+        cls.open(page)
+        return ForbiddenPage(page)
 
     @property
     def authority(self) -> str | None:
@@ -137,11 +142,12 @@ class SchemePage:
         self._outputs_tab = self._main.get_by_role("tab", name="Outputs")
         self.outputs = SchemeOutputsComponent(self._main.get_by_role("tabpanel", name="Outputs"))
 
-    def open(self, id_: int) -> SchemePage:
+    @classmethod
+    def open(cls, page: Page, id_: int) -> SchemePage:
         # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
-        self._page.goto("/schemes")
-        self._page.goto(f"/schemes/{id_}")
-        return self
+        page.goto("/schemes")
+        page.goto(f"/schemes/{id_}")
+        return cls(page)
 
     @property
     def name(self) -> str | None:

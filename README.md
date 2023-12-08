@@ -63,7 +63,7 @@ The application can also be configured with the following environment variables:
 1. Run the server:
 
     ```bash
-    flask --app schemes run
+    make run
     ```
 
 1. Open http://127.0.0.1:5000

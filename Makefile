@@ -46,3 +46,6 @@ test:
 	$(bin)/pytest
 
 verify: format-check lint test
+
+run:
+	$(bin)/flask --app schemes run

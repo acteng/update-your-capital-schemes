@@ -94,6 +94,10 @@ def _configure_jinja_filters(app: Flask) -> None:
 
 
 def _configure_error_pages(app: Flask) -> None:
+    @app.errorhandler(403)
+    def forbidden(_error: Exception) -> Response:
+        return Response(render_template("403.html"), status=403)
+
     @app.errorhandler(404)
     def not_found(_error: Exception) -> Response:
         return Response(render_template("404.html"), status=404)

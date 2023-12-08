@@ -288,3 +288,14 @@ def test_scheme_shows_message_when_no_outputs(schemes: SchemeRepository, client:
 
     assert not scheme_page.outputs.outputs
     assert scheme_page.outputs.is_no_outputs_message_visible
+
+
+def test_scheme_when_different_authority(
+    authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
+) -> None:
+    authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
+    schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+
+    forbidden_page = SchemePage(client).open_when_unauthorized(2)
+
+    assert forbidden_page.is_visible and forbidden_page.is_forbidden

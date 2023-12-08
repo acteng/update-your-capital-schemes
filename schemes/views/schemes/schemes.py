@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass, field
 from enum import Enum, unique
 
 import inject
-from flask import Blueprint, Response, render_template, session
+from flask import Blueprint, Response, abort, render_template, session
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import (
@@ -74,10 +74,16 @@ class SchemeRowContext:
 
 @bp.get("<int:scheme_id>")
 @bearer_auth
-@inject.autoparams("schemes")
-def get(schemes: SchemeRepository, scheme_id: int) -> str:
+@inject.autoparams("users", "schemes")
+def get(users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> str:
+    user_info = session["user"]
+    user = users.get_by_email(user_info["email"])
+    assert user
     scheme = schemes.get(scheme_id)
     assert scheme
+
+    if user.authority_id != scheme.authority_id:
+        abort(403)
 
     context = SchemeContext.from_domain(scheme)
     return render_template("scheme.html", **asdict(context))

@@ -24,7 +24,7 @@ jobs:
           node-version: 20
 
       - name: Create virtual environment
-        run: python3 -m venv .venv
+        run: python3 -m venv --upgrade-deps .venv
 
       - name: Build web assets
         run: npm install && npm run build

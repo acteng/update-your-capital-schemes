@@ -39,7 +39,7 @@ The application can also be configured with the following environment variables:
 1. Create a virtual environment:
 
     ```bash
-    python3.12 -m venv --prompt . .venv
+    python3.12 -m venv --prompt . --upgrade-deps .venv
     ```
 
 1. Activate the virtual environment:

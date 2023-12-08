@@ -64,9 +64,7 @@ class TestApiEnabled:
         assert response.status_code == 401
         assert not authorities.get(1)
 
-    def test_cannot_add_authorities_with_invalid_repr(
-        self, authorities: AuthorityRepository, client: FlaskClient
-    ) -> None:
+    def test_cannot_add_authorities_with_invalid_repr(self, client: FlaskClient) -> None:
         response = client.post(
             "/authorities",
             headers={"Authorization": "API-Key boardman"},
@@ -102,7 +100,7 @@ class TestApiEnabled:
         assert response.status_code == 401
         assert not users.get_by_email("boardman@example.com")
 
-    def test_cannot_add_users_with_invalid_repr(self, users: UserRepository, client: FlaskClient) -> None:
+    def test_cannot_add_users_with_invalid_repr(self, client: FlaskClient) -> None:
         response = client.post(
             "/authorities/1/users",
             headers={"Authorization": "API-Key boardman"},
@@ -234,7 +232,7 @@ class TestApiEnabled:
             )
         ]
 
-    def test_cannot_add_schemes_with_invalid_repr(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    def test_cannot_add_schemes_with_invalid_repr(self, client: FlaskClient) -> None:
         response = client.post(
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key boardman"},

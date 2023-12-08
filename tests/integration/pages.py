@@ -8,14 +8,14 @@ from werkzeug.test import TestResponse
 
 
 class StartPage:
-    def __init__(self, client: FlaskClient):
-        self._client = client
-        self._soup = BeautifulSoup()
-
-    def open(self) -> StartPage:
-        response = self._client.get("/")
+    def __init__(self, response: TestResponse):
+        self._response = response
         self._soup = BeautifulSoup(response.text, "html.parser")
-        return self
+
+    @classmethod
+    def open(cls, client: FlaskClient) -> StartPage:
+        response = client.get("/")
+        return cls(response)
 
     @property
     def is_visible(self) -> bool:
@@ -51,14 +51,14 @@ class ForbiddenPage:
 
 
 class SchemesPage:
-    def __init__(self, client: FlaskClient):
-        self._client = client
-        self._soup = BeautifulSoup()
-
-    def open(self) -> SchemesPage:
-        response = self._client.get("/schemes")
+    def __init__(self, response: TestResponse):
+        self._response = response
         self._soup = BeautifulSoup(response.text, "html.parser")
-        return self
+
+    @classmethod
+    def open(cls, client: FlaskClient) -> SchemesPage:
+        response = client.get("/schemes")
+        return cls(response)
 
     @property
     def header(self) -> ServiceHeaderComponent:
@@ -121,17 +121,18 @@ class SchemeRowComponent:
 
 
 class SchemePage:
-    def __init__(self, client: FlaskClient):
-        self._client = client
-        self._soup = BeautifulSoup()
-
-    def open(self, id_: int) -> SchemePage:
-        response = self._client.get(f"/schemes/{id_}")
+    def __init__(self, response: TestResponse):
+        self._response = response
         self._soup = BeautifulSoup(response.text, "html.parser")
-        return self
 
-    def open_when_unauthorized(self, id_: int) -> ForbiddenPage:
-        response = self._client.get(f"/schemes/{id_}")
+    @classmethod
+    def open(cls, client: FlaskClient, id_: int) -> SchemePage:
+        response = client.get(f"/schemes/{id_}")
+        return cls(response)
+
+    @classmethod
+    def open_when_unauthorized(cls, client: FlaskClient, id_: int) -> ForbiddenPage:
+        response = client.get(f"/schemes/{id_}")
         return ForbiddenPage(response)
 
     @property

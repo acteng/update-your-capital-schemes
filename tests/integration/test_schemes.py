@@ -23,25 +23,25 @@ def auth_fixture(authorities: AuthorityRepository, users: UserRepository, client
 
 
 def test_header_home_shows_start(client: FlaskClient) -> None:
-    schemes_page = SchemesPage(client).open()
+    schemes_page = SchemesPage.open(client)
 
     assert schemes_page.header.home_url == "/"
 
 
 def test_header_profile_shows_profile(client: FlaskClient) -> None:
-    schemes_page = SchemesPage(client).open()
+    schemes_page = SchemesPage.open(client)
 
     assert schemes_page.header.profile_url == "https://example.com/profile"
 
 
 def test_header_sign_out_signs_out(client: FlaskClient) -> None:
-    schemes_page = SchemesPage(client).open()
+    schemes_page = SchemesPage.open(client)
 
     assert schemes_page.header.sign_out_url == "/auth/logout"
 
 
 def test_schemes_shows_authority(client: FlaskClient) -> None:
-    schemes_page = SchemesPage(client).open()
+    schemes_page = SchemesPage.open(client)
 
     assert schemes_page.authority == "Liverpool City Region Combined Authority"
 
@@ -55,7 +55,7 @@ def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -
         Scheme(id_=3, name="Hospital Fields Road", authority_id=2),
     )
 
-    schemes_page = SchemesPage(client).open()
+    schemes_page = SchemesPage.open(client)
 
     assert schemes_page.schemes
     assert schemes_page.schemes.to_dicts() == [
@@ -68,14 +68,14 @@ def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -
 def test_scheme_shows_scheme(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    schemes_page = SchemesPage(client).open()
+    schemes_page = SchemesPage.open(client)
 
     assert schemes_page.schemes
     assert schemes_page.schemes["ATE00001"].reference_url == "/schemes/1"
 
 
 def test_schemes_shows_message_when_no_schemes(client: FlaskClient) -> None:
-    schemes_page = SchemesPage(client).open()
+    schemes_page = SchemesPage.open(client)
 
     assert not schemes_page.schemes
     assert schemes_page.is_no_schemes_message_visible

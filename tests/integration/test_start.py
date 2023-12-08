@@ -4,13 +4,13 @@ from tests.integration.pages import StartPage
 
 
 def test_start(client: FlaskClient) -> None:
-    start_page = StartPage(client).open()
+    start_page = StartPage.open(client)
 
     assert start_page.is_visible
 
 
 def test_header_home_shows_start(client: FlaskClient) -> None:
-    start_page = StartPage(client).open()
+    start_page = StartPage.open(client)
 
     assert start_page.header.home_url == "/"
 

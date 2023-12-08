@@ -35,7 +35,7 @@ def auth_fixture(authorities: AuthorityRepository, users: UserRepository, client
 def test_scheme_shows_back(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert scheme_page.back_url == "/schemes"
 
@@ -43,7 +43,7 @@ def test_scheme_shows_back(schemes: SchemeRepository, client: FlaskClient) -> No
 def test_scheme_shows_name(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert scheme_page.name == "Wirral Package"
 
@@ -51,7 +51,7 @@ def test_scheme_shows_name(schemes: SchemeRepository, client: FlaskClient) -> No
 def test_scheme_shows_minimal_overview(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert (
         scheme_page.overview.reference == "ATE00001"
@@ -75,7 +75,7 @@ def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -
     )
     schemes.add(scheme)
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert (
         scheme_page.overview.reference == "ATE00001"
@@ -88,7 +88,7 @@ def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -
 def test_scheme_shows_minimal_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert (
         scheme_page.funding.funding_allocation == "N/A"
@@ -122,7 +122,7 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
     )
     schemes.add(scheme)
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert (
         scheme_page.funding.funding_allocation == "£100,000"
@@ -156,7 +156,7 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
     )
     schemes.add(scheme)
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert (
         scheme_page.funding.funding_allocation == "£0"
@@ -169,7 +169,7 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
 def test_scheme_shows_minimal_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert scheme_page.milestones.milestones.to_dicts() == [
         {"milestone": "Feasibility design completed", "planned": "N/A", "actual": "N/A"},
@@ -197,7 +197,7 @@ def test_scheme_shows_milestones(schemes: SchemeRepository, client: FlaskClient)
     )
     schemes.add(scheme)
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert scheme_page.milestones.milestones.to_dicts() == [
         {"milestone": "Feasibility design completed", "planned": "01/02/2020", "actual": "02/02/2020"},
@@ -220,7 +220,7 @@ def test_scheme_shows_minimal_outputs(schemes: SchemeRepository, client: FlaskCl
     )
     schemes.add(scheme)
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert scheme_page.outputs.outputs
     outputs = list(scheme_page.outputs.outputs)
@@ -245,7 +245,7 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
     )
     schemes.add(scheme)
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert scheme_page.outputs.outputs
     assert scheme_page.outputs.outputs.to_dicts() == [
@@ -274,7 +274,7 @@ def test_scheme_shows_zero_outputs(schemes: SchemeRepository, client: FlaskClien
     )
     schemes.add(scheme)
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert scheme_page.outputs.outputs
     outputs = list(scheme_page.outputs.outputs)
@@ -284,7 +284,7 @@ def test_scheme_shows_zero_outputs(schemes: SchemeRepository, client: FlaskClien
 def test_scheme_shows_message_when_no_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    scheme_page = SchemePage(client).open(1)
+    scheme_page = SchemePage.open(client, 1)
 
     assert not scheme_page.outputs.outputs
     assert scheme_page.outputs.is_no_outputs_message_visible
@@ -296,6 +296,6 @@ def test_scheme_when_different_authority(
     authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
     schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
 
-    forbidden_page = SchemePage(client).open_when_unauthorized(2)
+    forbidden_page = SchemePage.open_when_unauthorized(client, 2)
 
     assert forbidden_page.is_visible and forbidden_page.is_forbidden

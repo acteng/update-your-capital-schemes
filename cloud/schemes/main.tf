@@ -44,6 +44,11 @@ module "cloud_run" {
   database_uri_secret_id         = module.cloud_sql.database_uri_secret_id
   database_uri_secret_version_id = module.cloud_sql.database_uri_secret_version_id
   vpc_id                         = module.vpc.id
+
+  depends_on = [
+    module.secret_manager,
+    module.vpc
+  ]
 }
 
 module "github_action" {

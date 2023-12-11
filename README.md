@@ -12,10 +12,15 @@
    gcloud auth application-default login
    ```
 1. Install Terraform 1.6
+1. Install [Bitwarden CLI](https://bitwarden.com/help/cli/#download-and-install)
 
 ## Configure the app
 
-Find the secure note in the password manager called `Schemes Secrets (Localhost)` and copy the contents to `.env`.
+Configure the application's environment variables with the localhost secrets:
+
+```bash
+bw get notes "Schemes Secrets (Localhost)" > .env
+```
 
 The application can also be configured with the following environment variables:
 
@@ -234,8 +239,11 @@ For each environment required (dev, test, prod):
    terraform apply
    ```
 
-1. This will fail due to missing secrets. Find the secure note in the password manager called `Schemes Secrets ($ENVIRONMENT)`
-and execute the script. Then repeat the previous step.
+1. This will fail due to missing secrets. Now that the Secret Manager service has been enabled, create the secrets then repeat the previous step:
+
+   ```bash
+   bw get notes "Schemes Secrets ($ENVIRONMENT)" | sh
+   ```
 
 1. Obtain the Cloud Run service account private key:
 

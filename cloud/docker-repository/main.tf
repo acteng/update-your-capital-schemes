@@ -1,12 +1,12 @@
 terraform {
   backend "gcs" {
-    bucket = "dft-ate-schemes-tf-backend"
+    bucket = "dft-schemes-common-tf-backend"
     prefix = "docker-repository"
   }
 }
 
 locals {
-  project  = "dft-ate-schemes"
+  project  = "dft-schemes-common"
   location = "europe-west1"
 }
 

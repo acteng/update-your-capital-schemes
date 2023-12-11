@@ -1,10 +1,10 @@
 locals {
-  project  = "dft-ate-schemes"
+  project  = "dft-schemes-common"
   location = "europe-west1"
 }
 
 resource "google_storage_bucket" "main" {
-  name     = "dft-ate-schemes-tf-backend"
+  name     = "dft-schemes-common-tf-backend"
   project  = local.project
   location = local.location
 

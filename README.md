@@ -261,9 +261,9 @@ To manually redeploy the Cloud Run service using the latest image in the Docker 
 
 ```bash
 gcloud run deploy schemes \
-    --project dft-ate-schemes-$ENVIRONMENT \
+    --project dft-schemes-$ENVIRONMENT \
     --region europe-west1 \
-    --image europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes
+    --image europe-west1-docker.pkg.dev/dft-schemes-common/docker/schemes
 ```
 
 ## Authentication
@@ -273,19 +273,19 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/mana
 ### Dev
 
 * Service name: ATE Schemes (Dev)
-* Service redirect URLs: https://schemes-ijnazoz5mq-ew.a.run.app/auth, http://127.0.0.1:5000/auth
+* Service redirect URLs: https://schemes-a552yllyya-ew.a.run.app/auth, https://schemes-ijnazoz5mq-ew.a.run.app/auth, http://127.0.0.1:5000/auth
 * Service contact email address: mark.hobson@activetravelengland.gov.uk
 * Scopes: openid email
 * Public key: (see "Schemes GOV.UK One Login Public Key (Dev)" in Bitwarden)
-* Logout URL: https://schemes-ijnazoz5mq-ew.a.run.app/, http://127.0.0.1:5000/
+* Logout URLs: https://schemes-a552yllyya-ew.a.run.app/, https://schemes-ijnazoz5mq-ew.a.run.app/, http://127.0.0.1:5000/
 * Sector identifier URI: https://schemes-ijnazoz5mq-ew.a.run.app/
 
 ### Test
 
 * Service name: ATE Schemes (Test)
-* Service redirect URLs: https://schemes-dcmtqc7uca-ew.a.run.app/auth
+* Service redirect URLs: https://schemes-d7yho5f3pa-ew.a.run.app/auth, https://schemes-dcmtqc7uca-ew.a.run.app/auth
 * Service contact email address: mark.hobson@activetravelengland.gov.uk
 * Scopes: openid email
 * Public key: (see "Schemes GOV.UK One Login Public Key (Test)" in Bitwarden)
-* Logout URL: https://schemes-dcmtqc7uca-ew.a.run.app/
+* Logout URLs: https://schemes-d7yho5f3pa-ew.a.run.app/, https://schemes-dcmtqc7uca-ew.a.run.app/
 * Sector identifier URI: https://schemes-dcmtqc7uca-ew.a.run.app/

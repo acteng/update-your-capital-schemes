@@ -22,5 +22,5 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: schemes
-          image: europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes:${{ github.event.inputs.tag }}
+          image: europe-west1-docker.pkg.dev/dft-schemes-common/docker/schemes:${{ github.event.inputs.tag }}
           region: europe-west1

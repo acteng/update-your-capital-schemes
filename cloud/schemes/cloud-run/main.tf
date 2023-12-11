@@ -15,7 +15,7 @@ resource "google_cloud_run_v2_service" "schemes" {
 
   template {
     containers {
-      image = "europe-west1-docker.pkg.dev/dft-ate-schemes/docker/schemes"
+      image = "europe-west1-docker.pkg.dev/dft-schemes-common/docker/schemes"
       env {
         name  = "FLASK_ENV"
         value = var.env
@@ -120,7 +120,7 @@ data "google_project" "main" {
 }
 
 resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
-  project = "dft-ate-schemes"
+  project = "dft-schemes-common"
   role    = "roles/artifactregistry.reader"
   member  = "serviceAccount:service-${data.google_project.main.number}@serverless-robot-prod.iam.gserviceaccount.com"
 

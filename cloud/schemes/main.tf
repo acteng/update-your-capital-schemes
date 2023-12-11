@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "dft-ate-schemes-tf-backend"
+    bucket = "dft-schemes-common-tf-backend"
     prefix = "schemes"
   }
 }
@@ -11,7 +11,7 @@ provider "google" {
 
 locals {
   env      = terraform.workspace
-  project  = "dft-ate-schemes-${local.env}"
+  project  = "dft-schemes-${local.env}"
   location = "europe-west1"
 }
 

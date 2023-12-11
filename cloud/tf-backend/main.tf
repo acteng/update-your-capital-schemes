@@ -9,7 +9,7 @@ resource "google_storage_bucket" "main" {
   location = local.location
 
   uniform_bucket_level_access = true
-  public_access_prevention = "enforced"
+  public_access_prevention    = "enforced"
 
   versioning {
     enabled = true

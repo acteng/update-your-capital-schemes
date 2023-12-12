@@ -147,6 +147,7 @@ class TestDataSourceRepr:
             ("ATE published data", DataSource.ATE_PUBLISHED_DATA),
             ("change control", DataSource.CHANGE_CONTROL),
             ("ATF4e Bid", DataSource.ATF4E_BID),
+            ("ATF4e Moderation", DataSource.ATF4E_MODERATION),
             ("Pulse 2023/24 Q2", DataSource.PULSE_2023_24_Q2),
             ("Initial Scheme List", DataSource.INITIAL_SCHEME_LIST),
         ],

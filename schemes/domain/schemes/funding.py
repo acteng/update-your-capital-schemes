@@ -112,5 +112,6 @@ class DataSource(Enum):
     ATE_PUBLISHED_DATA = auto()
     CHANGE_CONTROL = auto()
     ATF4E_BID = auto()
+    ATF4E_MODERATION = auto()
     PULSE_2023_24_Q2 = auto()
     INITIAL_SCHEME_LIST = auto()

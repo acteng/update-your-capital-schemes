@@ -28,8 +28,9 @@ class DataSourceMapper:
         DataSource.ATE_PUBLISHED_DATA: 7,
         DataSource.CHANGE_CONTROL: 8,
         DataSource.ATF4E_BID: 9,
-        DataSource.PULSE_2023_24_Q2: 10,
-        DataSource.INITIAL_SCHEME_LIST: 11,
+        DataSource.ATF4E_MODERATION: 10,
+        DataSource.PULSE_2023_24_Q2: 11,
+        DataSource.INITIAL_SCHEME_LIST: 12,
     }
 
     def to_id(self, data_source: DataSource) -> int:

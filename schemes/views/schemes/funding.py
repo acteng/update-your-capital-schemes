@@ -81,6 +81,7 @@ class DataSourceRepr(Enum):
     ATE_PUBLISHED_DATA = "ATE published data"
     CHANGE_CONTROL = "change control"
     ATF4E_BID = "ATF4e Bid"
+    ATF4E_MODERATION = "ATF4e Moderation"
     PULSE_2023_24_Q2 = "Pulse 2023/24 Q2"
     INITIAL_SCHEME_LIST = "Initial Scheme List"
 
@@ -95,6 +96,7 @@ class DataSourceRepr(Enum):
             DataSourceRepr.ATE_PUBLISHED_DATA: DataSource.ATE_PUBLISHED_DATA,
             DataSourceRepr.CHANGE_CONTROL: DataSource.CHANGE_CONTROL,
             DataSourceRepr.ATF4E_BID: DataSource.ATF4E_BID,
+            DataSourceRepr.ATF4E_MODERATION: DataSource.ATF4E_MODERATION,
             DataSourceRepr.PULSE_2023_24_Q2: DataSource.PULSE_2023_24_Q2,
             DataSourceRepr.INITIAL_SCHEME_LIST: DataSource.INITIAL_SCHEME_LIST,
         }

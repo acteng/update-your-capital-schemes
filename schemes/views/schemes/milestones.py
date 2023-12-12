@@ -97,6 +97,7 @@ class MilestoneRevisionRepr:
 @unique
 class MilestoneRepr(Enum):
     PUBLIC_CONSULTATION_COMPLETED = "public consultation completed"
+    FEASIBILITY_DESIGN_STARTED = "feasibility design started"
     FEASIBILITY_DESIGN_COMPLETED = "feasibility design completed"
     PRELIMINARY_DESIGN_COMPLETED = "preliminary design completed"
     OUTLINE_DESIGN_COMPLETED = "outline design completed"
@@ -111,6 +112,7 @@ class MilestoneRepr(Enum):
     def to_domain(self) -> Milestone:
         members = {
             MilestoneRepr.PUBLIC_CONSULTATION_COMPLETED: Milestone.PUBLIC_CONSULTATION_COMPLETED,
+            MilestoneRepr.FEASIBILITY_DESIGN_STARTED: Milestone.FEASIBILITY_DESIGN_STARTED,
             MilestoneRepr.FEASIBILITY_DESIGN_COMPLETED: Milestone.FEASIBILITY_DESIGN_COMPLETED,
             MilestoneRepr.PRELIMINARY_DESIGN_COMPLETED: Milestone.PRELIMINARY_DESIGN_COMPLETED,
             MilestoneRepr.OUTLINE_DESIGN_COMPLETED: Milestone.OUTLINE_DESIGN_COMPLETED,

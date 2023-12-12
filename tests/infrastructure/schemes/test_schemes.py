@@ -159,7 +159,7 @@ class TestDatabaseSchemeRepository:
             row1.capital_scheme_id == 1
             and row1.effective_date_from == date(2020, 1, 1)
             and row1.effective_date_to == date(2020, 1, 31)
-            and row1.milestone_id == 5
+            and row1.milestone_id == 6
             and row1.observation_type_id == 1
             and row1.status_date == date(2020, 2, 1)
         )
@@ -167,7 +167,7 @@ class TestDatabaseSchemeRepository:
             row2.capital_scheme_id == 1
             and row2.effective_date_from == date(2020, 2, 1)
             and row2.effective_date_to is None
-            and row2.milestone_id == 5
+            and row2.milestone_id == 6
             and row2.observation_type_id == 1
             and row2.status_date == date(2020, 3, 1)
         )
@@ -303,7 +303,7 @@ class TestDatabaseSchemeRepository:
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=date(2020, 1, 31),
-                    milestone_id=5,
+                    milestone_id=6,
                     observation_type_id=1,
                     status_date=date(2020, 2, 1),
                 )
@@ -313,7 +313,7 @@ class TestDatabaseSchemeRepository:
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 2, 1),
                     effective_date_to=None,
-                    milestone_id=5,
+                    milestone_id=6,
                     observation_type_id=1,
                     status_date=date(2020, 3, 1),
                 )
@@ -524,7 +524,7 @@ class TestDatabaseSchemeRepository:
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=None,
-                    milestone_id=5,
+                    milestone_id=6,
                     observation_type_id=1,
                     status_date=date(2020, 2, 1),
                 )
@@ -539,7 +539,7 @@ class TestDatabaseSchemeRepository:
                     capital_scheme_id=2,
                     effective_date_from=date(2020, 2, 1),
                     effective_date_to=None,
-                    milestone_id=5,
+                    milestone_id=6,
                     observation_type_id=1,
                     status_date=date(2020, 3, 1),
                 )
@@ -554,7 +554,7 @@ class TestDatabaseSchemeRepository:
                     capital_scheme_id=3,
                     effective_date_from=date(2020, 3, 1),
                     effective_date_to=None,
-                    milestone_id=5,
+                    milestone_id=6,
                     observation_type_id=1,
                     status_date=date(2020, 4, 1),
                 )

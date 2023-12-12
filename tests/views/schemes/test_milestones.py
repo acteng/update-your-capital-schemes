@@ -150,6 +150,7 @@ class TestMilestoneRepr:
         "milestone, expected_milestone",
         [
             ("public consultation completed", Milestone.PUBLIC_CONSULTATION_COMPLETED),
+            ("feasibility design started", Milestone.FEASIBILITY_DESIGN_STARTED),
             ("feasibility design completed", Milestone.FEASIBILITY_DESIGN_COMPLETED),
             ("preliminary design completed", Milestone.PRELIMINARY_DESIGN_COMPLETED),
             ("outline design completed", Milestone.OUTLINE_DESIGN_COMPLETED),

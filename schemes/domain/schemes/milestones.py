@@ -64,6 +64,7 @@ class MilestoneRevision:
 
 class Milestone(IntEnum):
     PUBLIC_CONSULTATION_COMPLETED = auto()
+    FEASIBILITY_DESIGN_STARTED = auto()
     FEASIBILITY_DESIGN_COMPLETED = auto()
     PRELIMINARY_DESIGN_COMPLETED = auto()
     OUTLINE_DESIGN_COMPLETED = auto()

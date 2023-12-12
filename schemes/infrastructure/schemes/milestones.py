@@ -4,16 +4,17 @@ from schemes.domain.schemes import Milestone
 class MilestoneMapper:
     _IDS = {
         Milestone.PUBLIC_CONSULTATION_COMPLETED: 1,
-        Milestone.FEASIBILITY_DESIGN_COMPLETED: 2,
-        Milestone.PRELIMINARY_DESIGN_COMPLETED: 3,
-        Milestone.OUTLINE_DESIGN_COMPLETED: 4,
-        Milestone.DETAILED_DESIGN_COMPLETED: 5,
-        Milestone.CONSTRUCTION_STARTED: 6,
-        Milestone.CONSTRUCTION_COMPLETED: 7,
-        Milestone.INSPECTION: 8,
-        Milestone.NOT_PROGRESSED: 9,
-        Milestone.SUPERSEDED: 10,
-        Milestone.REMOVED: 11,
+        Milestone.FEASIBILITY_DESIGN_STARTED: 2,
+        Milestone.FEASIBILITY_DESIGN_COMPLETED: 3,
+        Milestone.PRELIMINARY_DESIGN_COMPLETED: 4,
+        Milestone.OUTLINE_DESIGN_COMPLETED: 5,
+        Milestone.DETAILED_DESIGN_COMPLETED: 6,
+        Milestone.CONSTRUCTION_STARTED: 7,
+        Milestone.CONSTRUCTION_COMPLETED: 8,
+        Milestone.INSPECTION: 9,
+        Milestone.NOT_PROGRESSED: 10,
+        Milestone.SUPERSEDED: 11,
+        Milestone.REMOVED: 12,
     }
 
     def to_id(self, milestone: Milestone) -> int:

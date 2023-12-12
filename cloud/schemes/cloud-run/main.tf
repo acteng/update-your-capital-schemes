@@ -40,18 +40,13 @@ resource "google_cloud_run_v2_service" "schemes" {
       }
       env {
         name = "FLASK_BASIC_AUTH_USERNAME"
-        value_source {
-          secret_key_ref {
-            secret  = data.google_secret_manager_secret.basic_auth_username.secret_id
-            version = "latest"
-          }
-        }
+        value = data.bitwarden_item_login.basic_auth.username
       }
       env {
         name = "FLASK_BASIC_AUTH_PASSWORD"
         value_source {
           secret_key_ref {
-            secret  = data.google_secret_manager_secret.basic_auth_password.secret_id
+            secret  = google_secret_manager_secret.basic_auth_password.secret_id
             version = "latest"
           }
         }
@@ -92,9 +87,8 @@ resource "google_cloud_run_v2_service" "schemes" {
     # database URI
     var.database_uri_secret_version_id,
     google_secret_manager_secret_iam_member.cloud_run_schemes_database_uri,
-    # basic auth username
-    google_secret_manager_secret_iam_member.cloud_run_schemes_basic_auth_username,
     # basic auth password
+    google_secret_manager_secret_version.basic_auth_password,
     google_secret_manager_secret_iam_member.cloud_run_schemes_basic_auth_password,
     # api key
     google_secret_manager_secret_version.api_key,
@@ -169,28 +163,30 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_database_u
   secret_id = var.database_uri_secret_id
 }
 
-# basic auth username
+# basic auth
 
-data "google_secret_manager_secret" "basic_auth_username" {
-  secret_id = "basic-auth-username"
+data "bitwarden_item_login" "basic_auth" {
+  id = "f3791527-73d8-4e0f-8b19-b08900ae5299" # Schemes (Dev)
 }
 
-resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_basic_auth_username" {
-  member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
-  role      = "roles/secretmanager.secretAccessor"
-  secret_id = data.google_secret_manager_secret.basic_auth_username.id
-}
-
-# basic auth password
-
-data "google_secret_manager_secret" "basic_auth_password" {
+resource "google_secret_manager_secret" "basic_auth_password" {
   secret_id = "basic-auth-password"
+
+  replication {
+    auto {
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "basic_auth_password" {
+  secret      = google_secret_manager_secret.basic_auth_password.id
+  secret_data = data.bitwarden_item_login.basic_auth.password
 }
 
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_basic_auth_password" {
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
   role      = "roles/secretmanager.secretAccessor"
-  secret_id = data.google_secret_manager_secret.basic_auth_password.id
+  secret_id = google_secret_manager_secret.basic_auth_password.id
 }
 
 # api key

@@ -5,6 +5,10 @@ terraform {
   }
 }
 
+provider "bitwarden" {
+  email = var.bitwarden_email
+}
+
 provider "google" {
   project = local.project
 }

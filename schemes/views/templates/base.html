@@ -1,4 +1,5 @@
 {% extends "govuk_frontend_jinja/template.html" %}
+{% from "govuk_frontend_jinja/components/phase-banner/macro.html" import govukPhaseBanner -%}
 
 {% block pageTitle %}Schemes - Active Travel England - GOV.UK{% endblock %}
 
@@ -8,6 +9,17 @@
 
 {% block header %}
     {{ govukHeader({"serviceName": "Schemes", "homepageUrl": url_for("start.index")}) }}
+{% endblock %}
+
+{% block beforeContent %}
+    {{ govukPhaseBanner({
+        "tag": {
+            "text": "Beta"
+        },
+        "html": "This is a new service – your "
+            ~ '<a class="govuk-link" href="mailto:contact@activetravelengland.gov.uk">feedback</a> '
+            ~ "will help us to improve it."
+    }) }}
 {% endblock %}
 
 {% block bodyEnd %}

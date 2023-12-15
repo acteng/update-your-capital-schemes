@@ -3,6 +3,7 @@
 {% from "govuk_frontend_jinja/components/tabs/macro.html" import govukTabs %}
 
 {% block beforeContent %}
+    {{ super() }}
     {{ govukBackLink({
         "href": url_for("schemes.index")
     }) }}

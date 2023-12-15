@@ -1,4 +1,3 @@
-from decimal import Decimal
 from typing import Any
 
 import inject
@@ -94,7 +93,7 @@ def add_tables(metadata: MetaData) -> None:
             ForeignKey("capital_scheme.capital_scheme_id", name="scheme_intervention_capital_scheme_id_fkey"),
             nullable=False,
         ),
-        Column("intervention_value", Numeric(precision=15, scale=6)),
+        Column("intervention_value", Numeric(precision=15, scale=6), nullable=False),
         Column("observation_type_id", Integer, nullable=False),
         Column("effective_date_from", Date, nullable=False),
         Column("effective_date_to", Date),
@@ -273,7 +272,7 @@ class DatabaseSchemeRepository(SchemeRepository):
         return OutputRevision(
             effective=DateRange(row.effective_date_from, row.effective_date_to),
             type_measure=self._output_type_measure_mapper.to_domain(row.intervention_type_measure_id),
-            value=row.intervention_value or Decimal(0),
+            value=row.intervention_value,
             observation_type=self._observation_type_mapper.to_domain(row.observation_type_id),
         )
 

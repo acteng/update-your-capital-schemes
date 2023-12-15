@@ -385,32 +385,6 @@ class TestDatabaseSchemeRepository:
             ),
         ]
 
-    def test_get_scheme_output_revision_with_no_value(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
-        with engine.begin() as connection:
-            connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
-                    capital_scheme_id=1,
-                    scheme_name="Wirral Package",
-                    bid_submitting_authority_id=1,
-                )
-            )
-            connection.execute(
-                insert(metadata.tables["scheme_intervention"]).values(
-                    capital_scheme_id=1,
-                    effective_date_from=date(2020, 1, 1),
-                    effective_date_to=date(2020, 1, 31),
-                    intervention_type_measure_id=4,
-                    intervention_value=None,
-                    observation_type_id=1,
-                )
-            )
-
-        scheme = schemes.get(1)
-
-        assert scheme and scheme.outputs.output_revisions[0].value == Decimal(0)
-
     def test_get_scheme_that_does_not_exist(
         self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
     ) -> None:

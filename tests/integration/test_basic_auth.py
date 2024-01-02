@@ -14,7 +14,7 @@ class TestUnauthenticated:
 class TestAuthenticated:
     @pytest.fixture(name="config")
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
-        return config | {"BASIC_AUTH_USERNAME": "boardman", "BASIC_AUTH_PASSWORD": "letmein"}
+        return dict(config) | {"BASIC_AUTH_USERNAME": "boardman", "BASIC_AUTH_PASSWORD": "letmein"}
 
     def test_challenge_when_basic_auth(self, client: FlaskClient) -> None:
         response = client.get("/")

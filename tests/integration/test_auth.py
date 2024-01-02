@@ -12,7 +12,7 @@ from schemes.domain.users import User, UserRepository
 
 @pytest.fixture(name="config")
 def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
-    return config | {"GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
+    return dict(config) | {"GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
 
 
 def test_callback_logs_in(users: UserRepository, client: FlaskClient) -> None:

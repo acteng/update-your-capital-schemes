@@ -11,7 +11,7 @@ from tests.integration.pages import SchemesPage
 
 @pytest.fixture(name="config")
 def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
-    return config | {"GOVUK_PROFILE_URL": "https://example.com/profile"}
+    return dict(config) | {"GOVUK_PROFILE_URL": "https://example.com/profile"}
 
 
 @pytest.fixture(name="auth", autouse=True)
@@ -84,7 +84,7 @@ def test_schemes_shows_message_when_no_schemes(client: FlaskClient) -> None:
 class TestApiEnabled:
     @pytest.fixture(name="config")
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
-        return config | {"API_KEY": "boardman"}
+        return dict(config) | {"API_KEY": "boardman"}
 
     def test_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))

@@ -26,7 +26,7 @@ from schemes.domain.users import UserRepository
 class TestApiEnabled:
     @pytest.fixture(name="config")
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
-        return config | {"API_KEY": "boardman"}
+        return dict(config) | {"API_KEY": "boardman"}
 
     def test_add_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
         response = client.post(

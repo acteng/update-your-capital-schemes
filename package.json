@@ -20,7 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "govuk-frontend": "^4.7.0",
-    "govuk-one-login-service-header": "github:alphagov/di-govuk-one-login-service-header#25cb2d00881048031c6b4a0023b6aef429fcffb3"
+    "govuk-one-login-service-header": "github:govuk-one-login/service-header#aa4fbc65487ae259aafc67b9f830dd2c246487b2"
   },
   "devDependencies": {
     "sass": "^1.69.0",

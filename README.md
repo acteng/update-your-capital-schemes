@@ -149,10 +149,10 @@ To run the server as a container using a PostgreSQL database:
     pip install -e .[dev]
     ```
 
-1. Install the browsers:
+1. Install the browsers and their dependencies:
 
    ```bash
-   playwright install chromium
+   playwright install --with-deps chromium
    ```
 
 1. Run the tests:

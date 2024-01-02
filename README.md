@@ -289,3 +289,7 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/mana
 * Public key: (see "Schemes GOV.UK One Login Public Key (Test)" in Bitwarden)
 * Logout URLs: https://schemes-d7yho5f3pa-ew.a.run.app/, https://schemes-dcmtqc7uca-ew.a.run.app/
 * Sector identifier URI: https://schemes-dcmtqc7uca-ew.a.run.app/
+
+## See also
+
+* [Maintenance](docs/maintenance.md)

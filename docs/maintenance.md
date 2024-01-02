@@ -48,6 +48,12 @@ hasn't been released yet. To upgrade:
 1. Update the commit hash for the dependency `govuk-one-login-service-header` in `package.json` to the
    [latest commit](https://github.com/govuk-one-login/service-header/commits/main/)
 
+1. Install the updated package:
+
+   ```bash
+   npm install
+   ```
+
 1. Copy the contents of
    [the service header Nunjucks template](https://raw.githubusercontent.com/govuk-one-login/service-header/main/src/nunjucks/template.njk)
    to `schemes/views/templates/govuk_one_login_service_header/macro.html`, replacing the contents of the Jinja macro:

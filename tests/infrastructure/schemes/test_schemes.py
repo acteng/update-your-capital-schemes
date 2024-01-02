@@ -673,7 +673,7 @@ class TestDatabaseSchemeRepository:
         schemes.clear()
 
         with engine.connect() as connection:
-            count = connection.execute(select(func.count("*")).select_from(capital_scheme_table)).scalar()
+            count = connection.execute(select(func.count()).select_from(capital_scheme_table)).scalar()
         assert count == 0
 
 

@@ -48,4 +48,4 @@ test:
 verify: format-check lint test
 
 run:
-	$(bin)/flask --app schemes run
+	$(bin)/flask --debug --app schemes run

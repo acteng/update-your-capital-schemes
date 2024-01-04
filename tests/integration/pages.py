@@ -137,48 +137,51 @@ class SchemePage(PageObject):
 
     @property
     def overview(self) -> SchemeOverviewComponent:
-        card = self._soup.select_one("main .govuk-summary-card:has(h2:-soup-contains('Overview'))")
-        assert card
-        return SchemeOverviewComponent(card)
+        title = self._soup.select_one("main h2:-soup-contains('Overview')")
+        assert title
+        return SchemeOverviewComponent(title)
 
     @property
     def funding(self) -> SchemeFundingComponent:
-        card = self._soup.select_one("main .govuk-summary-card:has(h2:-soup-contains('Funding'))")
-        assert card
-        return SchemeFundingComponent(card)
+        title = self._soup.select_one("main h2:-soup-contains('Funding')")
+        assert title
+        return SchemeFundingComponent(title)
 
     @property
     def milestones(self) -> SchemeMilestonesComponent:
-        card = self._soup.select_one("main .govuk-summary-card:has(h2:-soup-contains('Milestones'))")
-        assert card
-        return SchemeMilestonesComponent(card)
+        title = self._soup.select_one("main h2:-soup-contains('Milestones')")
+        assert title
+        return SchemeMilestonesComponent(title)
 
     @property
     def outputs(self) -> SchemeOutputsComponent:
-        card = self._soup.select_one("main .govuk-summary-card:has(h2:-soup-contains('Outputs'))")
-        assert card
-        return SchemeOutputsComponent(card)
+        title = self._soup.select_one("main h2:-soup-contains('Outputs')")
+        assert title
+        return SchemeOutputsComponent(title)
 
 
 class SchemeOverviewComponent:
-    def __init__(self, tag: Tag):
-        self.reference = (tag.select("dd")[0].string or "").strip()
-        self.scheme_type = (tag.select("dd")[1].string or "").strip()
-        self.funding_programme = (tag.select("dd")[2].string or "").strip()
-        self.current_milestone = (tag.select("dd")[3].string or "").strip()
+    def __init__(self, title: Tag):
+        card = title.find_parent("div", class_="govuk-summary-card") or Tag()
+        self.reference = (card.select("dd")[0].string or "").strip()
+        self.scheme_type = (card.select("dd")[1].string or "").strip()
+        self.funding_programme = (card.select("dd")[2].string or "").strip()
+        self.current_milestone = (card.select("dd")[3].string or "").strip()
 
 
 class SchemeFundingComponent:
-    def __init__(self, tag: Tag):
-        self.funding_allocation = (tag.select("dd")[0].string or "").strip()
-        self.spend_to_date = (tag.select("dd")[1].string or "").strip()
-        self.change_control_adjustment = (tag.select("dd")[2].string or "").strip()
-        self.allocation_still_to_spend = (tag.select("dd")[3].string or "").strip()
+    def __init__(self, title: Tag):
+        card = title.find_parent("div", class_="govuk-summary-card") or Tag()
+        self.funding_allocation = (card.select("dd")[0].string or "").strip()
+        self.spend_to_date = (card.select("dd")[1].string or "").strip()
+        self.change_control_adjustment = (card.select("dd")[2].string or "").strip()
+        self.allocation_still_to_spend = (card.select("dd")[3].string or "").strip()
 
 
 class SchemeMilestonesComponent:
-    def __init__(self, tag: Tag):
-        milestones_table = tag.select_one("table")
+    def __init__(self, title: Tag):
+        card = title.find_parent("div", class_="govuk-summary-card") or Tag()
+        milestones_table = card.select_one("table")
         assert milestones_table
         self.milestones = SchemeMilestonesTableComponent(milestones_table)
 
@@ -207,10 +210,11 @@ class SchemeMilestoneRowComponent:
 
 
 class SchemeOutputsComponent:
-    def __init__(self, tag: Tag):
-        outputs_table = tag.select_one("table")
+    def __init__(self, title: Tag):
+        card = title.find_parent("div", class_="govuk-summary-card") or Tag()
+        outputs_table = card.select_one("table")
         self.outputs = SchemeOutputsTableComponent(outputs_table) if outputs_table else None
-        paragraph = tag.select_one("p")
+        paragraph = card.select_one("p")
         self.is_no_outputs_message_visible = (
             paragraph.string == "There are no outputs for this scheme." if paragraph else None
         )

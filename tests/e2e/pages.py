@@ -153,11 +153,11 @@ class SchemePage:
 
 class SchemeOverviewComponent:
     def __init__(self, title: Locator):
-        content = title.locator("xpath=../..")
-        self._reference = content.get_by_role("definition").nth(0)
-        self._scheme_type = content.get_by_role("definition").nth(1)
-        self._funding_programme = content.get_by_role("definition").nth(2)
-        self._current_milestone = content.get_by_role("definition").nth(3)
+        card = title.locator("xpath=../..")
+        self._reference = card.get_by_role("definition").nth(0)
+        self._scheme_type = card.get_by_role("definition").nth(1)
+        self._funding_programme = card.get_by_role("definition").nth(2)
+        self._current_milestone = card.get_by_role("definition").nth(3)
 
     @property
     def reference(self) -> str:
@@ -178,11 +178,11 @@ class SchemeOverviewComponent:
 
 class SchemeFundingComponent:
     def __init__(self, title: Locator):
-        content = title.locator("xpath=../..")
-        self._funding_allocation = content.get_by_role("definition").nth(0)
-        self._spend_to_date = content.get_by_role("definition").nth(1)
-        self._change_control_adjustment = content.get_by_role("definition").nth(2)
-        self._allocation_still_to_spend = content.get_by_role("definition").nth(3)
+        card = title.locator("xpath=../..")
+        self._funding_allocation = card.get_by_role("definition").nth(0)
+        self._spend_to_date = card.get_by_role("definition").nth(1)
+        self._change_control_adjustment = card.get_by_role("definition").nth(2)
+        self._allocation_still_to_spend = card.get_by_role("definition").nth(3)
 
     @property
     def funding_allocation(self) -> str:
@@ -203,8 +203,8 @@ class SchemeFundingComponent:
 
 class SchemeMilestonesComponent:
     def __init__(self, title: Locator):
-        content = title.locator("xpath=../..")
-        self.milestones = SchemeMilestonesTableComponent(content.get_by_role("table"))
+        card = title.locator("xpath=../..")
+        self.milestones = SchemeMilestonesTableComponent(card.get_by_role("table"))
 
 
 class SchemeMilestonesTableComponent:
@@ -241,8 +241,8 @@ class SchemeMilestoneRowComponent:
 
 class SchemeOutputsComponent:
     def __init__(self, title: Locator):
-        content = title.locator("xpath=../..")
-        self.outputs = SchemeOutputsTableComponent(content.get_by_role("table"))
+        card = title.locator("xpath=../..")
+        self.outputs = SchemeOutputsTableComponent(card.get_by_role("table"))
 
 
 class SchemeOutputsTableComponent:

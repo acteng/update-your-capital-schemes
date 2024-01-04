@@ -162,18 +162,18 @@ class SchemePage(PageObject):
 
 class SchemeOverviewComponent:
     def __init__(self, tag: Tag):
-        self.reference = (tag.select("main dd")[0].string or "").strip()
-        self.scheme_type = (tag.select("main dd")[1].string or "").strip()
-        self.funding_programme = (tag.select("main dd")[2].string or "").strip()
-        self.current_milestone = (tag.select("main dd")[3].string or "").strip()
+        self.reference = (tag.select("dd")[0].string or "").strip()
+        self.scheme_type = (tag.select("dd")[1].string or "").strip()
+        self.funding_programme = (tag.select("dd")[2].string or "").strip()
+        self.current_milestone = (tag.select("dd")[3].string or "").strip()
 
 
 class SchemeFundingComponent:
     def __init__(self, tag: Tag):
-        self.funding_allocation = (tag.select("main dd")[0].string or "").strip()
-        self.spend_to_date = (tag.select("main dd")[1].string or "").strip()
-        self.change_control_adjustment = (tag.select("main dd")[2].string or "").strip()
-        self.allocation_still_to_spend = (tag.select("main dd")[3].string or "").strip()
+        self.funding_allocation = (tag.select("dd")[0].string or "").strip()
+        self.spend_to_date = (tag.select("dd")[1].string or "").strip()
+        self.change_control_adjustment = (tag.select("dd")[2].string or "").strip()
+        self.allocation_still_to_spend = (tag.select("dd")[3].string or "").strip()
 
 
 class SchemeMilestonesComponent:

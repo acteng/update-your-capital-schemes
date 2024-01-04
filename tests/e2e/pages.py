@@ -80,18 +80,18 @@ class SchemesPage:
 
 
 class ServiceHeaderComponent:
-    def __init__(self, component: Locator):
-        self._component = component
+    def __init__(self, header: Locator):
+        self._header = header
 
     def sign_out(self) -> StartPage:
-        self._component.get_by_role("link", name="Sign out").click()
-        return StartPage(self._component.page)
+        self._header.get_by_role("link", name="Sign out").click()
+        return StartPage(self._header.page)
 
 
 class SchemesTableComponent:
-    def __init__(self, page: Page, component: Locator):
+    def __init__(self, page: Page, table: Locator):
         self._page = page
-        self._rows = component.get_by_role("row")
+        self._rows = table.get_by_role("row")
 
     def __iter__(self) -> Iterator[SchemeRowComponent]:
         return iter([SchemeRowComponent(self._page, row) for row in self._rows.all()[1:]])
@@ -104,9 +104,9 @@ class SchemesTableComponent:
 
 
 class SchemeRowComponent:
-    def __init__(self, page: Page, component: Locator):
+    def __init__(self, page: Page, row: Locator):
         self._page = page
-        self._cells = component.get_by_role("cell")
+        self._cells = row.get_by_role("cell")
         self._reference = self._cells.nth(0)
 
     @property
@@ -208,8 +208,8 @@ class SchemeMilestonesComponent:
 
 
 class SchemeMilestonesTableComponent:
-    def __init__(self, component: Locator):
-        self._rows = component.get_by_role("row")
+    def __init__(self, table: Locator):
+        self._rows = table.get_by_role("row")
 
     def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
         return iter([SchemeMilestoneRowComponent(row) for row in self._rows.all()[1:]])
@@ -219,9 +219,9 @@ class SchemeMilestonesTableComponent:
 
 
 class SchemeMilestoneRowComponent:
-    def __init__(self, component: Locator):
-        self._header = component.get_by_role("rowheader")
-        self._cells = component.get_by_role("cell")
+    def __init__(self, row: Locator):
+        self._header = row.get_by_role("rowheader")
+        self._cells = row.get_by_role("cell")
 
     @property
     def milestone(self) -> str | None:
@@ -246,8 +246,8 @@ class SchemeOutputsComponent:
 
 
 class SchemeOutputsTableComponent:
-    def __init__(self, component: Locator):
-        self._rows = component.get_by_role("row")
+    def __init__(self, table: Locator):
+        self._rows = table.get_by_role("row")
 
     def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
         return iter([SchemeOutputRowComponent(row) for row in self._rows.all()[1:]])
@@ -257,8 +257,8 @@ class SchemeOutputsTableComponent:
 
 
 class SchemeOutputRowComponent:
-    def __init__(self, component: Locator):
-        self._cells = component.get_by_role("cell")
+    def __init__(self, row: Locator):
+        self._cells = row.get_by_role("cell")
 
     @property
     def infrastructure(self) -> str | None:

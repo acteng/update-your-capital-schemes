@@ -86,7 +86,7 @@ def get(users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> str
         abort(403)
 
     context = SchemeContext.from_domain(scheme)
-    return render_template("scheme.html", **asdict(context))
+    return render_template("scheme/index.html", **asdict(context))
 
 
 @dataclass(frozen=True)

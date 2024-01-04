@@ -32,8 +32,8 @@ class StartPage(PageObject):
 
 
 class HeaderComponent:
-    def __init__(self, tag: Tag):
-        home = tag.select_one("a.govuk-header__link")
+    def __init__(self, header: Tag):
+        home = header.select_one("a.govuk-header__link")
         self.home_url = home["href"] if home else None
 
 
@@ -77,18 +77,18 @@ class SchemesPage(PageObject):
 
 
 class ServiceHeaderComponent:
-    def __init__(self, tag: Tag):
-        home = tag.select_one("a.one-login-header__link")
-        profile = tag.select_one("a.one-login-header__nav__link")
-        sign_out = tag.select_one("a:-soup-contains('Sign out')")
+    def __init__(self, header: Tag):
+        home = header.select_one("a.one-login-header__link")
+        profile = header.select_one("a.one-login-header__nav__link")
+        sign_out = header.select_one("a:-soup-contains('Sign out')")
         self.home_url = home["href"] if home else None
         self.profile_url = profile["href"] if profile else None
         self.sign_out_url = sign_out["href"] if sign_out else None
 
 
 class SchemesTableComponent:
-    def __init__(self, tag: Tag):
-        self._rows = tag.select("tbody tr")
+    def __init__(self, table: Tag):
+        self._rows = table.select("tbody tr")
 
     def __iter__(self) -> Iterator[SchemeRowComponent]:
         return iter([SchemeRowComponent(row) for row in self._rows])
@@ -101,8 +101,8 @@ class SchemesTableComponent:
 
 
 class SchemeRowComponent:
-    def __init__(self, tag: Tag):
-        cells = tag.select("td")
+    def __init__(self, row: Tag):
+        cells = row.select("td")
         reference = cells[0]
         self.reference = reference.string
         reference_link = reference.select_one("a")
@@ -181,14 +181,14 @@ class SchemeFundingComponent:
 class SchemeMilestonesComponent:
     def __init__(self, title: Tag):
         card = title.find_parent("div", class_="govuk-summary-card") or Tag()
-        milestones_table = card.select_one("table")
-        assert milestones_table
-        self.milestones = SchemeMilestonesTableComponent(milestones_table)
+        table = card.select_one("table")
+        assert table
+        self.milestones = SchemeMilestonesTableComponent(table)
 
 
 class SchemeMilestonesTableComponent:
-    def __init__(self, tag: Tag):
-        self._rows = tag.select("tbody tr")
+    def __init__(self, table: Tag):
+        self._rows = table.select("tbody tr")
 
     def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
         return iter([SchemeMilestoneRowComponent(row) for row in self._rows])
@@ -198,10 +198,10 @@ class SchemeMilestonesTableComponent:
 
 
 class SchemeMilestoneRowComponent:
-    def __init__(self, tag: Tag):
-        milestone_tag = tag.select_one("th")
-        self.milestone = milestone_tag.string if milestone_tag else None
-        cells = tag.select("td")
+    def __init__(self, row: Tag):
+        header = row.select_one("th")
+        self.milestone = header.string if header else None
+        cells = row.select("td")
         self.planned = cells[0].string
         self.actual = cells[1].string
 
@@ -212,8 +212,8 @@ class SchemeMilestoneRowComponent:
 class SchemeOutputsComponent:
     def __init__(self, title: Tag):
         card = title.find_parent("div", class_="govuk-summary-card") or Tag()
-        outputs_table = card.select_one("table")
-        self.outputs = SchemeOutputsTableComponent(outputs_table) if outputs_table else None
+        table = card.select_one("table")
+        self.outputs = SchemeOutputsTableComponent(table) if table else None
         paragraph = card.select_one("p")
         self.is_no_outputs_message_visible = (
             paragraph.string == "There are no outputs for this scheme." if paragraph else None
@@ -221,8 +221,8 @@ class SchemeOutputsComponent:
 
 
 class SchemeOutputsTableComponent:
-    def __init__(self, tag: Tag):
-        self._rows = tag.select("tbody tr")
+    def __init__(self, table: Tag):
+        self._rows = table.select("tbody tr")
 
     def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
         return iter([SchemeOutputRowComponent(row) for row in self._rows])
@@ -232,8 +232,8 @@ class SchemeOutputsTableComponent:
 
 
 class SchemeOutputRowComponent:
-    def __init__(self, tag: Tag):
-        cells = tag.select("td")
+    def __init__(self, row: Tag):
+        cells = row.select("td")
         self.infrastructure = cells[0].string
         self.measurement = cells[1].string
         self.planned = cells[2].string

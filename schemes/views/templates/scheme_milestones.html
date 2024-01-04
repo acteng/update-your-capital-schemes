@@ -1,7 +1,5 @@
 {% from "govuk_frontend_jinja/components/table/macro.html" import govukTable -%}
 
-<h2 class="govuk-heading-l">Milestones</h2>
-
 {% set rows = [] %}
 {% for milestone in milestones.milestones %}
     {% do rows.append([
@@ -16,18 +14,26 @@
         }
     ]) %}
 {% endfor %}
-{{ govukTable({
-    "firstCellIsHeader": true,
-    "head": [
-        {
-            "text": "Milestone"
-        },
-        {
-            "text": "Planned date"
-        },
-        {
-            "text": "Actual date"
-        }
-    ],
-    "rows": rows
-}) }}
+<div class="govuk-summary-card">
+    <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title">Milestones</h2>
+    </div>
+    <div class="govuk-summary-card__content">
+        {{ govukTable({
+            "classes": "govuk-!-margin-bottom-0",
+            "firstCellIsHeader": true,
+            "head": [
+                {
+                    "text": "Milestone"
+                },
+                {
+                    "text": "Planned date"
+                },
+                {
+                    "text": "Actual date"
+                }
+            ],
+            "rows": rows
+        }) }}
+    </div>
+</div>

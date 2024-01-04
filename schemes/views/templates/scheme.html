@@ -12,52 +12,12 @@
 {% block content %}
     <h1 class="govuk-heading-l">{{ name }}</h1>
 
-    {% set overviewHtml %}
-        {% include "scheme_overview.html" %}
-    {% endset -%}
-
-    {% set fundingHtml %}
-        {% include "scheme_funding.html" %}
-    {% endset -%}
-
-    {% set milestonesHtml %}
-        {% include "scheme_milestones.html" %}
-    {% endset -%}
-
-    {% set outputsHtml %}
-        {% include "scheme_outputs.html" %}
-    {% endset -%}
-
-    {{ govukTabs({
-        "items": [
-            {
-                "id": "overview",
-                "label": "Overview",
-                "panel": {
-                    "html": overviewHtml
-                }
-            },
-            {
-                "id": "funding",
-                "label": "Funding",
-                "panel": {
-                    "html": fundingHtml
-                }
-            },
-            {
-                "id": "milestones",
-                "label": "Milestones",
-                "panel": {
-                    "html": milestonesHtml
-                }
-            },
-            {
-                "id": "outputs",
-                "label": "Outputs",
-                "panel": {
-                    "html": outputsHtml
-                }
-            }
-        ]
-    }) }}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% include "scheme_overview.html" %}
+            {% include "scheme_funding.html" %}
+            {% include "scheme_milestones.html" %}
+            {% include "scheme_outputs.html" %}
+        </div>
+    </div>
 {% endblock %}

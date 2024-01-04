@@ -1,36 +1,42 @@
 {% from "govuk_frontend_jinja/components/table/macro.html" import govukTable -%}
 
-<h2 class="govuk-heading-l">Outputs</h2>
-
-{% if outputs.outputs %}
-    {% set rows = [] %}
-    {% for output in outputs.outputs %}
-        {% do rows.append([
-            {
-                "text": output.type.name
-            },
-            {
-                "text": output.measure.name
-            },
-            {
-                "text": output.planned | remove_exponent if output.planned is not none() else "N/A"
-            }
-        ]) %}
-    {% endfor %}
-    {{ govukTable({
-        "head": [
-            {
-                "text": "Infrastructure"
-            },
-            {
-                "text": "Measurement"
-            },
-            {
-                "text": "Planned"
-            }
-        ],
-        "rows": rows
-    }) }}
-{% else %}
-    <p class="govuk-body">There are no outputs for this scheme.</p>
-{% endif %}
+<div class="govuk-summary-card">
+    <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title">Outputs</h2>
+    </div>
+    <div class="govuk-summary-card__content">
+        {% if outputs.outputs %}
+            {% set rows = [] %}
+            {% for output in outputs.outputs %}
+                {% do rows.append([
+                    {
+                        "text": output.type.name
+                    },
+                    {
+                        "text": output.measure.name
+                    },
+                    {
+                        "text": output.planned | remove_exponent if output.planned is not none() else "N/A"
+                    }
+                ]) %}
+            {% endfor %}
+            {{ govukTable({
+                "classes": "govuk-!-margin-bottom-0",
+                "head": [
+                    {
+                        "text": "Infrastructure"
+                    },
+                    {
+                        "text": "Measurement"
+                    },
+                    {
+                        "text": "Planned"
+                    }
+                ],
+                "rows": rows
+            }) }}
+        {% else %}
+            <p class="govuk-body">There are no outputs for this scheme.</p>
+        {% endif %}
+    </div>
+</div>

@@ -137,27 +137,27 @@ class SchemePage(PageObject):
 
     @property
     def overview(self) -> SchemeOverviewComponent:
-        panel = self._soup.select_one("#overview")
-        assert panel
-        return SchemeOverviewComponent(panel)
+        card = self._soup.select_one("main .govuk-summary-card:has(h2:-soup-contains('Overview'))")
+        assert card
+        return SchemeOverviewComponent(card)
 
     @property
     def funding(self) -> SchemeFundingComponent:
-        panel = self._soup.select_one("#funding")
-        assert panel
-        return SchemeFundingComponent(panel)
+        card = self._soup.select_one("main .govuk-summary-card:has(h2:-soup-contains('Funding'))")
+        assert card
+        return SchemeFundingComponent(card)
 
     @property
     def milestones(self) -> SchemeMilestonesComponent:
-        panel = self._soup.select_one("#milestones")
-        assert panel
-        return SchemeMilestonesComponent(panel)
+        card = self._soup.select_one("main .govuk-summary-card:has(h2:-soup-contains('Milestones'))")
+        assert card
+        return SchemeMilestonesComponent(card)
 
     @property
     def outputs(self) -> SchemeOutputsComponent:
-        panel = self._soup.select_one("#outputs")
-        assert panel
-        return SchemeOutputsComponent(panel)
+        card = self._soup.select_one("main .govuk-summary-card:has(h2:-soup-contains('Outputs'))")
+        assert card
+        return SchemeOutputsComponent(card)
 
 
 class SchemeOverviewComponent:

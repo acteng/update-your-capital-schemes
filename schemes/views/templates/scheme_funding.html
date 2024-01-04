@@ -1,8 +1,12 @@
 {% from "govuk_frontend_jinja/components/summary-list/macro.html" import govukSummaryList %}
 
-<h2 class="govuk-heading-l">Funding</h2>
 
 {{ govukSummaryList({
+    "card": {
+        "title": {
+            "text": "Funding"
+        }
+    },
     "rows": [
         {
             "key": {

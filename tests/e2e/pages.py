@@ -134,13 +134,10 @@ class SchemePage:
         self._page = page
         self._main = page.get_by_role("main")
         self._name = self._main.get_by_role("heading").nth(0)
-        self.overview = SchemeOverviewComponent(self._main.get_by_role("tabpanel", name="Overview"))
-        self._funding_tab = self._main.get_by_role("tab", name="Funding")
-        self.funding = SchemeFundingComponent(self._main.get_by_role("tabpanel", name="Funding"))
-        self._milestones_tab = self._main.get_by_role("tab", name="Milestones")
-        self.milestones = SchemeMilestonesComponent(self._main.get_by_role("tabpanel", name="Milestones"))
-        self._outputs_tab = self._main.get_by_role("tab", name="Outputs")
-        self.outputs = SchemeOutputsComponent(self._main.get_by_role("tabpanel", name="Outputs"))
+        self.overview = SchemeOverviewComponent(self._main.get_by_role("heading", name="Overview"))
+        self.funding = SchemeFundingComponent(self._main.get_by_role("heading", name="Funding"))
+        self.milestones = SchemeMilestonesComponent(self._main.get_by_role("heading", name="Milestones"))
+        self.outputs = SchemeOutputsComponent(self._main.get_by_role("heading", name="Outputs"))
 
     @classmethod
     def open(cls, page: Page, id_: int) -> SchemePage:
@@ -153,25 +150,14 @@ class SchemePage:
     def name(self) -> str | None:
         return self._name.text_content()
 
-    def open_funding(self) -> SchemeFundingComponent:
-        self._funding_tab.click()
-        return self.funding
-
-    def open_milestones(self) -> SchemeMilestonesComponent:
-        self._milestones_tab.click()
-        return self.milestones
-
-    def open_outputs(self) -> SchemeOutputsComponent:
-        self._outputs_tab.click()
-        return self.outputs
-
 
 class SchemeOverviewComponent:
-    def __init__(self, component: Locator):
-        self._reference = component.get_by_role("definition").nth(0)
-        self._scheme_type = component.get_by_role("definition").nth(1)
-        self._funding_programme = component.get_by_role("definition").nth(2)
-        self._current_milestone = component.get_by_role("definition").nth(3)
+    def __init__(self, title: Locator):
+        content = title.locator("xpath=../..")
+        self._reference = content.get_by_role("definition").nth(0)
+        self._scheme_type = content.get_by_role("definition").nth(1)
+        self._funding_programme = content.get_by_role("definition").nth(2)
+        self._current_milestone = content.get_by_role("definition").nth(3)
 
     @property
     def reference(self) -> str:
@@ -191,11 +177,12 @@ class SchemeOverviewComponent:
 
 
 class SchemeFundingComponent:
-    def __init__(self, component: Locator):
-        self._funding_allocation = component.get_by_role("definition").nth(0)
-        self._spend_to_date = component.get_by_role("definition").nth(1)
-        self._change_control_adjustment = component.get_by_role("definition").nth(2)
-        self._allocation_still_to_spend = component.get_by_role("definition").nth(3)
+    def __init__(self, title: Locator):
+        content = title.locator("xpath=../..")
+        self._funding_allocation = content.get_by_role("definition").nth(0)
+        self._spend_to_date = content.get_by_role("definition").nth(1)
+        self._change_control_adjustment = content.get_by_role("definition").nth(2)
+        self._allocation_still_to_spend = content.get_by_role("definition").nth(3)
 
     @property
     def funding_allocation(self) -> str:
@@ -215,8 +202,9 @@ class SchemeFundingComponent:
 
 
 class SchemeMilestonesComponent:
-    def __init__(self, component: Locator):
-        self.milestones = SchemeMilestonesTableComponent(component.get_by_role("table"))
+    def __init__(self, title: Locator):
+        content = title.locator("xpath=../..")
+        self.milestones = SchemeMilestonesTableComponent(content.get_by_role("table"))
 
 
 class SchemeMilestonesTableComponent:
@@ -252,8 +240,9 @@ class SchemeMilestoneRowComponent:
 
 
 class SchemeOutputsComponent:
-    def __init__(self, component: Locator):
-        self.outputs = SchemeOutputsTableComponent(component.get_by_role("table"))
+    def __init__(self, title: Locator):
+        content = title.locator("xpath=../..")
+        self.outputs = SchemeOutputsTableComponent(content.get_by_role("table"))
 
 
 class SchemeOutputsTableComponent:

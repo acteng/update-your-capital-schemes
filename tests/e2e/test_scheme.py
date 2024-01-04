@@ -86,13 +86,13 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Pa
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    funding_component = SchemePage.open(page, id_=1).open_funding()
+    scheme_page = SchemePage.open(page, id_=1)
 
     assert (
-        funding_component.funding_allocation == "£100,000"
-        and funding_component.spend_to_date == "£50,000"
-        and funding_component.change_control_adjustment == "£10,000"
-        and funding_component.allocation_still_to_spend == "£60,000"
+        scheme_page.funding.funding_allocation == "£100,000"
+        and scheme_page.funding.spend_to_date == "£50,000"
+        and scheme_page.funding.change_control_adjustment == "£10,000"
+        and scheme_page.funding.allocation_still_to_spend == "£60,000"
     )
 
 
@@ -146,9 +146,9 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    milestones_component = SchemePage.open(page, id_=1).open_milestones()
+    scheme_page = SchemePage.open(page, id_=1)
 
-    assert milestones_component.milestones.to_dicts() == [
+    assert scheme_page.milestones.milestones.to_dicts() == [
         {"milestone": "Feasibility design completed", "planned": "N/A", "actual": "30/11/2020"},
         {"milestone": "Preliminary design completed", "planned": "N/A", "actual": "30/06/2022"},
         {"milestone": "Detailed design completed", "planned": "N/A", "actual": "30/06/2022"},
@@ -188,9 +188,9 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    outputs_component = SchemePage.open(page, id_=1).open_outputs()
+    scheme_page = SchemePage.open(page, id_=1)
 
-    assert outputs_component.outputs.to_dicts() == [
+    assert scheme_page.outputs.outputs.to_dicts() == [
         {
             "infrastructure": "New segregated cycling facility",
             "measurement": "Miles",

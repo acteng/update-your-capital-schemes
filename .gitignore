@@ -13,6 +13,9 @@ __pycache__/
 # npm
 /node_modules/
 
+# Application assets
+/schemes/views/static/application.min.css*
+
 # GOV.UK Frontend
 /schemes/views/static/govuk-frontend/
 

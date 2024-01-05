@@ -162,7 +162,8 @@ class SchemePage(PageObject):
 
 class SchemeOverviewComponent:
     def __init__(self, title: Tag):
-        card = title.find_parent("div", class_="govuk-summary-card") or Tag()
+        card = title.find_parent("div", class_="govuk-summary-card")
+        assert card
         self.reference = (card.select("dd")[0].string or "").strip()
         self.scheme_type = (card.select("dd")[1].string or "").strip()
         self.funding_programme = (card.select("dd")[2].string or "").strip()
@@ -171,7 +172,8 @@ class SchemeOverviewComponent:
 
 class SchemeFundingComponent:
     def __init__(self, title: Tag):
-        card = title.find_parent("div", class_="govuk-summary-card") or Tag()
+        card = title.find_parent("div", class_="govuk-summary-card")
+        assert card
         self.funding_allocation = (card.select("dd")[0].string or "").strip()
         self.spend_to_date = (card.select("dd")[1].string or "").strip()
         self.change_control_adjustment = (card.select("dd")[2].string or "").strip()
@@ -180,7 +182,8 @@ class SchemeFundingComponent:
 
 class SchemeMilestonesComponent:
     def __init__(self, title: Tag):
-        card = title.find_parent("div", class_="govuk-summary-card") or Tag()
+        card = title.find_parent("div", class_="govuk-summary-card")
+        assert card
         table = card.select_one("table")
         assert table
         self.milestones = SchemeMilestonesTableComponent(table)
@@ -211,7 +214,8 @@ class SchemeMilestoneRowComponent:
 
 class SchemeOutputsComponent:
     def __init__(self, title: Tag):
-        card = title.find_parent("div", class_="govuk-summary-card") or Tag()
+        card = title.find_parent("div", class_="govuk-summary-card")
+        assert card
         table = card.select_one("table")
         self.outputs = SchemeOutputsTableComponent(table) if table else None
         paragraph = card.select_one("p")

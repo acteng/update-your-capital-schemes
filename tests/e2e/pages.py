@@ -151,13 +151,24 @@ class SchemePage:
         return self._name.text_content()
 
 
-class SchemeOverviewComponent:
+class SummaryCardComponent:
     def __init__(self, title: Locator):
-        card = title.locator("xpath=../..")
-        self._reference = card.get_by_role("definition").nth(0)
-        self._scheme_type = card.get_by_role("definition").nth(1)
-        self._funding_programme = card.get_by_role("definition").nth(2)
-        self._current_milestone = card.get_by_role("definition").nth(3)
+        self._card = title.locator("xpath=../..")
+
+    def _get_definition(self, term_text: str) -> Locator:
+        row = self._card.locator(".govuk-summary-list__row").filter(
+            has=self._card.page.get_by_role("term").filter(has_text=term_text)
+        )
+        return row.get_by_role("definition")
+
+
+class SchemeOverviewComponent(SummaryCardComponent):
+    def __init__(self, title: Locator):
+        super().__init__(title)
+        self._reference = self._get_definition("Reference")
+        self._scheme_type = self._get_definition("Scheme type")
+        self._funding_programme = self._get_definition("Funding programme")
+        self._current_milestone = self._get_definition("Current milestone")
 
     @property
     def reference(self) -> str:
@@ -176,13 +187,13 @@ class SchemeOverviewComponent:
         return (self._current_milestone.text_content() or "").strip()
 
 
-class SchemeFundingComponent:
+class SchemeFundingComponent(SummaryCardComponent):
     def __init__(self, title: Locator):
-        card = title.locator("xpath=../..")
-        self._funding_allocation = card.get_by_role("definition").nth(0)
-        self._spend_to_date = card.get_by_role("definition").nth(1)
-        self._change_control_adjustment = card.get_by_role("definition").nth(2)
-        self._allocation_still_to_spend = card.get_by_role("definition").nth(3)
+        super().__init__(title)
+        self._funding_allocation = self._get_definition("Funding allocation")
+        self._spend_to_date = self._get_definition("Spend to date")
+        self._change_control_adjustment = self._get_definition("Change control adjustment")
+        self._allocation_still_to_spend = self._get_definition("Allocation still to spend")
 
     @property
     def funding_allocation(self) -> str:

@@ -57,7 +57,7 @@ class SchemesPage:
         self.header = ServiceHeaderComponent(page.get_by_role("banner"))
         self._main = page.get_by_role("main")
         self._authority = self._main.get_by_role("heading")
-        self.schemes = SchemesTableComponent(page, self._main.get_by_role("table"))
+        self.schemes = SchemesTableComponent(self._main.get_by_role("table"))
 
     @classmethod
     def open(cls, page: Page) -> SchemesPage:
@@ -89,12 +89,11 @@ class ServiceHeaderComponent:
 
 
 class SchemesTableComponent:
-    def __init__(self, page: Page, table: Locator):
-        self._page = page
+    def __init__(self, table: Locator):
         self._rows = table.get_by_role("row")
 
     def __iter__(self) -> Iterator[SchemeRowComponent]:
-        return iter([SchemeRowComponent(self._page, row) for row in self._rows.all()[1:]])
+        return iter([SchemeRowComponent(row) for row in self._rows.all()[1:]])
 
     def __getitem__(self, reference: str) -> SchemeRowComponent:
         return next((scheme for scheme in self if scheme.reference == reference))
@@ -104,8 +103,8 @@ class SchemesTableComponent:
 
 
 class SchemeRowComponent:
-    def __init__(self, page: Page, row: Locator):
-        self._page = page
+    def __init__(self, row: Locator):
+        self._row = row
         self._cells = row.get_by_role("cell")
         self._reference = self._cells.nth(0)
 
@@ -123,7 +122,7 @@ class SchemeRowComponent:
 
     def open(self) -> SchemePage:
         self._reference.get_by_role("link").click()
-        return SchemePage(self._page)
+        return SchemePage(self._row.page)
 
     def to_dict(self) -> dict[str, str | None]:
         return {"reference": self.reference, "funding_programme": self.funding_programme, "name": self.name}

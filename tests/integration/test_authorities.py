@@ -178,7 +178,7 @@ class TestApiEnabled:
                             "effective_date_from": "2020-01-01",
                             "effective_date_to": None,
                             "type": "funding allocation",
-                            "amount": 100_000,
+                            "amount": "100000",
                             "source": "ATF4 Bid",
                         }
                     ],

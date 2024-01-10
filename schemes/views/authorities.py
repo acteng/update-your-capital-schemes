@@ -1,8 +1,8 @@
 from dataclasses import dataclass
+from enum import Enum
 
 import inject
-from dataclass_wizard import fromlist
-from dataclass_wizard.errors import UnknownJSONKey
+from dacite import Config, UnexpectedDataError, from_dict
 from flask import Blueprint, Response, current_app, request
 
 from schemes.domain.authorities import Authority, AuthorityRepository
@@ -20,8 +20,10 @@ bp = Blueprint("authorities", __name__)
 @inject.autoparams()
 def add(authorities: AuthorityRepository) -> Response:
     try:
-        authorities_repr = fromlist(AuthorityRepr, request.get_json())
-    except UnknownJSONKey as error:
+        authorities_repr = [
+            from_dict(data_class=AuthorityRepr, data=data, config=_config()) for data in request.get_json()
+        ]
+    except UnexpectedDataError as error:
         current_app.logger.error(error)
         return Response(status=400)
 
@@ -34,8 +36,8 @@ def add(authorities: AuthorityRepository) -> Response:
 @inject.autoparams("users")
 def add_users(users: UserRepository, authority_id: int) -> Response:
     try:
-        users_repr = fromlist(UserRepr, request.get_json())
-    except UnknownJSONKey as error:
+        users_repr = [from_dict(data_class=UserRepr, data=data, config=_config()) for data in request.get_json()]
+    except UnexpectedDataError as error:
         current_app.logger.error(error)
         return Response(status=400)
 
@@ -48,8 +50,8 @@ def add_users(users: UserRepository, authority_id: int) -> Response:
 @inject.autoparams("schemes")
 def add_schemes(schemes: SchemeRepository, authority_id: int) -> Response:
     try:
-        schemes_repr = fromlist(SchemeRepr, request.get_json())
-    except UnknownJSONKey as error:
+        schemes_repr = [from_dict(data_class=SchemeRepr, data=data, config=_config()) for data in request.get_json()]
+    except UnexpectedDataError as error:
         current_app.logger.error(error)
         return Response(status=400)
 
@@ -72,3 +74,7 @@ class AuthorityRepr:
 
     def to_domain(self) -> Authority:
         return Authority(id_=self.id, name=self.name)
+
+
+def _config() -> Config:
+    return Config(strict=True, cast=[Enum])

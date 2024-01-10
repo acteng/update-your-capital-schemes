@@ -92,13 +92,13 @@ class TestDatabaseSchemeRepository:
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal(100000),
+                amount=100_000,
                 source=DataSource.ATF4_BID,
             ),
             FinancialRevision(
                 effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal(200000),
+                amount=200_000,
                 source=DataSource.ATF4_BID,
             ),
         )
@@ -117,7 +117,7 @@ class TestDatabaseSchemeRepository:
             and row1.effective_date_from == date(2020, 1, 1)
             and row1.effective_date_to == date(2020, 1, 31)
             and row1.financial_type_id == 3
-            and row1.amount == Decimal(100000)
+            and row1.amount == 100_000
             and row1.data_source_id == 3
         )
         assert (
@@ -125,7 +125,7 @@ class TestDatabaseSchemeRepository:
             and row2.effective_date_from == date(2020, 2, 1)
             and row2.effective_date_to is None
             and row2.financial_type_id == 3
-            and row2.amount == Decimal(200000)
+            and row2.amount == 200_000
             and row2.data_source_id == 3
         )
 
@@ -255,7 +255,7 @@ class TestDatabaseSchemeRepository:
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=date(2020, 1, 31),
                     financial_type_id=3,
-                    amount=Decimal(100000),
+                    amount=100_000,
                     data_source_id=3,
                 )
             )
@@ -265,7 +265,7 @@ class TestDatabaseSchemeRepository:
                     effective_date_from=date(2020, 2, 1),
                     effective_date_to=None,
                     financial_type_id=3,
-                    amount=Decimal(200000),
+                    amount=200_000,
                     data_source_id=3,
                 )
             )
@@ -276,13 +276,13 @@ class TestDatabaseSchemeRepository:
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal(100000),
+                amount=100_000,
                 source=DataSource.ATF4_BID,
             ),
             FinancialRevision(
                 effective=DateRange(date(2020, 2, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal(200000),
+                amount=200_000,
                 source=DataSource.ATF4_BID,
             ),
         ]
@@ -452,7 +452,7 @@ class TestDatabaseSchemeRepository:
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=None,
                     financial_type_id=3,
-                    amount=Decimal(100000),
+                    amount=100_000,
                     data_source_id=3,
                 )
             )
@@ -467,7 +467,7 @@ class TestDatabaseSchemeRepository:
                     effective_date_from=date(2020, 2, 1),
                     effective_date_to=None,
                     financial_type_id=3,
-                    amount=Decimal(200000),
+                    amount=200_000,
                     data_source_id=3,
                 )
             )
@@ -479,7 +479,7 @@ class TestDatabaseSchemeRepository:
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal(100000),
+                amount=100_000,
                 source=DataSource.ATF4_BID,
             )
         ]
@@ -640,7 +640,7 @@ class TestDatabaseSchemeRepository:
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=None,
                     financial_type_id=3,
-                    amount=Decimal(100000),
+                    amount=100_000,
                     data_source_id=3,
                 )
             )

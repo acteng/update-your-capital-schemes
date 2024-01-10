@@ -86,7 +86,7 @@ class TestSchemeContext:
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal(100000),
+                amount=100_000,
                 source=DataSource.ATF4_BID,
             )
         )
@@ -124,7 +124,7 @@ class TestSchemeContext:
         assert (
             context.name == "Wirral Package"
             and context.overview.reference == "ATE00001"
-            and context.funding.funding_allocation == Decimal(100000)
+            and context.funding.funding_allocation == 100_000
             and context.milestones.milestones[0].planned == date(2020, 2, 1)
             and context.outputs.outputs[0].planned == Decimal(20)
         )
@@ -247,14 +247,14 @@ class TestSchemeRepr:
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type=FinancialTypeRepr.FUNDING_ALLOCATION,
-                    amount="100000",
+                    amount=100_000,
                     source=DataSourceRepr.ATF4_BID,
                 ),
                 FinancialRevisionRepr(
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type=FinancialTypeRepr.EXPECTED_COST,
-                    amount="200000",
+                    amount=200_000,
                     source=DataSourceRepr.PULSE_6,
                 ),
             ],
@@ -266,13 +266,13 @@ class TestSchemeRepr:
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal(100000),
+                amount=100_000,
                 source=DataSource.ATF4_BID,
             ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.EXPECTED_COST,
-                amount=Decimal(200000),
+                amount=200_000,
                 source=DataSource.PULSE_6,
             ),
         ]

@@ -81,7 +81,7 @@ class FinancialRevisionRepr:
     effective_date_from: str
     effective_date_to: str | None
     type: str
-    amount: str
+    amount: int
     source: str
 
 

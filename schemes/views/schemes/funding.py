@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
-from decimal import Decimal
 from enum import Enum, unique
 
 from schemes.domain.schemes import (
@@ -16,10 +15,10 @@ from schemes.domain.schemes import (
 
 @dataclass(frozen=True)
 class SchemeFundingContext:
-    funding_allocation: Decimal | None
-    spend_to_date: Decimal | None
-    change_control_adjustment: Decimal | None
-    allocation_still_to_spend: Decimal
+    funding_allocation: int | None
+    spend_to_date: int | None
+    change_control_adjustment: int | None
+    allocation_still_to_spend: int
 
     @classmethod
     def from_domain(cls, funding: SchemeFunding) -> SchemeFundingContext:
@@ -36,7 +35,7 @@ class FinancialRevisionRepr:
     effective_date_from: str
     effective_date_to: str | None
     type: FinancialTypeRepr
-    amount: str
+    amount: int
     source: DataSourceRepr
 
     def to_domain(self) -> FinancialRevision:
@@ -46,7 +45,7 @@ class FinancialRevisionRepr:
                 date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
             ),
             type=self.type.to_domain(),
-            amount=Decimal(self.amount),
+            amount=self.amount,
             source=self.source.to_domain(),
         )
 

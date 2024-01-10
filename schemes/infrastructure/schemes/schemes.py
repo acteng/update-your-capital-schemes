@@ -59,7 +59,7 @@ def add_tables(metadata: MetaData) -> None:
             nullable=False,
         ),
         Column("financial_type_id", Integer, nullable=False),
-        Column("amount", Numeric, nullable=False),
+        Column("amount", Integer, nullable=False),
         Column("effective_date_from", Date, nullable=False),
         Column("effective_date_to", Date),
         Column("data_source_id", Integer, nullable=False),

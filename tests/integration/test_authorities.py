@@ -193,7 +193,7 @@ class TestApiEnabled:
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
                 type=FinancialType.FUNDING_ALLOCATION,
-                amount=Decimal(100000),
+                amount=100_000,
                 source=DataSource.ATF4_BID,
             )
         ]

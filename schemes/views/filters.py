@@ -1,8 +1,8 @@
 from decimal import Decimal
 
 
-def pounds(d: Decimal) -> str:
-    return "£{:,}".format(round(d))
+def pounds(i: int) -> str:
+    return "£{:,}".format(i)
 
 
 def remove_exponent(d: Decimal) -> Decimal:

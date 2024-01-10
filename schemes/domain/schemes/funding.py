@@ -3,8 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum, auto, unique
 
-from _decimal import Decimal
-
 from schemes.domain.schemes.dates import DateRange
 
 
@@ -44,17 +42,17 @@ class SchemeFunding:
             raise ValueError(f"Current spent to date already exists: {current_spent_to_date}")
 
     @property
-    def funding_allocation(self) -> Decimal | None:
+    def funding_allocation(self) -> int | None:
         amounts = (revision.amount for revision in self._financial_revisions if revision.is_current_funding_allocation)
         return next(amounts, None)
 
     @property
-    def spend_to_date(self) -> Decimal | None:
+    def spend_to_date(self) -> int | None:
         amounts = (revision.amount for revision in self._financial_revisions if revision.is_current_spent_to_date)
         return next(amounts, None)
 
     @property
-    def change_control_adjustment(self) -> Decimal | None:
+    def change_control_adjustment(self) -> int | None:
         amounts = [
             revision.amount
             for revision in self._financial_revisions
@@ -62,13 +60,13 @@ class SchemeFunding:
             and revision.source == DataSource.CHANGE_CONTROL
             and revision.effective.date_to is None
         ]
-        return sum(amounts, Decimal(0)) if amounts else None
+        return sum(amounts) if amounts else None
 
     @property
-    def allocation_still_to_spend(self) -> Decimal:
-        funding_allocation = self.funding_allocation or Decimal(0)
-        spend_to_date = self.spend_to_date or Decimal(0)
-        change_control_adjustment = self.change_control_adjustment or Decimal(0)
+    def allocation_still_to_spend(self) -> int:
+        funding_allocation = self.funding_allocation or 0
+        spend_to_date = self.spend_to_date or 0
+        change_control_adjustment = self.change_control_adjustment or 0
         return funding_allocation + change_control_adjustment - spend_to_date
 
 
@@ -76,7 +74,7 @@ class SchemeFunding:
 class FinancialRevision:
     effective: DateRange
     type: FinancialType
-    amount: Decimal
+    amount: int
     source: DataSource
 
     @property

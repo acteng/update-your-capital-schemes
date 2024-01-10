@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 import inject
-from dataclass_wizard import JSONWizard, fromlist
+from dataclass_wizard import fromlist
 from dataclass_wizard.errors import UnknownJSONKey
 from flask import Blueprint, Response, current_app, request
 
@@ -13,10 +13,6 @@ from schemes.views.schemes import SchemeRepr
 from schemes.views.users import UserRepr
 
 bp = Blueprint("authorities", __name__)
-
-
-class GlobalJSONMeta(JSONWizard.Meta):  # type: ignore
-    raise_on_unknown_json_key = True
 
 
 @bp.post("")

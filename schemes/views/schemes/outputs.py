@@ -118,6 +118,20 @@ class OutputRevisionRepr:
     value: str
     observation_type: ObservationTypeRepr
 
+    @classmethod
+    def from_domain(cls, output_revision: OutputRevision) -> OutputRevisionRepr:
+        return cls(
+            id=output_revision.id,
+            effective_date_from=output_revision.effective.date_from.isoformat(),
+            effective_date_to=output_revision.effective.date_to.isoformat()
+            if output_revision.effective.date_to
+            else None,
+            type=OutputTypeRepr.from_domain(output_revision.type_measure.type),
+            measure=OutputMeasureRepr.from_domain(output_revision.type_measure.measure),
+            value=str(output_revision.value),
+            observation_type=ObservationTypeRepr.from_domain(output_revision.observation_type),
+        )
+
     def to_domain(self) -> OutputRevision:
         return OutputRevision(
             id_=self.id,
@@ -154,30 +168,37 @@ class OutputTypeRepr(Enum):
     WIDENING_EXISTING_FOOTWAY = "Widening existing footway"
     OTHER_INTERVENTIONS = "Other interventions"
 
+    @classmethod
+    def from_domain(cls, type_: OutputType) -> OutputTypeRepr:
+        return cls._members()[type_]
+
     def to_domain(self) -> OutputType:
-        members = {
-            OutputTypeRepr.NEW_SEGREGATED_CYCLING_FACILITY: OutputType.NEW_SEGREGATED_CYCLING_FACILITY,
-            OutputTypeRepr.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY: OutputType.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY,
-            OutputTypeRepr.NEW_JUNCTION_TREATMENT: OutputType.NEW_JUNCTION_TREATMENT,
-            OutputTypeRepr.NEW_PERMANENT_FOOTWAY: OutputType.NEW_PERMANENT_FOOTWAY,
-            OutputTypeRepr.NEW_TEMPORARY_FOOTWAY: OutputType.NEW_TEMPORARY_FOOTWAY,
-            OutputTypeRepr.NEW_SHARED_USE_FACILITIES: OutputType.NEW_SHARED_USE_FACILITIES,
-            OutputTypeRepr.NEW_SHARED_USE_FACILITIES_WHEELING: OutputType.NEW_SHARED_USE_FACILITIES_WHEELING,
-            OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE: OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE,
-            OutputTypeRepr.AREA_WIDE_TRAFFIC_MANAGEMENT: OutputType.AREA_WIDE_TRAFFIC_MANAGEMENT,
-            OutputTypeRepr.BUS_PRIORITY_MEASURES: OutputType.BUS_PRIORITY_MEASURES,
-            OutputTypeRepr.SECURE_CYCLE_PARKING: OutputType.SECURE_CYCLE_PARKING,
-            OutputTypeRepr.NEW_ROAD_CROSSINGS: OutputType.NEW_ROAD_CROSSINGS,
-            OutputTypeRepr.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY: OutputType.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY,
-            OutputTypeRepr.SCHOOL_STREETS: OutputType.SCHOOL_STREETS,
-            OutputTypeRepr.UPGRADES_TO_EXISTING_FACILITIES: OutputType.UPGRADES_TO_EXISTING_FACILITIES,
-            OutputTypeRepr.E_SCOOTER_TRIALS: OutputType.E_SCOOTER_TRIALS,
-            OutputTypeRepr.PARK_AND_CYCLE_STRIDE_FACILITIES: OutputType.PARK_AND_CYCLE_STRIDE_FACILITIES,
-            OutputTypeRepr.TRAFFIC_CALMING: OutputType.TRAFFIC_CALMING,
-            OutputTypeRepr.WIDENING_EXISTING_FOOTWAY: OutputType.WIDENING_EXISTING_FOOTWAY,
-            OutputTypeRepr.OTHER_INTERVENTIONS: OutputType.OTHER_INTERVENTIONS,
+        return {value: key for key, value in self._members().items()}[self]
+
+    @staticmethod
+    def _members() -> dict[OutputType, OutputTypeRepr]:
+        return {
+            OutputType.NEW_SEGREGATED_CYCLING_FACILITY: OutputTypeRepr.NEW_SEGREGATED_CYCLING_FACILITY,
+            OutputType.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY: OutputTypeRepr.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY,
+            OutputType.NEW_JUNCTION_TREATMENT: OutputTypeRepr.NEW_JUNCTION_TREATMENT,
+            OutputType.NEW_PERMANENT_FOOTWAY: OutputTypeRepr.NEW_PERMANENT_FOOTWAY,
+            OutputType.NEW_TEMPORARY_FOOTWAY: OutputTypeRepr.NEW_TEMPORARY_FOOTWAY,
+            OutputType.NEW_SHARED_USE_FACILITIES: OutputTypeRepr.NEW_SHARED_USE_FACILITIES,
+            OutputType.NEW_SHARED_USE_FACILITIES_WHEELING: OutputTypeRepr.NEW_SHARED_USE_FACILITIES_WHEELING,
+            OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE: OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE,
+            OutputType.AREA_WIDE_TRAFFIC_MANAGEMENT: OutputTypeRepr.AREA_WIDE_TRAFFIC_MANAGEMENT,
+            OutputType.BUS_PRIORITY_MEASURES: OutputTypeRepr.BUS_PRIORITY_MEASURES,
+            OutputType.SECURE_CYCLE_PARKING: OutputTypeRepr.SECURE_CYCLE_PARKING,
+            OutputType.NEW_ROAD_CROSSINGS: OutputTypeRepr.NEW_ROAD_CROSSINGS,
+            OutputType.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY: OutputTypeRepr.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY,
+            OutputType.SCHOOL_STREETS: OutputTypeRepr.SCHOOL_STREETS,
+            OutputType.UPGRADES_TO_EXISTING_FACILITIES: OutputTypeRepr.UPGRADES_TO_EXISTING_FACILITIES,
+            OutputType.E_SCOOTER_TRIALS: OutputTypeRepr.E_SCOOTER_TRIALS,
+            OutputType.PARK_AND_CYCLE_STRIDE_FACILITIES: OutputTypeRepr.PARK_AND_CYCLE_STRIDE_FACILITIES,
+            OutputType.TRAFFIC_CALMING: OutputTypeRepr.TRAFFIC_CALMING,
+            OutputType.WIDENING_EXISTING_FOOTWAY: OutputTypeRepr.WIDENING_EXISTING_FOOTWAY,
+            OutputType.OTHER_INTERVENTIONS: OutputTypeRepr.OTHER_INTERVENTIONS,
         }
-        return members[self]
 
 
 @unique
@@ -194,18 +215,25 @@ class OutputMeasureRepr(Enum):
     NUMBER_OF_CHILDREN_AFFECTED = "number of children affected"
     NUMBER_OF_MEASURES_PLANNED = "number of measures planned"
 
+    @classmethod
+    def from_domain(cls, measure: OutputMeasure) -> OutputMeasureRepr:
+        return cls._members()[measure]
+
     def to_domain(self) -> OutputMeasure:
-        members = {
-            OutputMeasureRepr.MILES: OutputMeasure.MILES,
-            OutputMeasureRepr.NUMBER_OF_JUNCTIONS: OutputMeasure.NUMBER_OF_JUNCTIONS,
-            OutputMeasureRepr.SIZE_OF_AREA: OutputMeasure.SIZE_OF_AREA,
-            OutputMeasureRepr.NUMBER_OF_PARKING_SPACES: OutputMeasure.NUMBER_OF_PARKING_SPACES,
-            OutputMeasureRepr.NUMBER_OF_CROSSINGS: OutputMeasure.NUMBER_OF_CROSSINGS,
-            OutputMeasureRepr.NUMBER_OF_SCHOOL_STREETS: OutputMeasure.NUMBER_OF_SCHOOL_STREETS,
-            OutputMeasureRepr.NUMBER_OF_TRIALS: OutputMeasure.NUMBER_OF_TRIALS,
-            OutputMeasureRepr.NUMBER_OF_BUS_GATES: OutputMeasure.NUMBER_OF_BUS_GATES,
-            OutputMeasureRepr.NUMBER_OF_UPGRADES: OutputMeasure.NUMBER_OF_UPGRADES,
-            OutputMeasureRepr.NUMBER_OF_CHILDREN_AFFECTED: OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED,
-            OutputMeasureRepr.NUMBER_OF_MEASURES_PLANNED: OutputMeasure.NUMBER_OF_MEASURES_PLANNED,
+        return {value: key for key, value in self._members().items()}[self]
+
+    @staticmethod
+    def _members() -> dict[OutputMeasure, OutputMeasureRepr]:
+        return {
+            OutputMeasure.MILES: OutputMeasureRepr.MILES,
+            OutputMeasure.NUMBER_OF_JUNCTIONS: OutputMeasureRepr.NUMBER_OF_JUNCTIONS,
+            OutputMeasure.SIZE_OF_AREA: OutputMeasureRepr.SIZE_OF_AREA,
+            OutputMeasure.NUMBER_OF_PARKING_SPACES: OutputMeasureRepr.NUMBER_OF_PARKING_SPACES,
+            OutputMeasure.NUMBER_OF_CROSSINGS: OutputMeasureRepr.NUMBER_OF_CROSSINGS,
+            OutputMeasure.NUMBER_OF_SCHOOL_STREETS: OutputMeasureRepr.NUMBER_OF_SCHOOL_STREETS,
+            OutputMeasure.NUMBER_OF_TRIALS: OutputMeasureRepr.NUMBER_OF_TRIALS,
+            OutputMeasure.NUMBER_OF_BUS_GATES: OutputMeasureRepr.NUMBER_OF_BUS_GATES,
+            OutputMeasure.NUMBER_OF_UPGRADES: OutputMeasureRepr.NUMBER_OF_UPGRADES,
+            OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED: OutputMeasureRepr.NUMBER_OF_CHILDREN_AFFECTED,
+            OutputMeasure.NUMBER_OF_MEASURES_PLANNED: OutputMeasureRepr.NUMBER_OF_MEASURES_PLANNED,
         }
-        return members[self]

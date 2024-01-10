@@ -9,6 +9,7 @@ from schemes.domain.schemes import (
     DateRange,
     FinancialRevision,
     FinancialType,
+    Scheme,
     SchemeFunding,
 )
 
@@ -31,6 +32,15 @@ class SchemeFundingContext:
 
 
 @dataclass(frozen=True)
+class SchemeChangeSpendToDateContext:
+    id: int
+
+    @classmethod
+    def from_domain(cls, scheme: Scheme) -> SchemeChangeSpendToDateContext:
+        return cls(id=scheme.id)
+
+
+@dataclass(frozen=True)
 class FinancialRevisionRepr:
     id: int
     effective_date_from: str
@@ -38,6 +48,22 @@ class FinancialRevisionRepr:
     type: FinancialTypeRepr
     amount: int
     source: DataSourceRepr
+
+    @classmethod
+    def from_domain(cls, financial_revision: FinancialRevision) -> FinancialRevisionRepr:
+        if not financial_revision.id:
+            raise ValueError("Financial revision must be persistent")
+
+        return FinancialRevisionRepr(
+            id=financial_revision.id,
+            effective_date_from=financial_revision.effective.date_from.isoformat(),
+            effective_date_to=financial_revision.effective.date_to.isoformat()
+            if financial_revision.effective.date_to
+            else None,
+            type=FinancialTypeRepr.from_domain(financial_revision.type),
+            amount=financial_revision.amount,
+            source=DataSourceRepr.from_domain(financial_revision.source),
+        )
 
     def to_domain(self) -> FinancialRevision:
         return FinancialRevision(
@@ -60,15 +86,22 @@ class FinancialTypeRepr(Enum):
     SPENT_TO_DATE = "spent to date"
     FUNDING_REQUEST = "funding request"
 
+    @classmethod
+    def from_domain(cls, financial_type: FinancialType) -> FinancialTypeRepr:
+        return cls._members()[financial_type]
+
     def to_domain(self) -> FinancialType:
-        members = {
-            FinancialTypeRepr.EXPECTED_COST: FinancialType.EXPECTED_COST,
-            FinancialTypeRepr.ACTUAL_COST: FinancialType.ACTUAL_COST,
-            FinancialTypeRepr.FUNDING_ALLOCATION: FinancialType.FUNDING_ALLOCATION,
-            FinancialTypeRepr.SPENT_TO_DATE: FinancialType.SPENT_TO_DATE,
-            FinancialTypeRepr.FUNDING_REQUEST: FinancialType.FUNDING_REQUEST,
+        return {value: key for key, value in self._members().items()}[self]
+
+    @staticmethod
+    def _members() -> dict[FinancialType, FinancialTypeRepr]:
+        return {
+            FinancialType.EXPECTED_COST: FinancialTypeRepr.EXPECTED_COST,
+            FinancialType.ACTUAL_COST: FinancialTypeRepr.ACTUAL_COST,
+            FinancialType.FUNDING_ALLOCATION: FinancialTypeRepr.FUNDING_ALLOCATION,
+            FinancialType.SPENT_TO_DATE: FinancialTypeRepr.SPENT_TO_DATE,
+            FinancialType.FUNDING_REQUEST: FinancialTypeRepr.FUNDING_REQUEST,
         }
-        return members[self]
 
 
 @unique
@@ -88,21 +121,28 @@ class DataSourceRepr(Enum):
     AUTHORITY_UPDATE = "Authority Update"
     PULSE_2023_24_Q2_DATA_CLEANSE = "Pulse 2023/24 Q2 Data Cleanse"
 
+    @classmethod
+    def from_domain(cls, data_source: DataSource) -> DataSourceRepr:
+        return cls._members()[data_source]
+
     def to_domain(self) -> DataSource:
-        members = {
-            DataSourceRepr.PULSE_5: DataSource.PULSE_5,
-            DataSourceRepr.PULSE_6: DataSource.PULSE_6,
-            DataSourceRepr.ATF4_BID: DataSource.ATF4_BID,
-            DataSourceRepr.ATF3_BID: DataSource.ATF3_BID,
-            DataSourceRepr.INSPECTORATE_REVIEW: DataSource.INSPECTORATE_REVIEW,
-            DataSourceRepr.REGIONAL_ENGAGEMENT_MANAGER_REVIEW: DataSource.REGIONAL_ENGAGEMENT_MANAGER_REVIEW,
-            DataSourceRepr.ATE_PUBLISHED_DATA: DataSource.ATE_PUBLISHED_DATA,
-            DataSourceRepr.CHANGE_CONTROL: DataSource.CHANGE_CONTROL,
-            DataSourceRepr.ATF4E_BID: DataSource.ATF4E_BID,
-            DataSourceRepr.ATF4E_MODERATION: DataSource.ATF4E_MODERATION,
-            DataSourceRepr.PULSE_2023_24_Q2: DataSource.PULSE_2023_24_Q2,
-            DataSourceRepr.INITIAL_SCHEME_LIST: DataSource.INITIAL_SCHEME_LIST,
-            DataSourceRepr.AUTHORITY_UPDATE: DataSource.AUTHORITY_UPDATE,
-            DataSourceRepr.PULSE_2023_24_Q2_DATA_CLEANSE: DataSource.PULSE_2023_24_Q2_DATA_CLEANSE,
+        return {value: key for key, value in self._members().items()}[self]
+
+    @staticmethod
+    def _members() -> dict[DataSource, DataSourceRepr]:
+        return {
+            DataSource.PULSE_5: DataSourceRepr.PULSE_5,
+            DataSource.PULSE_6: DataSourceRepr.PULSE_6,
+            DataSource.ATF4_BID: DataSourceRepr.ATF4_BID,
+            DataSource.ATF3_BID: DataSourceRepr.ATF3_BID,
+            DataSource.INSPECTORATE_REVIEW: DataSourceRepr.INSPECTORATE_REVIEW,
+            DataSource.REGIONAL_ENGAGEMENT_MANAGER_REVIEW: DataSourceRepr.REGIONAL_ENGAGEMENT_MANAGER_REVIEW,
+            DataSource.ATE_PUBLISHED_DATA: DataSourceRepr.ATE_PUBLISHED_DATA,
+            DataSource.CHANGE_CONTROL: DataSourceRepr.CHANGE_CONTROL,
+            DataSource.ATF4E_BID: DataSourceRepr.ATF4E_BID,
+            DataSource.ATF4E_MODERATION: DataSourceRepr.ATF4E_MODERATION,
+            DataSource.PULSE_2023_24_Q2: DataSourceRepr.PULSE_2023_24_Q2,
+            DataSource.INITIAL_SCHEME_LIST: DataSourceRepr.INITIAL_SCHEME_LIST,
+            DataSource.AUTHORITY_UPDATE: DataSourceRepr.AUTHORITY_UPDATE,
+            DataSource.PULSE_2023_24_Q2_DATA_CLEANSE: DataSourceRepr.PULSE_2023_24_Q2_DATA_CLEANSE,
         }
-        return members[self]

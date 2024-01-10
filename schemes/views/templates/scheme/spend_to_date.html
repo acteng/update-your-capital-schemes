@@ -1,0 +1,29 @@
+{% extends "service_base.html" %}
+{% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
+{% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">Change spend to date</h1>
+
+            <form method="post" action="{{ url_for('schemes.spend_to_date', scheme_id=id) }}">
+                {{ govukInput({
+                    "id": "amount",
+                    "name": "amount",
+                    "label": {
+                        "text": "How much has been spent to date?"
+                    },
+                    "prefix": {
+                        "text": "£"
+                    },
+                    "classes": "govuk-input--width-10"
+                }) }}
+
+                {{ govukButton({
+                    "text": "Confirm"
+                }) }}
+            </form>
+        </div>
+    </div>
+{% endblock %}

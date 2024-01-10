@@ -7,6 +7,7 @@ from alembic import command
 from authlib.integrations.flask_client import OAuth
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from dataclass_wizard import JSONWizard
+from dataclass_wizard.enums import LetterCase
 from flask import Config, Flask, Response, render_template, url_for
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
@@ -19,10 +20,11 @@ from schemes.config import DevConfig
 from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
+from schemes.infrastructure.clock import Clock, FakeClock, SystemClock
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
 from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.database.users import DatabaseUserRepository
-from schemes.views import auth, authorities, schemes, start, users
+from schemes.views import auth, authorities, clock, schemes, start, users
 from schemes.views.filters import pounds, remove_exponent
 
 
@@ -36,6 +38,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
     def bindings(binder: Binder) -> None:
         binder.bind(Config, app.config)
+        binder.bind(Clock, FakeClock() if app.testing else SystemClock())
         _bindings(binder)
 
     inject.configure(bindings, bind_in_runtime=False)
@@ -47,6 +50,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     _configure_govuk_frontend(app)
     _configure_oidc(app)
 
+    app.register_blueprint(clock.bp, url_prefix="/clock")
     app.register_blueprint(start.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
     app.register_blueprint(authorities.bp, url_prefix="/authorities")
@@ -88,6 +92,7 @@ def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_
 
 def _configure_dataclass_wizard() -> None:
     class GlobalJSONMeta(JSONWizard.Meta):  # type: ignore
+        key_transform_with_dump = LetterCase.SNAKE
         raise_on_unknown_json_key = True
 
 

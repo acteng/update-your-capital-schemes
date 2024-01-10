@@ -10,6 +10,7 @@ from schemes import create_app, destroy_app
 from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
+from schemes.infrastructure.clock import Clock, FakeClock
 from tests.integration.fakes import (
     MemoryAuthorityRepository,
     MemorySchemeRepository,
@@ -44,6 +45,11 @@ def client_fixture(app: Flask) -> FlaskClient:
     return app.test_client()
 
 
+@pytest.fixture(name="clock")
+def clock_fixture(app: Flask) -> Clock:
+    return inject.instance(Clock)
+
+
 @pytest.fixture(name="authorities")
 def authorities_fixture(app: Flask) -> AuthorityRepository:
     return inject.instance(AuthorityRepository)
@@ -60,6 +66,7 @@ def schemes_fixture(app: Flask) -> SchemeRepository:
 
 
 def _bindings(binder: Binder) -> None:
+    binder.bind(Clock, FakeClock())
     binder.bind(AuthorityRepository, MemoryAuthorityRepository())
     binder.bind(UserRepository, MemoryUserRepository())
     binder.bind(SchemeRepository, MemorySchemeRepository())

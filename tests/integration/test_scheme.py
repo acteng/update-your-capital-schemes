@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
+from typing import Any, Mapping
 
 import pytest
 from flask.testing import FlaskClient
@@ -21,7 +22,8 @@ from schemes.domain.schemes import (
     SchemeType,
 )
 from schemes.domain.users import User, UserRepository
-from tests.integration.pages import SchemePage
+from schemes.infrastructure.clock import Clock
+from tests.integration.pages import SchemeChangeSpendToDatePage, SchemePage
 
 
 @pytest.fixture(name="auth", autouse=True)
@@ -30,6 +32,15 @@ def auth_fixture(authorities: AuthorityRepository, users: UserRepository, client
     users.add(User(email="boardman@example.com", authority_id=1))
     with client.session_transaction() as session:
         session["user"] = {"email": "boardman@example.com"}
+
+
+def test_scheme_shows_html(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+    chromium_default_accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
+
+    response = client.get("/schemes/1", headers={"Accept": chromium_default_accept})
+
+    assert response.status_code == 200 and response.content_type == "text/html; charset=utf-8"
 
 
 def test_scheme_shows_back(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -181,6 +192,14 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
     )
 
 
+def test_scheme_shows_change_spend_to_date(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    scheme_page = SchemePage.open(client, id_=1)
+
+    assert scheme_page.funding.change_spend_to_date_url == "/schemes/1/spend-to-date"
+
+
 def test_scheme_shows_minimal_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
@@ -322,3 +341,102 @@ def test_scheme_when_different_authority(
     forbidden_page = SchemePage.open_when_unauthorized(client, id_=2)
 
     assert forbidden_page.is_visible and forbidden_page.is_forbidden
+
+
+def test_spend_to_date_form_shows_spent_to_date(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+
+    assert change_spend_to_date_page.is_visible
+
+
+def test_spend_to_date_form_submits(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+
+    assert change_spend_to_date_page.confirm_url == "/schemes/1/spend-to-date"
+
+
+def test_spend_to_date_updates_spend_to_date(clock: Clock, schemes: SchemeRepository, client: FlaskClient) -> None:
+    clock.now = datetime(2020, 1, 31, 13)
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.funding.update_financial(
+        FinancialRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1, 12), None),
+            type_=FinancialType.SPENT_TO_DATE,
+            amount=50_000,
+            source=DataSource.ATF4_BID,
+        )
+    )
+    schemes.add(scheme)
+
+    client.post("/schemes/1/spend-to-date", data={"amount": "60000"})
+
+    actual_scheme = schemes.get(1)
+    assert actual_scheme
+    financial_revision1: FinancialRevision
+    financial_revision2: FinancialRevision
+    financial_revision1, financial_revision2 = actual_scheme.funding.financial_revisions
+    assert financial_revision1.id == 1 and financial_revision1.effective.date_to == datetime(2020, 1, 31, 13)
+    assert (
+        financial_revision2.effective == DateRange(datetime(2020, 1, 31, 13), None)
+        and financial_revision2.amount == 60_000
+    )
+
+
+def test_spend_to_date_shows_scheme(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    response = client.post("/schemes/1/spend-to-date", data={"amount": "60000"})
+
+    assert response.status_code == 302 and response.location == "/schemes/1"
+
+
+class TestApiEnabled:
+    @pytest.fixture(name="config")
+    def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
+        return dict(config) | {"API_KEY": "boardman"}
+
+    def test_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.type = SchemeType.CONSTRUCTION
+        scheme.funding_programme = FundingProgramme.ATF4
+        schemes.add(scheme)
+
+        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+
+        assert response.json == {
+            "id": 1,
+            "name": "Wirral Package",
+            "type": "construction",
+            "funding_programme": "ATF4",
+            "financial_revisions": [],
+            "milestone_revisions": [],
+            "output_revisions": [],
+        }
+
+    def test_cannot_get_scheme_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        response = client.get("/schemes/1", headers={"Accept": "application/json"})
+
+        assert response.status_code == 401
+
+    def test_cannot_get_scheme_when_incorrect_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key obree"})
+
+        assert response.status_code == 401
+
+
+class TestApiDisabled:
+    def test_cannot_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+
+        assert response.status_code == 401

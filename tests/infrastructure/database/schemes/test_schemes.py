@@ -663,6 +663,61 @@ class TestDatabaseSchemeRepository:
         with Session(engine) as session:
             assert session.execute(select(func.count()).select_from(CapitalSchemeEntity)).scalar_one() == 0
 
+    def test_update_scheme_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+        with Session(engine) as session:
+            session.add_all(
+                [
+                    CapitalSchemeEntity(
+                        capital_scheme_id=1,
+                        scheme_name="Wirral Package",
+                        bid_submitting_authority_id=1,
+                    ),
+                    CapitalSchemeFinancialEntity(
+                        capital_scheme_financial_id=2,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
+                        financial_type_id=4,
+                        amount=50_000,
+                        data_source_id=3,
+                    ),
+                ]
+            )
+            session.commit()
+        scheme = schemes.get(1)
+        assert scheme
+        scheme.funding.financial_revisions[0].effective = DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31))
+        scheme.funding.update_financial(
+            FinancialRevision(
+                id_=3,
+                effective=DateRange(datetime(2020, 1, 31), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=60_000,
+                source=DataSource.AUTHORITY_UPDATE,
+            )
+        )
+
+        schemes.update(scheme)
+
+        with Session(engine) as session:
+            row = session.get_one(CapitalSchemeEntity, 1)
+            capital_scheme_financial1: CapitalSchemeFinancialEntity
+            capital_scheme_financial2: CapitalSchemeFinancialEntity
+            capital_scheme_financial1, capital_scheme_financial2 = row.capital_scheme_financials
+        assert (
+            capital_scheme_financial1.capital_scheme_financial_id == 2
+            and capital_scheme_financial1.effective_date_to == datetime(2020, 1, 31)
+        )
+        assert (
+            capital_scheme_financial2.capital_scheme_financial_id == 3
+            and capital_scheme_financial2.capital_scheme_id == 1
+            and capital_scheme_financial2.effective_date_from == datetime(2020, 1, 31)
+            and capital_scheme_financial2.effective_date_to is None
+            and capital_scheme_financial2.financial_type_id == 4
+            and capital_scheme_financial2.amount == 60_000
+            and capital_scheme_financial2.data_source_id == 13
+        )
+
 
 @pytest.mark.parametrize("type_, id_", [(SchemeType.DEVELOPMENT, 1), (SchemeType.CONSTRUCTION, 2), (None, None)])
 class TestSchemeTypeMapper:

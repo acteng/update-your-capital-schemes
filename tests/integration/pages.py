@@ -190,6 +190,8 @@ class SchemeFundingComponent(SummaryCardComponent):
         self.funding_allocation = (self._get_definition("Funding allocation")[0].string or "").strip()
         self.change_control_adjustment = (self._get_definition("Change control adjustment")[0].string or "").strip()
         self.spend_to_date = (self._get_definition("Spend to date")[0].string or "").strip()
+        spend_to_date_link = self._get_definition("Spend to date")[1].select_one("a")
+        self.change_spend_to_date_url = spend_to_date_link.get("href") if spend_to_date_link else None
         self.allocation_still_to_spend = (self._get_definition("Allocation still to spend")[0].string or "").strip()
 
 
@@ -261,3 +263,20 @@ class SchemeOutputRowComponent:
             "measurement": self.measurement,
             "planned": self.planned,
         }
+
+
+class SchemeChangeSpendToDatePage(PageObject):
+    def __init__(self, response: TestResponse):
+        super().__init__(response)
+        form = self._soup.select_one("form")
+        self.confirm_url = form.get("action") if form else None
+
+    @classmethod
+    def open(cls, client: FlaskClient, id_: int) -> SchemeChangeSpendToDatePage:
+        response = client.get(f"/schemes/{id_}/spend-to-date")
+        return cls(response)
+
+    @property
+    def is_visible(self) -> bool:
+        heading = self._soup.select_one("main h1")
+        return heading.string == "Change spend to date" if heading else False

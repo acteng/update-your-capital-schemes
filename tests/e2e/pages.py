@@ -195,9 +195,11 @@ class SchemeOverviewComponent(SummaryCardComponent):
 class SchemeFundingComponent(SummaryCardComponent):
     def __init__(self, title: Locator):
         super().__init__(title)
+        self._title = title
         self._funding_allocation = self._get_definition("Funding allocation")
         self._change_control_adjustment = self._get_definition("Change control adjustment")
-        self._spend_to_date = self._get_definition("Spend to date")
+        self._spend_to_date = self._get_definition("Spend to date").first
+        self._change_spend_to_date = self._get_definition("Spend to date").nth(1)
         self._allocation_still_to_spend = self._get_definition("Allocation still to spend")
 
     @property
@@ -211,6 +213,10 @@ class SchemeFundingComponent(SummaryCardComponent):
     @property
     def spend_to_date(self) -> str:
         return (self._spend_to_date.text_content() or "").strip()
+
+    def change_spend_to_date(self) -> SchemeChangeSpendToDatePage:
+        self._change_spend_to_date.click()
+        return SchemeChangeSpendToDatePage(self._title.page)
 
     @property
     def allocation_still_to_spend(self) -> str:
@@ -294,3 +300,18 @@ class SchemeOutputRowComponent:
             "measurement": self.measurement,
             "planned": self.planned,
         }
+
+
+class SchemeChangeSpendToDatePage:
+    def __init__(self, page: Page):
+        self._page = page
+        self._spend_to_date = page.get_by_label("How much has been spent to date?")
+        self._confirm = page.get_by_role("button", name="Confirm")
+
+    def spent_to_date(self, value: str) -> SchemeChangeSpendToDatePage:
+        self._spend_to_date.fill(value)
+        return self
+
+    def confirm(self) -> SchemePage:
+        self._confirm.click()
+        return SchemePage(self._page)

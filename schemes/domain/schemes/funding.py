@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from enum import Enum, auto, unique
 
 from schemes.domain.schemes.dates import DateRange
@@ -34,11 +35,28 @@ class SchemeFunding:
             raise ValueError(f"Current funding allocation already exists: {current_funding_allocation}")
 
     def _ensure_no_current_spent_to_date(self) -> None:
-        current_spent_to_date = next(
-            (revision for revision in self._financial_revisions if revision.is_current_spent_to_date), None
-        )
+        current_spent_to_date = self._current_spent_to_date
         if current_spent_to_date:
             raise ValueError(f"Current spent to date already exists: {current_spent_to_date}")
+
+    @property
+    def _current_spent_to_date(self) -> FinancialRevision | None:
+        return next((revision for revision in self._financial_revisions if revision.is_current_spent_to_date), None)
+
+    def update_spend_to_date(self, now: datetime, amount: int) -> None:
+        current_spent_to_date = self._current_spent_to_date
+        if current_spent_to_date:
+            current_spent_to_date.effective = DateRange(current_spent_to_date.effective.date_from, now)
+
+        self.update_financial(
+            FinancialRevision(
+                id_=None,
+                effective=DateRange(now, None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=amount,
+                source=DataSource.AUTHORITY_UPDATE,
+            )
+        )
 
     @property
     def funding_allocation(self) -> int | None:
@@ -70,7 +88,8 @@ class SchemeFunding:
 
 
 class FinancialRevision:
-    def __init__(self, id_: int, effective: DateRange, type_: FinancialType, amount: int, source: DataSource):
+    # TODO: domain identifier should be mandatory for transient instances
+    def __init__(self, id_: int | None, effective: DateRange, type_: FinancialType, amount: int, source: DataSource):
         self.id = id_
         self.effective = effective
         self.type = type_

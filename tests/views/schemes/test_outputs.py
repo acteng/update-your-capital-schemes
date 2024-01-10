@@ -158,6 +158,40 @@ class TestOutputMeasureContext:
 
 
 class TestOutputRevisionRepr:
+    def test_from_domain(self) -> None:
+        output_revision = OutputRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 1, 31, 13)),
+            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+            value=Decimal(10),
+            observation_type=ObservationType.ACTUAL,
+        )
+
+        output_revision_repr = OutputRevisionRepr.from_domain(output_revision)
+
+        assert output_revision_repr == OutputRevisionRepr(
+            id=1,
+            effective_date_from="2020-01-01T12:00:00",
+            effective_date_to="2020-01-31T13:00:00",
+            type=OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE,
+            measure=OutputMeasureRepr.MILES,
+            value="10",
+            observation_type=ObservationTypeRepr.ACTUAL,
+        )
+
+    def test_from_domain_when_no_effective_date_to(self) -> None:
+        output_revision = OutputRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1), None),
+            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+            value=Decimal(10),
+            observation_type=ObservationType.ACTUAL,
+        )
+
+        output_revision_repr = OutputRevisionRepr.from_domain(output_revision)
+
+        assert output_revision_repr.effective_date_to is None
+
     def test_to_domain(self) -> None:
         output_revision_repr = OutputRevisionRepr(
             id=1,
@@ -195,64 +229,70 @@ class TestOutputRevisionRepr:
         assert output_revision.effective.date_to is None
 
 
+@pytest.mark.parametrize(
+    "type_, type_repr",
+    [
+        (OutputType.NEW_SEGREGATED_CYCLING_FACILITY, "New segregated cycling facility"),
+        (OutputType.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY, "New temporary segregated cycling facility"),
+        (OutputType.NEW_JUNCTION_TREATMENT, "New junction treatment"),
+        (OutputType.NEW_PERMANENT_FOOTWAY, "New permanent footway"),
+        (OutputType.NEW_TEMPORARY_FOOTWAY, "New temporary footway"),
+        (OutputType.NEW_SHARED_USE_FACILITIES, "New shared use (walking and cycling) facilities"),
+        (OutputType.NEW_SHARED_USE_FACILITIES_WHEELING, "New shared use (walking, wheeling & cycling) facilities"),
+        (OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE, "Improvements to make an existing walking/cycle route safer"),
+        (
+            OutputType.AREA_WIDE_TRAFFIC_MANAGEMENT,
+            "Area-wide traffic management (including by TROs (both permanent and experimental))",
+        ),
+        (
+            OutputType.BUS_PRIORITY_MEASURES,
+            "Bus priority measures that also enable active travel (for example, bus gates)",
+        ),
+        (OutputType.SECURE_CYCLE_PARKING, "Provision of secure cycle parking facilities"),
+        (OutputType.NEW_ROAD_CROSSINGS, "New road crossings"),
+        (
+            OutputType.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY,
+            "Restriction or reduction of car parking availability",
+        ),
+        (OutputType.SCHOOL_STREETS, "School streets"),
+        (
+            OutputType.UPGRADES_TO_EXISTING_FACILITIES,
+            "Upgrades to existing facilities (e.g. surfacing, signage, signals)",
+        ),
+        (OutputType.E_SCOOTER_TRIALS, "E-scooter trials"),
+        (OutputType.PARK_AND_CYCLE_STRIDE_FACILITIES, "Park and cycle/stride facilities"),
+        (OutputType.TRAFFIC_CALMING, "Traffic calming (e.g. lane closures, reducing speed limits)"),
+        (OutputType.WIDENING_EXISTING_FOOTWAY, "Widening existing footway"),
+        (OutputType.OTHER_INTERVENTIONS, "Other interventions"),
+    ],
+)
 class TestOutputTypeRepr:
-    @pytest.mark.parametrize(
-        "type_, expected_type",
-        [
-            ("New segregated cycling facility", OutputType.NEW_SEGREGATED_CYCLING_FACILITY),
-            ("New temporary segregated cycling facility", OutputType.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY),
-            ("New junction treatment", OutputType.NEW_JUNCTION_TREATMENT),
-            ("New permanent footway", OutputType.NEW_PERMANENT_FOOTWAY),
-            ("New temporary footway", OutputType.NEW_TEMPORARY_FOOTWAY),
-            ("New shared use (walking and cycling) facilities", OutputType.NEW_SHARED_USE_FACILITIES),
-            ("New shared use (walking, wheeling & cycling) facilities", OutputType.NEW_SHARED_USE_FACILITIES_WHEELING),
-            ("Improvements to make an existing walking/cycle route safer", OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE),
-            (
-                "Area-wide traffic management (including by TROs (both permanent and experimental))",
-                OutputType.AREA_WIDE_TRAFFIC_MANAGEMENT,
-            ),
-            (
-                "Bus priority measures that also enable active travel (for example, bus gates)",
-                OutputType.BUS_PRIORITY_MEASURES,
-            ),
-            ("Provision of secure cycle parking facilities", OutputType.SECURE_CYCLE_PARKING),
-            ("New road crossings", OutputType.NEW_ROAD_CROSSINGS),
-            (
-                "Restriction or reduction of car parking availability",
-                OutputType.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY,
-            ),
-            ("School streets", OutputType.SCHOOL_STREETS),
-            (
-                "Upgrades to existing facilities (e.g. surfacing, signage, signals)",
-                OutputType.UPGRADES_TO_EXISTING_FACILITIES,
-            ),
-            ("E-scooter trials", OutputType.E_SCOOTER_TRIALS),
-            ("Park and cycle/stride facilities", OutputType.PARK_AND_CYCLE_STRIDE_FACILITIES),
-            ("Traffic calming (e.g. lane closures, reducing speed limits)", OutputType.TRAFFIC_CALMING),
-            ("Widening existing footway", OutputType.WIDENING_EXISTING_FOOTWAY),
-            ("Other interventions", OutputType.OTHER_INTERVENTIONS),
-        ],
-    )
-    def test_to_domain(self, type_: str, expected_type: OutputType) -> None:
-        assert OutputTypeRepr(type_).to_domain() == expected_type
+    def test_from_domain(self, type_: OutputType, type_repr: str) -> None:
+        assert OutputTypeRepr.from_domain(type_).value == type_repr
+
+    def test_to_domain(self, type_: OutputType, type_repr: str) -> None:
+        assert OutputTypeRepr(type_repr).to_domain() == type_
 
 
+@pytest.mark.parametrize(
+    "measure, measure_repr",
+    [
+        (OutputMeasure.MILES, "miles"),
+        (OutputMeasure.NUMBER_OF_JUNCTIONS, "number of junctions"),
+        (OutputMeasure.SIZE_OF_AREA, "size of area"),
+        (OutputMeasure.NUMBER_OF_PARKING_SPACES, "number of parking spaces"),
+        (OutputMeasure.NUMBER_OF_CROSSINGS, "number of crossings"),
+        (OutputMeasure.NUMBER_OF_SCHOOL_STREETS, "number of school streets"),
+        (OutputMeasure.NUMBER_OF_TRIALS, "number of trials"),
+        (OutputMeasure.NUMBER_OF_BUS_GATES, "number of bus gates"),
+        (OutputMeasure.NUMBER_OF_UPGRADES, "number of upgrades"),
+        (OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED, "number of children affected"),
+        (OutputMeasure.NUMBER_OF_MEASURES_PLANNED, "number of measures planned"),
+    ],
+)
 class TestOutputMeasureRepr:
-    @pytest.mark.parametrize(
-        "measure, expected_measure",
-        [
-            ("miles", OutputMeasure.MILES),
-            ("number of junctions", OutputMeasure.NUMBER_OF_JUNCTIONS),
-            ("size of area", OutputMeasure.SIZE_OF_AREA),
-            ("number of parking spaces", OutputMeasure.NUMBER_OF_PARKING_SPACES),
-            ("number of crossings", OutputMeasure.NUMBER_OF_CROSSINGS),
-            ("number of school streets", OutputMeasure.NUMBER_OF_SCHOOL_STREETS),
-            ("number of trials", OutputMeasure.NUMBER_OF_TRIALS),
-            ("number of bus gates", OutputMeasure.NUMBER_OF_BUS_GATES),
-            ("number of upgrades", OutputMeasure.NUMBER_OF_UPGRADES),
-            ("number of children affected", OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED),
-            ("number of measures planned", OutputMeasure.NUMBER_OF_MEASURES_PLANNED),
-        ],
-    )
-    def test_to_domain(self, measure: str, expected_measure: OutputMeasure) -> None:
-        assert OutputMeasureRepr(measure).to_domain() == expected_measure
+    def test_from_domain(self, measure: OutputMeasure, measure_repr: str) -> None:
+        assert OutputMeasureRepr.from_domain(measure).value == measure_repr
+
+    def test_to_domain(self, measure: OutputMeasure, measure_repr: str) -> None:
+        assert OutputMeasureRepr(measure_repr).to_domain() == measure

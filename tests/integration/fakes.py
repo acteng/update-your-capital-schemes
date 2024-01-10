@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import Scheme, SchemeRepository
 from schemes.domain.users import User, UserRepository
@@ -44,10 +46,13 @@ class MemorySchemeRepository(SchemeRepository):
         self._schemes.clear()
 
     def get(self, id_: int) -> Scheme | None:
-        return self._schemes.get(id_)
+        return deepcopy(self._schemes.get(id_))
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
         return sorted(
-            [scheme for scheme in self._schemes.values() if scheme.authority_id == authority_id],
+            [deepcopy(scheme) for scheme in self._schemes.values() if scheme.authority_id == authority_id],
             key=lambda scheme: scheme.id,
         )
+
+    def update(self, scheme: Scheme) -> None:
+        self._schemes[scheme.id] = scheme

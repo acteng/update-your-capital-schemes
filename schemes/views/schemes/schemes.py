@@ -3,8 +3,20 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from enum import Enum, unique
 
+import dataclass_wizard
 import inject
-from flask import Blueprint, Response, abort, render_template, session
+from flask import (
+    Blueprint,
+    Response,
+    abort,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
+from werkzeug import Response as BaseResponse
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import (
@@ -14,9 +26,14 @@ from schemes.domain.schemes import (
     SchemeType,
 )
 from schemes.domain.users import UserRepository
+from schemes.infrastructure.clock import Clock
 from schemes.views.auth.api_key import api_key_auth
 from schemes.views.auth.bearer import bearer_auth
-from schemes.views.schemes.funding import FinancialRevisionRepr, SchemeFundingContext
+from schemes.views.schemes.funding import (
+    FinancialRevisionRepr,
+    SchemeChangeSpendToDateContext,
+    SchemeFundingContext,
+)
 from schemes.views.schemes.milestones import (
     MilestoneContext,
     MilestoneRevisionRepr,
@@ -73,9 +90,16 @@ class SchemeRowContext:
 
 
 @bp.get("<int:scheme_id>")
+def get(scheme_id: int) -> Response:
+    json = request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html
+    return get_json(scheme_id) if json else get_html(scheme_id)
+
+
 @bearer_auth
 @inject.autoparams("users", "authorities", "schemes")
-def get(users: UserRepository, authorities: AuthorityRepository, schemes: SchemeRepository, scheme_id: int) -> str:
+def get_html(
+    scheme_id: int, users: UserRepository, authorities: AuthorityRepository, schemes: SchemeRepository
+) -> Response:
     user_info = session["user"]
     user = users.get_by_email(user_info["email"])
     assert user
@@ -88,11 +112,23 @@ def get(users: UserRepository, authorities: AuthorityRepository, schemes: Scheme
         abort(403)
 
     context = SchemeContext.from_domain(authority, scheme)
-    return render_template("scheme/index.html", **asdict(context))
+    return Response(render_template("scheme/index.html", **asdict(context)))
+
+
+@api_key_auth
+@inject.autoparams("schemes")
+def get_json(scheme_id: int, schemes: SchemeRepository) -> Response:
+    scheme = schemes.get(scheme_id)
+    assert scheme
+
+    response = make_response(dataclass_wizard.asdict(SchemeRepr.from_domain(scheme)))
+    response.content_type = "application/json"
+    return response
 
 
 @dataclass(frozen=True)
 class SchemeContext:
+    id: int
     authority_name: str
     name: str
     overview: SchemeOverviewContext
@@ -103,6 +139,7 @@ class SchemeContext:
     @classmethod
     def from_domain(cls, authority: Authority, scheme: Scheme) -> SchemeContext:
         return cls(
+            id=scheme.id,
             authority_name=authority.name,
             name=scheme.name,
             overview=SchemeOverviewContext.from_domain(scheme),
@@ -161,6 +198,32 @@ class FundingProgrammeContext:
         return cls(name=cls._NAMES[funding_programme] if funding_programme else None)
 
 
+@bp.get("<int:scheme_id>/spend-to-date")
+@bearer_auth
+@inject.autoparams("schemes")
+def spend_to_date_form(schemes: SchemeRepository, scheme_id: int) -> str:
+    scheme = schemes.get(scheme_id)
+    assert scheme
+
+    context = SchemeChangeSpendToDateContext.from_domain(scheme)
+    return render_template("scheme/spend_to_date.html", **asdict(context))
+
+
+@bp.post("<int:scheme_id>/spend-to-date")
+@bearer_auth
+@inject.autoparams("clock", "schemes")
+def spend_to_date(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+    now = clock.now
+    amount = int(request.form["amount"])
+
+    scheme = schemes.get(scheme_id)
+    assert scheme
+    scheme.funding.update_spend_to_date(now=now, amount=amount)
+    schemes.update(scheme)
+
+    return redirect(url_for("schemes.get", scheme_id=scheme_id))
+
+
 @bp.delete("")
 @api_key_auth
 @inject.autoparams()
@@ -178,6 +241,28 @@ class SchemeRepr:
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
     output_revisions: list[OutputRevisionRepr] = field(default_factory=list)
+
+    @classmethod
+    def from_domain(cls, scheme: Scheme) -> SchemeRepr:
+        return cls(
+            id=scheme.id,
+            name=scheme.name,
+            type=SchemeTypeRepr.from_domain(scheme.type) if scheme.type else None,
+            funding_programme=FundingProgrammeRepr.from_domain(scheme.funding_programme)
+            if scheme.funding_programme
+            else None,
+            financial_revisions=[
+                FinancialRevisionRepr.from_domain(financial_revision)
+                for financial_revision in scheme.funding.financial_revisions
+            ],
+            milestone_revisions=[
+                MilestoneRevisionRepr.from_domain(milestone_revision)
+                for milestone_revision in scheme.milestones.milestone_revisions
+            ],
+            output_revisions=[
+                OutputRevisionRepr.from_domain(output_revision) for output_revision in scheme.outputs.output_revisions
+            ],
+        )
 
     def to_domain(self, authority_id: int) -> Scheme:
         scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
@@ -201,12 +286,19 @@ class SchemeTypeRepr(Enum):
     DEVELOPMENT = "development"
     CONSTRUCTION = "construction"
 
+    @classmethod
+    def from_domain(cls, type_: SchemeType) -> SchemeTypeRepr:
+        return cls._members()[type_]
+
     def to_domain(self) -> SchemeType:
-        members = {
-            SchemeTypeRepr.DEVELOPMENT: SchemeType.DEVELOPMENT,
-            SchemeTypeRepr.CONSTRUCTION: SchemeType.CONSTRUCTION,
+        return {value: key for key, value in self._members().items()}[self]
+
+    @staticmethod
+    def _members() -> dict[SchemeType, SchemeTypeRepr]:
+        return {
+            SchemeType.DEVELOPMENT: SchemeTypeRepr.DEVELOPMENT,
+            SchemeType.CONSTRUCTION: SchemeTypeRepr.CONSTRUCTION,
         }
-        return members[self]
 
 
 @unique
@@ -220,15 +312,22 @@ class FundingProgrammeRepr(Enum):
     LUF = "LUF"
     CRSTS = "CRSTS"
 
+    @classmethod
+    def from_domain(cls, funding_programme: FundingProgramme) -> FundingProgrammeRepr:
+        return cls._members()[funding_programme]
+
     def to_domain(self) -> FundingProgramme:
-        members = {
-            FundingProgrammeRepr.ATF2: FundingProgramme.ATF2,
-            FundingProgrammeRepr.ATF3: FundingProgramme.ATF3,
-            FundingProgrammeRepr.ATF4: FundingProgramme.ATF4,
-            FundingProgrammeRepr.ATF4E: FundingProgramme.ATF4E,
-            FundingProgrammeRepr.ATF5: FundingProgramme.ATF5,
-            FundingProgrammeRepr.MRN: FundingProgramme.MRN,
-            FundingProgrammeRepr.LUF: FundingProgramme.LUF,
-            FundingProgrammeRepr.CRSTS: FundingProgramme.CRSTS,
+        return {value: key for key, value in self._members().items()}[self]
+
+    @staticmethod
+    def _members() -> dict[FundingProgramme, FundingProgrammeRepr]:
+        return {
+            FundingProgramme.ATF2: FundingProgrammeRepr.ATF2,
+            FundingProgramme.ATF3: FundingProgrammeRepr.ATF3,
+            FundingProgramme.ATF4: FundingProgrammeRepr.ATF4,
+            FundingProgramme.ATF4E: FundingProgrammeRepr.ATF4E,
+            FundingProgramme.ATF5: FundingProgrammeRepr.ATF5,
+            FundingProgramme.MRN: FundingProgrammeRepr.MRN,
+            FundingProgramme.LUF: FundingProgrammeRepr.LUF,
+            FundingProgramme.CRSTS: FundingProgrammeRepr.CRSTS,
         }
-        return members[self]

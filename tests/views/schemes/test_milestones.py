@@ -115,6 +115,39 @@ class TestMilestoneContext:
 
 
 class TestMilestoneRevisionRepr:
+    def test_from_domain(self) -> None:
+        milestone_revision = MilestoneRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 1, 31, 13)),
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 1),
+        )
+
+        milestone_revision_repr = MilestoneRevisionRepr.from_domain(milestone_revision)
+
+        assert milestone_revision_repr == MilestoneRevisionRepr(
+            id=1,
+            effective_date_from="2020-01-01T12:00:00",
+            effective_date_to="2020-01-31T13:00:00",
+            milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationTypeRepr.ACTUAL,
+            status_date="2020-01-01",
+        )
+
+    def test_from_domain_when_no_effective_date_to(self) -> None:
+        milestone_revision = MilestoneRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1), None),
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 1),
+        )
+
+        milestone_revision_repr = MilestoneRevisionRepr.from_domain(milestone_revision)
+
+        assert milestone_revision_repr.effective_date_to is None
+
     def test_to_domain(self) -> None:
         milestone_revision_repr = MilestoneRevisionRepr(
             id=1,
@@ -150,23 +183,26 @@ class TestMilestoneRevisionRepr:
         assert milestone_revision.effective.date_to is None
 
 
+@pytest.mark.parametrize(
+    "milestone, milestone_repr",
+    [
+        (Milestone.PUBLIC_CONSULTATION_COMPLETED, "public consultation completed"),
+        (Milestone.FEASIBILITY_DESIGN_STARTED, "feasibility design started"),
+        (Milestone.FEASIBILITY_DESIGN_COMPLETED, "feasibility design completed"),
+        (Milestone.PRELIMINARY_DESIGN_COMPLETED, "preliminary design completed"),
+        (Milestone.OUTLINE_DESIGN_COMPLETED, "outline design completed"),
+        (Milestone.DETAILED_DESIGN_COMPLETED, "detailed design completed"),
+        (Milestone.CONSTRUCTION_STARTED, "construction started"),
+        (Milestone.CONSTRUCTION_COMPLETED, "construction completed"),
+        (Milestone.INSPECTION, "inspection"),
+        (Milestone.NOT_PROGRESSED, "not progressed"),
+        (Milestone.SUPERSEDED, "superseded"),
+        (Milestone.REMOVED, "removed"),
+    ],
+)
 class TestMilestoneRepr:
-    @pytest.mark.parametrize(
-        "milestone, expected_milestone",
-        [
-            ("public consultation completed", Milestone.PUBLIC_CONSULTATION_COMPLETED),
-            ("feasibility design started", Milestone.FEASIBILITY_DESIGN_STARTED),
-            ("feasibility design completed", Milestone.FEASIBILITY_DESIGN_COMPLETED),
-            ("preliminary design completed", Milestone.PRELIMINARY_DESIGN_COMPLETED),
-            ("outline design completed", Milestone.OUTLINE_DESIGN_COMPLETED),
-            ("detailed design completed", Milestone.DETAILED_DESIGN_COMPLETED),
-            ("construction started", Milestone.CONSTRUCTION_STARTED),
-            ("construction completed", Milestone.CONSTRUCTION_COMPLETED),
-            ("inspection", Milestone.INSPECTION),
-            ("not progressed", Milestone.NOT_PROGRESSED),
-            ("superseded", Milestone.SUPERSEDED),
-            ("removed", Milestone.REMOVED),
-        ],
-    )
-    def test_to_domain(self, milestone: str, expected_milestone: Milestone) -> None:
-        assert MilestoneRepr(milestone).to_domain() == expected_milestone
+    def test_from_domain(self, milestone: Milestone, milestone_repr: str) -> None:
+        assert MilestoneRepr.from_domain(milestone).value == milestone_repr
+
+    def test_to_domain(self, milestone: Milestone, milestone_repr: str) -> None:
+        assert MilestoneRepr(milestone_repr).to_domain() == milestone

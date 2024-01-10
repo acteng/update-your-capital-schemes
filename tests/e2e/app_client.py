@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 
 import requests
+from dataclass_wizard import fromdict
 
 
 class AppClient:
@@ -12,6 +13,10 @@ class AppClient:
         self._url = url
         self._session = requests.Session()
         self._session.headers.update({"Authorization": f"API-Key {api_key}"})
+
+    def set_clock(self, now: str) -> None:
+        response = self._session.put(f"{self._url}/clock", data={"now": now})
+        assert response.status_code == 204
 
     def add_authorities(self, *authorities: AuthorityRepr) -> None:
         json = [asdict(authority) for authority in authorities]
@@ -31,6 +36,14 @@ class AppClient:
             f"{self._url}/authorities/{authority_id}/schemes", json=json, timeout=self.DEFAULT_TIMEOUT
         )
         assert response.status_code == 201
+
+    def get_scheme(self, id_: int) -> SchemeRepr:
+        response = self._session.get(
+            f"{self._url}/schemes/{id_}", headers={"Accept": "application/json"}, timeout=self.DEFAULT_TIMEOUT
+        )
+        assert response.status_code == 200
+        scheme_repr: SchemeRepr = fromdict(SchemeRepr, response.json())
+        return scheme_repr
 
     def clear_authorities(self) -> None:
         response = self._session.delete(f"{self._url}/authorities", timeout=self.DEFAULT_TIMEOUT)

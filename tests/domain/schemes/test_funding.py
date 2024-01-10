@@ -112,6 +112,37 @@ class TestSchemeFunding:
 
         assert funding.financial_revisions == [financial_revision1, financial_revision2]
 
+    def test_update_spend_to_date_closes_current_revision(self) -> None:
+        funding = SchemeFunding()
+        funding.update_financial(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        funding.update_spend_to_date(now=datetime(2020, 1, 31, 13), amount=60_000)
+
+        financial_revision = funding.financial_revisions[0]
+        assert financial_revision.id == 1 and financial_revision.effective.date_to == datetime(2020, 1, 31, 13)
+
+    def test_update_spend_to_date_adds_new_revision(self) -> None:
+        funding = SchemeFunding()
+
+        funding.update_spend_to_date(now=datetime(2020, 1, 31, 13), amount=60_000)
+
+        financial_revision = funding.financial_revisions[0]
+        assert (
+            financial_revision.id is None
+            and financial_revision.effective == DateRange(datetime(2020, 1, 31, 13), None)
+            and financial_revision.type == FinancialType.SPENT_TO_DATE
+            and financial_revision.amount == 60_000
+            and financial_revision.source == DataSource.AUTHORITY_UPDATE
+        )
+
     def test_get_funding_allocation(self) -> None:
         funding = SchemeFunding()
         funding.update_financial(

@@ -35,6 +35,15 @@
             "value": {
                 "classes": "govuk-!-text-align-right",
                 "text": funding.spend_to_date | pounds if funding.spend_to_date is not none()
+            },
+            "actions": {
+                "items": [
+                    {
+                        "href": url_for("schemes.spend_to_date_form", scheme_id=id),
+                        "text": "Change",
+                        "visuallyHiddenText": "Spend to date"
+                    }
+                ]
             }
         },
         {

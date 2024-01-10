@@ -83,6 +83,19 @@ class MilestoneRevisionRepr:
     observation_type: ObservationTypeRepr
     status_date: str
 
+    @classmethod
+    def from_domain(cls, milestone_revision: MilestoneRevision) -> MilestoneRevisionRepr:
+        return cls(
+            id=milestone_revision.id,
+            effective_date_from=milestone_revision.effective.date_from.isoformat(),
+            effective_date_to=milestone_revision.effective.date_to.isoformat()
+            if milestone_revision.effective.date_to
+            else None,
+            milestone=MilestoneRepr.from_domain(milestone_revision.milestone),
+            observation_type=ObservationTypeRepr.from_domain(milestone_revision.observation_type),
+            status_date=milestone_revision.status_date.isoformat(),
+        )
+
     def to_domain(self) -> MilestoneRevision:
         return MilestoneRevision(
             id_=self.id,
@@ -111,19 +124,26 @@ class MilestoneRepr(Enum):
     SUPERSEDED = "superseded"
     REMOVED = "removed"
 
+    @classmethod
+    def from_domain(cls, milestone: Milestone) -> MilestoneRepr:
+        return cls._members()[milestone]
+
     def to_domain(self) -> Milestone:
-        members = {
-            MilestoneRepr.PUBLIC_CONSULTATION_COMPLETED: Milestone.PUBLIC_CONSULTATION_COMPLETED,
-            MilestoneRepr.FEASIBILITY_DESIGN_STARTED: Milestone.FEASIBILITY_DESIGN_STARTED,
-            MilestoneRepr.FEASIBILITY_DESIGN_COMPLETED: Milestone.FEASIBILITY_DESIGN_COMPLETED,
-            MilestoneRepr.PRELIMINARY_DESIGN_COMPLETED: Milestone.PRELIMINARY_DESIGN_COMPLETED,
-            MilestoneRepr.OUTLINE_DESIGN_COMPLETED: Milestone.OUTLINE_DESIGN_COMPLETED,
-            MilestoneRepr.DETAILED_DESIGN_COMPLETED: Milestone.DETAILED_DESIGN_COMPLETED,
-            MilestoneRepr.CONSTRUCTION_STARTED: Milestone.CONSTRUCTION_STARTED,
-            MilestoneRepr.CONSTRUCTION_COMPLETED: Milestone.CONSTRUCTION_COMPLETED,
-            MilestoneRepr.INSPECTION: Milestone.INSPECTION,
-            MilestoneRepr.NOT_PROGRESSED: Milestone.NOT_PROGRESSED,
-            MilestoneRepr.SUPERSEDED: Milestone.SUPERSEDED,
-            MilestoneRepr.REMOVED: Milestone.REMOVED,
+        return {value: key for key, value in self._members().items()}[self]
+
+    @staticmethod
+    def _members() -> dict[Milestone, MilestoneRepr]:
+        return {
+            Milestone.PUBLIC_CONSULTATION_COMPLETED: MilestoneRepr.PUBLIC_CONSULTATION_COMPLETED,
+            Milestone.FEASIBILITY_DESIGN_STARTED: MilestoneRepr.FEASIBILITY_DESIGN_STARTED,
+            Milestone.FEASIBILITY_DESIGN_COMPLETED: MilestoneRepr.FEASIBILITY_DESIGN_COMPLETED,
+            Milestone.PRELIMINARY_DESIGN_COMPLETED: MilestoneRepr.PRELIMINARY_DESIGN_COMPLETED,
+            Milestone.OUTLINE_DESIGN_COMPLETED: MilestoneRepr.OUTLINE_DESIGN_COMPLETED,
+            Milestone.DETAILED_DESIGN_COMPLETED: MilestoneRepr.DETAILED_DESIGN_COMPLETED,
+            Milestone.CONSTRUCTION_STARTED: MilestoneRepr.CONSTRUCTION_STARTED,
+            Milestone.CONSTRUCTION_COMPLETED: MilestoneRepr.CONSTRUCTION_COMPLETED,
+            Milestone.INSPECTION: MilestoneRepr.INSPECTION,
+            Milestone.NOT_PROGRESSED: MilestoneRepr.NOT_PROGRESSED,
+            Milestone.SUPERSEDED: MilestoneRepr.SUPERSEDED,
+            Milestone.REMOVED: MilestoneRepr.REMOVED,
         }
-        return members[self]

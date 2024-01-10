@@ -72,6 +72,11 @@ class DatabaseSchemeRepository(SchemeRepository):
             )
             return [self._capital_scheme_to_domain(row) for row in result]
 
+    def update(self, scheme: Scheme) -> None:
+        with Session(self._engine) as session:
+            session.merge(self._capital_scheme_from_domain(scheme))
+            session.commit()
+
     def _capital_scheme_from_domain(self, scheme: Scheme) -> CapitalSchemeEntity:
         return CapitalSchemeEntity(
             capital_scheme_id=scheme.id,

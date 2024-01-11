@@ -278,16 +278,16 @@ class DatabaseSchemeRepository(SchemeRepository):
 
 
 class SchemeTypeMapper:
-    _TYPE_IDS = {
+    _IDS = {
         SchemeType.DEVELOPMENT: 1,
         SchemeType.CONSTRUCTION: 2,
     }
 
     def to_id(self, type_: SchemeType | None) -> int | None:
-        return self._TYPE_IDS[type_] if type_ else None
+        return self._IDS[type_] if type_ else None
 
     def to_domain(self, id_: int | None) -> SchemeType | None:
-        return next(key for key, value in self._TYPE_IDS.items() if value == id_) if id_ else None
+        return next(key for key, value in self._IDS.items() if value == id_) if id_ else None
 
 
 class FundingProgrammeMapper:

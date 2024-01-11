@@ -11,4 +11,4 @@ class ObservationTypeMapper:
         return self._IDS[observation_type]
 
     def to_domain(self, id_: int) -> ObservationType:
-        return next(key for key, value in self._IDS.items() if value == id_)
+        return {value: key for key, value in self._IDS.items()}[id_]

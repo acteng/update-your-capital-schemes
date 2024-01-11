@@ -14,7 +14,7 @@ class FinancialTypeMapper:
         return self._IDS[financial_type]
 
     def to_domain(self, id_: int) -> FinancialType:
-        return next(key for key, value in self._IDS.items() if value == id_)
+        return {value: key for key, value in self._IDS.items()}[id_]
 
 
 class DataSourceMapper:
@@ -37,4 +37,4 @@ class DataSourceMapper:
         return self._IDS[data_source]
 
     def to_domain(self, id_: int) -> DataSource:
-        return next(key for key, value in self._IDS.items() if value == id_)
+        return {value: key for key, value in self._IDS.items()}[id_]

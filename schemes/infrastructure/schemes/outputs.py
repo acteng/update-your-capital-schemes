@@ -36,4 +36,4 @@ class OutputTypeMeasureMapper:
         return self._IDS[output_type_measure]
 
     def to_domain(self, id_: int) -> OutputTypeMeasure:
-        return next(key for key, value in self._IDS.items() if value == id_)
+        return {value: key for key, value in self._IDS.items()}[id_]

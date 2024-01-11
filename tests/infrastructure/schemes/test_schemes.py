@@ -677,28 +677,32 @@ class TestDatabaseSchemeRepository:
         assert count == 0
 
 
+@pytest.mark.parametrize("type_, id_", [(SchemeType.DEVELOPMENT, 1), (SchemeType.CONSTRUCTION, 2), (None, None)])
 class TestSchemeTypeMapper:
-    @pytest.mark.parametrize("type_, id_", [(SchemeType.DEVELOPMENT, 1), (SchemeType.CONSTRUCTION, 2), (None, None)])
-    def test_mapper(self, type_: SchemeType | None, id_: int | None) -> None:
-        mapper = SchemeTypeMapper()
-        assert mapper.to_id(type_) == id_ and mapper.to_domain(id_) == type_
+    def test_to_id(self, type_: SchemeType | None, id_: int | None) -> None:
+        assert SchemeTypeMapper().to_id(type_) == id_
+
+    def test_to_domain(self, type_: SchemeType | None, id_: int | None) -> None:
+        assert SchemeTypeMapper().to_domain(id_) == type_
 
 
+@pytest.mark.parametrize(
+    "funding_programme, id_",
+    [
+        (FundingProgramme.ATF2, 1),
+        (FundingProgramme.ATF3, 2),
+        (FundingProgramme.ATF4, 3),
+        (FundingProgramme.ATF4E, 4),
+        (FundingProgramme.ATF5, 5),
+        (FundingProgramme.MRN, 6),
+        (FundingProgramme.LUF, 7),
+        (FundingProgramme.CRSTS, 8),
+        (None, None),
+    ],
+)
 class TestFundingProgrammeMapper:
-    @pytest.mark.parametrize(
-        "funding_programme, id_",
-        [
-            (FundingProgramme.ATF2, 1),
-            (FundingProgramme.ATF3, 2),
-            (FundingProgramme.ATF4, 3),
-            (FundingProgramme.ATF4E, 4),
-            (FundingProgramme.ATF5, 5),
-            (FundingProgramme.MRN, 6),
-            (FundingProgramme.LUF, 7),
-            (FundingProgramme.CRSTS, 8),
-            (None, None),
-        ],
-    )
-    def test_mapper(self, funding_programme: FundingProgramme | None, id_: int | None) -> None:
-        mapper = FundingProgrammeMapper()
-        assert mapper.to_id(funding_programme) == id_ and mapper.to_domain(id_) == funding_programme
+    def test_to_id(self, funding_programme: FundingProgramme | None, id_: int | None) -> None:
+        assert FundingProgrammeMapper().to_id(funding_programme) == id_
+
+    def test_to_domain(self, funding_programme: FundingProgramme | None, id_: int | None) -> None:
+        assert FundingProgrammeMapper().to_domain(id_) == funding_programme

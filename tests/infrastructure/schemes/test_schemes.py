@@ -2,7 +2,7 @@ from datetime import date
 from decimal import Decimal
 
 import pytest
-from sqlalchemy import Engine, MetaData, func, insert, select
+from sqlalchemy import Engine, func, insert, select
 
 from schemes.domain.authorities import Authority
 from schemes.domain.schemes import (
@@ -19,10 +19,14 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeType,
 )
+from schemes.infrastructure import (
+    capital_scheme_financial_table,
+    capital_scheme_table,
+    scheme_intervention_table,
+    scheme_milestone_table,
+)
 from schemes.infrastructure.authorities import DatabaseAuthorityRepository
-from schemes.infrastructure.authorities import add_tables as authorities_add_tables
 from schemes.infrastructure.schemes import DatabaseSchemeRepository
-from schemes.infrastructure.schemes import add_tables as schemes_add_tables
 from schemes.infrastructure.schemes.schemes import (
     FundingProgrammeMapper,
     SchemeTypeMapper,
@@ -30,18 +34,6 @@ from schemes.infrastructure.schemes.schemes import (
 
 
 class TestDatabaseSchemeRepository:
-    @pytest.fixture(name="metadata")
-    def metadata_fixture(self) -> MetaData:
-        metadata = MetaData()
-        authorities_add_tables(metadata)
-        schemes_add_tables(metadata)
-        return metadata
-
-    @pytest.fixture(name="engine")
-    def engine_fixture(self, engine: Engine, metadata: MetaData) -> Engine:
-        metadata.create_all(engine)
-        return engine
-
     @pytest.fixture(name="authorities")
     def authorities_fixture(self, engine: Engine) -> DatabaseAuthorityRepository:
         repository: DatabaseAuthorityRepository = DatabaseAuthorityRepository(engine)
@@ -59,14 +51,13 @@ class TestDatabaseSchemeRepository:
             Authority(id_=2, name="West Yorkshire Combined Authority"),
         )
 
-    def test_add_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
+    def test_add_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.type = SchemeType.DEVELOPMENT
         scheme1.funding_programme = FundingProgramme.ATF3
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
-        capital_scheme_table = metadata.tables["capital_scheme"]
         with engine.connect() as connection:
             row1, row2 = connection.execute(
                 select(capital_scheme_table).order_by(capital_scheme_table.c.capital_scheme_id)
@@ -84,9 +75,7 @@ class TestDatabaseSchemeRepository:
             and row2.bid_submitting_authority_id == 1
         )
 
-    def test_add_schemes_financial_revisions(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
+    def test_add_schemes_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.funding.update_financials(
             FinancialRevision(
@@ -105,7 +94,6 @@ class TestDatabaseSchemeRepository:
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
-        capital_scheme_financial_table = metadata.tables["capital_scheme_financial"]
         with engine.connect() as connection:
             row1, row2 = connection.execute(
                 select(capital_scheme_financial_table).order_by(
@@ -129,9 +117,7 @@ class TestDatabaseSchemeRepository:
             and row2.data_source_id == 3
         )
 
-    def test_add_schemes_milestone_revisions(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
+    def test_add_schemes_milestone_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.milestones.update_milestones(
             MilestoneRevision(
@@ -150,7 +136,6 @@ class TestDatabaseSchemeRepository:
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
-        scheme_milestone_table = metadata.tables["scheme_milestone"]
         with engine.connect() as connection:
             row1, row2 = connection.execute(
                 select(scheme_milestone_table).order_by(scheme_milestone_table.c.scheme_milestone_id)
@@ -172,9 +157,7 @@ class TestDatabaseSchemeRepository:
             and row2.status_date == date(2020, 3, 1)
         )
 
-    def test_add_schemes_output_revisions(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
+    def test_add_schemes_output_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.outputs.update_outputs(
             OutputRevision(
@@ -193,7 +176,6 @@ class TestDatabaseSchemeRepository:
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
-        scheme_intervention_table = metadata.tables["scheme_intervention"]
         with engine.connect() as connection:
             row1, row2 = connection.execute(
                 select(scheme_intervention_table).order_by(scheme_intervention_table.c.scheme_intervention_id)
@@ -215,10 +197,10 @@ class TestDatabaseSchemeRepository:
             and row2.observation_type_id == 1
         )
 
-    def test_get_scheme(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
+    def test_get_scheme(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with engine.begin() as connection:
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=1,
                     scheme_name="Wirral Package",
                     bid_submitting_authority_id=1,
@@ -238,19 +220,17 @@ class TestDatabaseSchemeRepository:
             and scheme.funding_programme == FundingProgramme.ATF3
         )
 
-    def test_get_scheme_financial_revisions(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
+    def test_get_scheme_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with engine.begin() as connection:
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=1,
                     scheme_name="Wirral Package",
                     bid_submitting_authority_id=1,
                 )
             )
             connection.execute(
-                insert(metadata.tables["capital_scheme_financial"]).values(
+                insert(capital_scheme_financial_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=date(2020, 1, 31),
@@ -260,7 +240,7 @@ class TestDatabaseSchemeRepository:
                 )
             )
             connection.execute(
-                insert(metadata.tables["capital_scheme_financial"]).values(
+                insert(capital_scheme_financial_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 2, 1),
                     effective_date_to=None,
@@ -287,19 +267,17 @@ class TestDatabaseSchemeRepository:
             ),
         ]
 
-    def test_get_scheme_milestone_revisions(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
+    def test_get_scheme_milestone_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with engine.begin() as connection:
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=1,
                     scheme_name="Wirral Package",
                     bid_submitting_authority_id=1,
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_milestone"]).values(
+                insert(scheme_milestone_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=date(2020, 1, 31),
@@ -309,7 +287,7 @@ class TestDatabaseSchemeRepository:
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_milestone"]).values(
+                insert(scheme_milestone_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 2, 1),
                     effective_date_to=None,
@@ -336,19 +314,17 @@ class TestDatabaseSchemeRepository:
             ),
         ]
 
-    def test_get_scheme_output_revisions(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
+    def test_get_scheme_output_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with engine.begin() as connection:
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=1,
                     scheme_name="Wirral Package",
                     bid_submitting_authority_id=1,
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_intervention"]).values(
+                insert(scheme_intervention_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=date(2020, 1, 31),
@@ -358,7 +334,7 @@ class TestDatabaseSchemeRepository:
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_intervention"]).values(
+                insert(scheme_intervention_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 2, 1),
                     effective_date_to=None,
@@ -385,12 +361,10 @@ class TestDatabaseSchemeRepository:
             ),
         ]
 
-    def test_get_scheme_that_does_not_exist(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
+    def test_get_scheme_that_does_not_exist(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with engine.begin() as connection:
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=1,
                     scheme_name="Wirral Package",
                     bid_submitting_authority_id=1,
@@ -399,10 +373,7 @@ class TestDatabaseSchemeRepository:
 
         assert schemes.get(2) is None
 
-    def test_get_all_schemes_by_authority(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
-    ) -> None:
-        capital_scheme_table = metadata.tables["capital_scheme"]
+    def test_get_all_schemes_by_authority(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with engine.begin() as connection:
             connection.execute(
                 insert(capital_scheme_table).values(
@@ -438,16 +409,16 @@ class TestDatabaseSchemeRepository:
         assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme1.authority_id == 1
 
     def test_get_all_schemes_financial_revisions_by_authority(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+        self, schemes: DatabaseSchemeRepository, engine: Engine
     ) -> None:
         with engine.begin() as connection:
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
                 )
             )
             connection.execute(
-                insert(metadata.tables["capital_scheme_financial"]).values(
+                insert(capital_scheme_financial_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=None,
@@ -457,12 +428,12 @@ class TestDatabaseSchemeRepository:
                 )
             )
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=2
                 )
             )
             connection.execute(
-                insert(metadata.tables["capital_scheme_financial"]).values(
+                insert(capital_scheme_financial_table).values(
                     capital_scheme_id=2,
                     effective_date_from=date(2020, 2, 1),
                     effective_date_to=None,
@@ -485,16 +456,16 @@ class TestDatabaseSchemeRepository:
         ]
 
     def test_get_all_schemes_milestone_revisions_by_authority(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+        self, schemes: DatabaseSchemeRepository, engine: Engine
     ) -> None:
         with engine.begin() as connection:
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_milestone"]).values(
+                insert(scheme_milestone_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=None,
@@ -504,12 +475,12 @@ class TestDatabaseSchemeRepository:
                 )
             )
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=1
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_milestone"]).values(
+                insert(scheme_milestone_table).values(
                     capital_scheme_id=2,
                     effective_date_from=date(2020, 2, 1),
                     effective_date_to=None,
@@ -519,12 +490,12 @@ class TestDatabaseSchemeRepository:
                 )
             )
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=3, scheme_name="Hospital Fields Road", bid_submitting_authority_id=2
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_milestone"]).values(
+                insert(scheme_milestone_table).values(
                     capital_scheme_id=3,
                     effective_date_from=date(2020, 3, 1),
                     effective_date_to=None,
@@ -556,16 +527,16 @@ class TestDatabaseSchemeRepository:
         ]
 
     def test_get_all_schemes_output_revisions_by_authority(
-        self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData
+        self, schemes: DatabaseSchemeRepository, engine: Engine
     ) -> None:
         with engine.begin() as connection:
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_intervention"]).values(
+                insert(scheme_intervention_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=None,
@@ -575,12 +546,12 @@ class TestDatabaseSchemeRepository:
                 )
             )
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=1
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_intervention"]).values(
+                insert(scheme_intervention_table).values(
                     capital_scheme_id=2,
                     effective_date_from=date(2020, 2, 1),
                     effective_date_to=None,
@@ -590,12 +561,12 @@ class TestDatabaseSchemeRepository:
                 )
             )
             connection.execute(
-                insert(metadata.tables["capital_scheme"]).values(
+                insert(capital_scheme_table).values(
                     capital_scheme_id=3, scheme_name="Hospital Fields Road", bid_submitting_authority_id=2
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_intervention"]).values(
+                insert(scheme_intervention_table).values(
                     capital_scheme_id=3,
                     effective_date_from=date(2020, 3, 1),
                     effective_date_to=None,
@@ -626,8 +597,7 @@ class TestDatabaseSchemeRepository:
             ),
         ]
 
-    def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine, metadata: MetaData) -> None:
-        capital_scheme_table = metadata.tables["capital_scheme"]
+    def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with engine.begin() as connection:
             connection.execute(
                 insert(capital_scheme_table).values(
@@ -635,7 +605,7 @@ class TestDatabaseSchemeRepository:
                 )
             )
             connection.execute(
-                insert(metadata.tables["capital_scheme_financial"]).values(
+                insert(capital_scheme_financial_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=None,
@@ -645,7 +615,7 @@ class TestDatabaseSchemeRepository:
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_milestone"]).values(
+                insert(scheme_milestone_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=None,
@@ -655,7 +625,7 @@ class TestDatabaseSchemeRepository:
                 )
             )
             connection.execute(
-                insert(metadata.tables["scheme_intervention"]).values(
+                insert(scheme_intervention_table).values(
                     capital_scheme_id=1,
                     effective_date_from=date(2020, 1, 1),
                     effective_date_to=None,

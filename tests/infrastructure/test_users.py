@@ -1,5 +1,5 @@
 import pytest
-from sqlalchemy import Engine, select
+from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session
 
 from schemes.domain.authorities import Authority
@@ -60,5 +60,5 @@ class TestDatabaseUserRepository:
 
         users.clear()
 
-        assert not users.get_by_email("boardman@example.com")
-        assert not users.get_by_email("obree@example.com")
+        with Session(engine) as session:
+            assert session.execute(select(func.count()).select_from(UserEntity)).scalar_one() == 0

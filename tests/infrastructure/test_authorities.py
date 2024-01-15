@@ -1,5 +1,5 @@
 import pytest
-from sqlalchemy import Engine, select
+from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session
 
 from schemes.domain.authorities import Authority
@@ -52,4 +52,5 @@ class TestDatabaseAuthorityRepository:
 
         authorities.clear()
 
-        assert not authorities.get(1)
+        with Session(engine) as session:
+            assert session.execute(select(func.count()).select_from(AuthorityEntity)).scalar_one() == 0

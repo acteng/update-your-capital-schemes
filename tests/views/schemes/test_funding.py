@@ -149,6 +149,7 @@ class TestDataSourceRepr:
             ("ATF4e Moderation", DataSource.ATF4E_MODERATION),
             ("Pulse 2023/24 Q2", DataSource.PULSE_2023_24_Q2),
             ("Initial Scheme List", DataSource.INITIAL_SCHEME_LIST),
+            ("Pulse 2023/24 Q2 Data Cleanse", DataSource.PULSE_2023_24_Q2_DATA_CLEANSE),
         ],
     )
     def test_to_domain(self, data_source: str, expected_data_source: DataSource) -> None:

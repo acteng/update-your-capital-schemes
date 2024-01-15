@@ -31,6 +31,7 @@ class DataSourceMapper:
         DataSource.ATF4E_MODERATION: 10,
         DataSource.PULSE_2023_24_Q2: 11,
         DataSource.INITIAL_SCHEME_LIST: 12,
+        DataSource.PULSE_2023_24_Q2_DATA_CLEANSE: 13,
     }
 
     def to_id(self, data_source: DataSource) -> int:

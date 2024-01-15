@@ -113,3 +113,4 @@ class DataSource(Enum):
     ATF4E_MODERATION = auto()
     PULSE_2023_24_Q2 = auto()
     INITIAL_SCHEME_LIST = auto()
+    PULSE_2023_24_Q2_DATA_CLEANSE = auto()

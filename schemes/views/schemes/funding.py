@@ -83,6 +83,7 @@ class DataSourceRepr(Enum):
     ATF4E_MODERATION = "ATF4e Moderation"
     PULSE_2023_24_Q2 = "Pulse 2023/24 Q2"
     INITIAL_SCHEME_LIST = "Initial Scheme List"
+    PULSE_2023_24_Q2_DATA_CLEANSE = "Pulse 2023/24 Q2 Data Cleanse"
 
     def to_domain(self) -> DataSource:
         members = {
@@ -98,5 +99,6 @@ class DataSourceRepr(Enum):
             DataSourceRepr.ATF4E_MODERATION: DataSource.ATF4E_MODERATION,
             DataSourceRepr.PULSE_2023_24_Q2: DataSource.PULSE_2023_24_Q2,
             DataSourceRepr.INITIAL_SCHEME_LIST: DataSource.INITIAL_SCHEME_LIST,
+            DataSourceRepr.PULSE_2023_24_Q2_DATA_CLEANSE: DataSource.PULSE_2023_24_Q2_DATA_CLEANSE,
         }
         return members[self]

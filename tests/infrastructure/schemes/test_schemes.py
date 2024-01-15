@@ -616,7 +616,7 @@ class TestDatabaseSchemeRepository:
         schemes.clear()
 
         with Session(engine) as session:
-            count = session.execute(select(func.count()).select_from(CapitalSchemeEntity)).scalar()
+            count = session.execute(select(func.count()).select_from(CapitalSchemeEntity)).scalar_one()
         assert count == 0
 
 

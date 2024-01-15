@@ -1,8 +1,9 @@
 import inject
-from sqlalchemy import Engine, delete, insert, select
+from sqlalchemy import Engine, delete, select
+from sqlalchemy.orm import Session, raiseload
 
 from schemes.domain.authorities import Authority, AuthorityRepository
-from schemes.infrastructure import authority_table
+from schemes.infrastructure import AuthorityEntity
 
 
 class DatabaseAuthorityRepository(AuthorityRepository):
@@ -11,18 +12,21 @@ class DatabaseAuthorityRepository(AuthorityRepository):
         self._engine = engine
 
     def add(self, *authorities: Authority) -> None:
-        with self._engine.begin() as connection:
-            for authority in authorities:
-                connection.execute(
-                    insert(authority_table).values(authority_id=authority.id, authority_name=authority.name)
-                )
+        with Session(self._engine) as session:
+            session.add_all(
+                AuthorityEntity(authority_id=authority.id, authority_name=authority.name) for authority in authorities
+            )
+            session.commit()
 
     def clear(self) -> None:
-        with self._engine.begin() as connection:
-            connection.execute(delete(authority_table))
+        with Session(self._engine) as session:
+            session.execute(delete(AuthorityEntity))
+            session.commit()
 
     def get(self, id_: int) -> Authority | None:
-        with self._engine.connect() as connection:
-            result = connection.execute(select(authority_table).where(authority_table.c.authority_id == id_))
+        with Session(self._engine) as session:
+            result = session.scalars(
+                select(AuthorityEntity).options(raiseload("*")).where(AuthorityEntity.authority_id == id_)
+            )
             row = result.one_or_none()
             return Authority(id_=row.authority_id, name=row.authority_name) if row else None

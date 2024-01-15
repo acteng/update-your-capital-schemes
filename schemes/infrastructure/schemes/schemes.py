@@ -1,7 +1,6 @@
-from typing import Any
-
 import inject
-from sqlalchemy import Engine, Row, delete, insert, select
+from sqlalchemy import Engine, delete, select
+from sqlalchemy.orm import Session, selectinload
 
 from schemes.domain.schemes import (
     DateRange,
@@ -14,10 +13,10 @@ from schemes.domain.schemes import (
     SchemeType,
 )
 from schemes.infrastructure import (
-    capital_scheme_financial_table,
-    capital_scheme_table,
-    scheme_intervention_table,
-    scheme_milestone_table,
+    CapitalSchemeEntity,
+    CapitalSchemeFinancialEntity,
+    SchemeInterventionEntity,
+    SchemeMilestoneEntity,
 )
 from schemes.infrastructure.schemes.funding import DataSourceMapper, FinancialTypeMapper
 from schemes.infrastructure.schemes.milestones import MilestoneMapper
@@ -38,32 +37,26 @@ class DatabaseSchemeRepository(SchemeRepository):
         self._output_type_measure_mapper = OutputTypeMeasureMapper()
 
     def add(self, *schemes: Scheme) -> None:
-        with self._engine.begin() as connection:
-            for scheme in schemes:
-                connection.execute(
-                    insert(capital_scheme_table).values(
-                        capital_scheme_id=scheme.id,
-                        scheme_name=scheme.name,
-                        bid_submitting_authority_id=scheme.authority_id,
-                        scheme_type_id=self._scheme_type_mapper.to_id(scheme.type),
-                        funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
-                    )
-                )
-                for financial_revision in scheme.funding.financial_revisions:
-                    connection.execute(
-                        insert(capital_scheme_financial_table).values(
-                            capital_scheme_id=scheme.id,
+        with Session(self._engine) as session:
+            session.add_all(
+                CapitalSchemeEntity(
+                    capital_scheme_id=scheme.id,
+                    scheme_name=scheme.name,
+                    bid_submitting_authority_id=scheme.authority_id,
+                    scheme_type_id=self._scheme_type_mapper.to_id(scheme.type),
+                    funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
+                    capital_scheme_financials=[
+                        CapitalSchemeFinancialEntity(
                             effective_date_from=financial_revision.effective.date_from,
                             effective_date_to=financial_revision.effective.date_to,
                             financial_type_id=self._financial_type_mapper.to_id(financial_revision.type),
                             amount=financial_revision.amount,
                             data_source_id=self._data_source_mapper.to_id(financial_revision.source),
                         )
-                    )
-                for milestone_revision in scheme.milestones.milestone_revisions:
-                    connection.execute(
-                        insert(scheme_milestone_table).values(
-                            capital_scheme_id=scheme.id,
+                        for financial_revision in scheme.funding.financial_revisions
+                    ],
+                    scheme_milestones=[
+                        SchemeMilestoneEntity(
                             effective_date_from=milestone_revision.effective.date_from,
                             effective_date_to=milestone_revision.effective.date_to,
                             milestone_id=self._milestone_mapper.to_id(milestone_revision.milestone),
@@ -72,11 +65,10 @@ class DatabaseSchemeRepository(SchemeRepository):
                             ),
                             status_date=milestone_revision.status_date,
                         )
-                    )
-                for output_revision in scheme.outputs.output_revisions:
-                    connection.execute(
-                        insert(scheme_intervention_table).values(
-                            capital_scheme_id=scheme.id,
+                        for milestone_revision in scheme.milestones.milestone_revisions
+                    ],
+                    scheme_interventions=[
+                        SchemeInterventionEntity(
                             effective_date_from=output_revision.effective.date_from,
                             effective_date_to=output_revision.effective.date_to,
                             intervention_type_measure_id=self._output_type_measure_mapper.to_id(
@@ -85,112 +77,87 @@ class DatabaseSchemeRepository(SchemeRepository):
                             intervention_value=output_revision.value,
                             observation_type_id=self._observation_type_mapper.to_id(output_revision.observation_type),
                         )
-                    )
+                        for output_revision in scheme.outputs.output_revisions
+                    ],
+                )
+                for scheme in schemes
+            )
+            session.commit()
 
     def clear(self) -> None:
-        with self._engine.begin() as connection:
-            connection.execute(delete(scheme_intervention_table))
-            connection.execute(delete(scheme_milestone_table))
-            connection.execute(delete(capital_scheme_financial_table))
-            connection.execute(delete(capital_scheme_table))
+        with Session(self._engine) as session:
+            session.execute(delete(SchemeInterventionEntity))
+            session.execute(delete(SchemeMilestoneEntity))
+            session.execute(delete(CapitalSchemeFinancialEntity))
+            session.execute(delete(CapitalSchemeEntity))
+            session.commit()
 
     def get(self, id_: int) -> Scheme | None:
-        with self._engine.connect() as connection:
-            result = connection.execute(
-                select(capital_scheme_table).where(capital_scheme_table.c.capital_scheme_id == id_)
+        with Session(self._engine) as session:
+            result = session.scalars(
+                select(CapitalSchemeEntity)
+                .options(selectinload("*"))
+                .where(CapitalSchemeEntity.capital_scheme_id == id_)
             )
             row = result.one_or_none()
-            scheme = self._capital_scheme_to_domain(row) if row else None
-
-            if scheme:
-                result = connection.execute(
-                    select(capital_scheme_financial_table).where(
-                        capital_scheme_financial_table.c.capital_scheme_id == id_
-                    )
-                )
-                for row in result:
-                    scheme.funding.update_financial(self._capital_scheme_financial_to_domain(row))
-
-                result = connection.execute(
-                    select(scheme_milestone_table).where(scheme_milestone_table.c.capital_scheme_id == id_)
-                )
-                for row in result:
-                    scheme.milestones.update_milestone(self._scheme_milestone_to_domain(row))
-
-                result = connection.execute(
-                    select(scheme_intervention_table).where(scheme_intervention_table.c.capital_scheme_id == id_)
-                )
-                for row in result:
-                    scheme.outputs.update_output(self._scheme_intervention_to_domain(row))
-
-            return scheme
+            return self._capital_scheme_to_domain(row) if row else None
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
-        with self._engine.connect() as connection:
-            result = connection.execute(
-                select(capital_scheme_table)
-                .where(capital_scheme_table.c.bid_submitting_authority_id == authority_id)
-                .order_by(capital_scheme_table.c.capital_scheme_id)
+        with Session(self._engine) as session:
+            result = session.scalars(
+                select(CapitalSchemeEntity)
+                .options(selectinload("*"))
+                .where(CapitalSchemeEntity.bid_submitting_authority_id == authority_id)
+                .order_by(CapitalSchemeEntity.capital_scheme_id)
             )
-            schemes = [self._capital_scheme_to_domain(row) for row in result]
+            return [self._capital_scheme_to_domain(row) for row in result]
 
-            result = connection.execute(
-                select(capital_scheme_financial_table)
-                .join(capital_scheme_table)
-                .where(capital_scheme_table.c.bid_submitting_authority_id == authority_id)
-            )
-            for row in result:
-                scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
-                scheme.funding.update_financial(self._capital_scheme_financial_to_domain(row))
+    def _capital_scheme_to_domain(self, capital_scheme: CapitalSchemeEntity) -> Scheme:
+        scheme = Scheme(
+            id_=capital_scheme.capital_scheme_id,
+            name=capital_scheme.scheme_name,
+            authority_id=capital_scheme.bid_submitting_authority_id,
+        )
+        scheme.type = self._scheme_type_mapper.to_domain(capital_scheme.scheme_type_id)
+        scheme.funding_programme = self._funding_programme_mapper.to_domain(capital_scheme.funding_programme_id)
 
-            result = connection.execute(
-                select(scheme_milestone_table)
-                .join(capital_scheme_table)
-                .where(capital_scheme_table.c.bid_submitting_authority_id == authority_id)
-            )
-            for row in result:
-                scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
-                scheme.milestones.update_milestone(self._scheme_milestone_to_domain(row))
+        for capital_scheme_financial in capital_scheme.capital_scheme_financials:
+            scheme.funding.update_financial(self._capital_scheme_financial_to_domain(capital_scheme_financial))
 
-            result = connection.execute(
-                select(scheme_intervention_table)
-                .join(capital_scheme_table)
-                .where(capital_scheme_table.c.bid_submitting_authority_id == authority_id)
-            )
-            for row in result:
-                scheme = next((scheme for scheme in schemes if scheme.id == row.capital_scheme_id))
-                scheme.outputs.update_output(self._scheme_intervention_to_domain(row))
+        for scheme_milestone in capital_scheme.scheme_milestones:
+            scheme.milestones.update_milestone(self._scheme_milestone_to_domain(scheme_milestone))
 
-            return schemes
+        for scheme_intervention in capital_scheme.scheme_interventions:
+            scheme.outputs.update_output(self._scheme_intervention_to_domain(scheme_intervention))
 
-    def _capital_scheme_to_domain(self, row: Row[Any]) -> Scheme:
-        scheme = Scheme(id_=row.capital_scheme_id, name=row.scheme_name, authority_id=row.bid_submitting_authority_id)
-        scheme.type = self._scheme_type_mapper.to_domain(row.scheme_type_id)
-        scheme.funding_programme = self._funding_programme_mapper.to_domain(row.funding_programme_id)
         return scheme
 
-    def _capital_scheme_financial_to_domain(self, row: Row[Any]) -> FinancialRevision:
+    def _capital_scheme_financial_to_domain(
+        self, capital_scheme_financial: CapitalSchemeFinancialEntity
+    ) -> FinancialRevision:
         return FinancialRevision(
-            effective=DateRange(row.effective_date_from, row.effective_date_to),
-            type=self._financial_type_mapper.to_domain(row.financial_type_id),
-            amount=row.amount,
-            source=self._data_source_mapper.to_domain(row.data_source_id),
+            effective=DateRange(
+                capital_scheme_financial.effective_date_from, capital_scheme_financial.effective_date_to
+            ),
+            type=self._financial_type_mapper.to_domain(capital_scheme_financial.financial_type_id),
+            amount=capital_scheme_financial.amount,
+            source=self._data_source_mapper.to_domain(capital_scheme_financial.data_source_id),
         )
 
-    def _scheme_milestone_to_domain(self, row: Row[Any]) -> MilestoneRevision:
+    def _scheme_milestone_to_domain(self, scheme_milestone: SchemeMilestoneEntity) -> MilestoneRevision:
         return MilestoneRevision(
-            effective=DateRange(row.effective_date_from, row.effective_date_to),
-            milestone=self._milestone_mapper.to_domain(row.milestone_id),
-            observation_type=self._observation_type_mapper.to_domain(row.observation_type_id),
-            status_date=row.status_date,
+            effective=DateRange(scheme_milestone.effective_date_from, scheme_milestone.effective_date_to),
+            milestone=self._milestone_mapper.to_domain(scheme_milestone.milestone_id),
+            observation_type=self._observation_type_mapper.to_domain(scheme_milestone.observation_type_id),
+            status_date=scheme_milestone.status_date,
         )
 
-    def _scheme_intervention_to_domain(self, row: Row[Any]) -> OutputRevision:
+    def _scheme_intervention_to_domain(self, scheme_intervention: SchemeInterventionEntity) -> OutputRevision:
         return OutputRevision(
-            effective=DateRange(row.effective_date_from, row.effective_date_to),
-            type_measure=self._output_type_measure_mapper.to_domain(row.intervention_type_measure_id),
-            value=row.intervention_value,
-            observation_type=self._observation_type_mapper.to_domain(row.observation_type_id),
+            effective=DateRange(scheme_intervention.effective_date_from, scheme_intervention.effective_date_to),
+            type_measure=self._output_type_measure_mapper.to_domain(scheme_intervention.intervention_type_measure_id),
+            value=scheme_intervention.intervention_value,
+            observation_type=self._observation_type_mapper.to_domain(scheme_intervention.observation_type_id),
         )
 
 

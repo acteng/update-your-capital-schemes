@@ -1,95 +1,85 @@
-from sqlalchemy import (
-    Column,
-    Date,
-    ForeignKey,
-    Integer,
-    MetaData,
-    Numeric,
-    String,
-    Table,
-    Text,
-)
+from __future__ import annotations
 
-metadata = MetaData()
+from datetime import date
+from decimal import Decimal
 
-authority_table = Table(
-    "authority",
-    metadata,
-    Column("authority_id", Integer, primary_key=True),
-    Column("authority_name", Text, nullable=False, unique=True),
-)
+from sqlalchemy import ForeignKey, Numeric, String, Text
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-user_table = Table(
-    "user",
-    metadata,
-    Column("user_id", Integer, primary_key=True),
-    Column("email", String(length=256), nullable=False, unique=True),
-    Column(
-        "authority_id", Integer, ForeignKey("authority.authority_id", name="user_authority_id_fkey"), nullable=False
-    ),
-)
 
-capital_scheme_table = Table(
-    "capital_scheme",
-    metadata,
-    Column("capital_scheme_id", Integer, primary_key=True),
-    Column("scheme_name", Text, nullable=False),
-    Column(
-        "bid_submitting_authority_id",
-        Integer,
-        ForeignKey("authority.authority_id", name="capital_scheme_bid_submitting_authority_id_fkey"),
-    ),
-    Column("scheme_type_id", Integer),
-    Column("funding_programme_id", Integer),
-)
+class Base(DeclarativeBase):
+    pass
 
-capital_scheme_financial_table = Table(
-    "capital_scheme_financial",
-    metadata,
-    Column("capital_scheme_financial_id", Integer, primary_key=True),
-    Column(
-        "capital_scheme_id",
-        Integer,
+
+class AuthorityEntity(Base):
+    __tablename__ = "authority"
+
+    authority_id: Mapped[int] = mapped_column(primary_key=True)
+    authority_name: Mapped[str] = mapped_column(Text, unique=True)
+
+
+class UserEntity(Base):
+    __tablename__ = "user"
+
+    user_id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(length=256), unique=True)
+    authority_id = mapped_column(ForeignKey("authority.authority_id", name="user_authority_id_fkey"), nullable=False)
+
+
+class CapitalSchemeEntity(Base):
+    __tablename__ = "capital_scheme"
+
+    capital_scheme_id: Mapped[int] = mapped_column(primary_key=True)
+    scheme_name: Mapped[str] = mapped_column(Text)
+    bid_submitting_authority_id = mapped_column(
+        ForeignKey("authority.authority_id", name="capital_scheme_bid_submitting_authority_id_fkey")
+    )
+    scheme_type_id: Mapped[int | None]
+    funding_programme_id: Mapped[int | None]
+    capital_scheme_financials: Mapped[list[CapitalSchemeFinancialEntity]] = relationship()
+    scheme_milestones: Mapped[list[SchemeMilestoneEntity]] = relationship()
+    scheme_interventions: Mapped[list[SchemeInterventionEntity]] = relationship()
+
+
+class CapitalSchemeFinancialEntity(Base):
+    __tablename__ = "capital_scheme_financial"
+
+    capital_scheme_financial_id: Mapped[int] = mapped_column(primary_key=True)
+    capital_scheme_id = mapped_column(
         ForeignKey("capital_scheme.capital_scheme_id", name="capital_scheme_financial_capital_scheme_id_fkey"),
         nullable=False,
-    ),
-    Column("financial_type_id", Integer, nullable=False),
-    Column("amount", Integer, nullable=False),
-    Column("effective_date_from", Date, nullable=False),
-    Column("effective_date_to", Date),
-    Column("data_source_id", Integer, nullable=False),
-)
+    )
+    financial_type_id: Mapped[int]
+    amount: Mapped[int]
+    effective_date_from: Mapped[date]
+    effective_date_to: Mapped[date | None]
+    data_source_id: Mapped[int]
 
-scheme_milestone_table = Table(
-    "scheme_milestone",
-    metadata,
-    Column("scheme_milestone_id", Integer, primary_key=True),
-    Column(
-        "capital_scheme_id",
-        Integer,
-        ForeignKey("capital_scheme.capital_scheme_id", name="scheme_milestone_capital_scheme_id_fkey"),
-        nullable=False,
-    ),
-    Column("milestone_id", Integer, nullable=False),
-    Column("status_date", Date, nullable=False),
-    Column("observation_type_id", Integer, nullable=False),
-    Column("effective_date_from", Date, nullable=False),
-    Column("effective_date_to", Date),
-)
 
-scheme_intervention_table = Table(
-    "scheme_intervention",
-    metadata,
-    Column("scheme_intervention_id", Integer, primary_key=True),
-    Column("intervention_type_measure_id", Integer, nullable=False),
-    Column(
-        "capital_scheme_id",
-        Integer,
+class SchemeMilestoneEntity(Base):
+    __tablename__ = "scheme_milestone"
+
+    scheme_milestone_id: Mapped[int] = mapped_column(primary_key=True)
+    capital_scheme_id = mapped_column(
+        ForeignKey("capital_scheme.capital_scheme_id", name="scheme_milestone_capital_scheme_id_fkey"), nullable=False
+    )
+    milestone_id: Mapped[int]
+    status_date: Mapped[date]
+    observation_type_id: Mapped[int]
+    effective_date_from: Mapped[date]
+    effective_date_to: Mapped[date | None]
+
+
+class SchemeInterventionEntity(Base):
+    __tablename__ = "scheme_intervention"
+
+    scheme_intervention_id: Mapped[int] = mapped_column(primary_key=True)
+    intervention_type_measure_id: Mapped[int]
+    capital_scheme_id = mapped_column(
         ForeignKey("capital_scheme.capital_scheme_id", name="scheme_intervention_capital_scheme_id_fkey"),
         nullable=False,
-    ),
-    Column("intervention_value", Numeric(precision=15, scale=6), nullable=False),
-    Column("observation_type_id", Integer, nullable=False),
-    Column("effective_date_from", Date, nullable=False),
-    Column("effective_date_to", Date),
-)
+    )
+    intervention_value: Mapped[Decimal] = mapped_column(Numeric(precision=15, scale=6))
+    observation_type_id: Mapped[int]
+    effective_date_from: Mapped[date]
+    effective_date_to: Mapped[date | None]

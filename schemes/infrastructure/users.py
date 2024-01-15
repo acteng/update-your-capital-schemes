@@ -1,8 +1,9 @@
 import inject
-from sqlalchemy import Engine, delete, insert, select
+from sqlalchemy import Engine, delete, select
+from sqlalchemy.orm import Session, raiseload
 
 from schemes.domain.users import User, UserRepository
-from schemes.infrastructure import user_table
+from schemes.infrastructure import UserEntity
 
 
 class DatabaseUserRepository(UserRepository):
@@ -11,16 +12,17 @@ class DatabaseUserRepository(UserRepository):
         self._engine = engine
 
     def add(self, *users: User) -> None:
-        with self._engine.begin() as connection:
-            for user in users:
-                connection.execute(insert(user_table).values(email=user.email, authority_id=user.authority_id))
+        with Session(self._engine) as session:
+            session.add_all(UserEntity(email=user.email, authority_id=user.authority_id) for user in users)
+            session.commit()
 
     def clear(self) -> None:
-        with self._engine.begin() as connection:
-            connection.execute(delete(user_table))
+        with Session(self._engine) as session:
+            session.execute(delete(UserEntity))
+            session.commit()
 
     def get_by_email(self, email: str) -> User | None:
-        with self._engine.connect() as connection:
-            result = connection.execute(select(user_table).where(user_table.c.email == email))
+        with Session(self._engine) as session:
+            result = session.scalars(select(UserEntity).options(raiseload("*")).where(UserEntity.email == email))
             row = result.one_or_none()
             return User(email=row.email, authority_id=row.authority_id) if row else None

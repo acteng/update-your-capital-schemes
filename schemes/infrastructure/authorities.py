@@ -1,6 +1,6 @@
 import inject
-from sqlalchemy import Engine, delete, select
-from sqlalchemy.orm import Session, raiseload
+from sqlalchemy import Engine, delete
+from sqlalchemy.orm import Session
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.infrastructure import AuthorityEntity
@@ -25,8 +25,5 @@ class DatabaseAuthorityRepository(AuthorityRepository):
 
     def get(self, id_: int) -> Authority | None:
         with Session(self._engine) as session:
-            result = session.scalars(
-                select(AuthorityEntity).options(raiseload("*")).where(AuthorityEntity.authority_id == id_)
-            )
-            row = result.one_or_none()
+            row = session.get(AuthorityEntity, id_)
             return Authority(id_=row.authority_id, name=row.authority_name) if row else None

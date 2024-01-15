@@ -1,6 +1,6 @@
 import inject
 from sqlalchemy import Engine, delete, select
-from sqlalchemy.orm import Session, raiseload
+from sqlalchemy.orm import Session
 
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure import UserEntity
@@ -23,6 +23,6 @@ class DatabaseUserRepository(UserRepository):
 
     def get_by_email(self, email: str) -> User | None:
         with Session(self._engine) as session:
-            result = session.scalars(select(UserEntity).options(raiseload("*")).where(UserEntity.email == email))
+            result = session.scalars(select(UserEntity).where(UserEntity.email == email))
             row = result.one_or_none()
             return User(email=row.email, authority_id=row.authority_id) if row else None

@@ -616,8 +616,7 @@ class TestDatabaseSchemeRepository:
         schemes.clear()
 
         with Session(engine) as session:
-            count = session.execute(select(func.count()).select_from(CapitalSchemeEntity)).scalar_one()
-        assert count == 0
+            assert session.execute(select(func.count()).select_from(CapitalSchemeEntity)).scalar_one() == 0
 
 
 @pytest.mark.parametrize("type_, id_", [(SchemeType.DEVELOPMENT, 1), (SchemeType.CONSTRUCTION, 2), (None, None)])

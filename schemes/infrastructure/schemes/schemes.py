@@ -38,50 +38,7 @@ class DatabaseSchemeRepository(SchemeRepository):
 
     def add(self, *schemes: Scheme) -> None:
         with Session(self._engine) as session:
-            session.add_all(
-                CapitalSchemeEntity(
-                    capital_scheme_id=scheme.id,
-                    scheme_name=scheme.name,
-                    bid_submitting_authority_id=scheme.authority_id,
-                    scheme_type_id=self._scheme_type_mapper.to_id(scheme.type),
-                    funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
-                    capital_scheme_financials=[
-                        CapitalSchemeFinancialEntity(
-                            effective_date_from=financial_revision.effective.date_from,
-                            effective_date_to=financial_revision.effective.date_to,
-                            financial_type_id=self._financial_type_mapper.to_id(financial_revision.type),
-                            amount=financial_revision.amount,
-                            data_source_id=self._data_source_mapper.to_id(financial_revision.source),
-                        )
-                        for financial_revision in scheme.funding.financial_revisions
-                    ],
-                    scheme_milestones=[
-                        SchemeMilestoneEntity(
-                            effective_date_from=milestone_revision.effective.date_from,
-                            effective_date_to=milestone_revision.effective.date_to,
-                            milestone_id=self._milestone_mapper.to_id(milestone_revision.milestone),
-                            observation_type_id=self._observation_type_mapper.to_id(
-                                milestone_revision.observation_type
-                            ),
-                            status_date=milestone_revision.status_date,
-                        )
-                        for milestone_revision in scheme.milestones.milestone_revisions
-                    ],
-                    scheme_interventions=[
-                        SchemeInterventionEntity(
-                            effective_date_from=output_revision.effective.date_from,
-                            effective_date_to=output_revision.effective.date_to,
-                            intervention_type_measure_id=self._output_type_measure_mapper.to_id(
-                                output_revision.type_measure
-                            ),
-                            intervention_value=output_revision.value,
-                            observation_type_id=self._observation_type_mapper.to_id(output_revision.observation_type),
-                        )
-                        for output_revision in scheme.outputs.output_revisions
-                    ],
-                )
-                for scheme in schemes
-            )
+            session.add_all(self._capital_scheme_from_domain(scheme) for scheme in schemes)
             session.commit()
 
     def clear(self) -> None:
@@ -112,6 +69,27 @@ class DatabaseSchemeRepository(SchemeRepository):
             )
             return [self._capital_scheme_to_domain(row) for row in result]
 
+    def _capital_scheme_from_domain(self, scheme: Scheme) -> CapitalSchemeEntity:
+        return CapitalSchemeEntity(
+            capital_scheme_id=scheme.id,
+            scheme_name=scheme.name,
+            bid_submitting_authority_id=scheme.authority_id,
+            scheme_type_id=self._scheme_type_mapper.to_id(scheme.type),
+            funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
+            capital_scheme_financials=[
+                self._capital_scheme_financial_from_domain(financial_revision)
+                for financial_revision in scheme.funding.financial_revisions
+            ],
+            scheme_milestones=[
+                self._scheme_milestone_from_domain(milestone_revision)
+                for milestone_revision in scheme.milestones.milestone_revisions
+            ],
+            scheme_interventions=[
+                self._scheme_intervention_from_domain(output_revision)
+                for output_revision in scheme.outputs.output_revisions
+            ],
+        )
+
     def _capital_scheme_to_domain(self, capital_scheme: CapitalSchemeEntity) -> Scheme:
         scheme = Scheme(
             id_=capital_scheme.capital_scheme_id,
@@ -132,6 +110,17 @@ class DatabaseSchemeRepository(SchemeRepository):
 
         return scheme
 
+    def _capital_scheme_financial_from_domain(
+        self, financial_revision: FinancialRevision
+    ) -> CapitalSchemeFinancialEntity:
+        return CapitalSchemeFinancialEntity(
+            effective_date_from=financial_revision.effective.date_from,
+            effective_date_to=financial_revision.effective.date_to,
+            financial_type_id=self._financial_type_mapper.to_id(financial_revision.type),
+            amount=financial_revision.amount,
+            data_source_id=self._data_source_mapper.to_id(financial_revision.source),
+        )
+
     def _capital_scheme_financial_to_domain(
         self, capital_scheme_financial: CapitalSchemeFinancialEntity
     ) -> FinancialRevision:
@@ -144,12 +133,30 @@ class DatabaseSchemeRepository(SchemeRepository):
             source=self._data_source_mapper.to_domain(capital_scheme_financial.data_source_id),
         )
 
+    def _scheme_milestone_from_domain(self, milestone_revision: MilestoneRevision) -> SchemeMilestoneEntity:
+        return SchemeMilestoneEntity(
+            effective_date_from=milestone_revision.effective.date_from,
+            effective_date_to=milestone_revision.effective.date_to,
+            milestone_id=self._milestone_mapper.to_id(milestone_revision.milestone),
+            observation_type_id=self._observation_type_mapper.to_id(milestone_revision.observation_type),
+            status_date=milestone_revision.status_date,
+        )
+
     def _scheme_milestone_to_domain(self, scheme_milestone: SchemeMilestoneEntity) -> MilestoneRevision:
         return MilestoneRevision(
             effective=DateRange(scheme_milestone.effective_date_from, scheme_milestone.effective_date_to),
             milestone=self._milestone_mapper.to_domain(scheme_milestone.milestone_id),
             observation_type=self._observation_type_mapper.to_domain(scheme_milestone.observation_type_id),
             status_date=scheme_milestone.status_date,
+        )
+
+    def _scheme_intervention_from_domain(self, output_revision: OutputRevision) -> SchemeInterventionEntity:
+        return SchemeInterventionEntity(
+            effective_date_from=output_revision.effective.date_from,
+            effective_date_to=output_revision.effective.date_to,
+            intervention_type_measure_id=self._output_type_measure_mapper.to_id(output_revision.type_measure),
+            intervention_value=output_revision.value,
+            observation_type_id=self._observation_type_mapper.to_id(output_revision.observation_type),
         )
 
     def _scheme_intervention_to_domain(self, scheme_intervention: SchemeInterventionEntity) -> OutputRevision:

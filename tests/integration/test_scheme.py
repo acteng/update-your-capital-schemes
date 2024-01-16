@@ -63,9 +63,9 @@ def test_scheme_shows_minimal_overview(schemes: SchemeRepository, client: FlaskC
 
     assert (
         scheme_page.overview.reference == "ATE00001"
-        and scheme_page.overview.scheme_type == "N/A"
-        and scheme_page.overview.funding_programme == "N/A"
-        and scheme_page.overview.current_milestone == "N/A"
+        and scheme_page.overview.scheme_type == ""
+        and scheme_page.overview.funding_programme == ""
+        and scheme_page.overview.current_milestone == ""
     )
 
 

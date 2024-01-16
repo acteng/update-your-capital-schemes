@@ -66,9 +66,9 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
     scheme_page = SchemePage.open(page, id_=1)
 
     assert scheme_page.milestones.milestones.to_dicts() == [
-        {"milestone": "Feasibility design completed", "planned": "N/A", "actual": "30/11/2020"},
-        {"milestone": "Preliminary design completed", "planned": "N/A", "actual": "30/06/2022"},
-        {"milestone": "Detailed design completed", "planned": "N/A", "actual": "30/06/2022"},
-        {"milestone": "Construction started", "planned": "05/06/2023", "actual": "N/A"},
-        {"milestone": "Construction completed", "planned": "31/08/2023", "actual": "N/A"},
+        {"milestone": "Feasibility design completed", "planned": "N/A", "actual": "30 Nov 2020"},
+        {"milestone": "Preliminary design completed", "planned": "N/A", "actual": "30 Jun 2022"},
+        {"milestone": "Detailed design completed", "planned": "N/A", "actual": "30 Jun 2022"},
+        {"milestone": "Construction started", "planned": "5 Jun 2023", "actual": "N/A"},
+        {"milestone": "Construction completed", "planned": "31 Aug 2023", "actual": "N/A"},
     ]

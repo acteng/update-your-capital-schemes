@@ -107,7 +107,7 @@ class SchemeRowComponent:
         self.reference = reference.string
         reference_link = reference.select_one("a")
         self.reference_url = reference_link.get("href") if reference_link else None
-        self.funding_programme = cells[1].string
+        self.funding_programme = cells[1].string or ""
         self.name = cells[2].string
 
     def to_dict(self) -> dict[str, str | None]:

@@ -60,7 +60,7 @@ def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -
     assert schemes_page.schemes
     assert schemes_page.schemes.to_dicts() == [
         {"reference": "ATE00001", "funding_programme": "ATF3", "name": "Wirral Package"},
-        {"reference": "ATE00002", "funding_programme": "N/A", "name": "School Streets"},
+        {"reference": "ATE00002", "funding_programme": "", "name": "School Streets"},
     ]
     assert not schemes_page.is_no_schemes_message_visible
 

@@ -20,21 +20,21 @@
         {
             "key": {
                 "classes": "govuk-!-width-one-half",
-                "text": "Spend to date"
-            },
-            "value": {
-                "classes": "govuk-!-text-align-right",
-                "text": funding.spend_to_date | pounds if funding.spend_to_date is not none() else "N/A"
-            }
-        },
-        {
-            "key": {
-                "classes": "govuk-!-width-one-half",
                 "text": "Change control adjustment"
             },
             "value": {
                 "classes": "govuk-!-text-align-right",
                 "text": funding.change_control_adjustment | pounds if funding.change_control_adjustment is not none() else "N/A"
+            }
+        },
+        {
+            "key": {
+                "classes": "govuk-!-width-one-half",
+                "text": "Spend to date"
+            },
+            "value": {
+                "classes": "govuk-!-text-align-right",
+                "text": funding.spend_to_date | pounds if funding.spend_to_date is not none() else "N/A"
             }
         },
         {

@@ -100,8 +100,8 @@ def test_scheme_shows_minimal_funding(schemes: SchemeRepository, client: FlaskCl
 
     assert (
         scheme_page.funding.funding_allocation == "N/A"
-        and scheme_page.funding.spend_to_date == "N/A"
         and scheme_page.funding.change_control_adjustment == "N/A"
+        and scheme_page.funding.spend_to_date == "N/A"
         and scheme_page.funding.allocation_still_to_spend == "£0"
     )
 
@@ -117,15 +117,15 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
         ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
-            type=FinancialType.SPENT_TO_DATE,
-            amount=50_000,
-            source=DataSource.ATF4_BID,
-        ),
-        FinancialRevision(
-            effective=DateRange(date(2020, 1, 1), None),
             type=FinancialType.FUNDING_ALLOCATION,
             amount=10_000,
             source=DataSource.CHANGE_CONTROL,
+        ),
+        FinancialRevision(
+            effective=DateRange(date(2020, 1, 1), None),
+            type=FinancialType.SPENT_TO_DATE,
+            amount=50_000,
+            source=DataSource.ATF4_BID,
         ),
     )
     schemes.add(scheme)
@@ -134,8 +134,8 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
 
     assert (
         scheme_page.funding.funding_allocation == "£100,000"
-        and scheme_page.funding.spend_to_date == "£50,000"
         and scheme_page.funding.change_control_adjustment == "£10,000"
+        and scheme_page.funding.spend_to_date == "£50,000"
         and scheme_page.funding.allocation_still_to_spend == "£60,000"
     )
 
@@ -168,8 +168,8 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
 
     assert (
         scheme_page.funding.funding_allocation == "£0"
-        and scheme_page.funding.spend_to_date == "£0"
         and scheme_page.funding.change_control_adjustment == "£0"
+        and scheme_page.funding.spend_to_date == "£0"
         and scheme_page.funding.allocation_still_to_spend == "£0"
     )
 

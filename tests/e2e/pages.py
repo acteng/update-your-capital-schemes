@@ -196,8 +196,8 @@ class SchemeFundingComponent(SummaryCardComponent):
     def __init__(self, title: Locator):
         super().__init__(title)
         self._funding_allocation = self._get_definition("Funding allocation")
-        self._spend_to_date = self._get_definition("Spend to date")
         self._change_control_adjustment = self._get_definition("Change control adjustment")
+        self._spend_to_date = self._get_definition("Spend to date")
         self._allocation_still_to_spend = self._get_definition("Allocation still to spend")
 
     @property
@@ -205,12 +205,12 @@ class SchemeFundingComponent(SummaryCardComponent):
         return (self._funding_allocation.text_content() or "").strip()
 
     @property
-    def spend_to_date(self) -> str:
-        return (self._spend_to_date.text_content() or "").strip()
-
-    @property
     def change_control_adjustment(self) -> str:
         return (self._change_control_adjustment.text_content() or "").strip()
+
+    @property
+    def spend_to_date(self) -> str:
+        return (self._spend_to_date.text_content() or "").strip()
 
     @property
     def allocation_still_to_spend(self) -> str:

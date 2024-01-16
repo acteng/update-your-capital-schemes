@@ -47,11 +47,6 @@ class SchemeFunding:
         return next(amounts, None)
 
     @property
-    def spend_to_date(self) -> int | None:
-        amounts = (revision.amount for revision in self._financial_revisions if revision.is_current_spent_to_date)
-        return next(amounts, None)
-
-    @property
     def change_control_adjustment(self) -> int | None:
         amounts = [
             revision.amount
@@ -61,6 +56,11 @@ class SchemeFunding:
             and revision.effective.date_to is None
         ]
         return sum(amounts) if amounts else None
+
+    @property
+    def spend_to_date(self) -> int | None:
+        amounts = (revision.amount for revision in self._financial_revisions if revision.is_current_spent_to_date)
+        return next(amounts, None)
 
     @property
     def allocation_still_to_spend(self) -> int:

@@ -16,16 +16,16 @@ from schemes.domain.schemes import (
 @dataclass(frozen=True)
 class SchemeFundingContext:
     funding_allocation: int | None
-    spend_to_date: int | None
     change_control_adjustment: int | None
+    spend_to_date: int | None
     allocation_still_to_spend: int
 
     @classmethod
     def from_domain(cls, funding: SchemeFunding) -> SchemeFundingContext:
         return cls(
             funding_allocation=funding.funding_allocation,
-            spend_to_date=funding.spend_to_date,
             change_control_adjustment=funding.change_control_adjustment,
+            spend_to_date=funding.spend_to_date,
             allocation_still_to_spend=funding.allocation_still_to_spend,
         )
 

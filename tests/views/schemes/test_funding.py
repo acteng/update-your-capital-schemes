@@ -33,21 +33,6 @@ class TestSchemeFundingContext:
 
         assert context.funding_allocation == 100_000
 
-    def test_from_domain_sets_spend_to_date(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financial(
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.SPENT_TO_DATE,
-                amount=50_000,
-                source=DataSource.ATF4_BID,
-            )
-        )
-
-        context = SchemeFundingContext.from_domain(funding)
-
-        assert context.spend_to_date == 50_000
-
     def test_from_domain_sets_change_control_adjustment(self) -> None:
         funding = SchemeFunding()
         funding.update_financial(
@@ -62,6 +47,21 @@ class TestSchemeFundingContext:
         context = SchemeFundingContext.from_domain(funding)
 
         assert context.change_control_adjustment == 10_000
+
+    def test_from_domain_sets_spend_to_date(self) -> None:
+        funding = SchemeFunding()
+        funding.update_financial(
+            FinancialRevision(
+                effective=DateRange(date(2020, 1, 1), None),
+                type=FinancialType.SPENT_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        context = SchemeFundingContext.from_domain(funding)
+
+        assert context.spend_to_date == 50_000
 
     def test_from_domain_sets_allocation_still_to_spend(self) -> None:
         funding = SchemeFunding()

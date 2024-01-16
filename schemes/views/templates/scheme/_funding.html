@@ -14,7 +14,7 @@
             },
             "value": {
                 "classes": "govuk-!-text-align-right",
-                "text": funding.funding_allocation | pounds if funding.funding_allocation is not none() else "N/A"
+                "text": funding.funding_allocation | pounds if funding.funding_allocation is not none()
             }
         },
         {
@@ -24,7 +24,7 @@
             },
             "value": {
                 "classes": "govuk-!-text-align-right",
-                "text": funding.change_control_adjustment | pounds if funding.change_control_adjustment is not none() else "N/A"
+                "text": funding.change_control_adjustment | pounds if funding.change_control_adjustment is not none()
             }
         },
         {
@@ -34,7 +34,7 @@
             },
             "value": {
                 "classes": "govuk-!-text-align-right",
-                "text": funding.spend_to_date | pounds if funding.spend_to_date is not none() else "N/A"
+                "text": funding.spend_to_date | pounds if funding.spend_to_date is not none()
             }
         },
         {

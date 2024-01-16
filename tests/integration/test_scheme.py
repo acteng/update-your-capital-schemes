@@ -99,9 +99,9 @@ def test_scheme_shows_minimal_funding(schemes: SchemeRepository, client: FlaskCl
     scheme_page = SchemePage.open(client, id_=1)
 
     assert (
-        scheme_page.funding.funding_allocation == "N/A"
-        and scheme_page.funding.change_control_adjustment == "N/A"
-        and scheme_page.funding.spend_to_date == "N/A"
+        scheme_page.funding.funding_allocation == ""
+        and scheme_page.funding.change_control_adjustment == ""
+        and scheme_page.funding.spend_to_date == ""
         and scheme_page.funding.allocation_still_to_spend == "£0"
     )
 

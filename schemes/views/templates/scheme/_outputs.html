@@ -16,7 +16,7 @@
                         "text": output.measure.name
                     },
                     {
-                        "text": output.planned | remove_exponent if output.planned is not none() else "N/A",
+                        "text": output.planned | remove_exponent if output.planned is not none(),
                         "format": "numeric"
                     }
                 ]) %}

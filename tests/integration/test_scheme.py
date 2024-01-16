@@ -232,7 +232,7 @@ def test_scheme_shows_minimal_outputs(schemes: SchemeRepository, client: FlaskCl
 
     assert scheme_page.outputs.outputs
     outputs = list(scheme_page.outputs.outputs)
-    assert outputs[0].planned == "N/A"
+    assert outputs[0].planned == ""
 
 
 def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:

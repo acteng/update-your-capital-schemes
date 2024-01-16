@@ -253,7 +253,7 @@ class SchemeOutputRowComponent:
         cells = row.select("td")
         self.infrastructure = cells[0].string
         self.measurement = cells[1].string
-        self.planned = cells[2].string
+        self.planned = cells[2].string or ""
 
     def to_dict(self) -> dict[str, str | None]:
         return {

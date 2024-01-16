@@ -180,11 +180,11 @@ def test_scheme_shows_minimal_milestones(schemes: SchemeRepository, client: Flas
     scheme_page = SchemePage.open(client, id_=1)
 
     assert scheme_page.milestones.milestones.to_dicts() == [
-        {"milestone": "Feasibility design completed", "planned": "N/A", "actual": "N/A"},
-        {"milestone": "Preliminary design completed", "planned": "N/A", "actual": "N/A"},
-        {"milestone": "Detailed design completed", "planned": "N/A", "actual": "N/A"},
-        {"milestone": "Construction started", "planned": "N/A", "actual": "N/A"},
-        {"milestone": "Construction completed", "planned": "N/A", "actual": "N/A"},
+        {"milestone": "Feasibility design completed", "planned": "", "actual": ""},
+        {"milestone": "Preliminary design completed", "planned": "", "actual": ""},
+        {"milestone": "Detailed design completed", "planned": "", "actual": ""},
+        {"milestone": "Construction started", "planned": "", "actual": ""},
+        {"milestone": "Construction completed", "planned": "", "actual": ""},
     ]
 
 

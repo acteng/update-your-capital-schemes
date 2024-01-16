@@ -218,8 +218,8 @@ class SchemeMilestoneRowComponent:
         header = row.select_one("th")
         self.milestone = header.string if header else None
         cells = row.select("td")
-        self.planned = cells[0].string
-        self.actual = cells[1].string
+        self.planned = cells[0].string or ""
+        self.actual = cells[1].string or ""
 
     def to_dict(self) -> dict[str, str | None]:
         return {"milestone": self.milestone, "planned": self.planned, "actual": self.actual}

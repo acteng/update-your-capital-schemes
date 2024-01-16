@@ -7,10 +7,10 @@
             "text": milestone.milestone.name
         },
         {
-            "text": "{:%-d %b %Y}".format(milestone.planned) if milestone.planned else "N/A"
+            "text": "{:%-d %b %Y}".format(milestone.planned) if milestone.planned
         },
         {
-            "text": "{:%-d %b %Y}".format(milestone.actual) if milestone.actual else "N/A"
+            "text": "{:%-d %b %Y}".format(milestone.actual) if milestone.actual
         }
     ]) %}
 {% endfor %}

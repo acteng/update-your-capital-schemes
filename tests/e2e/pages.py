@@ -132,7 +132,9 @@ class SchemePage:
     def __init__(self, page: Page):
         self._page = page
         self._main = page.get_by_role("main")
-        self._name = self._main.get_by_role("heading").nth(0)
+        heading = self._main.get_by_role("heading").first
+        self._authority = heading.locator(".govuk-caption-xl")
+        self._name = heading.locator("span").nth(1)
         self.overview = SchemeOverviewComponent(self._main.get_by_role("heading", name="Overview"))
         self.funding = SchemeFundingComponent(self._main.get_by_role("heading", name="Funding"))
         self.milestones = SchemeMilestonesComponent(self._main.get_by_role("heading", name="Milestones"))
@@ -144,6 +146,10 @@ class SchemePage:
         page.goto("/schemes")
         page.goto(f"/schemes/{id_}")
         return cls(page)
+
+    @property
+    def authority(self) -> str | None:
+        return self._authority.text_content()
 
     @property
     def name(self) -> str | None:

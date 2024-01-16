@@ -40,6 +40,14 @@ def test_scheme_shows_back(schemes: SchemeRepository, client: FlaskClient) -> No
     assert scheme_page.back_url == "/schemes"
 
 
+def test_scheme_shows_authority(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    scheme_page = SchemePage.open(client, id_=1)
+
+    assert scheme_page.authority == "Liverpool City Region Combined Authority"
+
+
 def test_scheme_shows_name(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 

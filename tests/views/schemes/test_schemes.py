@@ -81,6 +81,7 @@ class TestSchemesRowContext:
 
 class TestSchemeContext:
     def test_from_domain(self) -> None:
+        authority = Authority(id_=2, name="Liverpool City Region Combined Authority")
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.funding.update_financial(
             FinancialRevision(
@@ -119,10 +120,11 @@ class TestSchemeContext:
             ),
         )
 
-        context = SchemeContext.from_domain(scheme)
+        context = SchemeContext.from_domain(authority, scheme)
 
         assert (
-            context.name == "Wirral Package"
+            context.authority_name == "Liverpool City Region Combined Authority"
+            and context.name == "Wirral Package"
             and context.overview.reference == "ATE00001"
             and context.funding.funding_allocation == 100_000
             and context.milestones.milestones[0].planned == date(2020, 2, 1)

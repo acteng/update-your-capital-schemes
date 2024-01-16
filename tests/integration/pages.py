@@ -131,8 +131,13 @@ class SchemePage(PageObject):
         return back["href"] if back else None
 
     @property
+    def authority(self) -> str | None:
+        caption = self._soup.select_one("main h1 .govuk-caption-xl")
+        return caption.string if caption else None
+
+    @property
     def name(self) -> str | None:
-        heading = self._soup.select_one("main h1")
+        heading = self._soup.select_one("main h1 span:nth-child(2)")
         return heading.string if heading else None
 
     @property

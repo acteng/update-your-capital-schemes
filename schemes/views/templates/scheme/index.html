@@ -10,7 +10,10 @@
 {% endblock %}
 
 {% block content %}
-    <h1 class="govuk-heading-l">{{ name }}</h1>
+    <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl">{{ authority_name }}</span>
+        <span>{{ name }}</span>
+    </h1>
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">

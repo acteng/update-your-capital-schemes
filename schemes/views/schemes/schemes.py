@@ -74,23 +74,26 @@ class SchemeRowContext:
 
 @bp.get("<int:scheme_id>")
 @bearer_auth
-@inject.autoparams("users", "schemes")
-def get(users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> str:
+@inject.autoparams("users", "authorities", "schemes")
+def get(users: UserRepository, authorities: AuthorityRepository, schemes: SchemeRepository, scheme_id: int) -> str:
     user_info = session["user"]
     user = users.get_by_email(user_info["email"])
     assert user
+    authority = authorities.get(user.authority_id)
+    assert authority
     scheme = schemes.get(scheme_id)
     assert scheme
 
     if user.authority_id != scheme.authority_id:
         abort(403)
 
-    context = SchemeContext.from_domain(scheme)
+    context = SchemeContext.from_domain(authority, scheme)
     return render_template("scheme/index.html", **asdict(context))
 
 
 @dataclass(frozen=True)
 class SchemeContext:
+    authority_name: str
     name: str
     overview: SchemeOverviewContext
     funding: SchemeFundingContext
@@ -98,8 +101,9 @@ class SchemeContext:
     outputs: SchemeOutputsContext
 
     @classmethod
-    def from_domain(cls, scheme: Scheme) -> SchemeContext:
+    def from_domain(cls, authority: Authority, scheme: Scheme) -> SchemeContext:
         return cls(
+            authority_name=authority.name,
             name=scheme.name,
             overview=SchemeOverviewContext.from_domain(scheme),
             funding=SchemeFundingContext.from_domain(scheme.funding),

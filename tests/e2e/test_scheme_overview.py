@@ -40,7 +40,8 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: P
     scheme_page = SchemePage.open(page, id_=1)
 
     assert (
-        scheme_page.name == "Wirral Package"
+        scheme_page.authority == "Liverpool City Region Combined Authority"
+        and scheme_page.name == "Wirral Package"
         and scheme_page.overview.reference == "ATE00001"
         and scheme_page.overview.scheme_type == "Construction"
         and scheme_page.overview.funding_programme == "ATF4"

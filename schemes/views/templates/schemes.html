@@ -2,7 +2,10 @@
 {% from "govuk_frontend_jinja/components/table/macro.html" import govukTable -%}
 
 {% block content %}
-    <h1 class="govuk-heading-l">{{ authority_name }}</h1>
+    <h1 class="govuk-heading-xl">
+        <span class="govuk-caption-xl">{{ authority_name }}</span>
+        Your schemes
+    </h1>
 
     {% if schemes %}
         {% set rows = [] %}

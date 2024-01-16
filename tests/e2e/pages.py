@@ -56,7 +56,7 @@ class SchemesPage:
         self._page = page
         self.header = ServiceHeaderComponent(page.get_by_role("banner"))
         self._main = page.get_by_role("main")
-        self._authority = self._main.get_by_role("heading")
+        self._authority = self._main.get_by_role("heading").locator(".govuk-caption-xl")
         self.schemes = SchemesTableComponent(self._main.get_by_role("table"))
 
     @classmethod

@@ -62,8 +62,8 @@ class SchemesPage(PageObject):
 
     @property
     def authority(self) -> str | None:
-        heading = self._soup.select_one("main h1")
-        return heading.string if heading else None
+        caption = self._soup.select_one("main h1 .govuk-caption-xl")
+        return caption.string if caption else None
 
     @property
     def schemes(self) -> SchemesTableComponent | None:

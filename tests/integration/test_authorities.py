@@ -9,7 +9,6 @@ from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import (
     DataSource,
     DateRange,
-    FinancialRevision,
     FinancialType,
     FundingProgramme,
     Milestone,
@@ -189,14 +188,13 @@ class TestApiEnabled:
         assert response.status_code == 201
         scheme1 = schemes.get(1)
         assert scheme1 and scheme1.id == 1
-        assert scheme1.funding.financial_revisions == [
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
-            )
-        ]
+        (financial_revision1,) = scheme1.funding.financial_revisions
+        assert (
+            financial_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision1.amount == 100_000
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
 
     def test_add_schemes_output_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(

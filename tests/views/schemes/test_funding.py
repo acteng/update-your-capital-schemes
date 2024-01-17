@@ -23,7 +23,7 @@ class TestSchemeFundingContext:
         funding.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
+                type_=FinancialType.FUNDING_ALLOCATION,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
             )
@@ -38,7 +38,7 @@ class TestSchemeFundingContext:
         funding.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
+                type_=FinancialType.FUNDING_ALLOCATION,
                 amount=10_000,
                 source=DataSource.CHANGE_CONTROL,
             )
@@ -53,7 +53,7 @@ class TestSchemeFundingContext:
         funding.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPENT_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
             )
@@ -68,13 +68,13 @@ class TestSchemeFundingContext:
         funding.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
+                type_=FinancialType.FUNDING_ALLOCATION,
                 amount=110_000,
                 source=DataSource.ATF4_BID,
             ),
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPENT_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
             ),
@@ -97,11 +97,11 @@ class TestFinancialRevisionRepr:
 
         financial_revision = financial_revision_repr.to_domain()
 
-        assert financial_revision == FinancialRevision(
-            effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
-            type=FinancialType.FUNDING_ALLOCATION,
-            amount=100_000,
-            source=DataSource.ATF4_BID,
+        assert (
+            financial_revision.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            and financial_revision.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision.amount == 100_000
+            and financial_revision.source == DataSource.ATF4_BID
         )
 
     def test_to_domain_when_no_effective_date_to(self) -> None:

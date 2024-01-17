@@ -86,7 +86,7 @@ class TestSchemeContext:
         scheme.funding.update_financial(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
+                type_=FinancialType.FUNDING_ALLOCATION,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
             )
@@ -264,20 +264,19 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain(0)
 
-        assert scheme.funding.financial_revisions == [
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.EXPECTED_COST,
-                amount=200_000,
-                source=DataSource.PULSE_6,
-            ),
-        ]
+        financial_revision1, financial_revision2 = scheme.funding.financial_revisions
+        assert (
+            financial_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision1.amount == 100_000
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
+        assert (
+            financial_revision2.effective == DateRange(date(2020, 1, 1), None)
+            and financial_revision2.type == FinancialType.EXPECTED_COST
+            and financial_revision2.amount == 200_000
+            and financial_revision2.source == DataSource.PULSE_6
+        )
 
     def test_to_domain_sets_milestone_revisions(self) -> None:
         scheme_repr = SchemeRepr(

@@ -79,13 +79,13 @@ class TestDatabaseSchemeRepository:
         scheme1.funding.update_financials(
             FinancialRevision(
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
-                type=FinancialType.FUNDING_ALLOCATION,
+                type_=FinancialType.FUNDING_ALLOCATION,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
             ),
             FinancialRevision(
                 effective=DateRange(date(2020, 2, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
+                type_=FinancialType.FUNDING_ALLOCATION,
                 amount=200_000,
                 source=DataSource.ATF4_BID,
             ),
@@ -249,20 +249,20 @@ class TestDatabaseSchemeRepository:
 
         scheme = schemes.get(1)
 
-        assert scheme and scheme.funding.financial_revisions == [
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                effective=DateRange(date(2020, 2, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=200_000,
-                source=DataSource.ATF4_BID,
-            ),
-        ]
+        assert scheme
+        financial_revision1, financial_revision2 = scheme.funding.financial_revisions
+        assert (
+            financial_revision1.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision1.amount == 100_000
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
+        assert (
+            financial_revision2.effective == DateRange(date(2020, 2, 1), None)
+            and financial_revision2.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision2.amount == 200_000
+            and financial_revision2.source == DataSource.ATF4_BID
+        )
 
     def test_get_scheme_milestone_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with Session(engine) as session:
@@ -438,14 +438,14 @@ class TestDatabaseSchemeRepository:
         scheme1: Scheme
         (scheme1,) = schemes.get_by_authority(1)
 
-        assert scheme1.id == 1 and scheme1.funding.financial_revisions == [
-            FinancialRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
-            )
-        ]
+        assert scheme1.id == 1
+        (financial_revision1,) = scheme1.funding.financial_revisions
+        assert (
+            financial_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision1.amount == 100_000
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
 
     def test_get_all_schemes_milestone_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, engine: Engine

@@ -44,7 +44,7 @@ class FinancialRevisionRepr:
                 date_from=date.fromisoformat(self.effective_date_from),
                 date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
             ),
-            type=self.type.to_domain(),
+            type_=self.type.to_domain(),
             amount=self.amount,
             source=self.source.to_domain(),
         )

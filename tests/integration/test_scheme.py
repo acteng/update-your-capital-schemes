@@ -111,19 +111,19 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
     scheme.funding.update_financials(
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
-            type=FinancialType.FUNDING_ALLOCATION,
+            type_=FinancialType.FUNDING_ALLOCATION,
             amount=100_000,
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
-            type=FinancialType.FUNDING_ALLOCATION,
+            type_=FinancialType.FUNDING_ALLOCATION,
             amount=10_000,
             source=DataSource.CHANGE_CONTROL,
         ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
-            type=FinancialType.SPENT_TO_DATE,
+            type_=FinancialType.SPENT_TO_DATE,
             amount=50_000,
             source=DataSource.ATF4_BID,
         ),
@@ -145,19 +145,19 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
     scheme.funding.update_financials(
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
-            type=FinancialType.FUNDING_ALLOCATION,
+            type_=FinancialType.FUNDING_ALLOCATION,
             amount=0,
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
-            type=FinancialType.SPENT_TO_DATE,
+            type_=FinancialType.SPENT_TO_DATE,
             amount=0,
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
             effective=DateRange(date(2020, 1, 1), None),
-            type=FinancialType.FUNDING_ALLOCATION,
+            type_=FinancialType.FUNDING_ALLOCATION,
             amount=0,
             source=DataSource.CHANGE_CONTROL,
         ),

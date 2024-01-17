@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from enum import Enum, auto, unique
 
 from schemes.domain.schemes.dates import DateRange
@@ -70,12 +69,12 @@ class SchemeFunding:
         return funding_allocation + change_control_adjustment - spend_to_date
 
 
-@dataclass(frozen=True)
 class FinancialRevision:
-    effective: DateRange
-    type: FinancialType
-    amount: int
-    source: DataSource
+    def __init__(self, effective: DateRange, type_: FinancialType, amount: int, source: DataSource):
+        self.effective = effective
+        self.type = type_
+        self.amount = amount
+        self.source = source
 
     @property
     def is_current_funding_allocation(self) -> bool:

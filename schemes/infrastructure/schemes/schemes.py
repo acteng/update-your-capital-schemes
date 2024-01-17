@@ -128,7 +128,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             effective=DateRange(
                 capital_scheme_financial.effective_date_from, capital_scheme_financial.effective_date_to
             ),
-            type=self._financial_type_mapper.to_domain(capital_scheme_financial.financial_type_id),
+            type_=self._financial_type_mapper.to_domain(capital_scheme_financial.financial_type_id),
             amount=capital_scheme_financial.amount,
             source=self._data_source_mapper.to_domain(capital_scheme_financial.data_source_id),
         )

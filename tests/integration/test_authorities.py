@@ -12,7 +12,6 @@ from schemes.domain.schemes import (
     FinancialType,
     FundingProgramme,
     Milestone,
-    MilestoneRevision,
     ObservationType,
     OutputRevision,
     OutputTypeMeasure,
@@ -155,14 +154,13 @@ class TestApiEnabled:
         assert response.status_code == 201
         scheme1 = schemes.get(1)
         assert scheme1 and scheme1.id == 1
-        assert scheme1.milestones.milestone_revisions == [
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2020, 1, 1),
-            )
-        ]
+        (milestone_revision1,) = scheme1.milestones.milestone_revisions
+        assert (
+            milestone_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision1.observation_type == ObservationType.ACTUAL
+            and milestone_revision1.status_date == date(2020, 1, 1)
+        )
 
     def test_add_schemes_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(

@@ -124,11 +124,11 @@ class TestMilestoneRevisionRepr:
 
         milestone_revision = milestone_revision_repr.to_domain()
 
-        assert milestone_revision == MilestoneRevision(
-            effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
-            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-            observation_type=ObservationType.ACTUAL,
-            status_date=date(2020, 1, 1),
+        assert (
+            milestone_revision.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision.observation_type == ObservationType.ACTUAL
+            and milestone_revision.status_date == date(2020, 1, 1)
         )
 
     def test_to_domain_when_no_effective_date_to(self) -> None:

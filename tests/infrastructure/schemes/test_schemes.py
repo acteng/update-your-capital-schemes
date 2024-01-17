@@ -295,20 +295,20 @@ class TestDatabaseSchemeRepository:
 
         scheme = schemes.get(1)
 
-        assert scheme and scheme.milestones.milestone_revisions == [
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 2, 1),
-            ),
-            MilestoneRevision(
-                effective=DateRange(date(2020, 2, 1), None),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 3, 1),
-            ),
-        ]
+        assert scheme
+        milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
+        assert (
+            milestone_revision1.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision1.observation_type == ObservationType.PLANNED
+            and milestone_revision1.status_date == date(2020, 2, 1)
+        )
+        assert (
+            milestone_revision2.effective == DateRange(date(2020, 2, 1), None)
+            and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision2.observation_type == ObservationType.PLANNED
+            and milestone_revision2.status_date == date(2020, 3, 1)
+        )
 
     def test_get_scheme_output_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with Session(engine) as session:
@@ -494,22 +494,22 @@ class TestDatabaseSchemeRepository:
         scheme2: Scheme
         scheme1, scheme2 = schemes.get_by_authority(1)
 
-        assert scheme1.id == 1 and scheme1.milestones.milestone_revisions == [
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 2, 1),
-            )
-        ]
-        assert scheme2.id == 2 and scheme2.milestones.milestone_revisions == [
-            MilestoneRevision(
-                effective=DateRange(date(2020, 2, 1), None),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 3, 1),
-            )
-        ]
+        assert scheme1.id == 1
+        (milestone_revision1,) = scheme1.milestones.milestone_revisions
+        assert (
+            milestone_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision1.observation_type == ObservationType.PLANNED
+            and milestone_revision1.status_date == date(2020, 2, 1)
+        )
+        assert scheme2.id == 2
+        (milestone_revision2,) = scheme2.milestones.milestone_revisions
+        assert (
+            milestone_revision2.effective == DateRange(date(2020, 2, 1), None)
+            and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision2.observation_type == ObservationType.PLANNED
+            and milestone_revision2.status_date == date(2020, 3, 1)
+        )
 
     def test_get_all_schemes_output_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, engine: Engine

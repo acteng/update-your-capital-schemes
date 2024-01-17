@@ -302,20 +302,19 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain(0)
 
-        assert scheme.milestones.milestone_revisions == [
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2020, 1, 1),
-            ),
-            MilestoneRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                milestone=Milestone.CONSTRUCTION_STARTED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2020, 2, 1),
-            ),
-        ]
+        milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
+        assert (
+            milestone_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision1.observation_type == ObservationType.ACTUAL
+            and milestone_revision1.status_date == date(2020, 1, 1)
+        )
+        assert (
+            milestone_revision2.effective == DateRange(date(2020, 1, 1), None)
+            and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
+            and milestone_revision2.observation_type == ObservationType.ACTUAL
+            and milestone_revision2.status_date == date(2020, 2, 1)
+        )
 
     def test_to_domain_sets_output_revisions(self) -> None:
         scheme_repr = SchemeRepr(

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import date
 from enum import IntEnum, auto
 
@@ -54,12 +53,14 @@ class SchemeMilestones:
         return sorted(actual_milestones)[-1] if actual_milestones else None
 
 
-@dataclass(frozen=True)
 class MilestoneRevision:
-    effective: DateRange
-    milestone: Milestone
-    observation_type: ObservationType
-    status_date: date
+    def __init__(
+        self, effective: DateRange, milestone: Milestone, observation_type: ObservationType, status_date: date
+    ):
+        self.effective = effective
+        self.milestone = milestone
+        self.observation_type = observation_type
+        self.status_date = status_date
 
 
 class Milestone(IntEnum):

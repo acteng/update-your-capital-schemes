@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 
 from sqlalchemy import ForeignKey, Numeric, String, Text
@@ -51,8 +51,8 @@ class CapitalSchemeFinancialEntity(Base):
     )
     financial_type_id: Mapped[int]
     amount: Mapped[int]
-    effective_date_from: Mapped[date]
-    effective_date_to: Mapped[date | None]
+    effective_date_from: Mapped[datetime]
+    effective_date_to: Mapped[datetime | None]
     data_source_id: Mapped[int]
 
 
@@ -66,8 +66,8 @@ class SchemeMilestoneEntity(Base):
     milestone_id: Mapped[int]
     status_date: Mapped[date]
     observation_type_id: Mapped[int]
-    effective_date_from: Mapped[date]
-    effective_date_to: Mapped[date | None]
+    effective_date_from: Mapped[datetime]
+    effective_date_to: Mapped[datetime | None]
 
 
 class SchemeInterventionEntity(Base):
@@ -81,5 +81,5 @@ class SchemeInterventionEntity(Base):
     )
     intervention_value: Mapped[Decimal] = mapped_column(Numeric(precision=15, scale=6))
     observation_type_id: Mapped[int]
-    effective_date_from: Mapped[date]
-    effective_date_to: Mapped[date | None]
+    effective_date_from: Mapped[datetime]
+    effective_date_to: Mapped[datetime | None]

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import datetime
 
 
 @dataclass(frozen=True)
 class DateRange:
-    date_from: date
-    date_to: date | None
+    date_from: datetime
+    date_to: datetime | None
 
     def __post_init__(self) -> None:
         if not (self.date_to is None or self.date_from <= self.date_to):

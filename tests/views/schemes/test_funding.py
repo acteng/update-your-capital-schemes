@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime
 
 import pytest
 
@@ -23,7 +23,7 @@ class TestSchemeFundingContext:
         funding.update_financial(
             FinancialRevision(
                 id_=1,
-                effective=DateRange(date(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
@@ -39,7 +39,7 @@ class TestSchemeFundingContext:
         funding.update_financial(
             FinancialRevision(
                 id_=1,
-                effective=DateRange(date(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=10_000,
                 source=DataSource.CHANGE_CONTROL,
@@ -55,7 +55,7 @@ class TestSchemeFundingContext:
         funding.update_financial(
             FinancialRevision(
                 id_=1,
-                effective=DateRange(date(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.SPENT_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
@@ -71,14 +71,14 @@ class TestSchemeFundingContext:
         funding.update_financials(
             FinancialRevision(
                 id_=1,
-                effective=DateRange(date(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=110_000,
                 source=DataSource.ATF4_BID,
             ),
             FinancialRevision(
                 id_=2,
-                effective=DateRange(date(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.SPENT_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
@@ -94,8 +94,8 @@ class TestFinancialRevisionRepr:
     def test_to_domain(self) -> None:
         financial_revision_repr = FinancialRevisionRepr(
             id=1,
-            effective_date_from="2020-01-01",
-            effective_date_to="2020-01-31",
+            effective_date_from="2020-01-01T12:00:00",
+            effective_date_to="2020-01-31T13:00:00",
             type=FinancialTypeRepr.FUNDING_ALLOCATION,
             amount=100_000,
             source=DataSourceRepr.ATF4_BID,
@@ -105,7 +105,7 @@ class TestFinancialRevisionRepr:
 
         assert (
             financial_revision.id == 1
-            and financial_revision.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            and financial_revision.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 1, 31, 13))
             and financial_revision.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision.amount == 100_000
             and financial_revision.source == DataSource.ATF4_BID

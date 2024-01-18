@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import datetime
 from enum import Enum, unique
 
 from schemes.domain.schemes import (
@@ -43,8 +43,8 @@ class FinancialRevisionRepr:
         return FinancialRevision(
             id_=self.id,
             effective=DateRange(
-                date_from=date.fromisoformat(self.effective_date_from),
-                date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+                date_from=datetime.fromisoformat(self.effective_date_from),
+                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
             ),
             type_=self.type.to_domain(),
             amount=self.amount,

@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 import pytest
 
@@ -44,14 +44,14 @@ class TestSchemeMilestonesContext:
         milestone_revisions = [
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(date(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=milestone,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
             ),
             MilestoneRevision(
                 id_=2,
-                effective=DateRange(date(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=milestone,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 3, 1),
@@ -118,8 +118,8 @@ class TestMilestoneRevisionRepr:
     def test_to_domain(self) -> None:
         milestone_revision_repr = MilestoneRevisionRepr(
             id=1,
-            effective_date_from="2020-01-01",
-            effective_date_to="2020-01-31",
+            effective_date_from="2020-01-01T12:00:00",
+            effective_date_to="2020-01-31T13:00:00",
             milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationTypeRepr.ACTUAL,
             status_date="2020-01-01",
@@ -129,7 +129,7 @@ class TestMilestoneRevisionRepr:
 
         assert (
             milestone_revision.id == 1
-            and milestone_revision.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            and milestone_revision.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 1, 31, 13))
             and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision.observation_type == ObservationType.ACTUAL
             and milestone_revision.status_date == date(2020, 1, 1)

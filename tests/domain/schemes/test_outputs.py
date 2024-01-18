@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime
 from decimal import Decimal
 
 import pytest
@@ -20,7 +20,7 @@ class TestSchemeOutputs:
         outputs.update_output(
             OutputRevision(
                 id_=1,
-                effective=DateRange(date(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.ACTUAL,
@@ -35,14 +35,14 @@ class TestSchemeOutputs:
         outputs = SchemeOutputs()
         output_revision1 = OutputRevision(
             id_=1,
-            effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
+            effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.PLANNED,
         )
         output_revision2 = OutputRevision(
             id_=2,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
             value=Decimal(20),
             observation_type=ObservationType.PLANNED,
@@ -55,7 +55,7 @@ class TestSchemeOutputs:
         outputs = SchemeOutputs()
         output_revision = OutputRevision(
             id_=1,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.ACTUAL,
@@ -69,14 +69,14 @@ class TestSchemeOutputs:
         outputs = SchemeOutputs()
         output_revision1 = OutputRevision(
             id_=1,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.ACTUAL,
         )
         output_revision2 = OutputRevision(
             id_=2,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
             value=Decimal(20),
             observation_type=ObservationType.ACTUAL,

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from enum import Enum, unique
 
 from schemes.domain.schemes import (
@@ -87,8 +87,8 @@ class MilestoneRevisionRepr:
         return MilestoneRevision(
             id_=self.id,
             effective=DateRange(
-                date_from=date.fromisoformat(self.effective_date_from),
-                date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+                date_from=datetime.fromisoformat(self.effective_date_from),
+                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
             ),
             milestone=self.milestone.to_domain(),
             observation_type=self.observation_type.to_domain(),

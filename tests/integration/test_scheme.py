@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 
 import pytest
@@ -76,7 +76,7 @@ def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -
     scheme.milestones.update_milestone(
         MilestoneRevision(
             id_=1,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
@@ -112,21 +112,21 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
     scheme.funding.update_financials(
         FinancialRevision(
             id_=1,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_=FinancialType.FUNDING_ALLOCATION,
             amount=100_000,
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
             id_=2,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_=FinancialType.FUNDING_ALLOCATION,
             amount=10_000,
             source=DataSource.CHANGE_CONTROL,
         ),
         FinancialRevision(
             id_=3,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_=FinancialType.SPENT_TO_DATE,
             amount=50_000,
             source=DataSource.ATF4_BID,
@@ -149,21 +149,21 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
     scheme.funding.update_financials(
         FinancialRevision(
             id_=1,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_=FinancialType.FUNDING_ALLOCATION,
             amount=0,
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
             id_=2,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_=FinancialType.SPENT_TO_DATE,
             amount=0,
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
             id_=3,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_=FinancialType.FUNDING_ALLOCATION,
             amount=0,
             source=DataSource.CHANGE_CONTROL,
@@ -197,7 +197,7 @@ def test_scheme_shows_minimal_milestones(schemes: SchemeRepository, client: Flas
 
 def test_scheme_shows_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    current = DateRange(date(2020, 1, 1), None)
+    current = DateRange(datetime(2020, 1, 1), None)
     scheme.milestones.update_milestones(
         MilestoneRevision(
             1, current, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 2, 1)
@@ -232,7 +232,7 @@ def test_scheme_shows_minimal_outputs(schemes: SchemeRepository, client: FlaskCl
     scheme.outputs.update_outputs(
         OutputRevision(
             id_=1,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
             value=Decimal(1),
             observation_type=ObservationType.ACTUAL,
@@ -252,14 +252,14 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
     scheme.outputs.update_outputs(
         OutputRevision(
             id_=1,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES,
             value=Decimal("3.000000"),
             observation_type=ObservationType.PLANNED,
         ),
         OutputRevision(
             id_=2,
-            effective=DateRange(date(2020, 1, 1), None),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
             value=Decimal("2.600000"),
             observation_type=ObservationType.PLANNED,
@@ -289,7 +289,7 @@ def test_scheme_shows_zero_outputs(schemes: SchemeRepository, client: FlaskClien
     scheme.outputs.update_outputs(
         OutputRevision(
             id_=1,
-            effective=(DateRange(date(2020, 1, 1), None)),
+            effective=(DateRange(datetime(2020, 1, 1), None)),
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
             value=Decimal("0.000000"),
             observation_type=ObservationType.PLANNED,

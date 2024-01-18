@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 
 import pytest
@@ -86,7 +86,7 @@ class TestSchemeContext:
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=1,
-                effective=DateRange(date(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
@@ -95,14 +95,14 @@ class TestSchemeContext:
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 1, 1),
             ),
             MilestoneRevision(
                 id_=2,
-                effective=DateRange(date(2020, 2, 1), None),
+                effective=DateRange(datetime(2020, 2, 1), None),
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
@@ -111,14 +111,14 @@ class TestSchemeContext:
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
-                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.PLANNED,
             ),
             OutputRevision(
                 id_=2,
-                effective=DateRange(date(2020, 2, 1), None),
+                effective=DateRange(datetime(2020, 2, 1), None),
                 type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
                 value=Decimal(20),
                 observation_type=ObservationType.PLANNED,
@@ -166,7 +166,7 @@ class TestSchemeOverviewContext:
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(date(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -253,7 +253,7 @@ class TestSchemeRepr:
             financial_revisions=[
                 FinancialRevisionRepr(
                     id=2,
-                    effective_date_from="2020-01-01",
+                    effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     type=FinancialTypeRepr.FUNDING_ALLOCATION,
                     amount=100_000,
@@ -261,7 +261,7 @@ class TestSchemeRepr:
                 ),
                 FinancialRevisionRepr(
                     id=3,
-                    effective_date_from="2020-01-01",
+                    effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     type=FinancialTypeRepr.EXPECTED_COST,
                     amount=200_000,
@@ -277,14 +277,14 @@ class TestSchemeRepr:
         financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
             financial_revision1.id == 2
-            and financial_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and financial_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
             and financial_revision1.source == DataSource.ATF4_BID
         )
         assert (
             financial_revision2.id == 3
-            and financial_revision2.effective == DateRange(date(2020, 1, 1), None)
+            and financial_revision2.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and financial_revision2.type == FinancialType.EXPECTED_COST
             and financial_revision2.amount == 200_000
             and financial_revision2.source == DataSource.PULSE_6
@@ -297,7 +297,7 @@ class TestSchemeRepr:
             milestone_revisions=[
                 MilestoneRevisionRepr(
                     id=1,
-                    effective_date_from="2020-01-01",
+                    effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
                     observation_type=ObservationTypeRepr.ACTUAL,
@@ -305,7 +305,7 @@ class TestSchemeRepr:
                 ),
                 MilestoneRevisionRepr(
                     id=2,
-                    effective_date_from="2020-01-01",
+                    effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     milestone=MilestoneRepr.CONSTRUCTION_STARTED,
                     observation_type=ObservationTypeRepr.ACTUAL,
@@ -321,14 +321,14 @@ class TestSchemeRepr:
         milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 1
-            and milestone_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.ACTUAL
             and milestone_revision1.status_date == date(2020, 1, 1)
         )
         assert (
             milestone_revision2.id == 2
-            and milestone_revision2.effective == DateRange(date(2020, 1, 1), None)
+            and milestone_revision2.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone_revision2.observation_type == ObservationType.ACTUAL
             and milestone_revision2.status_date == date(2020, 2, 1)
@@ -341,7 +341,7 @@ class TestSchemeRepr:
             output_revisions=[
                 OutputRevisionRepr(
                     id=1,
-                    effective_date_from="2020-01-01",
+                    effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     type=OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE,
                     measure=OutputMeasureRepr.MILES,
@@ -350,7 +350,7 @@ class TestSchemeRepr:
                 ),
                 OutputRevisionRepr(
                     id=2,
-                    effective_date_from="2020-01-01",
+                    effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     type=OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE,
                     measure=OutputMeasureRepr.NUMBER_OF_JUNCTIONS,
@@ -367,14 +367,14 @@ class TestSchemeRepr:
         output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
             output_revision1.id == 1
-            and output_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and output_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision1.value == Decimal(10)
             and output_revision1.observation_type == ObservationType.ACTUAL
         )
         assert (
             output_revision2.id == 2
-            and output_revision2.effective == DateRange(date(2020, 1, 1), None)
+            and output_revision2.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and output_revision2.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS
             and output_revision2.value == Decimal(3)
             and output_revision2.observation_type == ObservationType.ACTUAL

@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Any, Mapping
 
@@ -143,7 +143,7 @@ class TestApiEnabled:
                     "milestone_revisions": [
                         {
                             "id": 2,
-                            "effective_date_from": "2020-01-01",
+                            "effective_date_from": "2020-01-01T12:00:00",
                             "effective_date_to": None,
                             "milestone": "detailed design completed",
                             "observation_type": "Actual",
@@ -161,7 +161,7 @@ class TestApiEnabled:
         (milestone_revision1,) = scheme1.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 2
-            and milestone_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.ACTUAL
             and milestone_revision1.status_date == date(2020, 1, 1)
@@ -178,7 +178,7 @@ class TestApiEnabled:
                     "financial_revisions": [
                         {
                             "id": 2,
-                            "effective_date_from": "2020-01-01",
+                            "effective_date_from": "2020-01-01T12:00:00",
                             "effective_date_to": None,
                             "type": "funding allocation",
                             "amount": 100_000,
@@ -196,7 +196,7 @@ class TestApiEnabled:
         (financial_revision1,) = scheme1.funding.financial_revisions
         assert (
             financial_revision1.id == 2
-            and financial_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and financial_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
             and financial_revision1.source == DataSource.ATF4_BID
@@ -213,7 +213,7 @@ class TestApiEnabled:
                     "output_revisions": [
                         {
                             "id": 2,
-                            "effective_date_from": "2020-01-01",
+                            "effective_date_from": "2020-01-01T12:00:00",
                             "effective_date_to": None,
                             "type": "Improvements to make an existing walking/cycle route safer",
                             "measure": "miles",
@@ -232,7 +232,7 @@ class TestApiEnabled:
         (output_revision1,) = scheme1.outputs.output_revisions
         assert (
             output_revision1.id == 2
-            and output_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and output_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision1.value == Decimal(10)
             and output_revision1.observation_type == ObservationType.ACTUAL

@@ -157,6 +157,7 @@ class TestDataSourceRepr:
             ("ATF4e Moderation", DataSource.ATF4E_MODERATION),
             ("Pulse 2023/24 Q2", DataSource.PULSE_2023_24_Q2),
             ("Initial Scheme List", DataSource.INITIAL_SCHEME_LIST),
+            ("Authority Update", DataSource.AUTHORITY_UPDATE),
             ("Pulse 2023/24 Q2 Data Cleanse", DataSource.PULSE_2023_24_Q2_DATA_CLEANSE),
         ],
     )

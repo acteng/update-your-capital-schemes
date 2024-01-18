@@ -76,6 +76,7 @@ class MilestoneContext:
 
 @dataclass(frozen=True)
 class MilestoneRevisionRepr:
+    id: int
     effective_date_from: str
     effective_date_to: str | None
     milestone: MilestoneRepr
@@ -84,6 +85,7 @@ class MilestoneRevisionRepr:
 
     def to_domain(self) -> MilestoneRevision:
         return MilestoneRevision(
+            id_=self.id,
             effective=DateRange(
                 date_from=date.fromisoformat(self.effective_date_from),
                 date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,

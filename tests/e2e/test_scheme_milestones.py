@@ -24,6 +24,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
             name="Wirral Package",
             milestone_revisions=[
                 MilestoneRevisionRepr(
+                    id=1,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     milestone="feasibility design completed",
@@ -31,6 +32,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     status_date="2020-11-30",
                 ),
                 MilestoneRevisionRepr(
+                    id=2,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     milestone="preliminary design completed",
@@ -38,6 +40,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     status_date="2022-06-30",
                 ),
                 MilestoneRevisionRepr(
+                    id=3,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     milestone="detailed design completed",
@@ -45,6 +48,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     status_date="2022-06-30",
                 ),
                 MilestoneRevisionRepr(
+                    id=4,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     milestone="construction started",
@@ -52,6 +56,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     status_date="2023-06-05",
                 ),
                 MilestoneRevisionRepr(
+                    id=5,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     milestone="construction completed",

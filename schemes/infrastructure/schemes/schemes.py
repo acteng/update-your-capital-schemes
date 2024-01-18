@@ -137,6 +137,7 @@ class DatabaseSchemeRepository(SchemeRepository):
 
     def _scheme_milestone_from_domain(self, milestone_revision: MilestoneRevision) -> SchemeMilestoneEntity:
         return SchemeMilestoneEntity(
+            scheme_milestone_id=milestone_revision.id,
             effective_date_from=milestone_revision.effective.date_from,
             effective_date_to=milestone_revision.effective.date_to,
             milestone_id=self._milestone_mapper.to_id(milestone_revision.milestone),
@@ -146,6 +147,7 @@ class DatabaseSchemeRepository(SchemeRepository):
 
     def _scheme_milestone_to_domain(self, scheme_milestone: SchemeMilestoneEntity) -> MilestoneRevision:
         return MilestoneRevision(
+            id_=scheme_milestone.scheme_milestone_id,
             effective=DateRange(scheme_milestone.effective_date_from, scheme_milestone.effective_date_to),
             milestone=self._milestone_mapper.to_domain(scheme_milestone.milestone_id),
             observation_type=self._observation_type_mapper.to_domain(scheme_milestone.observation_type_id),

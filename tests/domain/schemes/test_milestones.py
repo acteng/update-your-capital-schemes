@@ -17,6 +17,7 @@ class TestSchemeMilestones:
         milestones = SchemeMilestones()
         milestones.update_milestone(
             MilestoneRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -31,12 +32,14 @@ class TestSchemeMilestones:
     def test_get_current_milestone_revisions(self) -> None:
         milestones = SchemeMilestones()
         milestone_revision1 = MilestoneRevision(
+            id_=1,
             effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
             milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
             observation_type=ObservationType.PLANNED,
             status_date=date(2020, 1, 1),
         )
         milestone_revision2 = MilestoneRevision(
+            id_=2,
             effective=DateRange(date(2020, 2, 1), None),
             milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
             observation_type=ObservationType.PLANNED,
@@ -49,6 +52,7 @@ class TestSchemeMilestones:
     def test_update_milestone(self) -> None:
         milestones = SchemeMilestones()
         milestone_revision = MilestoneRevision(
+            id_=1,
             effective=DateRange(date(2020, 1, 1), None),
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
@@ -62,6 +66,7 @@ class TestSchemeMilestones:
     def test_cannot_update_milestone_with_another_current_milestone(self) -> None:
         milestones = SchemeMilestones()
         milestone_revision = MilestoneRevision(
+            id_=1,
             effective=DateRange(date(2020, 1, 1), None),
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
@@ -74,6 +79,7 @@ class TestSchemeMilestones:
         ):
             milestones.update_milestone(
                 MilestoneRevision(
+                    id_=2,
                     effective=DateRange(date(2020, 1, 1), None),
                     milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                     observation_type=ObservationType.ACTUAL,
@@ -84,12 +90,14 @@ class TestSchemeMilestones:
     def test_update_milestones(self) -> None:
         milestones = SchemeMilestones()
         milestone_revision1 = MilestoneRevision(
+            id_=1,
             effective=DateRange(date(2020, 1, 1), None),
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
         )
         milestone_revision2 = MilestoneRevision(
+            id_=2,
             effective=DateRange(date(2020, 1, 1), None),
             milestone=Milestone.CONSTRUCTION_STARTED,
             observation_type=ObservationType.ACTUAL,
@@ -104,12 +112,14 @@ class TestSchemeMilestones:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             MilestoneRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 1, 1),
             ),
             MilestoneRevision(
+                id_=2,
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -123,12 +133,14 @@ class TestSchemeMilestones:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             MilestoneRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
             ),
             MilestoneRevision(
+                id_=2,
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
@@ -142,6 +154,7 @@ class TestSchemeMilestones:
         milestones = SchemeMilestones()
         milestones.update_milestone(
             MilestoneRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), date(2020, 2, 1)),
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,

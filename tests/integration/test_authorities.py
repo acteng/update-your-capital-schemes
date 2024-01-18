@@ -139,6 +139,7 @@ class TestApiEnabled:
                     "name": "Wirral Package",
                     "milestone_revisions": [
                         {
+                            "id": 2,
                             "effective_date_from": "2020-01-01",
                             "effective_date_to": None,
                             "milestone": "detailed design completed",
@@ -155,7 +156,8 @@ class TestApiEnabled:
         assert scheme1 and scheme1.id == 1
         (milestone_revision1,) = scheme1.milestones.milestone_revisions
         assert (
-            milestone_revision1.effective == DateRange(date(2020, 1, 1), None)
+            milestone_revision1.id == 2
+            and milestone_revision1.effective == DateRange(date(2020, 1, 1), None)
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.ACTUAL
             and milestone_revision1.status_date == date(2020, 1, 1)

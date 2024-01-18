@@ -55,8 +55,9 @@ class SchemeMilestones:
 
 class MilestoneRevision:
     def __init__(
-        self, effective: DateRange, milestone: Milestone, observation_type: ObservationType, status_date: date
+        self, id_: int, effective: DateRange, milestone: Milestone, observation_type: ObservationType, status_date: date
     ):
+        self.id = id_
         self.effective = effective
         self.milestone = milestone
         self.observation_type = observation_type

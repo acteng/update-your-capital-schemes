@@ -75,6 +75,7 @@ def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -
     scheme.funding_programme = FundingProgramme.ATF4
     scheme.milestones.update_milestone(
         MilestoneRevision(
+            id_=1,
             effective=DateRange(date(2020, 1, 1), None),
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
@@ -198,16 +199,20 @@ def test_scheme_shows_milestones(schemes: SchemeRepository, client: FlaskClient)
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     current = DateRange(date(2020, 1, 1), None)
     scheme.milestones.update_milestones(
-        MilestoneRevision(current, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 2, 1)),
-        MilestoneRevision(current, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL, date(2020, 2, 2)),
-        MilestoneRevision(current, Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 3, 1)),
-        MilestoneRevision(current, Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL, date(2020, 3, 2)),
-        MilestoneRevision(current, Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 4, 1)),
-        MilestoneRevision(current, Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL, date(2020, 4, 2)),
-        MilestoneRevision(current, Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED, date(2020, 5, 1)),
-        MilestoneRevision(current, Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL, date(2020, 5, 2)),
-        MilestoneRevision(current, Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED, date(2020, 6, 1)),
-        MilestoneRevision(current, Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL, date(2020, 6, 2)),
+        MilestoneRevision(
+            1, current, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 2, 1)
+        ),
+        MilestoneRevision(2, current, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL, date(2020, 2, 2)),
+        MilestoneRevision(
+            3, current, Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 3, 1)
+        ),
+        MilestoneRevision(4, current, Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL, date(2020, 3, 2)),
+        MilestoneRevision(5, current, Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 4, 1)),
+        MilestoneRevision(6, current, Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL, date(2020, 4, 2)),
+        MilestoneRevision(7, current, Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED, date(2020, 5, 1)),
+        MilestoneRevision(8, current, Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL, date(2020, 5, 2)),
+        MilestoneRevision(9, current, Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED, date(2020, 6, 1)),
+        MilestoneRevision(10, current, Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL, date(2020, 6, 2)),
     )
     schemes.add(scheme)
 

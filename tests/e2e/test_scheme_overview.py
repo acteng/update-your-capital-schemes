@@ -26,6 +26,7 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: P
             funding_programme="ATF4",
             milestone_revisions=[
                 MilestoneRevisionRepr(
+                    id=1,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     milestone="detailed design completed",

@@ -94,12 +94,14 @@ class TestSchemeContext:
         )
         scheme.milestones.update_milestones(
             MilestoneRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 1, 1),
             ),
             MilestoneRevision(
+                id_=2,
                 effective=DateRange(date(2020, 2, 1), None),
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
@@ -161,6 +163,7 @@ class TestSchemeOverviewContext:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.milestones.update_milestone(
             MilestoneRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -289,6 +292,7 @@ class TestSchemeRepr:
             name="",
             milestone_revisions=[
                 MilestoneRevisionRepr(
+                    id=1,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
@@ -296,6 +300,7 @@ class TestSchemeRepr:
                     status_date="2020-01-01",
                 ),
                 MilestoneRevisionRepr(
+                    id=2,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     milestone=MilestoneRepr.CONSTRUCTION_STARTED,
@@ -309,13 +314,15 @@ class TestSchemeRepr:
 
         milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
-            milestone_revision1.effective == DateRange(date(2020, 1, 1), None)
+            milestone_revision1.id == 1
+            and milestone_revision1.effective == DateRange(date(2020, 1, 1), None)
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.ACTUAL
             and milestone_revision1.status_date == date(2020, 1, 1)
         )
         assert (
-            milestone_revision2.effective == DateRange(date(2020, 1, 1), None)
+            milestone_revision2.id == 2
+            and milestone_revision2.effective == DateRange(date(2020, 1, 1), None)
             and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone_revision2.observation_type == ObservationType.ACTUAL
             and milestone_revision2.status_date == date(2020, 2, 1)

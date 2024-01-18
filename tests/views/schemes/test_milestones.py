@@ -43,12 +43,14 @@ class TestSchemeMilestonesContext:
     def test_from_domain_sets_milestone_dates(self, milestone: Milestone, expected_milestone_name: str) -> None:
         milestone_revisions = [
             MilestoneRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=milestone,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
             ),
             MilestoneRevision(
+                id_=2,
                 effective=DateRange(date(2020, 1, 1), None),
                 milestone=milestone,
                 observation_type=ObservationType.ACTUAL,
@@ -115,6 +117,7 @@ class TestMilestoneContext:
 class TestMilestoneRevisionRepr:
     def test_to_domain(self) -> None:
         milestone_revision_repr = MilestoneRevisionRepr(
+            id=1,
             effective_date_from="2020-01-01",
             effective_date_to="2020-01-31",
             milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
@@ -125,7 +128,8 @@ class TestMilestoneRevisionRepr:
         milestone_revision = milestone_revision_repr.to_domain()
 
         assert (
-            milestone_revision.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            milestone_revision.id == 1
+            and milestone_revision.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
             and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision.observation_type == ObservationType.ACTUAL
             and milestone_revision.status_date == date(2020, 1, 1)
@@ -133,6 +137,7 @@ class TestMilestoneRevisionRepr:
 
     def test_to_domain_when_no_effective_date_to(self) -> None:
         milestone_revision_repr = MilestoneRevisionRepr(
+            id=1,
             effective_date_from="2020-01-01",
             effective_date_to=None,
             milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,

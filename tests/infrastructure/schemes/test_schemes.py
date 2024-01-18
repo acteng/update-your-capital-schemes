@@ -122,12 +122,14 @@ class TestDatabaseSchemeRepository:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.milestones.update_milestones(
             MilestoneRevision(
+                id_=2,
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
             ),
             MilestoneRevision(
+                id_=3,
                 effective=DateRange(date(2020, 2, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
@@ -142,7 +144,8 @@ class TestDatabaseSchemeRepository:
                 select(SchemeMilestoneEntity).order_by(SchemeMilestoneEntity.scheme_milestone_id)
             )
         assert (
-            row1.capital_scheme_id == 1
+            row1.scheme_milestone_id == 2
+            and row1.capital_scheme_id == 1
             and row1.effective_date_from == date(2020, 1, 1)
             and row1.effective_date_to == date(2020, 1, 31)
             and row1.milestone_id == 6
@@ -150,7 +153,8 @@ class TestDatabaseSchemeRepository:
             and row1.status_date == date(2020, 2, 1)
         )
         assert (
-            row2.capital_scheme_id == 1
+            row2.scheme_milestone_id == 3
+            and row2.capital_scheme_id == 1
             and row2.effective_date_from == date(2020, 2, 1)
             and row2.effective_date_to is None
             and row2.milestone_id == 6
@@ -282,6 +286,7 @@ class TestDatabaseSchemeRepository:
                         bid_submitting_authority_id=1,
                     ),
                     SchemeMilestoneEntity(
+                        scheme_milestone_id=2,
                         capital_scheme_id=1,
                         effective_date_from=date(2020, 1, 1),
                         effective_date_to=date(2020, 1, 31),
@@ -290,6 +295,7 @@ class TestDatabaseSchemeRepository:
                         status_date=date(2020, 2, 1),
                     ),
                     SchemeMilestoneEntity(
+                        scheme_milestone_id=3,
                         capital_scheme_id=1,
                         effective_date_from=date(2020, 2, 1),
                         effective_date_to=None,
@@ -306,13 +312,15 @@ class TestDatabaseSchemeRepository:
         assert scheme
         milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
-            milestone_revision1.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            milestone_revision1.id == 2
+            and milestone_revision1.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
         )
         assert (
-            milestone_revision2.effective == DateRange(date(2020, 2, 1), None)
+            milestone_revision2.id == 3
+            and milestone_revision2.effective == DateRange(date(2020, 2, 1), None)
             and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
@@ -465,6 +473,7 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
                     ),
                     SchemeMilestoneEntity(
+                        scheme_milestone_id=4,
                         capital_scheme_id=1,
                         effective_date_from=date(2020, 1, 1),
                         effective_date_to=None,
@@ -476,6 +485,7 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=1
                     ),
                     SchemeMilestoneEntity(
+                        scheme_milestone_id=5,
                         capital_scheme_id=2,
                         effective_date_from=date(2020, 2, 1),
                         effective_date_to=None,
@@ -487,6 +497,7 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_id=3, scheme_name="Hospital Fields Road", bid_submitting_authority_id=2
                     ),
                     SchemeMilestoneEntity(
+                        scheme_milestone_id=6,
                         capital_scheme_id=3,
                         effective_date_from=date(2020, 3, 1),
                         effective_date_to=None,
@@ -505,7 +516,8 @@ class TestDatabaseSchemeRepository:
         assert scheme1.id == 1
         (milestone_revision1,) = scheme1.milestones.milestone_revisions
         assert (
-            milestone_revision1.effective == DateRange(date(2020, 1, 1), None)
+            milestone_revision1.id == 4
+            and milestone_revision1.effective == DateRange(date(2020, 1, 1), None)
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
@@ -513,7 +525,8 @@ class TestDatabaseSchemeRepository:
         assert scheme2.id == 2
         (milestone_revision2,) = scheme2.milestones.milestone_revisions
         assert (
-            milestone_revision2.effective == DateRange(date(2020, 2, 1), None)
+            milestone_revision2.id == 5
+            and milestone_revision2.effective == DateRange(date(2020, 2, 1), None)
             and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)

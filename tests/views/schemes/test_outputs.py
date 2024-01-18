@@ -27,18 +27,21 @@ class TestSchemeOutputsContext:
     def test_from_domain_orders_by_type_then_measure(self) -> None:
         output_revisions = [
             OutputRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_MILES,
                 value=Decimal(30),
                 observation_type=ObservationType.PLANNED,
             ),
             OutputRevision(
+                id_=2,
                 effective=DateRange(date(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
                 value=Decimal(20),
                 observation_type=ObservationType.PLANNED,
             ),
             OutputRevision(
+                id_=3,
                 effective=DateRange(date(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
@@ -53,6 +56,7 @@ class TestSchemeOutputsContext:
     def test_from_domain_groups_by_type_measure(self) -> None:
         output_revisions = [
             OutputRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
@@ -73,6 +77,7 @@ class TestSchemeOutputsContext:
     def test_from_domain_when_no_planned(self) -> None:
         output_revisions = [
             OutputRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(20),
@@ -155,6 +160,7 @@ class TestOutputMeasureContext:
 class TestOutputRevisionRepr:
     def test_to_domain(self) -> None:
         output_revision_repr = OutputRevisionRepr(
+            id=1,
             effective_date_from="2020-01-01",
             effective_date_to="2020-01-31",
             type=OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE,
@@ -166,7 +172,8 @@ class TestOutputRevisionRepr:
         output_revision = output_revision_repr.to_domain()
 
         assert (
-            output_revision.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            output_revision.id == 1
+            and output_revision.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
             and output_revision.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision.value == Decimal(10)
             and output_revision.observation_type == ObservationType.ACTUAL
@@ -174,6 +181,7 @@ class TestOutputRevisionRepr:
 
     def test_to_domain_when_no_effective_date_to(self) -> None:
         output_revision_repr = OutputRevisionRepr(
+            id=1,
             effective_date_from="2020-01-01",
             effective_date_to=None,
             type=OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE,

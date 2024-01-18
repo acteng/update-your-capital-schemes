@@ -110,12 +110,14 @@ class TestSchemeContext:
         )
         scheme.outputs.update_outputs(
             OutputRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.PLANNED,
             ),
             OutputRevision(
+                id_=2,
                 effective=DateRange(date(2020, 2, 1), None),
                 type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
                 value=Decimal(20),
@@ -334,6 +336,7 @@ class TestSchemeRepr:
             name="",
             output_revisions=[
                 OutputRevisionRepr(
+                    id=1,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type=OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE,
@@ -342,6 +345,7 @@ class TestSchemeRepr:
                     observation_type=ObservationTypeRepr.ACTUAL,
                 ),
                 OutputRevisionRepr(
+                    id=2,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type=OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE,
@@ -356,13 +360,15 @@ class TestSchemeRepr:
 
         output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
-            output_revision1.effective == DateRange(date(2020, 1, 1), None)
+            output_revision1.id == 1
+            and output_revision1.effective == DateRange(date(2020, 1, 1), None)
             and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision1.value == Decimal(10)
             and output_revision1.observation_type == ObservationType.ACTUAL
         )
         assert (
-            output_revision2.effective == DateRange(date(2020, 1, 1), None)
+            output_revision2.id == 2
+            and output_revision2.effective == DateRange(date(2020, 1, 1), None)
             and output_revision2.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS
             and output_revision2.value == Decimal(3)
             and output_revision2.observation_type == ObservationType.ACTUAL

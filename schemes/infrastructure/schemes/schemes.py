@@ -156,6 +156,7 @@ class DatabaseSchemeRepository(SchemeRepository):
 
     def _scheme_intervention_from_domain(self, output_revision: OutputRevision) -> SchemeInterventionEntity:
         return SchemeInterventionEntity(
+            scheme_intervention_id=output_revision.id,
             effective_date_from=output_revision.effective.date_from,
             effective_date_to=output_revision.effective.date_to,
             intervention_type_measure_id=self._output_type_measure_mapper.to_id(output_revision.type_measure),
@@ -165,6 +166,7 @@ class DatabaseSchemeRepository(SchemeRepository):
 
     def _scheme_intervention_to_domain(self, scheme_intervention: SchemeInterventionEntity) -> OutputRevision:
         return OutputRevision(
+            id_=scheme_intervention.scheme_intervention_id,
             effective=DateRange(scheme_intervention.effective_date_from, scheme_intervention.effective_date_to),
             type_measure=self._output_type_measure_mapper.to_domain(scheme_intervention.intervention_type_measure_id),
             value=scheme_intervention.intervention_value,

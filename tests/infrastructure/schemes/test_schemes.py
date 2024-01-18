@@ -166,12 +166,14 @@ class TestDatabaseSchemeRepository:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.outputs.update_outputs(
             OutputRevision(
+                id_=3,
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.PLANNED,
             ),
             OutputRevision(
+                id_=4,
                 effective=DateRange(date(2020, 2, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(20),
@@ -186,7 +188,8 @@ class TestDatabaseSchemeRepository:
                 select(SchemeInterventionEntity).order_by(SchemeInterventionEntity.scheme_intervention_id)
             )
         assert (
-            row1.capital_scheme_id == 1
+            row1.scheme_intervention_id == 3
+            and row1.capital_scheme_id == 1
             and row1.effective_date_from == date(2020, 1, 1)
             and row1.effective_date_to == date(2020, 1, 31)
             and row1.intervention_type_measure_id == 4
@@ -194,7 +197,8 @@ class TestDatabaseSchemeRepository:
             and row1.observation_type_id == 1
         )
         assert (
-            row2.capital_scheme_id == 1
+            row2.scheme_intervention_id == 4
+            and row2.capital_scheme_id == 1
             and row2.effective_date_from == date(2020, 2, 1)
             and row2.effective_date_to is None
             and row2.intervention_type_measure_id == 4
@@ -336,6 +340,7 @@ class TestDatabaseSchemeRepository:
                         bid_submitting_authority_id=1,
                     ),
                     SchemeInterventionEntity(
+                        scheme_intervention_id=2,
                         capital_scheme_id=1,
                         effective_date_from=date(2020, 1, 1),
                         effective_date_to=date(2020, 1, 31),
@@ -344,6 +349,7 @@ class TestDatabaseSchemeRepository:
                         observation_type_id=1,
                     ),
                     SchemeInterventionEntity(
+                        scheme_intervention_id=3,
                         capital_scheme_id=1,
                         effective_date_from=date(2020, 2, 1),
                         effective_date_to=None,
@@ -360,13 +366,15 @@ class TestDatabaseSchemeRepository:
         assert scheme
         output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
-            output_revision1.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            output_revision1.id == 2
+            and output_revision1.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
             and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision1.value == Decimal(10)
             and output_revision1.observation_type == ObservationType.PLANNED
         )
         assert (
-            output_revision2.effective == DateRange(date(2020, 2, 1), None)
+            output_revision2.id == 3
+            and output_revision2.effective == DateRange(date(2020, 2, 1), None)
             and output_revision2.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision2.value == Decimal(20)
             and output_revision2.observation_type == ObservationType.PLANNED
@@ -542,6 +550,7 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
                     ),
                     SchemeInterventionEntity(
+                        scheme_intervention_id=4,
                         capital_scheme_id=1,
                         effective_date_from=date(2020, 1, 1),
                         effective_date_to=None,
@@ -553,6 +562,7 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=1
                     ),
                     SchemeInterventionEntity(
+                        scheme_intervention_id=5,
                         capital_scheme_id=2,
                         effective_date_from=date(2020, 2, 1),
                         effective_date_to=None,
@@ -564,6 +574,7 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_id=3, scheme_name="Hospital Fields Road", bid_submitting_authority_id=2
                     ),
                     SchemeInterventionEntity(
+                        scheme_intervention_id=6,
                         capital_scheme_id=3,
                         effective_date_from=date(2020, 3, 1),
                         effective_date_to=None,
@@ -582,7 +593,8 @@ class TestDatabaseSchemeRepository:
         assert scheme1.id == 1
         (output_revision1,) = scheme1.outputs.output_revisions
         assert (
-            output_revision1.effective == DateRange(date(2020, 1, 1), None)
+            output_revision1.id == 4
+            and output_revision1.effective == DateRange(date(2020, 1, 1), None)
             and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision1.value == Decimal(10)
             and output_revision1.observation_type == ObservationType.PLANNED
@@ -590,7 +602,8 @@ class TestDatabaseSchemeRepository:
         assert scheme2.id == 2
         (output_revision2,) = scheme2.outputs.output_revisions
         assert (
-            output_revision2.effective == DateRange(date(2020, 2, 1), None)
+            output_revision2.id == 5
+            and output_revision2.effective == DateRange(date(2020, 2, 1), None)
             and output_revision2.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision2.value == Decimal(20)
             and output_revision2.observation_type == ObservationType.PLANNED

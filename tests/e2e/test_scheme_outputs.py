@@ -24,6 +24,7 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
             name="Wirral Package",
             output_revisions=[
                 OutputRevisionRepr(
+                    id=1,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type="New segregated cycling facility",
@@ -32,6 +33,7 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
                     observation_type="Planned",
                 ),
                 OutputRevisionRepr(
+                    id=2,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type="Improvements to make an existing walking/cycle route safer",

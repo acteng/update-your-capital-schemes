@@ -29,8 +29,14 @@ class SchemeOutputs:
 
 class OutputRevision:
     def __init__(
-        self, effective: DateRange, type_measure: OutputTypeMeasure, value: Decimal, observation_type: ObservationType
+        self,
+        id_: int,
+        effective: DateRange,
+        type_measure: OutputTypeMeasure,
+        value: Decimal,
+        observation_type: ObservationType,
     ):
+        self.id = id_
         self.effective = effective
         self.type_measure = type_measure
         self.value = value

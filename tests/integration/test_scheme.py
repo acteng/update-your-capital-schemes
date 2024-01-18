@@ -231,6 +231,7 @@ def test_scheme_shows_minimal_outputs(schemes: SchemeRepository, client: FlaskCl
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.outputs.update_outputs(
         OutputRevision(
+            id_=1,
             effective=DateRange(date(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
             value=Decimal(1),
@@ -250,12 +251,14 @@ def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) ->
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.outputs.update_outputs(
         OutputRevision(
+            id_=1,
             effective=DateRange(date(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES,
             value=Decimal("3.000000"),
             observation_type=ObservationType.PLANNED,
         ),
         OutputRevision(
+            id_=2,
             effective=DateRange(date(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
             value=Decimal("2.600000"),
@@ -285,6 +288,7 @@ def test_scheme_shows_zero_outputs(schemes: SchemeRepository, client: FlaskClien
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.outputs.update_outputs(
         OutputRevision(
+            id_=1,
             effective=(DateRange(date(2020, 1, 1), None)),
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
             value=Decimal("0.000000"),

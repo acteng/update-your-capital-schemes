@@ -89,6 +89,7 @@ class FinancialRevisionRepr:
 
 @dataclass(frozen=True)
 class OutputRevisionRepr:
+    id: int
     effective_date_from: str
     effective_date_to: str | None
     type: str

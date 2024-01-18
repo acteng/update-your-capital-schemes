@@ -110,6 +110,7 @@ class OutputMeasureContext:
 
 @dataclass(frozen=True)
 class OutputRevisionRepr:
+    id: int
     effective_date_from: str
     effective_date_to: str | None
     type: OutputTypeRepr
@@ -119,6 +120,7 @@ class OutputRevisionRepr:
 
     def to_domain(self) -> OutputRevision:
         return OutputRevision(
+            id_=self.id,
             effective=DateRange(
                 date_from=date.fromisoformat(self.effective_date_from),
                 date_to=date.fromisoformat(self.effective_date_to) if self.effective_date_to else None,

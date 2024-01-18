@@ -207,6 +207,7 @@ class TestApiEnabled:
                     "name": "Wirral Package",
                     "output_revisions": [
                         {
+                            "id": 2,
                             "effective_date_from": "2020-01-01",
                             "effective_date_to": None,
                             "type": "Improvements to make an existing walking/cycle route safer",
@@ -224,7 +225,8 @@ class TestApiEnabled:
         assert scheme1 and scheme1.id == 1
         (output_revision1,) = scheme1.outputs.output_revisions
         assert (
-            output_revision1.effective == DateRange(date(2020, 1, 1), None)
+            output_revision1.id == 2
+            and output_revision1.effective == DateRange(date(2020, 1, 1), None)
             and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision1.value == Decimal(10)
             and output_revision1.observation_type == ObservationType.ACTUAL

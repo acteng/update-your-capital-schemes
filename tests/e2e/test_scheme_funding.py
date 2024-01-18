@@ -35,7 +35,7 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Pa
                     effective_date_to=None,
                     type="funding allocation",
                     amount=10_000,
-                    source="change control",
+                    source="Change Control",
                 ),
                 FinancialRevisionRepr(
                     effective_date_from="2020-01-01",

@@ -342,20 +342,19 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain(0)
 
-        assert scheme.outputs.output_revisions == [
-            OutputRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-                value=Decimal(10),
-                observation_type=ObservationType.ACTUAL,
-            ),
-            OutputRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
-                value=Decimal(3),
-                observation_type=ObservationType.ACTUAL,
-            ),
-        ]
+        output_revision1, output_revision2 = scheme.outputs.output_revisions
+        assert (
+            output_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            and output_revision1.value == Decimal(10)
+            and output_revision1.observation_type == ObservationType.ACTUAL
+        )
+        assert (
+            output_revision2.effective == DateRange(date(2020, 1, 1), None)
+            and output_revision2.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS
+            and output_revision2.value == Decimal(3)
+            and output_revision2.observation_type == ObservationType.ACTUAL
+        )
 
 
 class TestSchemeTypeRepr:

@@ -341,20 +341,20 @@ class TestDatabaseSchemeRepository:
 
         scheme = schemes.get(1)
 
-        assert scheme and scheme.outputs.output_revisions == [
-            OutputRevision(
-                effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
-                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-                value=Decimal(10),
-                observation_type=ObservationType.PLANNED,
-            ),
-            OutputRevision(
-                effective=DateRange(date(2020, 2, 1), None),
-                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-                value=Decimal(20),
-                observation_type=ObservationType.PLANNED,
-            ),
-        ]
+        assert scheme
+        output_revision1, output_revision2 = scheme.outputs.output_revisions
+        assert (
+            output_revision1.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            and output_revision1.value == Decimal(10)
+            and output_revision1.observation_type == ObservationType.PLANNED
+        )
+        assert (
+            output_revision2.effective == DateRange(date(2020, 2, 1), None)
+            and output_revision2.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            and output_revision2.value == Decimal(20)
+            and output_revision2.observation_type == ObservationType.PLANNED
+        )
 
     def test_get_scheme_that_does_not_exist(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with Session(engine) as session:
@@ -558,22 +558,22 @@ class TestDatabaseSchemeRepository:
         scheme2: Scheme
         scheme1, scheme2 = schemes.get_by_authority(1)
 
-        assert scheme1.id == 1 and scheme1.outputs.output_revisions == [
-            OutputRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-                value=Decimal(10),
-                observation_type=ObservationType.PLANNED,
-            ),
-        ]
-        assert scheme2.id == 2 and scheme2.outputs.output_revisions == [
-            OutputRevision(
-                effective=DateRange(date(2020, 2, 1), None),
-                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-                value=Decimal(20),
-                observation_type=ObservationType.PLANNED,
-            ),
-        ]
+        assert scheme1.id == 1
+        (output_revision1,) = scheme1.outputs.output_revisions
+        assert (
+            output_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            and output_revision1.value == Decimal(10)
+            and output_revision1.observation_type == ObservationType.PLANNED
+        )
+        assert scheme2.id == 2
+        (output_revision2,) = scheme2.outputs.output_revisions
+        assert (
+            output_revision2.effective == DateRange(date(2020, 2, 1), None)
+            and output_revision2.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            and output_revision2.value == Decimal(20)
+            and output_revision2.observation_type == ObservationType.PLANNED
+        )
 
     def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with Session(engine) as session:

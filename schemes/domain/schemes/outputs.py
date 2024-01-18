@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum, IntEnum, auto, unique
 
@@ -28,12 +27,14 @@ class SchemeOutputs:
             self.update_output(output_revision)
 
 
-@dataclass(frozen=True)
 class OutputRevision:
-    effective: DateRange
-    type_measure: OutputTypeMeasure
-    value: Decimal
-    observation_type: ObservationType
+    def __init__(
+        self, effective: DateRange, type_measure: OutputTypeMeasure, value: Decimal, observation_type: ObservationType
+    ):
+        self.effective = effective
+        self.type_measure = type_measure
+        self.value = value
+        self.observation_type = observation_type
 
 
 class OutputType(IntEnum):

@@ -13,7 +13,6 @@ from schemes.domain.schemes import (
     FundingProgramme,
     Milestone,
     ObservationType,
-    OutputRevision,
     OutputTypeMeasure,
     SchemeRepository,
     SchemeType,
@@ -219,14 +218,13 @@ class TestApiEnabled:
         assert response.status_code == 201
         scheme1 = schemes.get(1)
         assert scheme1 and scheme1.id == 1
-        assert scheme1.outputs.output_revisions == [
-            OutputRevision(
-                effective=DateRange(date(2020, 1, 1), None),
-                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-                value=Decimal(10),
-                observation_type=ObservationType.ACTUAL,
-            )
-        ]
+        (output_revision1,) = scheme1.outputs.output_revisions
+        assert (
+            output_revision1.effective == DateRange(date(2020, 1, 1), None)
+            and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            and output_revision1.value == Decimal(10)
+            and output_revision1.observation_type == ObservationType.ACTUAL
+        )
 
     def test_cannot_add_schemes_with_invalid_repr(self, client: FlaskClient) -> None:
         response = client.post(

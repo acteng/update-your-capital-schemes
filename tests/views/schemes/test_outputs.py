@@ -165,11 +165,11 @@ class TestOutputRevisionRepr:
 
         output_revision = output_revision_repr.to_domain()
 
-        assert output_revision == OutputRevision(
-            effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
-            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-            value=Decimal(10),
-            observation_type=ObservationType.ACTUAL,
+        assert (
+            output_revision.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            and output_revision.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            and output_revision.value == Decimal(10)
+            and output_revision.observation_type == ObservationType.ACTUAL
         )
 
     def test_to_domain_when_no_effective_date_to(self) -> None:

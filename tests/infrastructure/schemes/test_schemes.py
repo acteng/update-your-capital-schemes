@@ -264,6 +264,8 @@ class TestDatabaseSchemeRepository:
         scheme = schemes.get(1)
 
         assert scheme
+        financial_revision1: FinancialRevision
+        financial_revision2: FinancialRevision
         financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
             financial_revision1.id == 2
@@ -314,6 +316,8 @@ class TestDatabaseSchemeRepository:
         scheme = schemes.get(1)
 
         assert scheme
+        milestone_revision1: MilestoneRevision
+        milestone_revision2: MilestoneRevision
         milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 2
@@ -364,6 +368,8 @@ class TestDatabaseSchemeRepository:
         scheme = schemes.get(1)
 
         assert scheme
+        output_revision1: OutputRevision
+        output_revision2: OutputRevision
         output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
             output_revision1.id == 2
@@ -463,6 +469,7 @@ class TestDatabaseSchemeRepository:
         (scheme1,) = schemes.get_by_authority(1)
 
         assert scheme1.id == 1
+        financial_revision1: FinancialRevision
         (financial_revision1,) = scheme1.funding.financial_revisions
         assert (
             financial_revision1.effective == DateRange(date(2020, 1, 1), None)
@@ -522,6 +529,7 @@ class TestDatabaseSchemeRepository:
         scheme1, scheme2 = schemes.get_by_authority(1)
 
         assert scheme1.id == 1
+        milestone_revision1: MilestoneRevision
         (milestone_revision1,) = scheme1.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 4
@@ -531,6 +539,7 @@ class TestDatabaseSchemeRepository:
             and milestone_revision1.status_date == date(2020, 2, 1)
         )
         assert scheme2.id == 2
+        milestone_revision2: MilestoneRevision
         (milestone_revision2,) = scheme2.milestones.milestone_revisions
         assert (
             milestone_revision2.id == 5
@@ -591,6 +600,7 @@ class TestDatabaseSchemeRepository:
         scheme1, scheme2 = schemes.get_by_authority(1)
 
         assert scheme1.id == 1
+        output_revision1: OutputRevision
         (output_revision1,) = scheme1.outputs.output_revisions
         assert (
             output_revision1.id == 4
@@ -600,6 +610,7 @@ class TestDatabaseSchemeRepository:
             and output_revision1.observation_type == ObservationType.PLANNED
         )
         assert scheme2.id == 2
+        output_revision2: OutputRevision
         (output_revision2,) = scheme2.outputs.output_revisions
         assert (
             output_revision2.id == 5

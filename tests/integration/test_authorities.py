@@ -9,10 +9,13 @@ from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import (
     DataSource,
     DateRange,
+    FinancialRevision,
     FinancialType,
     FundingProgramme,
     Milestone,
+    MilestoneRevision,
     ObservationType,
+    OutputRevision,
     OutputTypeMeasure,
     SchemeRepository,
     SchemeType,
@@ -154,6 +157,7 @@ class TestApiEnabled:
         assert response.status_code == 201
         scheme1 = schemes.get(1)
         assert scheme1 and scheme1.id == 1
+        milestone_revision1: MilestoneRevision
         (milestone_revision1,) = scheme1.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 2
@@ -188,6 +192,7 @@ class TestApiEnabled:
         assert response.status_code == 201
         scheme1 = schemes.get(1)
         assert scheme1 and scheme1.id == 1
+        financial_revision1: FinancialRevision
         (financial_revision1,) = scheme1.funding.financial_revisions
         assert (
             financial_revision1.id == 2
@@ -223,6 +228,7 @@ class TestApiEnabled:
         assert response.status_code == 201
         scheme1 = schemes.get(1)
         assert scheme1 and scheme1.id == 1
+        output_revision1: OutputRevision
         (output_revision1,) = scheme1.outputs.output_revisions
         assert (
             output_revision1.id == 2

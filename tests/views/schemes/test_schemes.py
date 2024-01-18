@@ -272,6 +272,8 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain(0)
 
+        financial_revision1: FinancialRevision
+        financial_revision2: FinancialRevision
         financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
             financial_revision1.id == 2
@@ -314,6 +316,8 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain(0)
 
+        milestone_revision1: MilestoneRevision
+        milestone_revision2: MilestoneRevision
         milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 1
@@ -358,6 +362,8 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain(0)
 
+        output_revision1: OutputRevision
+        output_revision2: OutputRevision
         output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
             output_revision1.id == 1

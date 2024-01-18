@@ -78,12 +78,14 @@ class TestDatabaseSchemeRepository:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.funding.update_financials(
             FinancialRevision(
+                id_=2,
                 effective=DateRange(date(2020, 1, 1), date(2020, 1, 31)),
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
             ),
             FinancialRevision(
+                id_=3,
                 effective=DateRange(date(2020, 2, 1), None),
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=200_000,
@@ -98,7 +100,8 @@ class TestDatabaseSchemeRepository:
                 select(CapitalSchemeFinancialEntity).order_by(CapitalSchemeFinancialEntity.capital_scheme_financial_id)
             )
         assert (
-            row1.capital_scheme_id == 1
+            row1.capital_scheme_financial_id == 2
+            and row1.capital_scheme_id == 1
             and row1.effective_date_from == date(2020, 1, 1)
             and row1.effective_date_to == date(2020, 1, 31)
             and row1.financial_type_id == 3
@@ -106,7 +109,8 @@ class TestDatabaseSchemeRepository:
             and row1.data_source_id == 3
         )
         assert (
-            row2.capital_scheme_id == 1
+            row2.capital_scheme_financial_id == 3
+            and row2.capital_scheme_id == 1
             and row2.effective_date_from == date(2020, 2, 1)
             and row2.effective_date_to is None
             and row2.financial_type_id == 3
@@ -228,6 +232,7 @@ class TestDatabaseSchemeRepository:
                         bid_submitting_authority_id=1,
                     ),
                     CapitalSchemeFinancialEntity(
+                        capital_scheme_financial_id=2,
                         capital_scheme_id=1,
                         effective_date_from=date(2020, 1, 1),
                         effective_date_to=date(2020, 1, 31),
@@ -236,6 +241,7 @@ class TestDatabaseSchemeRepository:
                         data_source_id=3,
                     ),
                     CapitalSchemeFinancialEntity(
+                        capital_scheme_financial_id=3,
                         capital_scheme_id=1,
                         effective_date_from=date(2020, 2, 1),
                         effective_date_to=None,
@@ -252,13 +258,15 @@ class TestDatabaseSchemeRepository:
         assert scheme
         financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
-            financial_revision1.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
+            financial_revision1.id == 2
+            and financial_revision1.effective == DateRange(date(2020, 1, 1), date(2020, 1, 31))
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
             and financial_revision1.source == DataSource.ATF4_BID
         )
         assert (
-            financial_revision2.effective == DateRange(date(2020, 2, 1), None)
+            financial_revision2.id == 3
+            and financial_revision2.effective == DateRange(date(2020, 2, 1), None)
             and financial_revision2.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision2.amount == 200_000
             and financial_revision2.source == DataSource.ATF4_BID

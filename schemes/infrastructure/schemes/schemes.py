@@ -114,6 +114,7 @@ class DatabaseSchemeRepository(SchemeRepository):
         self, financial_revision: FinancialRevision
     ) -> CapitalSchemeFinancialEntity:
         return CapitalSchemeFinancialEntity(
+            capital_scheme_financial_id=financial_revision.id,
             effective_date_from=financial_revision.effective.date_from,
             effective_date_to=financial_revision.effective.date_to,
             financial_type_id=self._financial_type_mapper.to_id(financial_revision.type),
@@ -125,6 +126,7 @@ class DatabaseSchemeRepository(SchemeRepository):
         self, capital_scheme_financial: CapitalSchemeFinancialEntity
     ) -> FinancialRevision:
         return FinancialRevision(
+            id_=capital_scheme_financial.capital_scheme_financial_id,
             effective=DateRange(
                 capital_scheme_financial.effective_date_from, capital_scheme_financial.effective_date_to
             ),

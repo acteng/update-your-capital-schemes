@@ -24,6 +24,7 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Pa
             name="Wirral Package",
             financial_revisions=[
                 FinancialRevisionRepr(
+                    id=1,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type="funding allocation",
@@ -31,6 +32,7 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Pa
                     source="ATF4 Bid",
                 ),
                 FinancialRevisionRepr(
+                    id=2,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type="funding allocation",
@@ -38,6 +40,7 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Pa
                     source="Change Control",
                 ),
                 FinancialRevisionRepr(
+                    id=3,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type="spent to date",

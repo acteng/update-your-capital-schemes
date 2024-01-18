@@ -110,18 +110,21 @@ def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) ->
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.funding.update_financials(
         FinancialRevision(
+            id_=1,
             effective=DateRange(date(2020, 1, 1), None),
             type_=FinancialType.FUNDING_ALLOCATION,
             amount=100_000,
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
+            id_=2,
             effective=DateRange(date(2020, 1, 1), None),
             type_=FinancialType.FUNDING_ALLOCATION,
             amount=10_000,
             source=DataSource.CHANGE_CONTROL,
         ),
         FinancialRevision(
+            id_=3,
             effective=DateRange(date(2020, 1, 1), None),
             type_=FinancialType.SPENT_TO_DATE,
             amount=50_000,
@@ -144,18 +147,21 @@ def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClien
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.funding.update_financials(
         FinancialRevision(
+            id_=1,
             effective=DateRange(date(2020, 1, 1), None),
             type_=FinancialType.FUNDING_ALLOCATION,
             amount=0,
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
+            id_=2,
             effective=DateRange(date(2020, 1, 1), None),
             type_=FinancialType.SPENT_TO_DATE,
             amount=0,
             source=DataSource.ATF4_BID,
         ),
         FinancialRevision(
+            id_=3,
             effective=DateRange(date(2020, 1, 1), None),
             type_=FinancialType.FUNDING_ALLOCATION,
             amount=0,

@@ -171,6 +171,7 @@ class TestApiEnabled:
                     "name": "Wirral Package",
                     "financial_revisions": [
                         {
+                            "id": 2,
                             "effective_date_from": "2020-01-01",
                             "effective_date_to": None,
                             "type": "funding allocation",
@@ -187,7 +188,8 @@ class TestApiEnabled:
         assert scheme1 and scheme1.id == 1
         (financial_revision1,) = scheme1.funding.financial_revisions
         assert (
-            financial_revision1.effective == DateRange(date(2020, 1, 1), None)
+            financial_revision1.id == 2
+            and financial_revision1.effective == DateRange(date(2020, 1, 1), None)
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
             and financial_revision1.source == DataSource.ATF4_BID

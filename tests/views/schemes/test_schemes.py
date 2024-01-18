@@ -85,6 +85,7 @@ class TestSchemeContext:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.funding.update_financial(
             FinancialRevision(
+                id_=1,
                 effective=DateRange(date(2020, 1, 1), None),
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=100_000,
@@ -246,6 +247,7 @@ class TestSchemeRepr:
             name="",
             financial_revisions=[
                 FinancialRevisionRepr(
+                    id=2,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type=FinancialTypeRepr.FUNDING_ALLOCATION,
@@ -253,6 +255,7 @@ class TestSchemeRepr:
                     source=DataSourceRepr.ATF4_BID,
                 ),
                 FinancialRevisionRepr(
+                    id=3,
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     type=FinancialTypeRepr.EXPECTED_COST,
@@ -266,13 +269,15 @@ class TestSchemeRepr:
 
         financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
-            financial_revision1.effective == DateRange(date(2020, 1, 1), None)
+            financial_revision1.id == 2
+            and financial_revision1.effective == DateRange(date(2020, 1, 1), None)
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
             and financial_revision1.source == DataSource.ATF4_BID
         )
         assert (
-            financial_revision2.effective == DateRange(date(2020, 1, 1), None)
+            financial_revision2.id == 3
+            and financial_revision2.effective == DateRange(date(2020, 1, 1), None)
             and financial_revision2.type == FinancialType.EXPECTED_COST
             and financial_revision2.amount == 200_000
             and financial_revision2.source == DataSource.PULSE_6

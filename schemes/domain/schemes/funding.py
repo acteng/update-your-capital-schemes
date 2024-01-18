@@ -70,7 +70,8 @@ class SchemeFunding:
 
 
 class FinancialRevision:
-    def __init__(self, effective: DateRange, type_: FinancialType, amount: int, source: DataSource):
+    def __init__(self, id_: int, effective: DateRange, type_: FinancialType, amount: int, source: DataSource):
+        self.id = id_
         self.effective = effective
         self.type = type_
         self.amount = amount

@@ -1,7 +1,7 @@
 import pytest
 
 from schemes.domain.schemes import ObservationType
-from schemes.infrastructure.schemes.observations import ObservationTypeMapper
+from schemes.infrastructure.database.schemes.observations import ObservationTypeMapper
 
 
 @pytest.mark.parametrize("observation_type, id_", [(ObservationType.PLANNED, 1), (ObservationType.ACTUAL, 2)])

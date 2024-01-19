@@ -3,7 +3,7 @@ from sqlalchemy import Engine, delete
 from sqlalchemy.orm import Session
 
 from schemes.domain.authorities import Authority, AuthorityRepository
-from schemes.infrastructure import AuthorityEntity
+from schemes.infrastructure.database import AuthorityEntity
 
 
 class DatabaseAuthorityRepository(AuthorityRepository):

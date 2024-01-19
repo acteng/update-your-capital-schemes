@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 
 from schemes.domain.authorities import Authority
 from schemes.domain.users import User
-from schemes.infrastructure import UserEntity
-from schemes.infrastructure.authorities import DatabaseAuthorityRepository
-from schemes.infrastructure.users import DatabaseUserRepository
+from schemes.infrastructure.database import UserEntity
+from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
+from schemes.infrastructure.database.users import DatabaseUserRepository
 
 
 class TestDatabaseUserRepository:

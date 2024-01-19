@@ -3,7 +3,7 @@ from sqlalchemy import Engine, delete, select
 from sqlalchemy.orm import Session
 
 from schemes.domain.users import User, UserRepository
-from schemes.infrastructure import UserEntity
+from schemes.infrastructure.database import UserEntity
 
 
 class DatabaseUserRepository(UserRepository):

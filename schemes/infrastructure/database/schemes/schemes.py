@@ -12,16 +12,19 @@ from schemes.domain.schemes import (
     SchemeRepository,
     SchemeType,
 )
-from schemes.infrastructure import (
+from schemes.infrastructure.database import (
     CapitalSchemeEntity,
     CapitalSchemeFinancialEntity,
     SchemeInterventionEntity,
     SchemeMilestoneEntity,
 )
-from schemes.infrastructure.schemes.funding import DataSourceMapper, FinancialTypeMapper
-from schemes.infrastructure.schemes.milestones import MilestoneMapper
-from schemes.infrastructure.schemes.observations import ObservationTypeMapper
-from schemes.infrastructure.schemes.outputs import OutputTypeMeasureMapper
+from schemes.infrastructure.database.schemes.funding import (
+    DataSourceMapper,
+    FinancialTypeMapper,
+)
+from schemes.infrastructure.database.schemes.milestones import MilestoneMapper
+from schemes.infrastructure.database.schemes.observations import ObservationTypeMapper
+from schemes.infrastructure.database.schemes.outputs import OutputTypeMeasureMapper
 
 
 class DatabaseSchemeRepository(SchemeRepository):

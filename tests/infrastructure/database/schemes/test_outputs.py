@@ -1,7 +1,7 @@
 import pytest
 
 from schemes.domain.schemes import OutputTypeMeasure
-from schemes.infrastructure.schemes.outputs import OutputTypeMeasureMapper
+from schemes.infrastructure.database.schemes.outputs import OutputTypeMeasureMapper
 
 
 @pytest.mark.parametrize(

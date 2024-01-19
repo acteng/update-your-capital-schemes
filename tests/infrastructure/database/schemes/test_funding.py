@@ -1,7 +1,10 @@
 import pytest
 
 from schemes.domain.schemes import DataSource, FinancialType
-from schemes.infrastructure.schemes.funding import DataSourceMapper, FinancialTypeMapper
+from schemes.infrastructure.database.schemes.funding import (
+    DataSourceMapper,
+    FinancialTypeMapper,
+)
 
 
 @pytest.mark.parametrize(

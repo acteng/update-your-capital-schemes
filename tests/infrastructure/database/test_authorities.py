@@ -3,8 +3,8 @@ from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session
 
 from schemes.domain.authorities import Authority
-from schemes.infrastructure import AuthorityEntity
-from schemes.infrastructure.authorities import DatabaseAuthorityRepository
+from schemes.infrastructure.database import AuthorityEntity
+from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
 
 
 class TestDatabaseAuthorityRepository:

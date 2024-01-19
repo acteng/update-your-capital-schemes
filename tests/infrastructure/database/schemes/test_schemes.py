@@ -20,15 +20,15 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeType,
 )
-from schemes.infrastructure import (
+from schemes.infrastructure.database import (
     CapitalSchemeEntity,
     CapitalSchemeFinancialEntity,
     SchemeInterventionEntity,
     SchemeMilestoneEntity,
 )
-from schemes.infrastructure.authorities import DatabaseAuthorityRepository
-from schemes.infrastructure.schemes import DatabaseSchemeRepository
-from schemes.infrastructure.schemes.schemes import (
+from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
+from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
+from schemes.infrastructure.database.schemes.schemes import (
     FundingProgrammeMapper,
     SchemeTypeMapper,
 )

@@ -19,9 +19,9 @@ from schemes.config import DevConfig
 from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
-from schemes.infrastructure.authorities import DatabaseAuthorityRepository
-from schemes.infrastructure.schemes import DatabaseSchemeRepository
-from schemes.infrastructure.users import DatabaseUserRepository
+from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
+from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
+from schemes.infrastructure.database.users import DatabaseUserRepository
 from schemes.views import auth, authorities, schemes, start, users
 from schemes.views.filters import pounds, remove_exponent
 
@@ -145,7 +145,7 @@ def _migrate_database() -> None:
     engine: Engine = inject.instance(Engine)
 
     alembic_config = alembic.config.Config()
-    alembic_config.set_main_option("script_location", "schemes:infrastructure/migrations")
+    alembic_config.set_main_option("script_location", "schemes:infrastructure/database/migrations")
 
     with engine.connect() as connection:
         alembic_config.attributes["connection"] = connection

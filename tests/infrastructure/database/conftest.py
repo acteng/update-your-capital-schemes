@@ -5,7 +5,7 @@ from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.engine.interfaces import DBAPIConnection
 from sqlalchemy.pool import ConnectionPoolEntry
 
-from schemes.infrastructure import Base
+from schemes.infrastructure.database import Base
 
 
 @pytest.fixture(name="engine")

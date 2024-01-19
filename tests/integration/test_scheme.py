@@ -289,7 +289,7 @@ def test_scheme_shows_zero_outputs(schemes: SchemeRepository, client: FlaskClien
     scheme.outputs.update_outputs(
         OutputRevision(
             id_=1,
-            effective=(DateRange(datetime(2020, 1, 1), None)),
+            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
             value=Decimal("0.000000"),
             observation_type=ObservationType.PLANNED,

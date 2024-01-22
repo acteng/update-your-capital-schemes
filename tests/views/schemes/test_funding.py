@@ -95,10 +95,19 @@ class TestSchemeFundingContext:
 class TestSchemeChangeSpendToDateContext:
     def test_from_domain(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.funding.update_financial(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=40_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
 
         context = SchemeChangeSpendToDateContext.from_domain(scheme)
 
-        assert context == SchemeChangeSpendToDateContext(id=1)
+        assert context == SchemeChangeSpendToDateContext(id=1, amount=40_000)
 
 
 class TestFinancialRevisionRepr:

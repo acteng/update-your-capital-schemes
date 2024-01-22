@@ -344,11 +344,49 @@ def test_scheme_when_different_authority(
 
 
 def test_spend_to_date_form_shows_spent_to_date(schemes: SchemeRepository, client: FlaskClient) -> None:
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.funding.update_financial(
+        FinancialRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1, 12), None),
+            type_=FinancialType.SPENT_TO_DATE,
+            amount=50_000,
+            source=DataSource.ATF4_BID,
+        )
+    )
+    schemes.add(scheme)
+
+    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+
+    assert change_spend_to_date_page.amount == "50000"
+
+
+def test_spend_to_date_form_shows_zero_spent_to_date(schemes: SchemeRepository, client: FlaskClient) -> None:
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.funding.update_financial(
+        FinancialRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1, 12), None),
+            type_=FinancialType.SPENT_TO_DATE,
+            amount=0,
+            source=DataSource.ATF4_BID,
+        )
+    )
+    schemes.add(scheme)
+
+    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+
+    assert change_spend_to_date_page.amount == "0"
+
+
+def test_spend_to_date_form_shows_empty_when_no_current_spent_to_date(
+    schemes: SchemeRepository, client: FlaskClient
+) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
     change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
 
-    assert change_spend_to_date_page.is_visible
+    assert not change_spend_to_date_page.amount
 
 
 def test_spend_to_date_form_submits(schemes: SchemeRepository, client: FlaskClient) -> None:

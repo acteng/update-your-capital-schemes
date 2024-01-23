@@ -93,7 +93,7 @@ class SchemesTableComponent:
         self._rows = table.get_by_role("row")
 
     def __iter__(self) -> Iterator[SchemeRowComponent]:
-        return iter([SchemeRowComponent(row) for row in self._rows.all()[1:]])
+        return (SchemeRowComponent(row) for row in self._rows.all()[1:])
 
     def __getitem__(self, reference: str) -> SchemeRowComponent:
         return next((scheme for scheme in self if scheme.reference == reference))
@@ -234,7 +234,7 @@ class SchemeMilestonesTableComponent:
         self._rows = table.get_by_role("row")
 
     def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
-        return iter([SchemeMilestoneRowComponent(row) for row in self._rows.all()[1:]])
+        return (SchemeMilestoneRowComponent(row) for row in self._rows.all()[1:])
 
     def to_dicts(self) -> list[dict[str, str | None]]:
         return [milestone.to_dict() for milestone in self]
@@ -272,7 +272,7 @@ class SchemeOutputsTableComponent:
         self._rows = table.get_by_role("row")
 
     def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
-        return iter([SchemeOutputRowComponent(row) for row in self._rows.all()[1:]])
+        return (SchemeOutputRowComponent(row) for row in self._rows.all()[1:])
 
     def to_dicts(self) -> list[dict[str, str | None]]:
         return [output.to_dict() for output in self]

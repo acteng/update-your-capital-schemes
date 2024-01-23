@@ -91,7 +91,7 @@ class SchemesTableComponent:
         self._rows = table.select("tbody tr")
 
     def __iter__(self) -> Iterator[SchemeRowComponent]:
-        return iter([SchemeRowComponent(row) for row in self._rows])
+        return (SchemeRowComponent(row) for row in self._rows)
 
     def __getitem__(self, reference: str) -> SchemeRowComponent:
         return next((scheme for scheme in self if scheme.reference == reference))
@@ -209,7 +209,7 @@ class SchemeMilestonesTableComponent:
         self._rows = table.select("tbody tr")
 
     def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
-        return iter([SchemeMilestoneRowComponent(row) for row in self._rows])
+        return (SchemeMilestoneRowComponent(row) for row in self._rows)
 
     def to_dicts(self) -> list[dict[str, str | None]]:
         return [milestone.to_dict() for milestone in self]
@@ -244,7 +244,7 @@ class SchemeOutputsTableComponent:
         self._rows = table.select("tbody tr")
 
     def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
-        return iter([SchemeOutputRowComponent(row) for row in self._rows])
+        return (SchemeOutputRowComponent(row) for row in self._rows)
 
     def to_dicts(self) -> list[dict[str, str | None]]:
         return [output.to_dict() for output in self]

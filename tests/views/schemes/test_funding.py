@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pytest
+from flask import Flask
 
 from schemes.domain.schemes import (
     DataSource,
@@ -11,6 +12,7 @@ from schemes.domain.schemes import (
     SchemeFunding,
 )
 from schemes.views.schemes.funding import (
+    ChangeSpendToDateForm,
     DataSourceRepr,
     FinancialRevisionRepr,
     FinancialTypeRepr,
@@ -93,7 +95,7 @@ class TestSchemeFundingContext:
 
 
 class TestSchemeChangeSpendToDateContext:
-    def test_from_domain(self) -> None:
+    def test_from_domain(self, app: Flask) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.funding.update_financial(
             FinancialRevision(
@@ -107,7 +109,51 @@ class TestSchemeChangeSpendToDateContext:
 
         context = SchemeChangeSpendToDateContext.from_domain(scheme)
 
-        assert context == SchemeChangeSpendToDateContext(id=1, amount=40_000)
+        assert context.id == 1 and context.form.amount.data == 40_000
+
+
+class TestChangeSpendToDateForm:
+    def test_from_domain(self, app: Flask) -> None:
+        funding = SchemeFunding()
+        funding.update_financial(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        form = ChangeSpendToDateForm.from_domain(funding)
+
+        assert form.amount.data == 50_000
+
+    def test_update_domain(self, app: Flask) -> None:
+        form = ChangeSpendToDateForm(data={"amount": 60_000})
+        funding = SchemeFunding()
+        funding.update_financial(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        form.update_domain(funding, now=datetime(2020, 1, 31))
+
+        financial_revision1: FinancialRevision
+        financial_revision2: FinancialRevision
+        financial_revision1, financial_revision2 = funding.financial_revisions
+        assert financial_revision1.id == 1 and financial_revision1.effective.date_to == datetime(2020, 1, 31)
+        assert (
+            financial_revision2.effective == DateRange(datetime(2020, 1, 31), None)
+            and financial_revision2.type == FinancialType.SPENT_TO_DATE
+            and financial_revision2.amount == 60_000
+            and financial_revision2.source == DataSource.AUTHORITY_UPDATE
+        )
 
 
 class TestFinancialRevisionRepr:

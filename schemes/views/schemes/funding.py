@@ -4,6 +4,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, unique
 
+from flask_wtf import FlaskForm
+from govuk_frontend_wtf.wtforms_widgets import GovTextInput
+from wtforms.fields.simple import StringField
+
 from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
     DataSource,
@@ -35,11 +39,23 @@ class SchemeFundingContext:
 @dataclass(frozen=True)
 class SchemeChangeSpendToDateContext:
     id: int
-    amount: int | None
+    form: ChangeSpendToDateForm
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> SchemeChangeSpendToDateContext:
-        return cls(id=scheme.id, amount=scheme.funding.spend_to_date)
+        return cls(id=scheme.id, form=ChangeSpendToDateForm.from_domain(scheme.funding))
+
+
+class ChangeSpendToDateForm(FlaskForm):  # type: ignore
+    amount = StringField(widget=GovTextInput())
+
+    @classmethod
+    def from_domain(cls, funding: SchemeFunding) -> ChangeSpendToDateForm:
+        return cls(data={"amount": funding.spend_to_date})
+
+    def update_domain(self, funding: SchemeFunding, now: datetime) -> None:
+        amount = int(self.amount.data)
+        funding.update_spend_to_date(now=now, amount=amount)
 
 
 @dataclass(frozen=True)

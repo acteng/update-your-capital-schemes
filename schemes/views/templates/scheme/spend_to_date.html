@@ -8,16 +8,13 @@
             <h1 class="govuk-heading-l">Change spend to date</h1>
 
             <form method="post" action="{{ url_for('schemes.spend_to_date', scheme_id=id) }}">
-                {{ govukInput({
-                    "id": "amount",
-                    "name": "amount",
+                {{ form.amount(params={
                     "label": {
                         "text": "How much has been spent to date?"
                     },
                     "prefix": {
                         "text": "£"
                     },
-                    "value": amount | string if amount is not none(),
                     "classes": "govuk-input--width-10"
                 }) }}
 

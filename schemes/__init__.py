@@ -102,7 +102,12 @@ def _configure_jinja(app: Flask) -> None:
     app.jinja_env.filters[remove_exponent.__name__] = remove_exponent
 
     default_loader = FileSystemLoader(os.path.join(app.root_path, str(app.template_folder)))
-    package_loaders = PrefixLoader({"govuk_frontend_jinja": PackageLoader("govuk_frontend_jinja")})
+    package_loaders = PrefixLoader(
+        {
+            "govuk_frontend_jinja": PackageLoader("govuk_frontend_jinja"),
+            "govuk_frontend_wtf": PackageLoader("govuk_frontend_wtf"),
+        }
+    )
     app.jinja_loader = ChoiceLoader([default_loader, package_loaders])  # type: ignore
 
 

@@ -421,7 +421,9 @@ def test_spend_to_date_updates_spend_to_date(clock: Clock, schemes: SchemeReposi
     assert financial_revision1.id == 1 and financial_revision1.effective.date_to == datetime(2020, 1, 31, 13)
     assert (
         financial_revision2.effective == DateRange(datetime(2020, 1, 31, 13), None)
+        and financial_revision2.type == FinancialType.SPENT_TO_DATE
         and financial_revision2.amount == 60_000
+        and financial_revision2.source == DataSource.AUTHORITY_UPDATE
     )
 
 

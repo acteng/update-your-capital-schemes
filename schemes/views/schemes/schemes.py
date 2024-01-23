@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from enum import Enum, unique
 
 import dataclass_wizard
@@ -18,7 +18,7 @@ from flask import (
 )
 from werkzeug import Response as BaseResponse
 
-from schemes.dicts import inverse_dict
+from schemes.dicts import as_shallow_dict, inverse_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import (
     FundingProgramme,
@@ -57,7 +57,7 @@ def index(users: UserRepository, authorities: AuthorityRepository, schemes: Sche
     authority_schemes = schemes.get_by_authority(authority.id)
 
     context = SchemesContext.from_domain(authority, authority_schemes)
-    return render_template("schemes.html", **asdict(context))
+    return render_template("schemes.html", **as_shallow_dict(context))
 
 
 @dataclass(frozen=True)
@@ -113,7 +113,7 @@ def get_html(
         abort(403)
 
     context = SchemeContext.from_domain(authority, scheme)
-    return Response(render_template("scheme/index.html", **asdict(context)))
+    return Response(render_template("scheme/index.html", **as_shallow_dict(context)))
 
 
 @api_key_auth
@@ -207,7 +207,7 @@ def spend_to_date_form(schemes: SchemeRepository, scheme_id: int) -> str:
     assert scheme
 
     context = SchemeChangeSpendToDateContext.from_domain(scheme)
-    return render_template("scheme/spend_to_date.html", **asdict(context))
+    return render_template("scheme/spend_to_date.html", **as_shallow_dict(context))
 
 
 @bp.post("<int:scheme_id>/spend-to-date")

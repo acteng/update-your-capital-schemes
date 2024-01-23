@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum, unique
+from functools import wraps
+from typing import Callable, ParamSpec, TypeVar, cast
 
 import dataclass_wizard
 import inject
@@ -90,13 +92,38 @@ class SchemeRowContext:
         )
 
 
+T = TypeVar("T")
+P = ParamSpec("P")
+
+
+def authorized_scheme(func: Callable[P, T]) -> Callable[P, T | Response]:
+    @wraps(func)
+    @inject.autoparams("users", "schemes")
+    def decorated_function(
+        users: UserRepository, schemes: SchemeRepository, *args: P.args, **kwargs: P.kwargs
+    ) -> T | Response:
+        user_info = session["user"]
+        user = users.get_by_email(user_info["email"])
+        assert user
+        scheme_id = cast(int, kwargs.get("scheme_id"))
+        scheme = schemes.get(scheme_id)
+        assert scheme
+
+        if user.authority_id != scheme.authority_id:
+            abort(403)
+        return func(*args, **kwargs)
+
+    return decorated_function
+
+
 @bp.get("<int:scheme_id>")
 def get(scheme_id: int) -> Response:
     json = request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html
-    return get_json(scheme_id) if json else get_html(scheme_id)
+    return get_json(scheme_id) if json else get_html(scheme_id=scheme_id)
 
 
 @bearer_auth
+@authorized_scheme
 @inject.autoparams("users", "authorities", "schemes")
 def get_html(
     scheme_id: int, users: UserRepository, authorities: AuthorityRepository, schemes: SchemeRepository
@@ -108,9 +135,6 @@ def get_html(
     assert authority
     scheme = schemes.get(scheme_id)
     assert scheme
-
-    if user.authority_id != scheme.authority_id:
-        abort(403)
 
     context = SchemeContext.from_domain(authority, scheme)
     return Response(render_template("scheme/index.html", **as_shallow_dict(context)))
@@ -201,16 +225,11 @@ class FundingProgrammeContext:
 
 @bp.get("<int:scheme_id>/spend-to-date")
 @bearer_auth
-@inject.autoparams("users", "schemes")
-def spend_to_date_form(users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> str:
-    user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
-    assert user
+@authorized_scheme
+@inject.autoparams("schemes")
+def spend_to_date_form(schemes: SchemeRepository, scheme_id: int) -> str:
     scheme = schemes.get(scheme_id)
     assert scheme
-
-    if user.authority_id != scheme.authority_id:
-        abort(403)
 
     context = SchemeChangeSpendToDateContext.from_domain(scheme)
     return render_template("scheme/spend_to_date.html", **as_shallow_dict(context))
@@ -218,16 +237,11 @@ def spend_to_date_form(users: UserRepository, schemes: SchemeRepository, scheme_
 
 @bp.post("<int:scheme_id>/spend-to-date")
 @bearer_auth
-@inject.autoparams("clock", "users", "schemes")
-def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
-    user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
-    assert user
+@authorized_scheme
+@inject.autoparams("clock", "schemes")
+def spend_to_date(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
     scheme = schemes.get(scheme_id)
     assert scheme
-
-    if user.authority_id != scheme.authority_id:
-        abort(403)
 
     context = SchemeChangeSpendToDateContext.from_domain(scheme)
     context.form.process(formdata=request.form)

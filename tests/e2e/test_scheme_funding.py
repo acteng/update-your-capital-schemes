@@ -94,7 +94,7 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, id_=1).funding.change_spend_to_date().spent_to_date("60000").confirm()
+    scheme_page = SchemePage.open(page, id_=1).funding.change_spend_to_date().amount("60000").confirm()
 
     assert scheme_page.name == "Wirral Package" and scheme_page.funding.spend_to_date == "£60,000"
     assert app_client.get_scheme(id_=1).financial_revisions == [

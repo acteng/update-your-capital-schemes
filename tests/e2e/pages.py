@@ -305,11 +305,11 @@ class SchemeOutputRowComponent:
 class SchemeChangeSpendToDatePage:
     def __init__(self, page: Page):
         self._page = page
-        self._spend_to_date = page.get_by_label("How much has been spent to date?")
+        self._amount = page.get_by_label("How much has been spent to date?")
         self._confirm = page.get_by_role("button", name="Confirm")
 
-    def spent_to_date(self, value: str) -> SchemeChangeSpendToDatePage:
-        self._spend_to_date.fill(value)
+    def amount(self, value: str) -> SchemeChangeSpendToDatePage:
+        self._amount.fill(value)
         return self
 
     def confirm(self) -> SchemePage:

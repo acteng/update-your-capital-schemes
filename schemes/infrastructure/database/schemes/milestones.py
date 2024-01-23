@@ -1,3 +1,4 @@
+from schemes.dicts import inverse_dict
 from schemes.domain.schemes import Milestone
 
 
@@ -21,4 +22,4 @@ class MilestoneMapper:
         return self._IDS[milestone]
 
     def to_domain(self, id_: int) -> Milestone:
-        return {value: key for key, value in self._IDS.items()}[id_]
+        return inverse_dict(self._IDS)[id_]

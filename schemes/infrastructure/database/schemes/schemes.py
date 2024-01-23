@@ -2,6 +2,7 @@ import inject
 from sqlalchemy import Engine, delete, select
 from sqlalchemy.orm import Session, selectinload
 
+from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
     DateRange,
     FinancialRevision,
@@ -192,7 +193,7 @@ class SchemeTypeMapper:
         return self._IDS[type_] if type_ else None
 
     def to_domain(self, id_: int | None) -> SchemeType | None:
-        return {value: key for key, value in self._IDS.items()}[id_] if id_ else None
+        return inverse_dict(self._IDS)[id_] if id_ else None
 
 
 class FundingProgrammeMapper:
@@ -211,4 +212,4 @@ class FundingProgrammeMapper:
         return self._IDS[funding_programme] if funding_programme else None
 
     def to_domain(self, id_: int | None) -> FundingProgramme | None:
-        return {value: key for key, value in self._IDS.items()}[id_] if id_ else None
+        return inverse_dict(self._IDS)[id_] if id_ else None

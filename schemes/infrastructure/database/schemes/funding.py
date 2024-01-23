@@ -1,3 +1,4 @@
+from schemes.dicts import inverse_dict
 from schemes.domain.schemes import DataSource, FinancialType
 
 
@@ -14,7 +15,7 @@ class FinancialTypeMapper:
         return self._IDS[financial_type]
 
     def to_domain(self, id_: int) -> FinancialType:
-        return {value: key for key, value in self._IDS.items()}[id_]
+        return inverse_dict(self._IDS)[id_]
 
 
 class DataSourceMapper:
@@ -39,4 +40,4 @@ class DataSourceMapper:
         return self._IDS[data_source]
 
     def to_domain(self, id_: int) -> DataSource:
-        return {value: key for key, value in self._IDS.items()}[id_]
+        return inverse_dict(self._IDS)[id_]

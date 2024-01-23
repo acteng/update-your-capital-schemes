@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from enum import Enum, unique
 
+from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
     DateRange,
     Milestone,
@@ -129,7 +130,7 @@ class MilestoneRepr(Enum):
         return cls._members()[milestone]
 
     def to_domain(self) -> Milestone:
-        return {value: key for key, value in self._members().items()}[self]
+        return inverse_dict(self._members())[self]
 
     @staticmethod
     def _members() -> dict[Milestone, MilestoneRepr]:

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, unique
 
+from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
     DataSource,
     DateRange,
@@ -92,7 +93,7 @@ class FinancialTypeRepr(Enum):
         return cls._members()[financial_type]
 
     def to_domain(self) -> FinancialType:
-        return {value: key for key, value in self._members().items()}[self]
+        return inverse_dict(self._members())[self]
 
     @staticmethod
     def _members() -> dict[FinancialType, FinancialTypeRepr]:
@@ -127,7 +128,7 @@ class DataSourceRepr(Enum):
         return cls._members()[data_source]
 
     def to_domain(self) -> DataSource:
-        return {value: key for key, value in self._members().items()}[self]
+        return inverse_dict(self._members())[self]
 
     @staticmethod
     def _members() -> dict[DataSource, DataSourceRepr]:

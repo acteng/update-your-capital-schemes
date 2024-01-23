@@ -7,6 +7,7 @@ from enum import Enum, unique
 from itertools import groupby
 from typing import Iterator
 
+from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
     DateRange,
     ObservationType,
@@ -173,7 +174,7 @@ class OutputTypeRepr(Enum):
         return cls._members()[type_]
 
     def to_domain(self) -> OutputType:
-        return {value: key for key, value in self._members().items()}[self]
+        return inverse_dict(self._members())[self]
 
     @staticmethod
     def _members() -> dict[OutputType, OutputTypeRepr]:
@@ -220,7 +221,7 @@ class OutputMeasureRepr(Enum):
         return cls._members()[measure]
 
     def to_domain(self) -> OutputMeasure:
-        return {value: key for key, value in self._members().items()}[self]
+        return inverse_dict(self._members())[self]
 
     @staticmethod
     def _members() -> dict[OutputMeasure, OutputMeasureRepr]:

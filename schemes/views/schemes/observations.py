@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import Enum, unique
 
+from schemes.dicts import inverse_dict
 from schemes.domain.schemes import ObservationType
 
 
@@ -15,7 +16,7 @@ class ObservationTypeRepr(Enum):
         return cls._members()[observation_type]
 
     def to_domain(self) -> ObservationType:
-        return {value: key for key, value in self._members().items()}[self]
+        return inverse_dict(self._members())[self]
 
     @staticmethod
     def _members() -> dict[ObservationType, ObservationTypeRepr]:

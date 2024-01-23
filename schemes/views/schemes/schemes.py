@@ -18,6 +18,7 @@ from flask import (
 )
 from werkzeug import Response as BaseResponse
 
+from schemes.dicts import inverse_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import (
     FundingProgramme,
@@ -291,7 +292,7 @@ class SchemeTypeRepr(Enum):
         return cls._members()[type_]
 
     def to_domain(self) -> SchemeType:
-        return {value: key for key, value in self._members().items()}[self]
+        return inverse_dict(self._members())[self]
 
     @staticmethod
     def _members() -> dict[SchemeType, SchemeTypeRepr]:
@@ -317,7 +318,7 @@ class FundingProgrammeRepr(Enum):
         return cls._members()[funding_programme]
 
     def to_domain(self) -> FundingProgramme:
-        return {value: key for key, value in self._members().items()}[self]
+        return inverse_dict(self._members())[self]
 
     @staticmethod
     def _members() -> dict[FundingProgramme, FundingProgrammeRepr]:

@@ -45,7 +45,6 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
     _configure_dataclass_wizard()
     _configure_jinja(app)
-    _configure_jinja_filters(app)
     _configure_error_pages(app)
     _configure_govuk_frontend(app)
     _configure_oidc(app)
@@ -99,10 +98,12 @@ def _configure_dataclass_wizard() -> None:
 def _configure_jinja(app: Flask) -> None:
     app.jinja_options["extensions"] = ["jinja2.ext.do"]
 
-
-def _configure_jinja_filters(app: Flask) -> None:
     app.jinja_env.filters[pounds.__name__] = pounds
     app.jinja_env.filters[remove_exponent.__name__] = remove_exponent
+
+    default_loader = FileSystemLoader(os.path.join(app.root_path, str(app.template_folder)))
+    package_loaders = PrefixLoader({"govuk_frontend_jinja": PackageLoader("govuk_frontend_jinja")})
+    app.jinja_loader = ChoiceLoader([default_loader, package_loaders])  # type: ignore
 
 
 def _configure_error_pages(app: Flask) -> None:
@@ -120,10 +121,6 @@ def _configure_error_pages(app: Flask) -> None:
 
 
 def _configure_govuk_frontend(app: Flask) -> None:
-    default_loader = FileSystemLoader(os.path.join(app.root_path, str(app.template_folder)))
-    govuk_loader = PrefixLoader({"govuk_frontend_jinja": PackageLoader("govuk_frontend_jinja")})
-    app.jinja_loader = ChoiceLoader([default_loader, govuk_loader])  # type: ignore
-
     @app.context_processor
     def govuk_frontend_config() -> dict[str, str]:
         return {

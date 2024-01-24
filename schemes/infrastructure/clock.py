@@ -14,7 +14,6 @@ class Clock:
 class SystemClock(Clock):
     @property
     def now(self) -> datetime:
-        # NOTE: not yet tested
         return datetime.now()
 
     @now.setter

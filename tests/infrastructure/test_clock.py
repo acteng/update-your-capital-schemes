@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest.mock import patch
 
 import pytest
 
@@ -10,10 +11,11 @@ class TestSystemClock:
     def clock_fixture(self) -> SystemClock:
         return SystemClock()
 
-    @pytest.mark.skip
     def test_get_now(self, clock: SystemClock) -> None:
-        # TODO: can we test this?
-        pass
+        with patch("schemes.infrastructure.clock.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2020, 1, 2, 12)
+            
+            assert clock.now == datetime(2020, 1, 2, 12)
 
     def test_set_now(self, clock: SystemClock) -> None:
         with pytest.raises(NotImplementedError):

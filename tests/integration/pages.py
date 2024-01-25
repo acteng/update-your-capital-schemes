@@ -270,7 +270,7 @@ class SchemeChangeSpendToDatePage(PageObject):
         super().__init__(response)
         form = self._soup.select_one("form")
         self.confirm_url = form.get("action") if form else None
-        input_ = form.select_one("input") if form else None
+        input_ = form.select_one("input[name='amount']") if form else None
         self.amount = input_.get("value") if input_ else None
 
     @classmethod

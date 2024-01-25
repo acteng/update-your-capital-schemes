@@ -9,6 +9,7 @@ from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from dataclass_wizard import JSONWizard
 from dataclass_wizard.enums import LetterCase
 from flask import Config, Flask, Response, render_template, url_for
+from flask_wtf import CSRFProtect
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 from sqlalchemy import Engine, create_engine, event
@@ -46,15 +47,23 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     _configure_dataclass_wizard()
     _configure_jinja(app)
     _configure_error_pages(app)
+    csrf = CSRFProtect(app)
     _configure_govuk_frontend(app)
     _configure_oidc(app)
 
     app.register_blueprint(clock.bp, url_prefix="/clock")
+    csrf.exempt(clock.set_clock)
     app.register_blueprint(start.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
     app.register_blueprint(authorities.bp, url_prefix="/authorities")
+    csrf.exempt(authorities.add)
+    csrf.exempt(authorities.add_users)
+    csrf.exempt(authorities.add_schemes)
+    csrf.exempt(authorities.clear)
     app.register_blueprint(schemes.bp, url_prefix="/schemes")
+    csrf.exempt(schemes.schemes.clear)
     app.register_blueprint(users.bp, url_prefix="/users")
+    csrf.exempt(users.clear)
 
     _migrate_database()
 

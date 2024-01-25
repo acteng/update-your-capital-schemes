@@ -405,7 +405,9 @@ def test_spend_to_date_form_shows_back(schemes: SchemeRepository, client: FlaskC
     assert change_spend_to_date_page.back_url == "/schemes/1"
 
 
-def test_spend_to_date_updates_spend_to_date(clock: Clock, schemes: SchemeRepository, client: FlaskClient) -> None:
+def test_spend_to_date_updates_spend_to_date(
+    clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+) -> None:
     clock.now = datetime(2020, 1, 31, 13)
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.funding.update_financial(
@@ -419,7 +421,7 @@ def test_spend_to_date_updates_spend_to_date(clock: Clock, schemes: SchemeReposi
     )
     schemes.add(scheme)
 
-    client.post("/schemes/1/spend-to-date", data={"amount": "60000"})
+    client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
 
     actual_scheme = schemes.get(1)
     assert actual_scheme
@@ -435,12 +437,30 @@ def test_spend_to_date_updates_spend_to_date(clock: Clock, schemes: SchemeReposi
     )
 
 
-def test_spend_to_date_shows_scheme(schemes: SchemeRepository, client: FlaskClient) -> None:
+def test_spend_to_date_shows_scheme(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    response = client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+
+    assert response.status_code == 302 and response.location == "/schemes/1"
+
+
+def test_cannot_spend_to_date_when_no_csrf_token(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
     response = client.post("/schemes/1/spend-to-date", data={"amount": "60000"})
 
-    assert response.status_code == 302 and response.location == "/schemes/1"
+    assert response.status_code == 400
+
+
+def test_cannot_spend_to_date_when_incorrect_csrf_token(
+    schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    response = client.post("/schemes/1/spend-to-date", data={"csrf_token": "x", "amount": "60000"})
+
+    assert response.status_code == 400
 
 
 class TestApiEnabled:

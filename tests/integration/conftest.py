@@ -2,8 +2,9 @@ from typing import Any, Generator, Mapping
 
 import inject
 import pytest
-from flask import Flask
+from flask import Flask, session
 from flask.testing import FlaskClient
+from flask_wtf.csrf import generate_csrf
 from inject import Binder
 
 from schemes import create_app, destroy_app
@@ -43,6 +44,14 @@ def app_fixture(config: Mapping[str, Any]) -> Generator[Flask, Any, Any]:
 @pytest.fixture(name="client")
 def client_fixture(app: Flask) -> FlaskClient:
     return app.test_client()
+
+
+@pytest.fixture(name="csrf_token")
+def csrf_token_fixture(client: FlaskClient) -> str:
+    with client.session_transaction() as client_session:
+        csrf_token: str = generate_csrf()
+        client_session["csrf_token"] = session["csrf_token"]
+    return csrf_token
 
 
 @pytest.fixture(name="clock")

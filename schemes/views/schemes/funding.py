@@ -6,7 +6,6 @@ from enum import Enum, unique
 
 from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovTextInput
-from wtforms.fields.numeric import IntegerField
 from wtforms.validators import InputRequired
 
 from schemes.dicts import inverse_dict
@@ -18,6 +17,7 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeFunding,
 )
+from schemes.views.fields import CustomMessageIntegerField
 
 
 @dataclass(frozen=True)
@@ -48,9 +48,10 @@ class SchemeChangeSpendToDateContext:
 
 
 class ChangeSpendToDateForm(FlaskForm):  # type: ignore
-    amount = IntegerField(
+    amount = CustomMessageIntegerField(
         widget=GovTextInput(),
         validators=[InputRequired(message="Enter how much has been spent to date")],
+        message="Enter how much has been spent to date as a number",
     )
 
     @classmethod

@@ -184,7 +184,7 @@ class TestChangeSpendToDateForm:
 
         form.validate()
 
-        assert "Not a valid integer value." in form.errors["amount"]
+        assert "Enter how much has been spent to date as a number" in form.errors["amount"]
 
 
 class TestFinancialRevisionRepr:

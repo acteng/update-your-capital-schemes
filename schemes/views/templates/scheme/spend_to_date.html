@@ -1,7 +1,10 @@
 {% extends "service_base.html" %}
 {% from "govuk_frontend_jinja/components/back-link/macro.html" import govukBackLink %}
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
+{% from "govuk_frontend_jinja/components/error-summary/macro.html" import govukErrorSummary %}
 {% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
+
+{% block pageTitle %}{% if form.errors %}Error: {% endif %}{{ super() }}{% endblock %}
 
 {% block beforeContent %}
     {{ govukBackLink({
@@ -12,9 +15,13 @@
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
+            {% if form.errors %}
+                {{ govukErrorSummary(wtforms_errors(form)) }}
+            {% endif %}
+
             <h1 class="govuk-heading-l">Change spend to date</h1>
 
-            <form method="post" action="{{ url_for('schemes.spend_to_date', scheme_id=id) }}">
+            <form method="post" action="{{ url_for('schemes.spend_to_date', scheme_id=id) }}" novalidate>
                 {{ form.csrf_token }}
 
                 {{ form.amount(params={

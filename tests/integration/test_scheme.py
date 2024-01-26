@@ -358,7 +358,8 @@ def test_spend_to_date_form_shows_spent_to_date(schemes: SchemeRepository, clien
 
     change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
 
-    assert change_spend_to_date_page.amount == "50000"
+    assert change_spend_to_date_page.title == "Schemes - Active Travel England - GOV.UK"
+    assert change_spend_to_date_page.amount.value == "50000"
 
 
 def test_spend_to_date_form_shows_zero_spent_to_date(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -376,7 +377,7 @@ def test_spend_to_date_form_shows_zero_spent_to_date(schemes: SchemeRepository, 
 
     change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
 
-    assert change_spend_to_date_page.amount == "0"
+    assert change_spend_to_date_page.amount.value == "0"
 
 
 def test_spend_to_date_form_shows_empty_when_no_current_spent_to_date(
@@ -386,7 +387,7 @@ def test_spend_to_date_form_shows_empty_when_no_current_spent_to_date(
 
     change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
 
-    assert not change_spend_to_date_page.amount
+    assert not change_spend_to_date_page.amount.value
 
 
 def test_spend_to_date_form_submits(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -443,6 +444,43 @@ def test_spend_to_date_shows_scheme(schemes: SchemeRepository, client: FlaskClie
     response = client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
 
     assert response.status_code == 302 and response.location == "/schemes/1"
+
+
+def test_cannot_spend_to_date_when_error(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.funding.update_financial(
+        FinancialRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1, 12), None),
+            type_=FinancialType.SPENT_TO_DATE,
+            amount=50_000,
+            source=DataSource.ATF4_BID,
+        )
+    )
+    schemes.add(scheme)
+
+    change_spend_to_date_page = SchemeChangeSpendToDatePage(
+        client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": ""})
+    )
+
+    assert change_spend_to_date_page.title == "Error: Schemes - Active Travel England - GOV.UK"
+    assert change_spend_to_date_page.errors and list(change_spend_to_date_page.errors) == ["Enter an amount"]
+    assert (
+        change_spend_to_date_page.amount.is_errored
+        and change_spend_to_date_page.amount.error == "Error: Enter an amount"
+        and change_spend_to_date_page.amount.value is None
+    )
+    actual_scheme = schemes.get(1)
+    assert actual_scheme
+    financial_revision1: FinancialRevision
+    (financial_revision1,) = actual_scheme.funding.financial_revisions
+    assert (
+        financial_revision1.id == 1
+        and financial_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
+        and financial_revision1.type == FinancialType.SPENT_TO_DATE
+        and financial_revision1.amount == 50_000
+        and financial_revision1.source == DataSource.ATF4_BID
+    )
 
 
 def test_cannot_spend_to_date_when_no_csrf_token(schemes: SchemeRepository, client: FlaskClient) -> None:

@@ -10,6 +10,7 @@ from dataclass_wizard import JSONWizard
 from dataclass_wizard.enums import LetterCase
 from flask import Config, Flask, Response, render_template, url_for
 from flask_wtf import CSRFProtect
+from govuk_frontend_wtf.main import WTFormsHelpers
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 from sqlalchemy import Engine, create_engine, event
@@ -49,6 +50,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     _configure_error_pages(app)
     csrf = CSRFProtect(app)
     _configure_govuk_frontend(app)
+    WTFormsHelpers(app)
     _configure_oidc(app)
 
     app.register_blueprint(clock.bp, url_prefix="/clock")

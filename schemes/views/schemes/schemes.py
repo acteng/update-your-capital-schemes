@@ -31,7 +31,6 @@ from schemes.infrastructure.clock import Clock
 from schemes.views.auth.api_key import api_key_auth
 from schemes.views.auth.bearer import bearer_auth
 from schemes.views.schemes.funding import (
-    ChangeSpendToDateForm,
     FinancialRevisionRepr,
     SchemeChangeSpendToDateContext,
     SchemeFundingContext,
@@ -215,12 +214,16 @@ def spend_to_date_form(schemes: SchemeRepository, scheme_id: int) -> str:
 @bearer_auth
 @inject.autoparams("clock", "schemes")
 def spend_to_date(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
-    now = clock.now
-    form = ChangeSpendToDateForm(request.form)
-
     scheme = schemes.get(scheme_id)
     assert scheme
-    form.update_domain(scheme.funding, now)
+
+    context = SchemeChangeSpendToDateContext.from_domain(scheme)
+    context.form.process(formdata=request.form)
+
+    if not context.form.validate():
+        return Response(render_template("scheme/spend_to_date.html", **as_shallow_dict(context)))
+
+    context.form.update_domain(scheme.funding, clock.now)
     schemes.update(scheme)
 
     return redirect(url_for("schemes.get", scheme_id=scheme_id))

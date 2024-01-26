@@ -12,6 +12,11 @@ class PageObject:
         self._response = response
         self._soup = BeautifulSoup(response.text, "html.parser")
 
+    @property
+    def title(self) -> str | None:
+        title = self._soup.select_one("title")
+        return title.text if title else None
+
 
 class StartPage(PageObject):
     @classmethod
@@ -268,10 +273,14 @@ class SchemeOutputRowComponent:
 class SchemeChangeSpendToDatePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
+        alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
+        self.errors = ErrorSummaryComponent(alert) if alert else None
         form = self._soup.select_one("form")
-        self.confirm_url = form.get("action") if form else None
-        input_ = form.select_one("input[name='amount']") if form else None
-        self.amount = input_.get("value") if input_ else None
+        assert form
+        self.confirm_url = form.get("action")
+        input_ = form.select_one("input[name='amount']")
+        assert input_
+        self.amount = TextComponent(input_)
 
     @classmethod
     def open(cls, client: FlaskClient, id_: int) -> SchemeChangeSpendToDatePage:
@@ -287,3 +296,21 @@ class SchemeChangeSpendToDatePage(PageObject):
     def back_url(self) -> str | list[str] | None:
         back = self._soup.select_one("a.govuk-back-link")
         return back["href"] if back else None
+
+
+class ErrorSummaryComponent:
+    def __init__(self, alert: Tag):
+        self._alert = alert
+
+    def __iter__(self) -> Iterator[str]:
+        return (listitem.text.strip() for listitem in self._alert.select("li"))
+
+
+class TextComponent:
+    def __init__(self, input_: Tag):
+        self.value = input_.get("value")
+        self.is_errored = "govuk-input--error" in input_.get_attribute_list("class")
+        form_group = input_.find_parent("div", class_="govuk-form-group")
+        assert form_group
+        error_message = form_group.select_one(".govuk-error-message")
+        self.error = error_message.text.strip() if error_message else None

@@ -7,6 +7,7 @@ from enum import Enum, unique
 from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovTextInput
 from wtforms.fields.simple import StringField
+from wtforms.validators import InputRequired
 
 from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
@@ -47,7 +48,7 @@ class SchemeChangeSpendToDateContext:
 
 
 class ChangeSpendToDateForm(FlaskForm):  # type: ignore
-    amount = StringField(widget=GovTextInput())
+    amount = StringField(widget=GovTextInput(), validators=[InputRequired(message="Enter an amount")])
 
     @classmethod
     def from_domain(cls, funding: SchemeFunding) -> ChangeSpendToDateForm:

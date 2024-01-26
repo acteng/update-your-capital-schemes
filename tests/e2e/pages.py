@@ -305,13 +305,54 @@ class SchemeOutputRowComponent:
 class SchemeChangeSpendToDatePage:
     def __init__(self, page: Page):
         self._page = page
-        self._amount = page.get_by_label("How much has been spent to date?")
+        self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
+        self.amount = TextComponent(page.get_by_label("How much has been spent to date?"))
         self._confirm = page.get_by_role("button", name="Confirm")
 
-    def amount(self, value: str) -> SchemeChangeSpendToDatePage:
-        self._amount.fill(value)
+    @property
+    def title(self) -> str:
+        return self._page.title()
+
+    def enter_amount(self, value: str) -> SchemeChangeSpendToDatePage:
+        self.amount.value = value
         return self
 
     def confirm(self) -> SchemePage:
         self._confirm.click()
         return SchemePage(self._page)
+
+    def confirm_when_error(self) -> SchemeChangeSpendToDatePage:
+        self._confirm.click()
+        return self
+
+
+class ErrorSummaryComponent:
+    def __init__(self, alert: Locator):
+        self._listitems = alert.get_by_role("listitem")
+
+    def __iter__(self) -> Iterator[str]:
+        return (text_content.strip() for text_content in self._listitems.all_text_contents())
+
+
+class TextComponent:
+    def __init__(self, input_: Locator):
+        self._input = input_
+        form_group = input_.locator("xpath=../..")
+        self._error = form_group.locator(".govuk-error-message")
+
+    @property
+    def value(self) -> str:
+        return self._input.input_value()
+
+    @value.setter
+    def value(self, value: str) -> None:
+        self._input.fill(value)
+
+    @property
+    def is_errored(self) -> bool:
+        return "govuk-input--error" in (self._input.get_attribute("class") or "").split(" ")
+
+    @property
+    def error(self) -> str | None:
+        text_content = self._error.text_content()
+        return text_content.strip() if text_content else None

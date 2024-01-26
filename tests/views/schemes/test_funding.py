@@ -2,6 +2,8 @@ from datetime import datetime
 
 import pytest
 from flask import Flask
+from flask_wtf.csrf import generate_csrf
+from werkzeug.datastructures import MultiDict
 
 from schemes.domain.schemes import (
     DataSource,
@@ -154,6 +156,20 @@ class TestChangeSpendToDateForm:
             and financial_revision2.amount == 60_000
             and financial_revision2.source == DataSource.AUTHORITY_UPDATE
         )
+
+    def test_no_errors_when_valid(self, app: Flask) -> None:
+        form = ChangeSpendToDateForm(formdata=MultiDict([("csrf_token", generate_csrf()), ("amount", "50000")]))
+
+        form.validate()
+
+        assert not form.errors
+
+    def test_amount_is_required(self, app: Flask) -> None:
+        form = ChangeSpendToDateForm(formdata=MultiDict([("amount", "")]))
+
+        form.validate()
+
+        assert "Enter an amount" in form.errors["amount"]
 
 
 class TestFinancialRevisionRepr:

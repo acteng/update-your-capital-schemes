@@ -351,14 +351,6 @@ def test_spend_to_date_form_shows_back(schemes: SchemeRepository, client: FlaskC
     assert change_spend_to_date_page.back_url == "/schemes/1"
 
 
-def test_spend_to_date_form_shows_cancel(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
-
-    assert change_spend_to_date_page.cancel_url == "/schemes/1"
-
-
 def test_spend_to_date_form_shows_spent_to_date(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.funding.update_financial(
@@ -412,6 +404,14 @@ def test_spend_to_date_form_submits(schemes: SchemeRepository, client: FlaskClie
     change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
 
     assert change_spend_to_date_page.confirm_url == "/schemes/1/spend-to-date"
+
+
+def test_spend_to_date_form_shows_cancel(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+
+    assert change_spend_to_date_page.cancel_url == "/schemes/1"
 
 
 def test_spend_to_date_updates_spend_to_date(

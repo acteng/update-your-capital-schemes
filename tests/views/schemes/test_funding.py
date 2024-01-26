@@ -169,7 +169,7 @@ class TestChangeSpendToDateForm:
 
         form.validate()
 
-        assert "Enter an amount" in form.errors["amount"]
+        assert "Enter how much has been spent to date" in form.errors["amount"]
 
 
 class TestFinancialRevisionRepr:

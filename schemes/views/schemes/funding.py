@@ -48,7 +48,9 @@ class SchemeChangeSpendToDateContext:
 
 
 class ChangeSpendToDateForm(FlaskForm):  # type: ignore
-    amount = StringField(widget=GovTextInput(), validators=[InputRequired(message="Enter an amount")])
+    amount = StringField(
+        widget=GovTextInput(), validators=[InputRequired(message="Enter how much has been spent to date")]
+    )
 
     @classmethod
     def from_domain(cls, funding: SchemeFunding) -> ChangeSpendToDateForm:

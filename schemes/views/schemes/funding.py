@@ -54,7 +54,8 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
 
     @classmethod
     def from_domain(cls, funding: SchemeFunding) -> ChangeSpendToDateForm:
-        return cls(data={"amount": funding.spend_to_date})
+        amount = funding.spend_to_date
+        return cls(data={"amount": str(amount) if amount is not None else None})
 
     def update_domain(self, funding: SchemeFunding, now: datetime) -> None:
         amount = int(self.amount.data)

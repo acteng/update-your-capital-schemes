@@ -111,7 +111,7 @@ class TestSchemeChangeSpendToDateContext:
 
         context = SchemeChangeSpendToDateContext.from_domain(scheme)
 
-        assert context.id == 1 and context.form.amount.data == 40_000
+        assert context.id == 1 and context.form.amount.data == "40000"
 
 
 class TestChangeSpendToDateForm:
@@ -129,10 +129,33 @@ class TestChangeSpendToDateForm:
 
         form = ChangeSpendToDateForm.from_domain(funding)
 
-        assert form.amount.data == 50_000
+        assert form.amount.data == "50000"
+
+    def test_from_domain_when_zero(self, app: Flask) -> None:
+        funding = SchemeFunding()
+        funding.update_financial(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=0,
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        form = ChangeSpendToDateForm.from_domain(funding)
+
+        assert form.amount.data == "0"
+
+    def test_from_domain_when_minimal(self, app: Flask) -> None:
+        funding = SchemeFunding()
+
+        form = ChangeSpendToDateForm.from_domain(funding)
+
+        assert form.amount.data is None
 
     def test_update_domain(self, app: Flask) -> None:
-        form = ChangeSpendToDateForm(data={"amount": 60_000})
+        form = ChangeSpendToDateForm(data={"amount": "60000"})
         funding = SchemeFunding()
         funding.update_financial(
             FinancialRevision(

@@ -186,6 +186,20 @@ class TestChangeSpendToDateForm:
 
         assert "Enter how much has been spent to date as a number" in form.errors["amount"]
 
+    def test_amount_can_be_zero(self, app: Flask) -> None:
+        form = ChangeSpendToDateForm(formdata=MultiDict([("amount", "0")]))
+
+        form.validate()
+
+        assert "amount" not in form.errors
+
+    def test_amount_cannot_be_negative(self, app: Flask) -> None:
+        form = ChangeSpendToDateForm(formdata=MultiDict([("amount", "-100")]))
+
+        form.validate()
+
+        assert "Enter how much has been spent to date as zero or more" in form.errors["amount"]
+
 
 class TestFinancialRevisionRepr:
     def test_from_domain(self) -> None:

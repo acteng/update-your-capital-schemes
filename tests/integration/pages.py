@@ -275,8 +275,9 @@ class SchemeChangeSpendToDatePage(PageObject):
         super().__init__(response)
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
-        self._form = self._soup.select_one("form")
-        assert self._form
+        form = self._soup.select_one("form")
+        assert form
+        self._form = form
         self.confirm_url = self._form.get("action")
         input_ = self._form.select_one("input[name='amount']")
         assert input_
@@ -299,7 +300,6 @@ class SchemeChangeSpendToDatePage(PageObject):
 
     @property
     def cancel_url(self) -> str | list[str] | None:
-        assert self._form
         cancel = self._form.select_one("a.govuk-link")
         return cancel["href"] if cancel else None
 

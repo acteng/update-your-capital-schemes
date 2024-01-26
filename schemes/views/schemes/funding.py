@@ -6,7 +6,7 @@ from enum import Enum, unique
 
 from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovTextInput
-from wtforms.fields.simple import StringField
+from wtforms.fields.numeric import IntegerField
 from wtforms.validators import InputRequired
 
 from schemes.dicts import inverse_dict
@@ -48,19 +48,18 @@ class SchemeChangeSpendToDateContext:
 
 
 class ChangeSpendToDateForm(FlaskForm):  # type: ignore
-    amount = StringField(
-        widget=GovTextInput(), validators=[InputRequired(message="Enter how much has been spent to date")]
+    amount = IntegerField(
+        widget=GovTextInput(),
+        validators=[InputRequired(message="Enter how much has been spent to date")],
     )
 
     @classmethod
     def from_domain(cls, funding: SchemeFunding) -> ChangeSpendToDateForm:
-        amount = funding.spend_to_date
-        return cls(data={"amount": str(amount) if amount is not None else None})
+        return cls(data={"amount": funding.spend_to_date})
 
     def update_domain(self, funding: SchemeFunding, now: datetime) -> None:
-        assert self.amount.data
-        amount = int(self.amount.data)
-        funding.update_spend_to_date(now=now, amount=amount)
+        assert self.amount.data is not None
+        funding.update_spend_to_date(now=now, amount=self.amount.data)
 
 
 @dataclass(frozen=True)

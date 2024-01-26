@@ -111,7 +111,7 @@ class TestSchemeChangeSpendToDateContext:
 
         context = SchemeChangeSpendToDateContext.from_domain(scheme)
 
-        assert context.id == 1 and context.form.amount.data == "40000"
+        assert context.id == 1 and context.form.amount.data == 40_000
 
 
 class TestChangeSpendToDateForm:
@@ -129,30 +129,7 @@ class TestChangeSpendToDateForm:
 
         form = ChangeSpendToDateForm.from_domain(funding)
 
-        assert form.amount.data == "50000"
-
-    def test_from_domain_when_zero(self, app: Flask) -> None:
-        funding = SchemeFunding()
-        funding.update_financial(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
-                amount=0,
-                source=DataSource.ATF4_BID,
-            )
-        )
-
-        form = ChangeSpendToDateForm.from_domain(funding)
-
-        assert form.amount.data == "0"
-
-    def test_from_domain_when_minimal(self, app: Flask) -> None:
-        funding = SchemeFunding()
-
-        form = ChangeSpendToDateForm.from_domain(funding)
-
-        assert form.amount.data is None
+        assert form.amount.data == 50_000
 
     def test_update_domain(self, app: Flask) -> None:
         form = ChangeSpendToDateForm(data={"amount": "60000"})
@@ -180,6 +157,14 @@ class TestChangeSpendToDateForm:
             and financial_revision2.source == DataSource.AUTHORITY_UPDATE
         )
 
+    def test_update_domain_with_zero_amount(self, app: Flask) -> None:
+        form = ChangeSpendToDateForm(data={"amount": "0"})
+        funding = SchemeFunding()
+
+        form.update_domain(funding, now=datetime(2020, 1, 31))
+
+        assert funding.financial_revisions[0].amount == 0
+
     def test_no_errors_when_valid(self, app: Flask) -> None:
         form = ChangeSpendToDateForm(formdata=MultiDict([("csrf_token", generate_csrf()), ("amount", "50000")]))
 
@@ -193,6 +178,13 @@ class TestChangeSpendToDateForm:
         form.validate()
 
         assert "Enter how much has been spent to date" in form.errors["amount"]
+
+    def test_amount_is_an_integer(self, app: Flask) -> None:
+        form = ChangeSpendToDateForm(formdata=MultiDict([("amount", "x")]))
+
+        form.validate()
+
+        assert "Not a valid integer value." in form.errors["amount"]
 
 
 class TestFinancialRevisionRepr:

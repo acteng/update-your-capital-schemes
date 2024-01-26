@@ -351,7 +351,7 @@ def test_spend_to_date_form_shows_back(schemes: SchemeRepository, client: FlaskC
     assert change_spend_to_date_page.back_url == "/schemes/1"
 
 
-def test_spend_to_date_form_shows_spent_to_date(schemes: SchemeRepository, client: FlaskClient) -> None:
+def test_spend_to_date_form_shows_amount(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.funding.update_financial(
         FinancialRevision(
@@ -370,7 +370,7 @@ def test_spend_to_date_form_shows_spent_to_date(schemes: SchemeRepository, clien
     assert change_spend_to_date_page.amount.value == "50000"
 
 
-def test_spend_to_date_form_shows_zero_spent_to_date(schemes: SchemeRepository, client: FlaskClient) -> None:
+def test_spend_to_date_form_shows_zero_amount(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.funding.update_financial(
         FinancialRevision(
@@ -388,9 +388,7 @@ def test_spend_to_date_form_shows_zero_spent_to_date(schemes: SchemeRepository, 
     assert change_spend_to_date_page.amount.value == "0"
 
 
-def test_spend_to_date_form_shows_empty_when_no_current_spent_to_date(
-    schemes: SchemeRepository, client: FlaskClient
-) -> None:
+def test_spend_to_date_form_shows_empty_amount(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
     change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
@@ -398,7 +396,7 @@ def test_spend_to_date_form_shows_empty_when_no_current_spent_to_date(
     assert not change_spend_to_date_page.amount.value
 
 
-def test_spend_to_date_form_submits(schemes: SchemeRepository, client: FlaskClient) -> None:
+def test_spend_to_date_form_shows_confirm(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
     change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)

@@ -282,3 +282,8 @@ class SchemeChangeSpendToDatePage(PageObject):
     def is_visible(self) -> bool:
         heading = self._soup.select_one("main h1")
         return heading.string == "Change spend to date" if heading else False
+
+    @property
+    def back_url(self) -> str | list[str] | None:
+        back = self._soup.select_one("a.govuk-back-link")
+        return back["href"] if back else None

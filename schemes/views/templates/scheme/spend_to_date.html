@@ -1,6 +1,13 @@
 {% extends "service_base.html" %}
+{% from "govuk_frontend_jinja/components/back-link/macro.html" import govukBackLink %}
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
 {% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
+
+{% block beforeContent %}
+    {{ govukBackLink({
+        "href": url_for("schemes.get", scheme_id=id)
+    }) }}
+{% endblock %}
 
 {% block content %}
     <div class="govuk-grid-row">

@@ -35,9 +35,13 @@
                     "classes": "govuk-input--width-10"
                 }) }}
 
-                {{ govukButton({
-                    "text": "Confirm"
-                }) }}
+                <div class="govuk-button-group">
+                    {{ govukButton({
+                        "text": "Confirm"
+                    }) }}
+
+                    <a class="govuk-link" href={{ url_for("schemes.get", scheme_id=id) }}>Cancel</a>
+                </div>
             </form>
         </div>
     </div>

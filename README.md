@@ -11,7 +11,7 @@
    ```bash
    gcloud auth application-default login
    ```
-1. Install Terraform 1.6
+1. Install Terraform 1.7
 1. Install [Bitwarden CLI](https://bitwarden.com/help/cli/#download-and-install)
 
 ## Configure the app

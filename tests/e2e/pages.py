@@ -214,9 +214,9 @@ class SchemeFundingComponent(SummaryCardComponent):
     def spend_to_date(self) -> str:
         return (self._spend_to_date.text_content() or "").strip()
 
-    def change_spend_to_date(self) -> SchemeChangeSpendToDatePage:
+    def change_spend_to_date(self) -> ChangeSpendToDatePage:
         self._change_spend_to_date.click()
-        return SchemeChangeSpendToDatePage(self._title.page)
+        return ChangeSpendToDatePage(self._title.page)
 
     @property
     def allocation_still_to_spend(self) -> str:
@@ -302,7 +302,7 @@ class SchemeOutputRowComponent:
         }
 
 
-class SchemeChangeSpendToDatePage:
+class ChangeSpendToDatePage:
     def __init__(self, page: Page):
         self._page = page
         self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
@@ -313,7 +313,7 @@ class SchemeChangeSpendToDatePage:
     def title(self) -> str:
         return self._page.title()
 
-    def enter_amount(self, value: str) -> SchemeChangeSpendToDatePage:
+    def enter_amount(self, value: str) -> ChangeSpendToDatePage:
         self.amount.value = value
         return self
 
@@ -321,7 +321,7 @@ class SchemeChangeSpendToDatePage:
         self._confirm.click()
         return SchemePage(self._page)
 
-    def confirm_when_error(self) -> SchemeChangeSpendToDatePage:
+    def confirm_when_error(self) -> ChangeSpendToDatePage:
         self._confirm.click()
         return self
 

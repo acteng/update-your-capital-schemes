@@ -23,7 +23,7 @@ from schemes.domain.schemes import (
 )
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
-from tests.integration.pages import SchemeChangeSpendToDatePage, SchemePage
+from tests.integration.pages import ChangeSpendToDatePage, SchemePage
 
 
 @pytest.fixture(name="auth", autouse=True)
@@ -346,7 +346,7 @@ def test_cannot_scheme_when_different_authority(
 def test_spend_to_date_form_shows_back(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
     assert change_spend_to_date_page.back_url == "/schemes/1"
 
@@ -371,7 +371,7 @@ def test_spend_to_date_form_shows_funding_summary(schemes: SchemeRepository, cli
     )
     schemes.add(scheme)
 
-    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
     assert (
         change_spend_to_date_page.funding_summary
@@ -382,7 +382,7 @@ def test_spend_to_date_form_shows_funding_summary(schemes: SchemeRepository, cli
 def test_spend_to_date_form_shows_minimal_funding_summary(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
     assert (
         change_spend_to_date_page.funding_summary
@@ -403,7 +403,7 @@ def test_spend_to_date_form_shows_amount(schemes: SchemeRepository, client: Flas
     )
     schemes.add(scheme)
 
-    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
     assert change_spend_to_date_page.title == "Schemes - Active Travel England - GOV.UK"
     assert change_spend_to_date_page.amount.value == "50000"
@@ -422,7 +422,7 @@ def test_spend_to_date_form_shows_zero_amount(schemes: SchemeRepository, client:
     )
     schemes.add(scheme)
 
-    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
     assert change_spend_to_date_page.amount.value == "0"
 
@@ -430,7 +430,7 @@ def test_spend_to_date_form_shows_zero_amount(schemes: SchemeRepository, client:
 def test_spend_to_date_form_shows_empty_amount(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
     assert not change_spend_to_date_page.amount.value
 
@@ -438,7 +438,7 @@ def test_spend_to_date_form_shows_empty_amount(schemes: SchemeRepository, client
 def test_spend_to_date_form_shows_confirm(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
     assert change_spend_to_date_page.confirm_url == "/schemes/1/spend-to-date"
 
@@ -446,7 +446,7 @@ def test_spend_to_date_form_shows_confirm(schemes: SchemeRepository, client: Fla
 def test_spend_to_date_form_shows_cancel(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
     assert change_spend_to_date_page.cancel_url == "/schemes/1"
 
@@ -457,7 +457,7 @@ def test_cannot_spend_to_date_form_when_different_authority(
     authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
     schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
 
-    forbidden_page = SchemeChangeSpendToDatePage.open_when_unauthorized(client, id_=2)
+    forbidden_page = ChangeSpendToDatePage.open_when_unauthorized(client, id_=2)
 
     assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
@@ -533,7 +533,7 @@ def test_cannot_spend_to_date_when_error(schemes: SchemeRepository, client: Flas
     )
     schemes.add(scheme)
 
-    change_spend_to_date_page = SchemeChangeSpendToDatePage(
+    change_spend_to_date_page = ChangeSpendToDatePage(
         client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": ""})
     )
 

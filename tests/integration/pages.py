@@ -270,7 +270,7 @@ class SchemeOutputRowComponent:
         }
 
 
-class SchemeChangeSpendToDatePage(PageObject):
+class ChangeSpendToDatePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
@@ -286,7 +286,7 @@ class SchemeChangeSpendToDatePage(PageObject):
         self.amount = TextComponent(input_)
 
     @classmethod
-    def open(cls, client: FlaskClient, id_: int) -> SchemeChangeSpendToDatePage:
+    def open(cls, client: FlaskClient, id_: int) -> ChangeSpendToDatePage:
         response = client.get(f"/schemes/{id_}/spend-to-date")
         return cls(response)
 

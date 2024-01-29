@@ -273,6 +273,8 @@ class SchemeOutputRowComponent:
 class ChangeSpendToDatePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
+        back = self._soup.select_one("a.govuk-back-link")
+        self.back_url = back["href"] if back else None
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
         paragraph = self._soup.select_one("main p")
@@ -295,11 +297,6 @@ class ChangeSpendToDatePage(PageObject):
     def is_visible(self) -> bool:
         heading = self._soup.select_one("main h1")
         return heading.string == "Change spend to date" if heading else False
-
-    @property
-    def back_url(self) -> str | list[str] | None:
-        back = self._soup.select_one("a.govuk-back-link")
-        return back["href"] if back else None
 
 
 class ErrorSummaryComponent:

@@ -314,9 +314,9 @@ class ChangeSpendToDateFormComponent:
     def __init__(self, form: Tag):
         self._form = form
         self.confirm_url = form.get("action")
-        input_ = form.select_one("input[name='amount']")
-        assert input_
-        self.amount = TextComponent(input_)
+        amount_input = form.select_one("input[name='amount']")
+        assert amount_input
+        self.amount = TextComponent(amount_input)
 
     @property
     def cancel_url(self) -> str | list[str] | None:

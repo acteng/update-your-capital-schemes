@@ -332,7 +332,7 @@ def test_scheme_shows_message_when_no_outputs(schemes: SchemeRepository, client:
     assert scheme_page.outputs.is_no_outputs_message_visible
 
 
-def test_scheme_when_different_authority(
+def test_cannot_scheme_when_different_authority(
     authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
 ) -> None:
     authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))

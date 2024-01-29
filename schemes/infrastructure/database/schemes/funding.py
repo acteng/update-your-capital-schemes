@@ -26,14 +26,15 @@ class DataSourceMapper:
         DataSource.ATF3_BID: 4,
         DataSource.INSPECTORATE_REVIEW: 5,
         DataSource.REGIONAL_MANAGER_REQUEST: 6,
-        DataSource.ATE_PUBLISHED_DATA: 7,
-        DataSource.CHANGE_CONTROL: 8,
-        DataSource.ATF4E_BID: 9,
-        DataSource.ATF4E_MODERATION: 10,
-        DataSource.PULSE_2023_24_Q2: 11,
-        DataSource.INITIAL_SCHEME_LIST: 12,
-        DataSource.AUTHORITY_UPDATE: 13,
-        DataSource.PULSE_2023_24_Q2_DATA_CLEANSE: 14,
+        DataSource.INVESTMENT_TEAM_REQUEST: 7,
+        DataSource.ATE_PUBLISHED_DATA: 8,
+        DataSource.CHANGE_CONTROL: 9,
+        DataSource.ATF4E_BID: 10,
+        DataSource.ATF4E_MODERATION: 11,
+        DataSource.PULSE_2023_24_Q2: 12,
+        DataSource.INITIAL_SCHEME_LIST: 13,
+        DataSource.AUTHORITY_UPDATE: 14,
+        DataSource.PULSE_2023_24_Q2_DATA_CLEANSE: 15,
     }
 
     def to_id(self, data_source: DataSource) -> int:

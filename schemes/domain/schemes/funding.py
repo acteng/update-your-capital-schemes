@@ -130,6 +130,7 @@ class DataSource(Enum):
     ATF3_BID = auto()
     INSPECTORATE_REVIEW = auto()
     REGIONAL_MANAGER_REQUEST = auto()
+    INVESTMENT_TEAM_REQUEST = auto()
     ATE_PUBLISHED_DATA = auto()
     CHANGE_CONTROL = auto()
     ATF4E_BID = auto()

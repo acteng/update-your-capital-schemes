@@ -339,6 +339,7 @@ class TestFinancialTypeRepr:
         (DataSource.ATF3_BID, "ATF3 Bid"),
         (DataSource.INSPECTORATE_REVIEW, "Inspectorate Review"),
         (DataSource.REGIONAL_MANAGER_REQUEST, "Regional Manager Request"),
+        (DataSource.INVESTMENT_TEAM_REQUEST, "Investment Team Request"),
         (DataSource.ATE_PUBLISHED_DATA, "ATE Published Data"),
         (DataSource.CHANGE_CONTROL, "Change Control"),
         (DataSource.ATF4E_BID, "ATF4e Bid"),

@@ -715,7 +715,7 @@ class TestDatabaseSchemeRepository:
             and capital_scheme_financial2.effective_date_to is None
             and capital_scheme_financial2.financial_type_id == 4
             and capital_scheme_financial2.amount == 60_000
-            and capital_scheme_financial2.data_source_id == 13
+            and capital_scheme_financial2.data_source_id == 14
         )
 
 

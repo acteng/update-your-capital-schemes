@@ -317,11 +317,8 @@ class ChangeSpendToDateFormComponent:
         amount_input = form.select_one("input[name='amount']")
         assert amount_input
         self.amount = TextComponent(amount_input)
-
-    @property
-    def cancel_url(self) -> str | list[str] | None:
         cancel = self._form.select_one("a.govuk-link")
-        return cancel["href"] if cancel else None
+        self.cancel_url = cancel["href"] if cancel else None
 
 
 class TextComponent:

@@ -406,7 +406,7 @@ def test_spend_to_date_form_shows_amount(schemes: SchemeRepository, client: Flas
     change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
     assert change_spend_to_date_page.title == "Schemes - Active Travel England - GOV.UK"
-    assert change_spend_to_date_page.amount.value == "50000"
+    assert change_spend_to_date_page.form.amount.value == "50000"
 
 
 def test_spend_to_date_form_shows_zero_amount(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -424,7 +424,7 @@ def test_spend_to_date_form_shows_zero_amount(schemes: SchemeRepository, client:
 
     change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-    assert change_spend_to_date_page.amount.value == "0"
+    assert change_spend_to_date_page.form.amount.value == "0"
 
 
 def test_spend_to_date_form_shows_empty_amount(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -432,7 +432,7 @@ def test_spend_to_date_form_shows_empty_amount(schemes: SchemeRepository, client
 
     change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-    assert not change_spend_to_date_page.amount.value
+    assert not change_spend_to_date_page.form.amount.value
 
 
 def test_spend_to_date_form_shows_confirm(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -440,7 +440,7 @@ def test_spend_to_date_form_shows_confirm(schemes: SchemeRepository, client: Fla
 
     change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-    assert change_spend_to_date_page.confirm_url == "/schemes/1/spend-to-date"
+    assert change_spend_to_date_page.form.confirm_url == "/schemes/1/spend-to-date"
 
 
 def test_spend_to_date_form_shows_cancel(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -448,7 +448,7 @@ def test_spend_to_date_form_shows_cancel(schemes: SchemeRepository, client: Flas
 
     change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-    assert change_spend_to_date_page.cancel_url == "/schemes/1"
+    assert change_spend_to_date_page.form.cancel_url == "/schemes/1"
 
 
 def test_cannot_spend_to_date_form_when_different_authority(
@@ -542,9 +542,9 @@ def test_cannot_spend_to_date_when_error(schemes: SchemeRepository, client: Flas
         "Enter how much has been spent to date"
     ]
     assert (
-        change_spend_to_date_page.amount.is_errored
-        and change_spend_to_date_page.amount.error == "Error: Enter how much has been spent to date"
-        and change_spend_to_date_page.amount.value is None
+        change_spend_to_date_page.form.amount.is_errored
+        and change_spend_to_date_page.form.amount.error == "Error: Enter how much has been spent to date"
+        and change_spend_to_date_page.form.amount.value is None
     )
     actual_scheme = schemes.get(1)
     assert actual_scheme

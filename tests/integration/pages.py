@@ -277,13 +277,9 @@ class ChangeSpendToDatePage(PageObject):
         self.errors = ErrorSummaryComponent(alert) if alert else None
         paragraph = self._soup.select_one("main p")
         self.funding_summary = (paragraph.string or "").strip() if paragraph else None
-        form = self._soup.select_one("form")
-        assert form
-        self._form = form
-        self.confirm_url = self._form.get("action")
-        input_ = self._form.select_one("input[name='amount']")
-        assert input_
-        self.amount = TextComponent(input_)
+        form_tag = self._soup.select_one("form")
+        assert form_tag
+        self.form = ChangeSpendToDateFormComponent(form_tag)
 
     @classmethod
     def open(cls, client: FlaskClient, id_: int) -> ChangeSpendToDatePage:
@@ -305,11 +301,6 @@ class ChangeSpendToDatePage(PageObject):
         back = self._soup.select_one("a.govuk-back-link")
         return back["href"] if back else None
 
-    @property
-    def cancel_url(self) -> str | list[str] | None:
-        cancel = self._form.select_one("a.govuk-link")
-        return cancel["href"] if cancel else None
-
 
 class ErrorSummaryComponent:
     def __init__(self, alert: Tag):
@@ -317,6 +308,20 @@ class ErrorSummaryComponent:
 
     def __iter__(self) -> Iterator[str]:
         return (listitem.text.strip() for listitem in self._alert.select("li"))
+
+
+class ChangeSpendToDateFormComponent:
+    def __init__(self, form: Tag):
+        self._form = form
+        self.confirm_url = form.get("action")
+        input_ = form.select_one("input[name='amount']")
+        assert input_
+        self.amount = TextComponent(input_)
+
+    @property
+    def cancel_url(self) -> str | list[str] | None:
+        cancel = self._form.select_one("a.govuk-link")
+        return cancel["href"] if cancel else None
 
 
 class TextComponent:

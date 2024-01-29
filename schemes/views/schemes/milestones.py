@@ -89,9 +89,9 @@ class MilestoneRevisionRepr:
         return cls(
             id=milestone_revision.id,
             effective_date_from=milestone_revision.effective.date_from.isoformat(),
-            effective_date_to=milestone_revision.effective.date_to.isoformat()
-            if milestone_revision.effective.date_to
-            else None,
+            effective_date_to=(
+                milestone_revision.effective.date_to.isoformat() if milestone_revision.effective.date_to else None
+            ),
             milestone=MilestoneRepr.from_domain(milestone_revision.milestone),
             observation_type=ObservationTypeRepr.from_domain(milestone_revision.observation_type),
             status_date=milestone_revision.status_date.isoformat(),

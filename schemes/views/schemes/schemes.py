@@ -253,9 +253,9 @@ class SchemeRepr:
             id=scheme.id,
             name=scheme.name,
             type=SchemeTypeRepr.from_domain(scheme.type) if scheme.type else None,
-            funding_programme=FundingProgrammeRepr.from_domain(scheme.funding_programme)
-            if scheme.funding_programme
-            else None,
+            funding_programme=(
+                FundingProgrammeRepr.from_domain(scheme.funding_programme) if scheme.funding_programme else None
+            ),
             financial_revisions=[
                 FinancialRevisionRepr.from_domain(financial_revision)
                 for financial_revision in scheme.funding.financial_revisions

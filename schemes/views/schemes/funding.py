@@ -83,9 +83,9 @@ class FinancialRevisionRepr:
         return FinancialRevisionRepr(
             id=financial_revision.id,
             effective_date_from=financial_revision.effective.date_from.isoformat(),
-            effective_date_to=financial_revision.effective.date_to.isoformat()
-            if financial_revision.effective.date_to
-            else None,
+            effective_date_to=(
+                financial_revision.effective.date_to.isoformat() if financial_revision.effective.date_to else None
+            ),
             type=FinancialTypeRepr.from_domain(financial_revision.type),
             amount=financial_revision.amount,
             source=DataSourceRepr.from_domain(financial_revision.source),

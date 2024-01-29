@@ -124,9 +124,9 @@ class OutputRevisionRepr:
         return cls(
             id=output_revision.id,
             effective_date_from=output_revision.effective.date_from.isoformat(),
-            effective_date_to=output_revision.effective.date_to.isoformat()
-            if output_revision.effective.date_to
-            else None,
+            effective_date_to=(
+                output_revision.effective.date_to.isoformat() if output_revision.effective.date_to else None
+            ),
             type=OutputTypeRepr.from_domain(output_revision.type_measure.type),
             measure=OutputMeasureRepr.from_domain(output_revision.type_measure.measure),
             value=str(output_revision.value),

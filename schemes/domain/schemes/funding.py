@@ -80,11 +80,15 @@ class SchemeFunding:
         return next(amounts, None)
 
     @property
-    def allocation_still_to_spend(self) -> int:
+    def adjusted_funding_allocation(self) -> int:
         funding_allocation = self.funding_allocation or 0
-        spend_to_date = self.spend_to_date or 0
         change_control_adjustment = self.change_control_adjustment or 0
-        return funding_allocation + change_control_adjustment - spend_to_date
+        return funding_allocation + change_control_adjustment
+
+    @property
+    def allocation_still_to_spend(self) -> int:
+        spend_to_date = self.spend_to_date or 0
+        return self.adjusted_funding_allocation - spend_to_date
 
 
 class FinancialRevision:

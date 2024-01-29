@@ -417,6 +417,60 @@ class TestSchemeFunding:
 
         assert funding.spend_to_date is None
 
+    def test_get_adjusted_funding_allocation(self) -> None:
+        funding = SchemeFunding()
+        funding.update_financials(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=100_000,
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=10_000,
+                source=DataSource.CHANGE_CONTROL,
+            ),
+        )
+
+        assert funding.adjusted_funding_allocation == 110_000
+
+    def test_get_adjusted_funding_allocation_when_no_funding_allocation(self) -> None:
+        funding = SchemeFunding()
+        funding.update_financials(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=10_000,
+                source=DataSource.CHANGE_CONTROL,
+            ),
+        )
+
+        assert funding.adjusted_funding_allocation == 10_000
+
+    def test_get_adjusted_funding_allocation_when_no_change_control_adjustment(self) -> None:
+        funding = SchemeFunding()
+        funding.update_financials(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=100_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert funding.adjusted_funding_allocation == 100_000
+
+    def test_get_adjusted_funding_allocation_when_no_revisions(self) -> None:
+        funding = SchemeFunding()
+
+        assert funding.adjusted_funding_allocation == 0
+
     def test_get_allocation_still_to_spend(self) -> None:
         funding = SchemeFunding()
         funding.update_financials(

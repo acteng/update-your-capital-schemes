@@ -6,7 +6,7 @@ from enum import Enum, unique
 
 from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovTextInput
-from wtforms.validators import InputRequired, NumberRange
+from wtforms.validators import InputRequired, NumberRange, ValidationError
 
 from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
@@ -57,13 +57,22 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
         message="Enter how much has been spent to date as a number",
     )
 
+    def __init__(self, max_amount: int, **kwargs: object):
+        super().__init__(**kwargs)
+        self.max_amount = max_amount
+
     @classmethod
     def from_domain(cls, funding: SchemeFunding) -> ChangeSpendToDateForm:
-        return cls(data={"amount": funding.spend_to_date})
+        return cls(max_amount=funding.adjusted_funding_allocation, data={"amount": funding.spend_to_date})
 
     def update_domain(self, funding: SchemeFunding, now: datetime) -> None:
         assert self.amount.data is not None
         funding.update_spend_to_date(now=now, amount=self.amount.data)
+
+    @staticmethod
+    def validate_amount(form: ChangeSpendToDateForm, field: CustomMessageIntegerField) -> None:
+        if field.data is not None and field.data > form.max_amount:
+            raise ValidationError(f"Enter how much has been spent to date as £{form.max_amount:,} or less")
 
 
 @dataclass(frozen=True)

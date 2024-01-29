@@ -117,22 +117,36 @@ class TestSchemeChangeSpendToDateContext:
 class TestChangeSpendToDateForm:
     def test_from_domain(self, app: Flask) -> None:
         funding = SchemeFunding()
-        funding.update_financial(
+        funding.update_financials(
             FinancialRevision(
                 id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=100_000,
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=10_000,
+                source=DataSource.CHANGE_CONTROL,
+            ),
+            FinancialRevision(
+                id_=3,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.SPENT_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
-            )
+            ),
         )
 
         form = ChangeSpendToDateForm.from_domain(funding)
 
-        assert form.amount.data == 50_000
+        assert form.amount.data == 50_000 and form.max_amount == 110_000
 
     def test_update_domain(self, app: Flask) -> None:
-        form = ChangeSpendToDateForm(data={"amount": "60000"})
+        form = ChangeSpendToDateForm(max_amount=0, data={"amount": "60000"})
         funding = SchemeFunding()
         funding.update_financial(
             FinancialRevision(
@@ -158,7 +172,7 @@ class TestChangeSpendToDateForm:
         )
 
     def test_update_domain_with_zero_amount(self, app: Flask) -> None:
-        form = ChangeSpendToDateForm(data={"amount": "0"})
+        form = ChangeSpendToDateForm(max_amount=0, data={"amount": "0"})
         funding = SchemeFunding()
 
         form.update_domain(funding, now=datetime(2020, 1, 31))
@@ -166,39 +180,55 @@ class TestChangeSpendToDateForm:
         assert funding.financial_revisions[0].amount == 0
 
     def test_no_errors_when_valid(self, app: Flask) -> None:
-        form = ChangeSpendToDateForm(formdata=MultiDict([("csrf_token", generate_csrf()), ("amount", "50000")]))
+        form = ChangeSpendToDateForm(
+            max_amount=110_000, formdata=MultiDict([("csrf_token", generate_csrf()), ("amount", "50000")])
+        )
 
         form.validate()
 
         assert not form.errors
 
     def test_amount_is_required(self, app: Flask) -> None:
-        form = ChangeSpendToDateForm(formdata=MultiDict([("amount", "")]))
+        form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "")]))
 
         form.validate()
 
         assert "Enter how much has been spent to date" in form.errors["amount"]
 
     def test_amount_is_an_integer(self, app: Flask) -> None:
-        form = ChangeSpendToDateForm(formdata=MultiDict([("amount", "x")]))
+        form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "x")]))
 
         form.validate()
 
         assert "Enter how much has been spent to date as a number" in form.errors["amount"]
 
     def test_amount_can_be_zero(self, app: Flask) -> None:
-        form = ChangeSpendToDateForm(formdata=MultiDict([("amount", "0")]))
+        form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "0")]))
 
         form.validate()
 
         assert "amount" not in form.errors
 
     def test_amount_cannot_be_negative(self, app: Flask) -> None:
-        form = ChangeSpendToDateForm(formdata=MultiDict([("amount", "-100")]))
+        form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "-100")]))
 
         form.validate()
 
         assert "Enter how much has been spent to date as zero or more" in form.errors["amount"]
+
+    def test_amount_can_be_adjusted_funding_allocation(self, app: Flask) -> None:
+        form = ChangeSpendToDateForm(max_amount=110_000, formdata=MultiDict([("amount", "110000")]))
+
+        form.validate()
+
+        assert "amount" not in form.errors
+
+    def test_amount_cannot_exceed_adjusted_funding_allocation(self, app: Flask) -> None:
+        form = ChangeSpendToDateForm(max_amount=110_000, formdata=MultiDict([("amount", "120000")]))
+
+        form.validate()
+
+        assert "Enter how much has been spent to date as £110,000 or less" in form.errors["amount"]
 
 
 class TestFinancialRevisionRepr:

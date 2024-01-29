@@ -22,6 +22,18 @@
 
             <h1 class="govuk-heading-l">Change spend to date</h1>
 
+            <p class="govuk-body">
+                This scheme has {% if funding_allocation -%}
+                    {{ funding_allocation | pounds }} of
+                {%- else -%}
+                    no
+                {%- endif %} funding allocation and {% if change_control_adjustment -%}
+                    {{ change_control_adjustment | pounds }} of
+                {%- else -%}
+                    no
+                {%- endif %} change control adjustment.
+            </p>
+
             <form method="post" action="{{ url_for('schemes.spend_to_date', scheme_id=id) }}" novalidate>
                 {{ form.csrf_token }}
 

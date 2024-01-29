@@ -351,6 +351,45 @@ def test_spend_to_date_form_shows_back(schemes: SchemeRepository, client: FlaskC
     assert change_spend_to_date_page.back_url == "/schemes/1"
 
 
+def test_spend_to_date_form_shows_funding_summary(schemes: SchemeRepository, client: FlaskClient) -> None:
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.funding.update_financials(
+        FinancialRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1), None),
+            type_=FinancialType.FUNDING_ALLOCATION,
+            amount=100_000,
+            source=DataSource.ATF4_BID,
+        ),
+        FinancialRevision(
+            id_=2,
+            effective=DateRange(datetime(2020, 1, 1), None),
+            type_=FinancialType.FUNDING_ALLOCATION,
+            amount=10_000,
+            source=DataSource.CHANGE_CONTROL,
+        ),
+    )
+    schemes.add(scheme)
+
+    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+
+    assert (
+        change_spend_to_date_page.funding_summary
+        == "This scheme has £100,000 of funding allocation and £10,000 of change control adjustment."
+    )
+
+
+def test_spend_to_date_form_shows_minimal_funding_summary(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    change_spend_to_date_page = SchemeChangeSpendToDatePage.open(client, id_=1)
+
+    assert (
+        change_spend_to_date_page.funding_summary
+        == "This scheme has no funding allocation and no change control adjustment."
+    )
+
+
 def test_spend_to_date_form_shows_amount(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.funding.update_financial(

@@ -275,6 +275,8 @@ class SchemeChangeSpendToDatePage(PageObject):
         super().__init__(response)
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
+        paragraph = self._soup.select_one("main p")
+        self.funding_summary = (paragraph.string or "").strip() if paragraph else None
         form = self._soup.select_one("form")
         assert form
         self._form = form

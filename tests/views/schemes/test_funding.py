@@ -99,19 +99,38 @@ class TestSchemeFundingContext:
 class TestSchemeChangeSpendToDateContext:
     def test_from_domain(self, app: Flask) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.funding.update_financial(
+        scheme.funding.update_financials(
             FinancialRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=100_000,
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=10_000,
+                source=DataSource.CHANGE_CONTROL,
+            ),
+            FinancialRevision(
+                id_=3,
+                effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.SPENT_TO_DATE,
                 amount=40_000,
                 source=DataSource.ATF4_BID,
-            )
+            ),
         )
 
         context = SchemeChangeSpendToDateContext.from_domain(scheme)
 
-        assert context.id == 1 and context.form.amount.data == 40_000
+        assert (
+            context.id == 1
+            and context.funding_allocation == 100_000
+            and context.change_control_adjustment == 10_000
+            and context.form.amount.data == 40_000
+        )
 
 
 class TestChangeSpendToDateForm:

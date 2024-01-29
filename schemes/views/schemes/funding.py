@@ -146,7 +146,7 @@ class DataSourceRepr(Enum):
     ATF4_BID = "ATF4 Bid"
     ATF3_BID = "ATF3 Bid"
     INSPECTORATE_REVIEW = "Inspectorate Review"
-    REGIONAL_ENGAGEMENT_MANAGER_REVIEW = "Regional Engagement Manager Review"
+    REGIONAL_MANAGER_REQUEST = "Regional Manager Request"
     ATE_PUBLISHED_DATA = "ATE Published Data"
     CHANGE_CONTROL = "Change Control"
     ATF4E_BID = "ATF4e Bid"
@@ -171,7 +171,7 @@ class DataSourceRepr(Enum):
             DataSource.ATF4_BID: DataSourceRepr.ATF4_BID,
             DataSource.ATF3_BID: DataSourceRepr.ATF3_BID,
             DataSource.INSPECTORATE_REVIEW: DataSourceRepr.INSPECTORATE_REVIEW,
-            DataSource.REGIONAL_ENGAGEMENT_MANAGER_REVIEW: DataSourceRepr.REGIONAL_ENGAGEMENT_MANAGER_REVIEW,
+            DataSource.REGIONAL_MANAGER_REQUEST: DataSourceRepr.REGIONAL_MANAGER_REQUEST,
             DataSource.ATE_PUBLISHED_DATA: DataSourceRepr.ATE_PUBLISHED_DATA,
             DataSource.CHANGE_CONTROL: DataSourceRepr.CHANGE_CONTROL,
             DataSource.ATF4E_BID: DataSourceRepr.ATF4E_BID,

@@ -25,7 +25,7 @@ class DataSourceMapper:
         DataSource.ATF4_BID: 3,
         DataSource.ATF3_BID: 4,
         DataSource.INSPECTORATE_REVIEW: 5,
-        DataSource.REGIONAL_ENGAGEMENT_MANAGER_REVIEW: 6,
+        DataSource.REGIONAL_MANAGER_REQUEST: 6,
         DataSource.ATE_PUBLISHED_DATA: 7,
         DataSource.CHANGE_CONTROL: 8,
         DataSource.ATF4E_BID: 9,

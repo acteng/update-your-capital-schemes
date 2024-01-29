@@ -201,10 +201,16 @@ class FundingProgrammeContext:
 
 @bp.get("<int:scheme_id>/spend-to-date")
 @bearer_auth
-@inject.autoparams("schemes")
-def spend_to_date_form(schemes: SchemeRepository, scheme_id: int) -> str:
+@inject.autoparams("users", "schemes")
+def spend_to_date_form(users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> str:
+    user_info = session["user"]
+    user = users.get_by_email(user_info["email"])
+    assert user
     scheme = schemes.get(scheme_id)
     assert scheme
+
+    if user.authority_id != scheme.authority_id:
+        abort(403)
 
     context = SchemeChangeSpendToDateContext.from_domain(scheme)
     return render_template("scheme/spend_to_date.html", **as_shallow_dict(context))
@@ -212,10 +218,16 @@ def spend_to_date_form(schemes: SchemeRepository, scheme_id: int) -> str:
 
 @bp.post("<int:scheme_id>/spend-to-date")
 @bearer_auth
-@inject.autoparams("clock", "schemes")
-def spend_to_date(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+@inject.autoparams("clock", "users", "schemes")
+def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+    user_info = session["user"]
+    user = users.get_by_email(user_info["email"])
+    assert user
     scheme = schemes.get(scheme_id)
     assert scheme
+
+    if user.authority_id != scheme.authority_id:
+        abort(403)
 
     context = SchemeChangeSpendToDateContext.from_domain(scheme)
     context.form.process(formdata=request.form)

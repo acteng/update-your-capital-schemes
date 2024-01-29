@@ -451,6 +451,17 @@ def test_spend_to_date_form_shows_cancel(schemes: SchemeRepository, client: Flas
     assert change_spend_to_date_page.cancel_url == "/schemes/1"
 
 
+def test_cannot_spend_to_date_form_when_different_authority(
+    authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
+) -> None:
+    authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
+    schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+
+    forbidden_page = SchemeChangeSpendToDatePage.open_when_unauthorized(client, id_=2)
+
+    assert forbidden_page.is_visible and forbidden_page.is_forbidden
+
+
 def test_spend_to_date_updates_spend_to_date(
     clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
 ) -> None:
@@ -564,6 +575,17 @@ def test_cannot_spend_to_date_when_incorrect_csrf_token(
     response = client.post("/schemes/1/spend-to-date", data={"csrf_token": "x", "amount": "60000"})
 
     assert response.status_code == 400
+
+
+def test_cannot_spend_to_date_when_different_authority(
+    authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+) -> None:
+    authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
+    schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+
+    response = client.post("/schemes/2/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+
+    assert response.status_code == 403
 
 
 class TestApiEnabled:

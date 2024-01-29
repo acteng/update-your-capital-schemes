@@ -13,7 +13,6 @@ from flask import (
     redirect,
     render_template,
     request,
-    session,
     url_for,
 )
 from werkzeug import Response as BaseResponse
@@ -26,7 +25,7 @@ from schemes.domain.schemes import (
     SchemeRepository,
     SchemeType,
 )
-from schemes.domain.users import UserRepository
+from schemes.domain.users import User
 from schemes.infrastructure.clock import Clock
 from schemes.views.auth.api_key import api_key_auth
 from schemes.views.auth.bearer import bearer_auth
@@ -48,10 +47,7 @@ bp = Blueprint("schemes", __name__)
 @bp.get("")
 @bearer_auth
 @inject.autoparams()
-def index(users: UserRepository, authorities: AuthorityRepository, schemes: SchemeRepository) -> str:
-    user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
-    assert user
+def index(user: User, authorities: AuthorityRepository, schemes: SchemeRepository) -> str:
     authority = authorities.get(user.authority_id)
     assert authority
     authority_schemes = schemes.get_by_authority(authority.id)
@@ -97,13 +93,8 @@ def get(scheme_id: int) -> Response:
 
 
 @bearer_auth
-@inject.autoparams("users", "authorities", "schemes")
-def get_html(
-    scheme_id: int, users: UserRepository, authorities: AuthorityRepository, schemes: SchemeRepository
-) -> Response:
-    user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
-    assert user
+@inject.autoparams("user", "authorities", "schemes")
+def get_html(scheme_id: int, user: User, authorities: AuthorityRepository, schemes: SchemeRepository) -> Response:
     authority = authorities.get(user.authority_id)
     assert authority
     scheme = schemes.get(scheme_id)
@@ -201,11 +192,8 @@ class FundingProgrammeContext:
 
 @bp.get("<int:scheme_id>/spend-to-date")
 @bearer_auth
-@inject.autoparams("users", "schemes")
-def spend_to_date_form(users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> str:
-    user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
-    assert user
+@inject.autoparams("user", "schemes")
+def spend_to_date_form(user: User, schemes: SchemeRepository, scheme_id: int) -> str:
     scheme = schemes.get(scheme_id)
     assert scheme
 
@@ -218,11 +206,8 @@ def spend_to_date_form(users: UserRepository, schemes: SchemeRepository, scheme_
 
 @bp.post("<int:scheme_id>/spend-to-date")
 @bearer_auth
-@inject.autoparams("clock", "users", "schemes")
-def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
-    user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
-    assert user
+@inject.autoparams("clock", "user", "schemes")
+def spend_to_date(clock: Clock, user: User, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
     scheme = schemes.get(scheme_id)
     assert scheme
 

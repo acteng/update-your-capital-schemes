@@ -8,7 +8,7 @@ from authlib.integrations.flask_client import OAuth
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from dataclass_wizard import JSONWizard
 from dataclass_wizard.enums import LetterCase
-from flask import Config, Flask, Response, render_template, url_for
+from flask import Config, Flask, Response, render_template, session, url_for
 from flask_wtf import CSRFProtect
 from govuk_frontend_wtf.main import WTFormsHelpers
 from inject import Binder
@@ -21,7 +21,7 @@ from sqlalchemy.pool import ConnectionPoolEntry
 from schemes.config import DevConfig
 from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.schemes import SchemeRepository
-from schemes.domain.users import UserRepository
+from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock, FakeClock, SystemClock
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
 from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
@@ -82,6 +82,7 @@ def _bindings(binder: Binder) -> None:
     binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
     binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
     binder.bind_to_constructor(SchemeRepository, DatabaseSchemeRepository)
+    binder.bind_to_provider(User, _get_current_user)
 
 
 @inject.autoparams()
@@ -92,6 +93,14 @@ def _create_engine(config: Config) -> Engine:
         event.listen(Engine, "connect", _enforce_sqlite_foreign_keys)
 
     return engine
+
+
+@inject.autoparams()
+def _get_current_user(users: UserRepository) -> User:
+    user_info = session["user"]
+    user = users.get_by_email(user_info["email"])
+    assert user
+    return user
 
 
 def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_record: ConnectionPoolEntry) -> None:

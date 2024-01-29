@@ -7,10 +7,10 @@ from flask.testing import FlaskClient
 from flask_wtf.csrf import generate_csrf
 from inject import Binder
 
-from schemes import create_app, destroy_app
+from schemes import _get_current_user, create_app, destroy_app
 from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.schemes import SchemeRepository
-from schemes.domain.users import UserRepository
+from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock, FakeClock
 from tests.integration.fakes import (
     MemoryAuthorityRepository,
@@ -79,3 +79,4 @@ def _bindings(binder: Binder) -> None:
     binder.bind(AuthorityRepository, MemoryAuthorityRepository())
     binder.bind(UserRepository, MemoryUserRepository())
     binder.bind(SchemeRepository, MemorySchemeRepository())
+    binder.bind_to_provider(User, _get_current_user)

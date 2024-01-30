@@ -79,7 +79,7 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
     @staticmethod
     def validate_amount(form: ChangeSpendToDateForm, field: CustomMessageIntegerField) -> None:
         if field.data is not None and field.data > form.max_amount:
-            raise ValidationError(f"Enter how much has been spent to date as £{form.max_amount:,} or less")
+            raise ValidationError(f"Spend to date must be £{form.max_amount:,} or less")
 
 
 @dataclass(frozen=True)

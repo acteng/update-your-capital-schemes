@@ -247,7 +247,7 @@ class TestChangeSpendToDateForm:
 
         form.validate()
 
-        assert "Enter how much has been spent to date as £110,000 or less" in form.errors["amount"]
+        assert "Spend to date must be £110,000 or less" in form.errors["amount"]
 
 
 class TestFinancialRevisionRepr:

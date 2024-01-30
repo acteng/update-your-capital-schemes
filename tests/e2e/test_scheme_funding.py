@@ -94,7 +94,7 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, id_=1).funding.change_spend_to_date().enter_amount("60000").confirm()
+    scheme_page = SchemePage.open(page, id_=1).funding.change_spend_to_date().form.enter_amount("60000").confirm()
 
     assert scheme_page.name == "Wirral Package" and scheme_page.funding.spend_to_date == "£60,000"
     assert app_client.get_scheme(id_=1).financial_revisions == [
@@ -157,15 +157,15 @@ def test_cannot_change_spend_to_date_when_error(app_client: AppClient, oidc_clie
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     change_spend_to_date_page = (
-        SchemePage.open(page, id_=1).funding.change_spend_to_date().enter_amount("").confirm_when_error()
+        SchemePage.open(page, id_=1).funding.change_spend_to_date().form.enter_amount("").confirm_when_error()
     )
 
     assert change_spend_to_date_page.title == "Error: Schemes - Active Travel England - GOV.UK"
     assert list(change_spend_to_date_page.errors) == ["Enter how much has been spent to date"]
     assert (
-        change_spend_to_date_page.amount.is_errored
-        and change_spend_to_date_page.amount.error == "Error: Enter how much has been spent to date"
-        and change_spend_to_date_page.amount.value == ""
+        change_spend_to_date_page.form.amount.is_errored
+        and change_spend_to_date_page.form.amount.error == "Error: Enter how much has been spent to date"
+        and change_spend_to_date_page.form.amount.value == ""
     )
     assert app_client.get_scheme(id_=1).financial_revisions == [
         FinancialRevisionRepr(

@@ -306,24 +306,30 @@ class ChangeSpendToDatePage:
     def __init__(self, page: Page):
         self._page = page
         self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
-        self.amount = TextComponent(page.get_by_label("How much has been spent to date?"))
-        self._confirm = page.get_by_role("button", name="Confirm")
+        self.form = ChangeSpendToDateFormComponent(page.get_by_role("form"))
 
     @property
     def title(self) -> str:
         return self._page.title()
 
-    def enter_amount(self, value: str) -> ChangeSpendToDatePage:
+
+class ChangeSpendToDateFormComponent:
+    def __init__(self, form: Locator):
+        self._form = form
+        self.amount = TextComponent(form.get_by_label("How much has been spent to date?"))
+        self._confirm = form.get_by_role("button", name="Confirm")
+
+    def enter_amount(self, value: str) -> ChangeSpendToDateFormComponent:
         self.amount.value = value
         return self
 
     def confirm(self) -> SchemePage:
         self._confirm.click()
-        return SchemePage(self._page)
+        return SchemePage(self._form.page)
 
     def confirm_when_error(self) -> ChangeSpendToDatePage:
         self._confirm.click()
-        return self
+        return ChangeSpendToDatePage(self._form.page)
 
 
 class ErrorSummaryComponent:

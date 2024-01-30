@@ -34,7 +34,7 @@
                 {%- endif %} change control adjustment.
             </p>
 
-            <form method="post" action="{{ url_for('schemes.spend_to_date', scheme_id=id) }}" novalidate>
+            <form method="post" action="{{ url_for('schemes.spend_to_date', scheme_id=id) }}" novalidate aria-label="Change spend to date">
                 {{ form.csrf_token }}
 
                 {{ form.amount(params={

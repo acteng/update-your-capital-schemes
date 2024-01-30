@@ -161,10 +161,10 @@ def test_cannot_change_spend_to_date_when_error(app_client: AppClient, oidc_clie
     )
 
     assert change_spend_to_date_page.title == "Error: Schemes - Active Travel England - GOV.UK"
-    assert list(change_spend_to_date_page.errors) == ["Enter how much has been spent to date"]
+    assert list(change_spend_to_date_page.errors) == ["Enter spend to date"]
     assert (
         change_spend_to_date_page.form.amount.is_errored
-        and change_spend_to_date_page.form.amount.error == "Error: Enter how much has been spent to date"
+        and change_spend_to_date_page.form.amount.error == "Error: Enter spend to date"
         and change_spend_to_date_page.form.amount.value == ""
     )
     assert app_client.get_scheme(id_=1).financial_revisions == [

@@ -212,7 +212,7 @@ class TestChangeSpendToDateForm:
 
         form.validate()
 
-        assert "Enter how much has been spent to date" in form.errors["amount"]
+        assert "Enter spend to date" in form.errors["amount"]
 
     def test_amount_is_an_integer(self, app: Flask) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "x")]))

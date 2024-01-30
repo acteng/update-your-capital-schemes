@@ -538,12 +538,10 @@ def test_cannot_spend_to_date_when_error(schemes: SchemeRepository, client: Flas
     )
 
     assert change_spend_to_date_page.title == "Error: Schemes - Active Travel England - GOV.UK"
-    assert change_spend_to_date_page.errors and list(change_spend_to_date_page.errors) == [
-        "Enter how much has been spent to date"
-    ]
+    assert change_spend_to_date_page.errors and list(change_spend_to_date_page.errors) == ["Enter spend to date"]
     assert (
         change_spend_to_date_page.form.amount.is_errored
-        and change_spend_to_date_page.form.amount.error == "Error: Enter how much has been spent to date"
+        and change_spend_to_date_page.form.amount.error == "Error: Enter spend to date"
         and change_spend_to_date_page.form.amount.value is None
     )
     actual_scheme = schemes.get(1)

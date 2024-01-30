@@ -58,7 +58,7 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
     amount = CustomMessageIntegerField(
         widget=GovTextInput(),
         validators=[
-            InputRequired(message="Enter how much has been spent to date"),
+            InputRequired(message="Enter spend to date"),
             NumberRange(min=0, message="Enter how much has been spent to date as zero or more"),
         ],
         message="Enter how much has been spent to date as a number",

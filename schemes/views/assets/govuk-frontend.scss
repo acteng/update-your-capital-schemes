@@ -2,3 +2,13 @@ $govuk-assets-path: "/static/govuk-frontend/assets/";
 $govuk-brand-colour: #006853;
 
 @import "../../../node_modules/govuk-frontend/govuk/all";
+
+.govuk-notification-banner {
+  border-color: govuk-colour("blue");
+  background-color: govuk-colour("blue");
+}
+
+.govuk-notification-banner {
+  border-color: govuk-colour("blue");
+  background-color: govuk-colour("blue");
+}

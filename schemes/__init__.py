@@ -8,8 +8,18 @@ from authlib.integrations.flask_client import OAuth
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from dataclass_wizard import JSONWizard
 from dataclass_wizard.enums import LetterCase
-from flask import Config, Flask, Response, render_template, url_for
+from flask import (
+    Config,
+    Flask,
+    Response,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask_wtf import CSRFProtect
+from flask_wtf.csrf import CSRFError
 from govuk_frontend_wtf.main import WTFormsHelpers
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
@@ -17,6 +27,7 @@ from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.dialects.sqlite.base import SQLiteDialect
 from sqlalchemy.engine.interfaces import DBAPIConnection
 from sqlalchemy.pool import ConnectionPoolEntry
+from werkzeug import Response as BaseResponse
 
 from schemes.config import DevConfig
 from schemes.domain.authorities import AuthorityRepository
@@ -134,6 +145,11 @@ def _configure_error_pages(app: Flask) -> None:
     @app.errorhandler(500)
     def internal_server_error(_error: Exception) -> Response:
         return Response(render_template("500.html"), status=500)
+
+    @app.errorhandler(CSRFError)
+    def csrf_error(_error: CSRFError) -> BaseResponse:
+        flash("The form you were submitting has expired. Please try again.")
+        return redirect(request.full_path)
 
 
 def _configure_govuk_frontend(app: Flask) -> None:

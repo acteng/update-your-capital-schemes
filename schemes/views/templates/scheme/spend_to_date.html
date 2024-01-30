@@ -3,6 +3,7 @@
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
 {% from "govuk_frontend_jinja/components/error-summary/macro.html" import govukErrorSummary %}
 {% from "govuk_frontend_jinja/components/input/macro.html" import govukInput %}
+{% from "govuk_frontend_jinja/components/notification-banner/macro.html" import govukNotificationBanner %}
 
 {% block pageTitle %}{% if form.errors %}Error: {% endif %}{{ super() }}{% endblock %}
 
@@ -19,6 +20,14 @@
             {% if form.errors %}
                 {{ govukErrorSummary(wtforms_errors(form)) }}
             {% endif %}
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {{ govukNotificationBanner(params={
+                        "text": messages | first
+                    }) }}
+                {% endif %}
+            {% endwith %}
 
             <h1 class="govuk-heading-l">Change spend to date</h1>
 

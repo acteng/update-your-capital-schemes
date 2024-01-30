@@ -298,6 +298,12 @@ class ChangeSpendToDatePage(PageObject):
         heading = self._soup.select_one("main h1")
         return heading.string == "Change spend to date" if heading else False
 
+    @property
+    def notification_message(self) -> str | None:
+        banner_tag = self._soup.select_one(".govuk-notification-banner p")
+        assert banner_tag
+        return banner_tag.string if banner_tag else None
+
 
 class ErrorSummaryComponent:
     def __init__(self, alert: Tag):

@@ -564,9 +564,10 @@ def test_cannot_spend_to_date_when_no_csrf_token(schemes: SchemeRepository, clie
         client.post("/schemes/1/spend-to-date", data={"amount": "60000"}, follow_redirects=True)
     )
 
+    assert change_spend_to_date_page.is_visible
     assert (
-        change_spend_to_date_page.is_visible
-        and change_spend_to_date_page.notification_message
+        change_spend_to_date_page.notification_banner
+        and change_spend_to_date_page.notification_banner.heading
         == "The form you were submitting has expired. Please try again."
     )
 
@@ -580,9 +581,10 @@ def test_cannot_spend_to_date_when_incorrect_csrf_token(
         client.post("/schemes/1/spend-to-date", data={"csrf_token": "x", "amount": "60000"}, follow_redirects=True)
     )
 
+    assert change_spend_to_date_page.is_visible
     assert (
-        change_spend_to_date_page.is_visible
-        and change_spend_to_date_page.notification_message
+        change_spend_to_date_page.notification_banner
+        and change_spend_to_date_page.notification_banner.heading
         == "The form you were submitting has expired. Please try again."
     )
 

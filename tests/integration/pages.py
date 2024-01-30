@@ -277,6 +277,10 @@ class ChangeSpendToDatePage(PageObject):
         self.back_url = back["href"] if back else None
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
+        notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
+        self.notification_banner = (
+            NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
+        )
         paragraph = self._soup.select_one("main p")
         self.funding_summary = (paragraph.string or "").strip() if paragraph else None
         form_tag = self._soup.select_one("form")
@@ -298,12 +302,6 @@ class ChangeSpendToDatePage(PageObject):
         heading = self._soup.select_one("main h1")
         return heading.string == "Change spend to date" if heading else False
 
-    @property
-    def notification_message(self) -> str | None:
-        banner_tag = self._soup.select_one(".govuk-notification-banner p")
-        assert banner_tag
-        return banner_tag.string if banner_tag else None
-
 
 class ErrorSummaryComponent:
     def __init__(self, alert: Tag):
@@ -311,6 +309,12 @@ class ErrorSummaryComponent:
 
     def __iter__(self) -> Iterator[str]:
         return (listitem.text.strip() for listitem in self._alert.select("li"))
+
+
+class NotificationBannerComponent:
+    def __init__(self, banner: Tag):
+        heading_tag = banner.select_one("p")
+        self.heading = heading_tag.string if heading_tag else None
 
 
 class ChangeSpendToDateFormComponent:

@@ -59,7 +59,7 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
         widget=GovTextInput(),
         validators=[
             InputRequired(message="Enter spend to date"),
-            NumberRange(min=0, message="Enter how much has been spent to date as zero or more"),
+            NumberRange(min=0, message="Spend to date must be £0 or more"),
         ],
         message="Spend to date must be a number",
     )

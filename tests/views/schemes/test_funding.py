@@ -233,7 +233,7 @@ class TestChangeSpendToDateForm:
 
         form.validate()
 
-        assert "Enter how much has been spent to date as zero or more" in form.errors["amount"]
+        assert "Spend to date must be £0 or more" in form.errors["amount"]
 
     def test_amount_can_be_adjusted_funding_allocation(self, app: Flask) -> None:
         form = ChangeSpendToDateForm(max_amount=110_000, formdata=MultiDict([("amount", "110000")]))

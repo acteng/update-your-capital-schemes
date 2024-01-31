@@ -277,6 +277,36 @@ class TestApiEnabled:
 
 
 class TestApiDisabled:
+    def test_cannot_add_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
+        response = client.post(
+            "/authorities",
+            headers={"Authorization": "API-Key boardman"},
+            json=[{"id": 1, "name": "Liverpool City Region Combined Authority"}],
+        )
+
+        assert response.status_code == 401
+        assert not authorities.get(1)
+
+    def test_cannot_add_users(self, users: UserRepository, client: FlaskClient) -> None:
+        response = client.post(
+            "/authorities/1/users",
+            headers={"Authorization": "API-Key boardman"},
+            json=[{"email": "boardman@example.com"}],
+        )
+
+        assert response.status_code == 401
+        assert not users.get_by_email("boardman@example.com")
+
+    def test_cannot_add_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        response = client.post(
+            "/authorities/1/schemes",
+            headers={"Authorization": "API-Key boardman"},
+            json=[{"id": 1, "name": "Wirral Package"}],
+        )
+
+        assert response.status_code == 401
+        assert not schemes.get(1)
+
     def test_cannot_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
         authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
 

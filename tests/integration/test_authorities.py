@@ -238,6 +238,24 @@ class TestApiEnabled:
             and output_revision1.observation_type == ObservationType.ACTUAL
         )
 
+    def test_cannot_add_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        response = client.post("/authorities/1/schemes", json=[{"id": 1, "name": "Wirral Package"}])
+
+        assert response.status_code == 401
+        assert not schemes.get(1)
+
+    def test_cannot_add_schemes_when_incorrect_credentials(
+        self, schemes: SchemeRepository, client: FlaskClient
+    ) -> None:
+        response = client.post(
+            "/authorities/1/schemes",
+            headers={"Authorization": "API-Key obree"},
+            json=[{"id": 1, "name": "Wirral Package"}],
+        )
+
+        assert response.status_code == 401
+        assert not schemes.get(1)
+
     def test_cannot_add_schemes_with_invalid_repr(self, client: FlaskClient) -> None:
         response = client.post(
             "/authorities/1/schemes",

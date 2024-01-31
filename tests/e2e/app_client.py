@@ -16,46 +16,46 @@ class AppClient:
 
     def set_clock(self, now: str) -> None:
         response = self._session.put(f"{self._url}/clock", data={"now": now})
-        assert response.status_code == 204
+        response.raise_for_status()
 
     def add_authorities(self, *authorities: AuthorityRepr) -> None:
         json = [asdict(authority) for authority in authorities]
         response = self._session.post(f"{self._url}/authorities", json=json, timeout=self.DEFAULT_TIMEOUT)
-        assert response.status_code == 201
+        response.raise_for_status()
 
     def add_users(self, authority_id: int, *users: UserRepr) -> None:
         json = [asdict(user) for user in users]
         response = self._session.post(
             f"{self._url}/authorities/{authority_id}/users", json=json, timeout=self.DEFAULT_TIMEOUT
         )
-        assert response.status_code == 201
+        response.raise_for_status()
 
     def add_schemes(self, authority_id: int, *schemes: SchemeRepr) -> None:
         json = [asdict(scheme) for scheme in schemes]
         response = self._session.post(
             f"{self._url}/authorities/{authority_id}/schemes", json=json, timeout=self.DEFAULT_TIMEOUT
         )
-        assert response.status_code == 201
+        response.raise_for_status()
 
     def get_scheme(self, id_: int) -> SchemeRepr:
         response = self._session.get(
             f"{self._url}/schemes/{id_}", headers={"Accept": "application/json"}, timeout=self.DEFAULT_TIMEOUT
         )
-        assert response.status_code == 200
+        response.raise_for_status()
         scheme_repr: SchemeRepr = fromdict(SchemeRepr, response.json())
         return scheme_repr
 
     def clear_authorities(self) -> None:
         response = self._session.delete(f"{self._url}/authorities", timeout=self.DEFAULT_TIMEOUT)
-        assert response.status_code == 204
+        response.raise_for_status()
 
     def clear_users(self) -> None:
         response = self._session.delete(f"{self._url}/users", timeout=self.DEFAULT_TIMEOUT)
-        assert response.status_code == 204
+        response.raise_for_status()
 
     def clear_schemes(self) -> None:
         response = self._session.delete(f"{self._url}/schemes", timeout=self.DEFAULT_TIMEOUT)
-        assert response.status_code == 204
+        response.raise_for_status()
 
 
 @dataclass(frozen=True)

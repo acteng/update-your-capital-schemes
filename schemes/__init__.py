@@ -1,5 +1,5 @@
 import os
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 import alembic.config
 import inject
@@ -53,12 +53,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.config.from_prefixed_env()
     app.config.from_mapping(test_config)
 
-    def bindings(binder: Binder) -> None:
-        binder.bind(Config, app.config)
-        binder.bind(Clock, FakeClock() if app.testing else SystemClock())
-        _bindings(binder)
-
-    inject.configure(bindings, bind_in_runtime=False)
+    inject.configure(bindings(app), bind_in_runtime=False)
 
     _configure_dataclass_wizard()
     _configure_jinja(app)
@@ -92,12 +87,17 @@ def destroy_app(_app: Flask) -> None:
     inject.clear()
 
 
-def _bindings(binder: Binder) -> None:
-    binder.bind_to_constructor(ReportingWindowService, DefaultReportingWindowService)
-    binder.bind_to_constructor(Engine, _create_engine)
-    binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
-    binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
-    binder.bind_to_constructor(SchemeRepository, DatabaseSchemeRepository)
+def bindings(app: Flask) -> Callable[[Binder], None]:
+    def _bindings(binder: Binder) -> None:
+        binder.bind(Config, app.config)
+        binder.bind(Clock, FakeClock() if app.testing else SystemClock())
+        binder.bind_to_constructor(ReportingWindowService, DefaultReportingWindowService)
+        binder.bind_to_constructor(Engine, _create_engine)
+        binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
+        binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
+        binder.bind_to_constructor(SchemeRepository, DatabaseSchemeRepository)
+
+    return _bindings
 
 
 @inject.autoparams()

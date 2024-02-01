@@ -1,4 +1,4 @@
-from typing import Any, Generator, Mapping
+from typing import Any, Callable, Generator, Mapping
 
 import inject
 import pytest
@@ -7,15 +7,11 @@ from flask.testing import FlaskClient
 from flask_wtf.csrf import generate_csrf
 from inject import Binder
 
-from schemes import create_app, destroy_app
+from schemes import bindings, create_app, destroy_app
 from schemes.domain.authorities import AuthorityRepository
-from schemes.domain.reporting_window import (
-    DefaultReportingWindowService,
-    ReportingWindowService,
-)
 from schemes.domain.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
-from schemes.infrastructure.clock import Clock, FakeClock
+from schemes.infrastructure.clock import Clock
 from tests.integration.fakes import (
     MemoryAuthorityRepository,
     MemorySchemeRepository,
@@ -40,7 +36,7 @@ def config_fixture() -> Mapping[str, Any]:
 @pytest.fixture(name="app", scope="class")
 def app_fixture(config: Mapping[str, Any]) -> Generator[Flask, Any, Any]:
     app = create_app(config)
-    inject.clear_and_configure(_bindings, bind_in_runtime=False)
+    inject.clear_and_configure(_test_bindings(app), bind_in_runtime=False, allow_override=True)
     yield app
     destroy_app(app)
 
@@ -84,9 +80,11 @@ def schemes_fixture(app: Flask) -> Generator[SchemeRepository, None, None]:
     schemes.clear()
 
 
-def _bindings(binder: Binder) -> None:
-    binder.bind(Clock, FakeClock())
-    binder.bind_to_constructor(ReportingWindowService, DefaultReportingWindowService)
-    binder.bind(AuthorityRepository, MemoryAuthorityRepository())
-    binder.bind(UserRepository, MemoryUserRepository())
-    binder.bind(SchemeRepository, MemorySchemeRepository())
+def _test_bindings(app: Flask) -> Callable[[Binder], None]:
+    def _bindings(binder: Binder) -> None:
+        binder.install(bindings(app))
+        binder.bind(AuthorityRepository, MemoryAuthorityRepository())
+        binder.bind(UserRepository, MemoryUserRepository())
+        binder.bind(SchemeRepository, MemorySchemeRepository())
+
+    return _bindings

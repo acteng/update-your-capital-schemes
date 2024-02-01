@@ -28,6 +28,7 @@ def config_fixture() -> Mapping[str, Any]:
     return {
         "TESTING": True,
         "SECRET_KEY": b"secret_key",
+        "SQLALCHEMY_DATABASE_URI": "sqlite+pysqlite:///file::memory:?uri=true",
         "GOVUK_CLIENT_ID": "test",
         "GOVUK_CLIENT_SECRET": "test",
         "GOVUK_SERVER_METADATA_URL": "test",

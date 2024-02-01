@@ -1,5 +1,5 @@
 class Config:
-    SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///file::memory:?uri=true"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///schemes.db"
     GOVUK_SERVER_METADATA_URL = "https://oidc.integration.account.gov.uk/.well-known/openid-configuration"
     GOVUK_TOKEN_ENDPOINT = "https://oidc.integration.account.gov.uk/token"
     GOVUK_PROFILE_URL = "https://home.integration.account.gov.uk/"

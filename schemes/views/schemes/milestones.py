@@ -11,6 +11,7 @@ from schemes.domain.schemes import (
     MilestoneRevision,
     ObservationType,
 )
+from schemes.views.schemes.funding import DataSourceRepr
 from schemes.views.schemes.observations import ObservationTypeRepr
 
 
@@ -83,6 +84,7 @@ class MilestoneRevisionRepr:
     milestone: MilestoneRepr
     observation_type: ObservationTypeRepr
     status_date: str
+    source: DataSourceRepr
 
     @classmethod
     def from_domain(cls, milestone_revision: MilestoneRevision) -> MilestoneRevisionRepr:
@@ -95,6 +97,7 @@ class MilestoneRevisionRepr:
             milestone=MilestoneRepr.from_domain(milestone_revision.milestone),
             observation_type=ObservationTypeRepr.from_domain(milestone_revision.observation_type),
             status_date=milestone_revision.status_date.isoformat(),
+            source=DataSourceRepr.from_domain(milestone_revision.source),
         )
 
     def to_domain(self) -> MilestoneRevision:
@@ -107,6 +110,7 @@ class MilestoneRevisionRepr:
             milestone=self.milestone.to_domain(),
             observation_type=self.observation_type.to_domain(),
             status_date=date.fromisoformat(self.status_date),
+            source=self.source.to_domain(),
         )
 
 

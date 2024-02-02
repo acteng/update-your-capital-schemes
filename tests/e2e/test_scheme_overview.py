@@ -32,6 +32,7 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: P
                     milestone="detailed design completed",
                     observation_type="Actual",
                     status_date="2020-01-01",
+                    source="ATF4 Bid",
                 )
             ],
         ),

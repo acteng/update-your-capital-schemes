@@ -68,6 +68,7 @@ class SchemeMilestoneEntity(Base):
     observation_type_id: Mapped[int]
     effective_date_from: Mapped[datetime]
     effective_date_to: Mapped[datetime | None]
+    data_source_id: Mapped[int]
 
 
 class SchemeInterventionEntity(Base):

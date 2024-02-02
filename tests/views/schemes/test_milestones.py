@@ -3,11 +3,13 @@ from datetime import date, datetime
 import pytest
 
 from schemes.domain.schemes import (
+    DataSource,
     DateRange,
     Milestone,
     MilestoneRevision,
     ObservationType,
 )
+from schemes.views.schemes.funding import DataSourceRepr
 from schemes.views.schemes.milestones import (
     MilestoneContext,
     MilestoneRepr,
@@ -48,6 +50,7 @@ class TestSchemeMilestonesContext:
                 milestone=milestone,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
+                source=DataSource.ATF4_BID,
             ),
             MilestoneRevision(
                 id_=2,
@@ -55,6 +58,7 @@ class TestSchemeMilestonesContext:
                 milestone=milestone,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 3, 1),
+                source=DataSource.ATF4_BID,
             ),
         ]
 
@@ -122,6 +126,7 @@ class TestMilestoneRevisionRepr:
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
+            source=DataSource.ATF4_BID,
         )
 
         milestone_revision_repr = MilestoneRevisionRepr.from_domain(milestone_revision)
@@ -133,6 +138,7 @@ class TestMilestoneRevisionRepr:
             milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationTypeRepr.ACTUAL,
             status_date="2020-01-01",
+            source=DataSourceRepr.ATF4_BID,
         )
 
     def test_from_domain_when_no_effective_date_to(self) -> None:
@@ -142,6 +148,7 @@ class TestMilestoneRevisionRepr:
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
+            source=DataSource.ATF4_BID,
         )
 
         milestone_revision_repr = MilestoneRevisionRepr.from_domain(milestone_revision)
@@ -156,6 +163,7 @@ class TestMilestoneRevisionRepr:
             milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationTypeRepr.ACTUAL,
             status_date="2020-01-01",
+            source=DataSourceRepr.ATF4_BID,
         )
 
         milestone_revision = milestone_revision_repr.to_domain()
@@ -166,6 +174,7 @@ class TestMilestoneRevisionRepr:
             and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision.observation_type == ObservationType.ACTUAL
             and milestone_revision.status_date == date(2020, 1, 1)
+            and milestone_revision.source == DataSource.ATF4_BID
         )
 
     def test_to_domain_when_no_effective_date_to(self) -> None:
@@ -176,6 +185,7 @@ class TestMilestoneRevisionRepr:
             milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationTypeRepr.ACTUAL,
             status_date="2020-01-01",
+            source=DataSourceRepr.ATF4_BID,
         )
 
         milestone_revision = milestone_revision_repr.to_domain()

@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 from enum import IntEnum, auto
 
+from schemes.domain.schemes import DataSource
 from schemes.domain.schemes.dates import DateRange
 from schemes.domain.schemes.observations import ObservationType
 
@@ -55,13 +56,20 @@ class SchemeMilestones:
 
 class MilestoneRevision:
     def __init__(
-        self, id_: int, effective: DateRange, milestone: Milestone, observation_type: ObservationType, status_date: date
+        self,
+        id_: int,
+        effective: DateRange,
+        milestone: Milestone,
+        observation_type: ObservationType,
+        status_date: date,
+        source: DataSource,
     ):
         self.id = id_
         self.effective = effective
         self.milestone = milestone
         self.observation_type = observation_type
         self.status_date = status_date
+        self.source = source
 
 
 class Milestone(IntEnum):

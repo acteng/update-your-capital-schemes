@@ -99,6 +99,7 @@ class TestSchemeContext:
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
             ),
             MilestoneRevision(
                 id_=2,
@@ -106,6 +107,7 @@ class TestSchemeContext:
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
+                source=DataSource.ATF4_BID,
             ),
         )
         scheme.outputs.update_outputs(
@@ -171,6 +173,7 @@ class TestSchemeOverviewContext:
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
             )
         )
 
@@ -286,6 +289,7 @@ class TestSchemeRepr:
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
             ),
             MilestoneRevision(
                 id_=2,
@@ -293,6 +297,7 @@ class TestSchemeRepr:
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 2, 1),
+                source=DataSource.ATF4_BID,
             ),
         )
 
@@ -306,6 +311,7 @@ class TestSchemeRepr:
                 milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationTypeRepr.ACTUAL,
                 status_date="2020-01-01",
+                source=DataSourceRepr.ATF4_BID,
             ),
             MilestoneRevisionRepr(
                 id=2,
@@ -314,6 +320,7 @@ class TestSchemeRepr:
                 milestone=MilestoneRepr.CONSTRUCTION_STARTED,
                 observation_type=ObservationTypeRepr.ACTUAL,
                 status_date="2020-02-01",
+                source=DataSourceRepr.ATF4_BID,
             ),
         ]
 
@@ -443,6 +450,7 @@ class TestSchemeRepr:
                     milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
                     observation_type=ObservationTypeRepr.ACTUAL,
                     status_date="2020-01-01",
+                    source=DataSourceRepr.ATF4_BID,
                 ),
                 MilestoneRevisionRepr(
                     id=2,
@@ -451,6 +459,7 @@ class TestSchemeRepr:
                     milestone=MilestoneRepr.CONSTRUCTION_STARTED,
                     observation_type=ObservationTypeRepr.ACTUAL,
                     status_date="2020-02-01",
+                    source=DataSourceRepr.ATF4_BID,
                 ),
             ],
         )
@@ -466,6 +475,7 @@ class TestSchemeRepr:
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.ACTUAL
             and milestone_revision1.status_date == date(2020, 1, 1)
+            and milestone_revision1.source == DataSource.ATF4_BID
         )
         assert (
             milestone_revision2.id == 2
@@ -473,6 +483,7 @@ class TestSchemeRepr:
             and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone_revision2.observation_type == ObservationType.ACTUAL
             and milestone_revision2.status_date == date(2020, 2, 1)
+            and milestone_revision2.source == DataSource.ATF4_BID
         )
 
     def test_to_domain_sets_output_revisions(self) -> None:

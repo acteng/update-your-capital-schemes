@@ -88,6 +88,7 @@ class MilestoneRevisionRepr:
     milestone: str
     observation_type: str
     status_date: str
+    source: str
 
 
 @dataclass(frozen=True)

@@ -127,6 +127,7 @@ class TestDatabaseSchemeRepository:
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
+                source=DataSource.ATF4_BID,
             ),
             MilestoneRevision(
                 id_=3,
@@ -134,6 +135,7 @@ class TestDatabaseSchemeRepository:
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 3, 1),
+                source=DataSource.ATF4_BID,
             ),
         )
 
@@ -151,6 +153,7 @@ class TestDatabaseSchemeRepository:
             and row1.milestone_id == 6
             and row1.observation_type_id == 1
             and row1.status_date == date(2020, 2, 1)
+            and row1.data_source_id == 3
         )
         assert (
             row2.scheme_milestone_id == 3
@@ -160,6 +163,7 @@ class TestDatabaseSchemeRepository:
             and row2.milestone_id == 6
             and row2.observation_type_id == 1
             and row2.status_date == date(2020, 3, 1)
+            and row2.data_source_id == 3
         )
 
     def test_add_schemes_output_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
@@ -299,6 +303,7 @@ class TestDatabaseSchemeRepository:
                         milestone_id=6,
                         observation_type_id=1,
                         status_date=date(2020, 2, 1),
+                        data_source_id=3,
                     ),
                     SchemeMilestoneEntity(
                         scheme_milestone_id=3,
@@ -308,6 +313,7 @@ class TestDatabaseSchemeRepository:
                         milestone_id=6,
                         observation_type_id=1,
                         status_date=date(2020, 3, 1),
+                        data_source_id=3,
                     ),
                 ]
             )
@@ -325,6 +331,7 @@ class TestDatabaseSchemeRepository:
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
+            and milestone_revision1.source == DataSource.ATF4_BID
         )
         assert (
             milestone_revision2.id == 3
@@ -332,6 +339,7 @@ class TestDatabaseSchemeRepository:
             and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
+            and milestone_revision2.source == DataSource.ATF4_BID
         )
 
     def test_get_scheme_output_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
@@ -495,6 +503,7 @@ class TestDatabaseSchemeRepository:
                         milestone_id=6,
                         observation_type_id=1,
                         status_date=date(2020, 2, 1),
+                        data_source_id=3,
                     ),
                     CapitalSchemeEntity(
                         capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=1
@@ -507,6 +516,7 @@ class TestDatabaseSchemeRepository:
                         milestone_id=6,
                         observation_type_id=1,
                         status_date=date(2020, 3, 1),
+                        data_source_id=3,
                     ),
                     CapitalSchemeEntity(
                         capital_scheme_id=3, scheme_name="Hospital Fields Road", bid_submitting_authority_id=2
@@ -519,6 +529,7 @@ class TestDatabaseSchemeRepository:
                         milestone_id=6,
                         observation_type_id=1,
                         status_date=date(2020, 4, 1),
+                        data_source_id=3,
                     ),
                 ]
             )
@@ -537,6 +548,7 @@ class TestDatabaseSchemeRepository:
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
+            and milestone_revision1.source == DataSource.ATF4_BID
         )
         assert scheme2.id == 2
         milestone_revision2: MilestoneRevision
@@ -547,6 +559,7 @@ class TestDatabaseSchemeRepository:
             and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
+            and milestone_revision2.source == DataSource.ATF4_BID
         )
 
     def test_get_all_schemes_output_revisions_by_authority(
@@ -642,6 +655,7 @@ class TestDatabaseSchemeRepository:
                         milestone_id=5,
                         observation_type_id=1,
                         status_date=date(2020, 2, 1),
+                        data_source_id=3,
                     ),
                     SchemeInterventionEntity(
                         capital_scheme_id=1,

@@ -152,6 +152,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             milestone_id=self._milestone_mapper.to_id(milestone_revision.milestone),
             observation_type_id=self._observation_type_mapper.to_id(milestone_revision.observation_type),
             status_date=milestone_revision.status_date,
+            data_source_id=self._data_source_mapper.to_id(milestone_revision.source),
         )
 
     def _scheme_milestone_to_domain(self, scheme_milestone: SchemeMilestoneEntity) -> MilestoneRevision:
@@ -161,6 +162,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             milestone=self._milestone_mapper.to_domain(scheme_milestone.milestone_id),
             observation_type=self._observation_type_mapper.to_domain(scheme_milestone.observation_type_id),
             status_date=scheme_milestone.status_date,
+            source=self._data_source_mapper.to_domain(scheme_milestone.data_source_id),
         )
 
     def _scheme_intervention_from_domain(self, output_revision: OutputRevision) -> SchemeInterventionEntity:

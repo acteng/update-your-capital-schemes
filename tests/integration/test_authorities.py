@@ -152,6 +152,7 @@ class TestApiEnabled:
                             "milestone": "detailed design completed",
                             "observation_type": "Actual",
                             "status_date": "2020-01-01",
+                            "source": "ATF4 Bid",
                         }
                     ],
                 },
@@ -169,6 +170,7 @@ class TestApiEnabled:
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.ACTUAL
             and milestone_revision1.status_date == date(2020, 1, 1)
+            and milestone_revision1.source == DataSource.ATF4_BID
         )
 
     def test_add_schemes_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:

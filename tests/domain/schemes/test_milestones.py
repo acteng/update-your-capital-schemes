@@ -4,6 +4,7 @@ from datetime import date, datetime
 import pytest
 
 from schemes.domain.schemes import (
+    DataSource,
     DateRange,
     Milestone,
     MilestoneRevision,
@@ -22,6 +23,7 @@ class TestSchemeMilestones:
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
             )
         )
 
@@ -37,6 +39,7 @@ class TestSchemeMilestones:
             milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
             observation_type=ObservationType.PLANNED,
             status_date=date(2020, 1, 1),
+            source=DataSource.ATF4_BID,
         )
         milestone_revision2 = MilestoneRevision(
             id_=2,
@@ -44,6 +47,7 @@ class TestSchemeMilestones:
             milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
             observation_type=ObservationType.PLANNED,
             status_date=date(2020, 2, 1),
+            source=DataSource.ATF4_BID,
         )
         milestones.update_milestones(milestone_revision1, milestone_revision2)
 
@@ -57,6 +61,7 @@ class TestSchemeMilestones:
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
+            source=DataSource.ATF4_BID,
         )
 
         milestones.update_milestone(milestone_revision)
@@ -71,6 +76,7 @@ class TestSchemeMilestones:
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2000, 1, 1),
+            source=DataSource.ATF4_BID,
         )
         milestones.update_milestone(milestone_revision)
 
@@ -84,6 +90,7 @@ class TestSchemeMilestones:
                     milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                     observation_type=ObservationType.ACTUAL,
                     status_date=date(2000, 2, 1),
+                    source=DataSource.ATF4_BID,
                 )
             )
 
@@ -95,6 +102,7 @@ class TestSchemeMilestones:
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
+            source=DataSource.ATF4_BID,
         )
         milestone_revision2 = MilestoneRevision(
             id_=2,
@@ -102,6 +110,7 @@ class TestSchemeMilestones:
             milestone=Milestone.CONSTRUCTION_STARTED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 2, 1),
+            source=DataSource.ATF4_BID,
         )
 
         milestones.update_milestones(milestone_revision1, milestone_revision2)
@@ -117,6 +126,7 @@ class TestSchemeMilestones:
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
             ),
             MilestoneRevision(
                 id_=2,
@@ -124,6 +134,7 @@ class TestSchemeMilestones:
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
             ),
         )
 
@@ -138,6 +149,7 @@ class TestSchemeMilestones:
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
             ),
             MilestoneRevision(
                 id_=2,
@@ -145,6 +157,7 @@ class TestSchemeMilestones:
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
             ),
         )
 
@@ -159,6 +172,7 @@ class TestSchemeMilestones:
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
             )
         )
 

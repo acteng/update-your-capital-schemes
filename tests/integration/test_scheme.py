@@ -91,6 +91,7 @@ def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
+            source=DataSource.ATF4_BID,
         )
     )
     schemes.add(scheme)
@@ -219,19 +220,65 @@ def test_scheme_shows_milestones(schemes: SchemeRepository, client: FlaskClient)
     current = DateRange(datetime(2020, 1, 1), None)
     scheme.milestones.update_milestones(
         MilestoneRevision(
-            1, current, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 2, 1)
+            1,
+            current,
+            Milestone.FEASIBILITY_DESIGN_COMPLETED,
+            ObservationType.PLANNED,
+            date(2020, 2, 1),
+            DataSource.ATF4_BID,
         ),
-        MilestoneRevision(2, current, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL, date(2020, 2, 2)),
         MilestoneRevision(
-            3, current, Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 3, 1)
+            2,
+            current,
+            Milestone.FEASIBILITY_DESIGN_COMPLETED,
+            ObservationType.ACTUAL,
+            date(2020, 2, 2),
+            DataSource.ATF4_BID,
         ),
-        MilestoneRevision(4, current, Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL, date(2020, 3, 2)),
-        MilestoneRevision(5, current, Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED, date(2020, 4, 1)),
-        MilestoneRevision(6, current, Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL, date(2020, 4, 2)),
-        MilestoneRevision(7, current, Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED, date(2020, 5, 1)),
-        MilestoneRevision(8, current, Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL, date(2020, 5, 2)),
-        MilestoneRevision(9, current, Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED, date(2020, 6, 1)),
-        MilestoneRevision(10, current, Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL, date(2020, 6, 2)),
+        MilestoneRevision(
+            3,
+            current,
+            Milestone.PRELIMINARY_DESIGN_COMPLETED,
+            ObservationType.PLANNED,
+            date(2020, 3, 1),
+            DataSource.ATF4_BID,
+        ),
+        MilestoneRevision(
+            4,
+            current,
+            Milestone.PRELIMINARY_DESIGN_COMPLETED,
+            ObservationType.ACTUAL,
+            date(2020, 3, 2),
+            DataSource.ATF4_BID,
+        ),
+        MilestoneRevision(
+            5,
+            current,
+            Milestone.DETAILED_DESIGN_COMPLETED,
+            ObservationType.PLANNED,
+            date(2020, 4, 1),
+            DataSource.ATF4_BID,
+        ),
+        MilestoneRevision(
+            6,
+            current,
+            Milestone.DETAILED_DESIGN_COMPLETED,
+            ObservationType.ACTUAL,
+            date(2020, 4, 2),
+            DataSource.ATF4_BID,
+        ),
+        MilestoneRevision(
+            7, current, Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED, date(2020, 5, 1), DataSource.ATF4_BID
+        ),
+        MilestoneRevision(
+            8, current, Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL, date(2020, 5, 2), DataSource.ATF4_BID
+        ),
+        MilestoneRevision(
+            9, current, Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED, date(2020, 6, 1), DataSource.ATF4_BID
+        ),
+        MilestoneRevision(
+            10, current, Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL, date(2020, 6, 2), DataSource.ATF4_BID
+        ),
     )
     schemes.add(scheme)
 

@@ -225,8 +225,15 @@ class SchemeFundingComponent(SummaryCardComponent):
 
 class SchemeMilestonesComponent:
     def __init__(self, title: Locator):
-        card = title.locator("xpath=../..")
+        self._title = title
+        title_wrapper = title.locator("xpath=..")
+        card = title_wrapper.locator("xpath=..")
+        self._change_milestone_dates = title_wrapper.get_by_role("link", name="Change")
         self.milestones = SchemeMilestonesTableComponent(card.get_by_role("table"))
+
+    def change_milestone_dates(self) -> ChangeMilestoneDatesPage:
+        self._change_milestone_dates.click()
+        return ChangeMilestoneDatesPage(self._title.page)
 
 
 class SchemeMilestonesTableComponent:
@@ -235,6 +242,9 @@ class SchemeMilestonesTableComponent:
 
     def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
         return (SchemeMilestoneRowComponent(row) for row in self._rows.all()[1:])
+
+    def __getitem__(self, milestone: str) -> SchemeMilestoneRowComponent:
+        return next(row for row in self if row.milestone == milestone)
 
     def to_dicts(self) -> list[dict[str, str | None]]:
         return [milestone.to_dict() for milestone in self]
@@ -330,6 +340,60 @@ class ChangeSpendToDateFormComponent:
     def confirm_when_error(self) -> ChangeSpendToDatePage:
         self._confirm.click()
         return ChangeSpendToDatePage(self._form.page)
+
+
+class ChangeMilestoneDatesPage:
+    def __init__(self, page: Page):
+        self.form = ChangeMilestoneDatesFormComponent(page.get_by_role("form"))
+
+
+class ChangeMilestoneDatesFormComponent:
+    def __init__(self, form: Locator):
+        self._form = form
+        self._construction_started = ChangeMilestoneDateFormRowComponent(
+            form.get_by_role("heading", name="Construction started")
+        )
+        self._construction_completed = ChangeMilestoneDateFormRowComponent(
+            form.get_by_role("heading", name="Construction completed")
+        )
+        self._confirm = form.get_by_role("button", name="Confirm")
+
+    def enter_construction_started(self, actual: str) -> ChangeMilestoneDatesFormComponent:
+        self._construction_started.actual.value = actual
+        return self
+
+    def enter_construction_completed(self, planned: str) -> ChangeMilestoneDatesFormComponent:
+        self._construction_completed.planned.value = planned
+        return self
+
+    def confirm(self) -> SchemePage:
+        self._confirm.click()
+        return SchemePage(self._form.page)
+
+
+class ChangeMilestoneDateFormRowComponent:
+    def __init__(self, heading: Locator):
+        grid_row = heading.locator("xpath=following-sibling::*")
+        self.actual = DateComponent(grid_row.get_by_role("group", name="Actual date"))
+        self.planned = DateComponent(grid_row.get_by_role("group", name="Planned date"))
+
+
+class DateComponent:
+    def __init__(self, fieldset: Locator):
+        self.day = TextComponent(fieldset.get_by_label("Day"))
+        self.month = TextComponent(fieldset.get_by_label("Month"))
+        self.year = TextComponent(fieldset.get_by_label("Year"))
+
+    @property
+    def value(self) -> str:
+        return f"{self.day.value} {self.month.value} {self.year.value}"
+
+    @value.setter
+    def value(self, value: str) -> None:
+        values = value.split(" ")
+        self.day.value = values[0]
+        self.month.value = values[1]
+        self.year.value = values[2]
 
 
 class ErrorSummaryComponent:

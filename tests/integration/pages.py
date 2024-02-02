@@ -202,7 +202,11 @@ class SchemeFundingComponent(SummaryCardComponent):
 
 class SchemeMilestonesComponent:
     def __init__(self, title: Tag):
-        card = title.find_parent("div", class_="govuk-summary-card")
+        title_wrapper = title.find_parent("div", class_="govuk-summary-card__title-wrapper")
+        assert title_wrapper
+        change_milestones = title_wrapper.select_one("a:-soup-contains('Change')")
+        self.change_milestones_url = change_milestones["href"] if change_milestones else None
+        card = title_wrapper.find_parent("div", class_="govuk-summary-card")
         assert card
         table = card.select_one("table")
         assert table
@@ -303,6 +307,24 @@ class ChangeSpendToDatePage(PageObject):
         return heading.string == "Change spend to date" if heading else False
 
 
+class ChangeMilestoneDatesPage(PageObject):
+    def __init__(self, response: TestResponse):
+        super().__init__(response)
+        form_tag = self._soup.select_one("form")
+        assert form_tag
+        self.form = ChangeMilestoneDatesFormComponent(form_tag)
+
+    @classmethod
+    def open(cls, client: FlaskClient, id_: int) -> ChangeMilestoneDatesPage:
+        response = client.get(f"/schemes/{id_}/milestones")
+        return cls(response)
+
+    @property
+    def is_visible(self) -> bool:
+        heading = self._soup.select_one("main h1")
+        return heading.string == "Change milestone dates" if heading else False
+
+
 class ErrorSummaryComponent:
     def __init__(self, alert: Tag):
         self._alert = alert
@@ -326,6 +348,11 @@ class ChangeSpendToDateFormComponent:
         self.amount = TextComponent(amount_input)
         cancel = self._form.select_one("a")
         self.cancel_url = cancel["href"] if cancel else None
+
+
+class ChangeMilestoneDatesFormComponent:
+    def __init__(self, form: Tag):
+        self.confirm_url = form.get("action")
 
 
 class TextComponent:

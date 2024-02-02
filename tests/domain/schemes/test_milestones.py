@@ -117,6 +117,48 @@ class TestSchemeMilestones:
 
         assert milestones.milestone_revisions == [milestone_revision1, milestone_revision2]
 
+    def test_update_milestone_date_closes_existing_revision(self) -> None:
+        milestones = SchemeMilestones()
+        milestones.update_milestone(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        milestones.update_milestone_date(
+            now=datetime(2020, 1, 31, 13),
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 3),
+        )
+
+        milestone_revision = milestones.milestone_revisions[0]
+        assert milestone_revision.id == 1 and milestone_revision.effective.date_to == datetime(2020, 1, 31, 13)
+
+    def test_update_milestone_date_adds_new_revision(self) -> None:
+        milestones = SchemeMilestones()
+
+        milestones.update_milestone_date(
+            now=datetime(2020, 1, 31, 13),
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 3),
+        )
+
+        milestone_revision = milestones.milestone_revisions[0]
+        assert (
+            milestone_revision.id is None
+            and milestone_revision.effective == DateRange(datetime(2020, 1, 31, 13), None)
+            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision.observation_type == ObservationType.ACTUAL
+            and milestone_revision.status_date == date(2020, 1, 3)
+        )
+
     def test_get_current_milestone_selects_actual_observation_type(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(

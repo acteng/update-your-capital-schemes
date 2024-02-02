@@ -141,6 +141,19 @@ class TestMilestoneRevisionRepr:
             source=DataSourceRepr.ATF4_BID,
         )
 
+    def test_cannot_from_domain_when_transient(self) -> None:
+        milestone_revision = MilestoneRevision(
+            id_=None,
+            effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 1, 31, 13)),
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 1),
+            source=DataSource.ATF4_BID,
+        )
+
+        with pytest.raises(ValueError, match="Milestone revision must be persistent"):
+            MilestoneRevisionRepr.from_domain(milestone_revision)
+
     def test_from_domain_when_no_effective_date_to(self) -> None:
         milestone_revision = MilestoneRevision(
             id_=1,

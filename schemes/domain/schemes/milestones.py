@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from enum import IntEnum, auto
 
 from schemes.domain.schemes import DataSource
@@ -28,8 +28,33 @@ class SchemeMilestones:
 
         self._milestone_revisions.append(milestone_revision)
 
+    def update_milestone_date(
+        self, now: datetime, milestone: Milestone, observation_type: ObservationType, status_date: date
+    ) -> None:
+        current_milestone_revision = self._current_milestone_revision(milestone, observation_type)
+        if current_milestone_revision:
+            current_milestone_revision.effective = DateRange(current_milestone_revision.effective.date_from, now)
+
+        self.update_milestone(
+            MilestoneRevision(
+                id_=None,
+                effective=DateRange(now, None),
+                milestone=milestone,
+                observation_type=observation_type,
+                status_date=status_date,
+                source=DataSource.AUTHORITY_UPDATE,
+            )
+        )
+
     def _ensure_no_current_milestone_revision(self, milestone: Milestone, observation_type: ObservationType) -> None:
-        current_milestone_revision = next(
+        current_milestone_revision = self._current_milestone_revision(milestone, observation_type)
+        if current_milestone_revision:
+            raise ValueError(f"Current milestone already exists: {current_milestone_revision}")
+
+    def _current_milestone_revision(
+        self, milestone: Milestone, observation_type: ObservationType
+    ) -> MilestoneRevision | None:
+        return next(
             (
                 revision
                 for revision in self.current_milestone_revisions
@@ -37,8 +62,6 @@ class SchemeMilestones:
             ),
             None,
         )
-        if current_milestone_revision:
-            raise ValueError(f"Current milestone already exists: {current_milestone_revision}")
 
     def update_milestones(self, *milestone_revisions: MilestoneRevision) -> None:
         for milestone_revision in milestone_revisions:
@@ -55,9 +78,10 @@ class SchemeMilestones:
 
 
 class MilestoneRevision:
+    # TODO: domain identifier should be mandatory for transient instances
     def __init__(
         self,
-        id_: int,
+        id_: int | None,
         effective: DateRange,
         milestone: Milestone,
         observation_type: ObservationType,

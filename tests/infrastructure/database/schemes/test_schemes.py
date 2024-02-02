@@ -732,6 +732,63 @@ class TestDatabaseSchemeRepository:
             and capital_scheme_financial2.data_source_id == 14
         )
 
+    def test_update_scheme_milestone_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+        with Session(engine) as session:
+            session.add_all(
+                [
+                    CapitalSchemeEntity(
+                        capital_scheme_id=1,
+                        scheme_name="Wirral Package",
+                        bid_submitting_authority_id=1,
+                    ),
+                    SchemeMilestoneEntity(
+                        scheme_milestone_id=2,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
+                        milestone_id=6,
+                        observation_type_id=1,
+                        status_date=date(2020, 2, 1),
+                        data_source_id=3,
+                    ),
+                ]
+            )
+            session.commit()
+        scheme = schemes.get(1)
+        assert scheme
+        scheme.milestones.milestone_revisions[0].effective = DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31))
+        scheme.milestones.update_milestone(
+            MilestoneRevision(
+                id_=3,
+                effective=DateRange(datetime(2020, 1, 31), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 3, 1),
+                source=DataSource.AUTHORITY_UPDATE,
+            ),
+        )
+
+        schemes.update(scheme)
+
+        with Session(engine) as session:
+            row = session.get_one(CapitalSchemeEntity, 1)
+            scheme_milestone1: SchemeMilestoneEntity
+            scheme_milestone2: SchemeMilestoneEntity
+            scheme_milestone1, scheme_milestone2 = row.scheme_milestones
+        assert scheme_milestone1.scheme_milestone_id == 2 and scheme_milestone1.effective_date_to == datetime(
+            2020, 1, 31
+        )
+        assert (
+            scheme_milestone2.scheme_milestone_id == 3
+            and scheme_milestone2.capital_scheme_id == 1
+            and scheme_milestone2.effective_date_from == datetime(2020, 1, 31)
+            and scheme_milestone2.effective_date_to is None
+            and scheme_milestone2.milestone_id == 6
+            and scheme_milestone2.observation_type_id == 1
+            and scheme_milestone2.status_date == date(2020, 3, 1)
+            and scheme_milestone2.data_source_id == 14
+        )
+
 
 @pytest.mark.parametrize("type_, id_", [(SchemeType.DEVELOPMENT, 1), (SchemeType.CONSTRUCTION, 2), (None, None)])
 class TestSchemeTypeMapper:

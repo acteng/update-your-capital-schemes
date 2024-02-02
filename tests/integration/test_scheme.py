@@ -23,7 +23,11 @@ from schemes.domain.schemes import (
 )
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
-from tests.integration.pages import ChangeSpendToDatePage, SchemePage
+from tests.integration.pages import (
+    ChangeMilestoneDatesPage,
+    ChangeSpendToDatePage,
+    SchemePage,
+)
 
 
 @pytest.fixture(name="auth", autouse=True)
@@ -199,6 +203,14 @@ def test_scheme_shows_change_spend_to_date(schemes: SchemeRepository, client: Fl
     scheme_page = SchemePage.open(client, id_=1)
 
     assert scheme_page.funding.change_spend_to_date_url == "/schemes/1/spend-to-date"
+
+
+def test_scheme_shows_change_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    scheme_page = SchemePage.open(client, id_=1)
+
+    assert scheme_page.milestones.change_milestones_url == "/schemes/1/milestones"
 
 
 def test_scheme_shows_minimal_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -645,6 +657,62 @@ def test_cannot_spend_to_date_when_different_authority(
     response = client.post("/schemes/2/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
 
     assert response.status_code == 403
+
+
+def test_milestones_form_shows_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    change_milestones_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+    assert change_milestones_page.is_visible
+
+
+def test_milestones_form_shows_confirm(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    change_milestones_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+    assert change_milestones_page.form.confirm_url == "/schemes/1/milestones"
+
+
+def test_milestones_updates_milestones(clock: Clock, schemes: SchemeRepository, client: FlaskClient) -> None:
+    clock.now = datetime(2020, 1, 31, 13)
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.milestones.update_milestones(
+        MilestoneRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1, 12), None),
+            milestone=Milestone.CONSTRUCTION_STARTED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 2),
+            source=DataSource.ATF4_BID,
+        )
+    )
+    schemes.add(scheme)
+
+    client.post("/schemes/1/milestones", data={"day": "3", "month": "1", "year": "2020"})
+
+    actual_scheme = schemes.get(1)
+    assert actual_scheme
+    milestone_revision1: MilestoneRevision
+    milestone_revision2: MilestoneRevision
+    milestone_revision1, milestone_revision2 = actual_scheme.milestones.milestone_revisions
+    assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 1, 31, 13)
+    assert (
+        milestone_revision2.effective == DateRange(datetime(2020, 1, 31, 13), None)
+        and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
+        and milestone_revision2.observation_type == ObservationType.ACTUAL
+        and milestone_revision2.status_date == date(2020, 1, 3)
+        and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
+    )
+
+
+def test_milestones_shows_scheme(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    response = client.post("/schemes/1/milestones", data={"day": "3", "month": "1", "year": "2020"})
+
+    assert response.status_code == 302 and response.location == "/schemes/1"
 
 
 class TestApiEnabled:

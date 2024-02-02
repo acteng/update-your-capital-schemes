@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import date
 from enum import Enum, unique
 
 import dataclass_wizard
@@ -22,6 +23,8 @@ from schemes.dicts import as_shallow_dict, inverse_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import (
     FundingProgramme,
+    Milestone,
+    ObservationType,
     Scheme,
     SchemeRepository,
     SchemeType,
@@ -236,6 +239,32 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
         return Response(render_template("scheme/spend_to_date.html", **as_shallow_dict(context)))
 
     context.form.update_domain(scheme.funding, clock.now)
+    schemes.update(scheme)
+
+    return redirect(url_for("schemes.get", scheme_id=scheme_id))
+
+
+@bp.get("<int:scheme_id>/milestones")
+@bearer_auth
+def milestones_form(scheme_id: int) -> str:
+    return render_template("scheme/milestones.html", id=scheme_id)
+
+
+@bp.post("<int:scheme_id>/milestones")
+@bearer_auth
+@inject.autoparams("clock", "schemes")
+def milestones(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+    status_date = date(int(request.form["year"]), int(request.form["month"]), int(request.form["day"]))
+
+    scheme = schemes.get(scheme_id)
+    assert scheme
+    # TODO: support all milestones and observation types
+    scheme.milestones.update_milestone_date(
+        now=clock.now,
+        milestone=Milestone.CONSTRUCTION_STARTED,
+        observation_type=ObservationType.ACTUAL,
+        status_date=status_date,
+    )
     schemes.update(scheme)
 
     return redirect(url_for("schemes.get", scheme_id=scheme_id))

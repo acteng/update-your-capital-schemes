@@ -38,14 +38,14 @@ class SchemeFundingContext:
 
 
 @dataclass(frozen=True)
-class SchemeChangeSpendToDateContext:
+class ChangeSpendToDateContext:
     id: int
     funding_allocation: int | None
     change_control_adjustment: int | None
     form: ChangeSpendToDateForm
 
     @classmethod
-    def from_domain(cls, scheme: Scheme) -> SchemeChangeSpendToDateContext:
+    def from_domain(cls, scheme: Scheme) -> ChangeSpendToDateContext:
         return cls(
             id=scheme.id,
             funding_allocation=scheme.funding.funding_allocation,

@@ -14,11 +14,11 @@ from schemes.domain.schemes import (
     SchemeFunding,
 )
 from schemes.views.schemes.funding import (
+    ChangeSpendToDateContext,
     ChangeSpendToDateForm,
     DataSourceRepr,
     FinancialRevisionRepr,
     FinancialTypeRepr,
-    SchemeChangeSpendToDateContext,
     SchemeFundingContext,
 )
 
@@ -96,7 +96,7 @@ class TestSchemeFundingContext:
         assert context.allocation_still_to_spend == 60_000
 
 
-class TestSchemeChangeSpendToDateContext:
+class TestChangeSpendToDateContext:
     def test_from_domain(self, app: Flask) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.funding.update_financials(
@@ -123,7 +123,7 @@ class TestSchemeChangeSpendToDateContext:
             ),
         )
 
-        context = SchemeChangeSpendToDateContext.from_domain(scheme)
+        context = ChangeSpendToDateContext.from_domain(scheme)
 
         assert (
             context.id == 1

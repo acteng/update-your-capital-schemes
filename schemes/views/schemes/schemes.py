@@ -34,8 +34,8 @@ from schemes.infrastructure.clock import Clock
 from schemes.views.auth.api_key import api_key_auth
 from schemes.views.auth.bearer import bearer_auth
 from schemes.views.schemes.funding import (
+    ChangeSpendToDateContext,
     FinancialRevisionRepr,
-    SchemeChangeSpendToDateContext,
     SchemeFundingContext,
 )
 from schemes.views.schemes.milestones import (
@@ -215,7 +215,7 @@ def spend_to_date_form(users: UserRepository, schemes: SchemeRepository, scheme_
     if user.authority_id != scheme.authority_id:
         abort(403)
 
-    context = SchemeChangeSpendToDateContext.from_domain(scheme)
+    context = ChangeSpendToDateContext.from_domain(scheme)
     return render_template("scheme/spend_to_date.html", **as_shallow_dict(context))
 
 
@@ -232,7 +232,7 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
     if user.authority_id != scheme.authority_id:
         abort(403)
 
-    context = SchemeChangeSpendToDateContext.from_domain(scheme)
+    context = ChangeSpendToDateContext.from_domain(scheme)
     context.form.process(formdata=request.form)
 
     if not context.form.validate():

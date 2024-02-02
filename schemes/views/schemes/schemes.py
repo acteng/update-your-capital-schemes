@@ -39,6 +39,7 @@ from schemes.views.schemes.funding import (
     SchemeFundingContext,
 )
 from schemes.views.schemes.milestones import (
+    ChangeMilestoneDatesContext,
     MilestoneContext,
     MilestoneRevisionRepr,
     SchemeMilestonesContext,
@@ -246,8 +247,13 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
 
 @bp.get("<int:scheme_id>/milestones")
 @bearer_auth
-def milestones_form(scheme_id: int) -> str:
-    return render_template("scheme/milestones.html", id=scheme_id)
+@inject.autoparams("schemes")
+def milestones_form(schemes: SchemeRepository, scheme_id: int) -> str:
+    scheme = schemes.get(scheme_id)
+    assert scheme
+
+    context = ChangeMilestoneDatesContext.from_domain(scheme)
+    return render_template("scheme/milestones.html", **as_shallow_dict(context))
 
 
 @bp.post("<int:scheme_id>/milestones")

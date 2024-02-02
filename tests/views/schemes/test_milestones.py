@@ -8,9 +8,11 @@ from schemes.domain.schemes import (
     Milestone,
     MilestoneRevision,
     ObservationType,
+    Scheme,
 )
 from schemes.views.schemes.funding import DataSourceRepr
 from schemes.views.schemes.milestones import (
+    ChangeMilestoneDatesContext,
     MilestoneContext,
     MilestoneRepr,
     MilestoneRevisionRepr,
@@ -116,6 +118,15 @@ class TestMilestoneContext:
         context = MilestoneContext.from_domain(milestone)
 
         assert context == MilestoneContext(name=expected_name)
+
+
+class TestChangeMilestoneDatesContext:
+    def test_from_domain(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+
+        context = ChangeMilestoneDatesContext.from_domain(scheme)
+
+        assert context == ChangeMilestoneDatesContext(id=1)
 
 
 class TestMilestoneRevisionRepr:

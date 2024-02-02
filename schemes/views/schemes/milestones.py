@@ -10,6 +10,7 @@ from schemes.domain.schemes import (
     Milestone,
     MilestoneRevision,
     ObservationType,
+    Scheme,
 )
 from schemes.views.schemes.funding import DataSourceRepr
 from schemes.views.schemes.observations import ObservationTypeRepr
@@ -74,6 +75,15 @@ class MilestoneContext:
     @classmethod
     def from_domain(cls, milestone: Milestone | None) -> MilestoneContext:
         return cls(name=cls._NAMES[milestone] if milestone else None)
+
+
+@dataclass(frozen=True)
+class ChangeMilestoneDatesContext:
+    id: int
+
+    @classmethod
+    def from_domain(cls, scheme: Scheme) -> ChangeMilestoneDatesContext:
+        return ChangeMilestoneDatesContext(id=scheme.id)
 
 
 @dataclass(frozen=True)

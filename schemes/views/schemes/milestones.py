@@ -4,6 +4,10 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from enum import Enum, unique
 
+from flask_wtf import FlaskForm
+from govuk_frontend_wtf.wtforms_widgets import GovDateInput
+from wtforms.fields.datetime import DateField
+
 from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
     DateRange,
@@ -80,10 +84,15 @@ class MilestoneContext:
 @dataclass(frozen=True)
 class ChangeMilestoneDatesContext:
     id: int
+    form: ChangeMilestoneDatesForm
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> ChangeMilestoneDatesContext:
-        return ChangeMilestoneDatesContext(id=scheme.id)
+        return ChangeMilestoneDatesContext(id=scheme.id, form=ChangeMilestoneDatesForm())
+
+
+class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
+    date = DateField(widget=GovDateInput(), format="%d %m %Y")
 
 
 @dataclass(frozen=True)

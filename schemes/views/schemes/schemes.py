@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date
 from enum import Enum, unique
 
 import dataclass_wizard
@@ -40,6 +39,7 @@ from schemes.views.schemes.funding import (
 )
 from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,
+    ChangeMilestoneDatesForm,
     MilestoneContext,
     MilestoneRevisionRepr,
     SchemeMilestonesContext,
@@ -260,7 +260,8 @@ def milestones_form(schemes: SchemeRepository, scheme_id: int) -> str:
 @bearer_auth
 @inject.autoparams("clock", "schemes")
 def milestones(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
-    status_date = date(int(request.form["year"]), int(request.form["month"]), int(request.form["day"]))
+    form = ChangeMilestoneDatesForm(formdata=request.form)
+    assert form.date.data
 
     scheme = schemes.get(scheme_id)
     assert scheme
@@ -269,7 +270,7 @@ def milestones(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseR
         now=clock.now,
         milestone=Milestone.CONSTRUCTION_STARTED,
         observation_type=ObservationType.ACTUAL,
-        status_date=status_date,
+        status_date=form.date.data,
     )
     schemes.update(scheme)
 

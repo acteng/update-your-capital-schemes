@@ -690,7 +690,7 @@ def test_milestones_updates_milestones(clock: Clock, schemes: SchemeRepository, 
     )
     schemes.add(scheme)
 
-    client.post("/schemes/1/milestones", data={"day": "3", "month": "1", "year": "2020"})
+    client.post("/schemes/1/milestones", data={"date": ["3", "1", "2020"]})
 
     actual_scheme = schemes.get(1)
     assert actual_scheme
@@ -710,7 +710,7 @@ def test_milestones_updates_milestones(clock: Clock, schemes: SchemeRepository, 
 def test_milestones_shows_scheme(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    response = client.post("/schemes/1/milestones", data={"day": "3", "month": "1", "year": "2020"})
+    response = client.post("/schemes/1/milestones", data={"date": ["3", "1", "2020"]})
 
     assert response.status_code == 302 and response.location == "/schemes/1"
 

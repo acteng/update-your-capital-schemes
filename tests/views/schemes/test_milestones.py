@@ -1,6 +1,7 @@
 from datetime import date, datetime
 
 import pytest
+from flask import Flask
 
 from schemes.domain.schemes import (
     DataSource,
@@ -13,6 +14,7 @@ from schemes.domain.schemes import (
 from schemes.views.schemes.funding import DataSourceRepr
 from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,
+    ChangeMilestoneDatesForm,
     MilestoneContext,
     MilestoneRepr,
     MilestoneRevisionRepr,
@@ -121,12 +123,16 @@ class TestMilestoneContext:
 
 
 class TestChangeMilestoneDatesContext:
-    def test_from_domain(self) -> None:
+    def test_from_domain(self, app: Flask) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
 
         context = ChangeMilestoneDatesContext.from_domain(scheme)
 
-        assert context == ChangeMilestoneDatesContext(id=1)
+        assert context.id == 1 and isinstance(context.form, ChangeMilestoneDatesForm)
+
+
+class TestChangeMilestoneDatesForm:
+    pass
 
 
 class TestMilestoneRevisionRepr:

@@ -662,17 +662,17 @@ def test_cannot_spend_to_date_when_different_authority(
 def test_milestones_form_shows_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    change_milestones_page = ChangeMilestoneDatesPage.open(client, id_=1)
+    change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
-    assert change_milestones_page.is_visible
+    assert change_milestone_dates_page.is_visible
 
 
 def test_milestones_form_shows_confirm(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    change_milestones_page = ChangeMilestoneDatesPage.open(client, id_=1)
+    change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
-    assert change_milestones_page.form.confirm_url == "/schemes/1/milestones"
+    assert change_milestone_dates_page.form.confirm_url == "/schemes/1/milestones"
 
 
 def test_milestones_updates_milestones(

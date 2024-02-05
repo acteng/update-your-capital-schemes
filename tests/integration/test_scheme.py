@@ -659,12 +659,25 @@ def test_cannot_spend_to_date_when_different_authority(
     assert response.status_code == 403
 
 
-def test_milestones_form_shows_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+def test_milestones_form_shows_actual_date(schemes: SchemeRepository, client: FlaskClient) -> None:
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.milestones.update_milestones(
+        MilestoneRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1, 12), None),
+            milestone=Milestone.CONSTRUCTION_STARTED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 2),
+            source=DataSource.ATF4_BID,
+        )
+    )
+    schemes.add(scheme)
 
     change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
-    assert change_milestone_dates_page.is_visible
+    # TODO: remove leading zeros
+    # assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
+    assert change_milestone_dates_page.form.construction_started.actual.value == "02 01 2020"
 
 
 def test_milestones_form_shows_confirm(schemes: SchemeRepository, client: FlaskClient) -> None:

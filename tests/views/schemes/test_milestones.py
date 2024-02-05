@@ -126,13 +126,47 @@ class TestMilestoneContext:
 class TestChangeMilestoneDatesContext:
     def test_from_domain(self, app: Flask) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.milestones.update_milestone(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 2),
+                source=DataSource.ATF4_BID,
+            )
+        )
 
         context = ChangeMilestoneDatesContext.from_domain(scheme)
 
-        assert context.id == 1 and isinstance(context.form, ChangeMilestoneDatesForm)
+        assert context.id == 1 and context.form.date.data == date(2020, 1, 2)
 
 
 class TestChangeMilestoneDatesForm:
+    def test_from_domain(self, app: Flask) -> None:
+        milestones = SchemeMilestones()
+        milestones.update_milestone(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 2),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        form = ChangeMilestoneDatesForm.from_domain(milestones)
+
+        assert form.date.data == date(2020, 1, 2)
+
+    def test_from_domain_when_minimal(self, app: Flask) -> None:
+        milestones = SchemeMilestones()
+
+        form = ChangeMilestoneDatesForm.from_domain(milestones)
+
+        assert form.date.data is None
+
     def test_update_domain(self, app: Flask) -> None:
         form = ChangeMilestoneDatesForm(data={"date": date(2020, 1, 3)})
         milestones = SchemeMilestones()

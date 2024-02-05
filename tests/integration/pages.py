@@ -357,6 +357,27 @@ class ChangeSpendToDateFormComponent:
 class ChangeMilestoneDatesFormComponent:
     def __init__(self, form: Tag):
         self.confirm_url = form.get("action")
+        construction_started_tag = form.select_one("h2:-soup-contains('Construction started')")
+        assert construction_started_tag
+        self.construction_started = ChangeMilestoneDatesFormRowComponent(construction_started_tag)
+
+
+class ChangeMilestoneDatesFormRowComponent:
+    def __init__(self, heading: Tag):
+        grid_row = heading.find_next_sibling("div", class_="govuk-grid-row")
+        assert isinstance(grid_row, Tag)
+        actual_tag = grid_row.select_one("fieldset:has(legend:-soup-contains('Actual date'))")
+        assert actual_tag
+        self.actual = DateComponent(actual_tag)
+
+
+class DateComponent:
+    def __init__(self, fieldset: Tag):
+        inputs = fieldset.select("input")
+        self.day = TextComponent(inputs[0])
+        self.month = TextComponent(inputs[1])
+        self.year = TextComponent(inputs[2])
+        self.value = f"{self.day.value} {self.month.value} {self.year.value}"
 
 
 class TextComponent:

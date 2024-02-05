@@ -89,11 +89,26 @@ class ChangeMilestoneDatesContext:
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> ChangeMilestoneDatesContext:
-        return ChangeMilestoneDatesContext(id=scheme.id, form=ChangeMilestoneDatesForm())
+        return ChangeMilestoneDatesContext(id=scheme.id, form=ChangeMilestoneDatesForm.from_domain(scheme.milestones))
 
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
     date = DateField(widget=GovDateInput(), format="%d %m %Y")
+
+    @classmethod
+    def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:
+        # TODO: support all milestones and observation types
+        return cls(
+            date=next(
+                (
+                    revision.status_date
+                    for revision in milestones.current_milestone_revisions
+                    if revision.milestone == Milestone.CONSTRUCTION_STARTED
+                    and revision.observation_type == ObservationType.ACTUAL
+                ),
+                None,
+            )
+        )
 
     def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
         if self.date.data:

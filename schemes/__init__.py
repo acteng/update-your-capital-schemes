@@ -130,7 +130,7 @@ def _configure_jinja(app: Flask) -> None:
             "govuk_frontend_wtf": PackageLoader("govuk_frontend_wtf"),
         }
     )
-    app.jinja_loader = ChoiceLoader([default_loader, package_loaders])  # type: ignore
+    app.jinja_loader = ChoiceLoader([default_loader, package_loaders])
 
 
 def _configure_error_pages(app: Flask) -> None:

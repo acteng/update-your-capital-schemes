@@ -87,6 +87,25 @@ class TestSchemeOutputs:
         assert outputs.output_revisions == [output_revision1, output_revision2]
 
 
+class TestOutputRevision:
+    def test_create(self) -> None:
+        output_revision = OutputRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1), None),
+            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+            value=Decimal(10),
+            observation_type=ObservationType.ACTUAL,
+        )
+
+        assert (
+            output_revision.id == 1
+            and output_revision.effective == DateRange(datetime(2020, 1, 1), None)
+            and output_revision.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            and output_revision.value == Decimal(10)
+            and output_revision.observation_type == ObservationType.ACTUAL
+        )
+
+
 class TestOutputTypeMeasure:
     @pytest.mark.parametrize(
         "type_, measure, expected_type_measure",

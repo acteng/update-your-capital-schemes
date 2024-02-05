@@ -569,6 +569,23 @@ class TestSchemeFunding:
 
 
 class TestFinancialRevision:
+    def test_create(self) -> None:
+        financial_revision = FinancialRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1), None),
+            type_=FinancialType.FUNDING_ALLOCATION,
+            amount=100_000,
+            source=DataSource.ATF4_BID,
+        )
+
+        assert (
+            financial_revision.id == 1
+            and financial_revision.effective == DateRange(datetime(2020, 1, 1), None)
+            and financial_revision.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision.amount == 100_000
+            and financial_revision.source == DataSource.ATF4_BID
+        )
+
     @pytest.mark.parametrize(
         "effective_date_to, type_, source, expected",
         [

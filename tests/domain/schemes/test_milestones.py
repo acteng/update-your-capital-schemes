@@ -224,3 +224,24 @@ class TestSchemeMilestones:
         milestones = SchemeMilestones()
 
         assert milestones.current_milestone is None
+
+
+class TestMilestoneRevision:
+    def test_create(self) -> None:
+        milestone_revision = MilestoneRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1), None),
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 1),
+            source=DataSource.ATF4_BID,
+        )
+
+        assert (
+            milestone_revision.id == 1
+            and milestone_revision.effective == DateRange(datetime(2020, 1, 1), None)
+            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision.observation_type == ObservationType.ACTUAL
+            and milestone_revision.status_date == date(2020, 1, 1)
+            and milestone_revision.source == DataSource.ATF4_BID
+        )

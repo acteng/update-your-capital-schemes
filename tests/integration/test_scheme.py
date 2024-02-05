@@ -675,7 +675,9 @@ def test_milestones_form_shows_confirm(schemes: SchemeRepository, client: FlaskC
     assert change_milestones_page.form.confirm_url == "/schemes/1/milestones"
 
 
-def test_milestones_updates_milestones(clock: Clock, schemes: SchemeRepository, client: FlaskClient) -> None:
+def test_milestones_updates_milestones(
+    clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+) -> None:
     clock.now = datetime(2020, 1, 31, 13)
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.milestones.update_milestones(
@@ -690,7 +692,7 @@ def test_milestones_updates_milestones(clock: Clock, schemes: SchemeRepository, 
     )
     schemes.add(scheme)
 
-    client.post("/schemes/1/milestones", data={"date": ["3", "1", "2020"]})
+    client.post("/schemes/1/milestones", data={"csrf_token": csrf_token, "date": ["3", "1", "2020"]})
 
     actual_scheme = schemes.get(1)
     assert actual_scheme
@@ -707,12 +709,46 @@ def test_milestones_updates_milestones(clock: Clock, schemes: SchemeRepository, 
     )
 
 
-def test_milestones_shows_scheme(schemes: SchemeRepository, client: FlaskClient) -> None:
+def test_milestones_shows_scheme(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    response = client.post("/schemes/1/milestones", data={"date": ["3", "1", "2020"]})
+    response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token, "date": ["3", "1", "2020"]})
 
     assert response.status_code == 302 and response.location == "/schemes/1"
+
+
+def test_cannot_milestones_when_no_csrf_token(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    change_milestone_dates_page = ChangeMilestoneDatesPage(
+        client.post("/schemes/1/milestones", data={"date": ["3", "1", "2020"]}, follow_redirects=True)
+    )
+
+    assert change_milestone_dates_page.is_visible
+    assert (
+        change_milestone_dates_page.notification_banner
+        and change_milestone_dates_page.notification_banner.heading
+        == "The form you were submitting has expired. Please try again."
+    )
+
+
+def test_cannot_milestones_when_incorrect_csrf_token(
+    schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    change_milestone_dates_page = ChangeMilestoneDatesPage(
+        client.post(
+            "/schemes/1/milestones", data={"csrf_token": "x", "date": ["3", "1", "2020"]}, follow_redirects=True
+        )
+    )
+
+    assert change_milestone_dates_page.is_visible
+    assert (
+        change_milestone_dates_page.notification_banner
+        and change_milestone_dates_page.notification_banner.heading
+        == "The form you were submitting has expired. Please try again."
+    )
 
 
 class TestApiEnabled:

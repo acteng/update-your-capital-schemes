@@ -310,6 +310,10 @@ class ChangeSpendToDatePage(PageObject):
 class ChangeMilestoneDatesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
+        notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
+        self.notification_banner = (
+            NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
+        )
         form_tag = self._soup.select_one("form")
         assert form_tag
         self.form = ChangeMilestoneDatesFormComponent(form_tag)

@@ -261,18 +261,18 @@ def milestones_form(schemes: SchemeRepository, scheme_id: int) -> str:
 @inject.autoparams("clock", "schemes")
 def milestones(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
     form = ChangeMilestoneDatesForm(formdata=request.form)
-    assert form.date.data
 
-    scheme = schemes.get(scheme_id)
-    assert scheme
-    # TODO: support all milestones and observation types
-    scheme.milestones.update_milestone_date(
-        now=clock.now,
-        milestone=Milestone.CONSTRUCTION_STARTED,
-        observation_type=ObservationType.ACTUAL,
-        status_date=form.date.data,
-    )
-    schemes.update(scheme)
+    if form.date.data:
+        scheme = schemes.get(scheme_id)
+        assert scheme
+        # TODO: support all milestones and observation types
+        scheme.milestones.update_milestone_date(
+            now=clock.now,
+            milestone=Milestone.CONSTRUCTION_STARTED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=form.date.data,
+        )
+        schemes.update(scheme)
 
     return redirect(url_for("schemes.get", scheme_id=scheme_id))
 

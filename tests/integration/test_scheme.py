@@ -709,38 +709,6 @@ def test_milestones_updates_milestones(
     )
 
 
-def test_milestones_preserves_milestones_when_empty_date(
-    schemes: SchemeRepository, client: FlaskClient, csrf_token: str
-) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.milestones.update_milestones(
-        MilestoneRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1, 12), None),
-            milestone=Milestone.CONSTRUCTION_STARTED,
-            observation_type=ObservationType.ACTUAL,
-            status_date=date(2020, 1, 2),
-            source=DataSource.ATF4_BID,
-        )
-    )
-    schemes.add(scheme)
-
-    client.post("/schemes/1/milestones", data={"csrf_token": csrf_token, "date": ["", "", ""]})
-
-    actual_scheme = schemes.get(1)
-    assert actual_scheme
-    milestone_revision1: MilestoneRevision
-    (milestone_revision1,) = actual_scheme.milestones.milestone_revisions
-    assert (
-        milestone_revision1.id == 1
-        and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
-        and milestone_revision1.milestone == Milestone.CONSTRUCTION_STARTED
-        and milestone_revision1.observation_type == ObservationType.ACTUAL
-        and milestone_revision1.status_date == date(2020, 1, 2)
-        and milestone_revision1.source == DataSource.ATF4_BID
-    )
-
-
 def test_milestones_shows_scheme(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 

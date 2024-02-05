@@ -22,8 +22,6 @@ from schemes.dicts import as_shallow_dict, inverse_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import (
     FundingProgramme,
-    Milestone,
-    ObservationType,
     Scheme,
     SchemeRepository,
     SchemeType,
@@ -260,19 +258,12 @@ def milestones_form(schemes: SchemeRepository, scheme_id: int) -> str:
 @bearer_auth
 @inject.autoparams("clock", "schemes")
 def milestones(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
-    form = ChangeMilestoneDatesForm(formdata=request.form)
+    scheme = schemes.get(scheme_id)
+    assert scheme
 
-    if form.date.data:
-        scheme = schemes.get(scheme_id)
-        assert scheme
-        # TODO: support all milestones and observation types
-        scheme.milestones.update_milestone_date(
-            now=clock.now,
-            milestone=Milestone.CONSTRUCTION_STARTED,
-            observation_type=ObservationType.ACTUAL,
-            status_date=form.date.data,
-        )
-        schemes.update(scheme)
+    form = ChangeMilestoneDatesForm(formdata=request.form)
+    form.update_domain(scheme.milestones, clock.now)
+    schemes.update(scheme)
 
     return redirect(url_for("schemes.get", scheme_id=scheme_id))
 

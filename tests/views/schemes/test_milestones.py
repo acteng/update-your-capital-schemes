@@ -10,6 +10,7 @@ from schemes.domain.schemes import (
     MilestoneRevision,
     ObservationType,
     Scheme,
+    SchemeMilestones,
 )
 from schemes.views.schemes.funding import DataSourceRepr
 from schemes.views.schemes.milestones import (
@@ -132,7 +133,60 @@ class TestChangeMilestoneDatesContext:
 
 
 class TestChangeMilestoneDatesForm:
-    pass
+    def test_update_domain(self, app: Flask) -> None:
+        form = ChangeMilestoneDatesForm(data={"date": date(2020, 1, 3)})
+        milestones = SchemeMilestones()
+        milestones.update_milestone(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 2),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        form.update_domain(milestones, now=datetime(2020, 1, 31, 13))
+
+        milestone_revision1: MilestoneRevision
+        milestone_revision2: MilestoneRevision
+        milestone_revision1, milestone_revision2 = milestones.milestone_revisions
+        assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 1, 31, 13)
+        assert (
+            milestone_revision2.effective == DateRange(datetime(2020, 1, 31, 13), None)
+            and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
+            and milestone_revision2.observation_type == ObservationType.ACTUAL
+            and milestone_revision2.status_date == date(2020, 1, 3)
+            and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
+        )
+
+    def test_update_domain_preserves_dates_with_empty_date(self, app: Flask) -> None:
+        form = ChangeMilestoneDatesForm(data={"date": None})
+        milestones = SchemeMilestones()
+        milestones.update_milestones(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 2),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        form.update_domain(milestones, now=datetime(2020, 1, 31, 13))
+
+        milestone_revision1: MilestoneRevision
+        (milestone_revision1,) = milestones.milestone_revisions
+        assert (
+            milestone_revision1.id == 1
+            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
+            and milestone_revision1.milestone == Milestone.CONSTRUCTION_STARTED
+            and milestone_revision1.observation_type == ObservationType.ACTUAL
+            and milestone_revision1.status_date == date(2020, 1, 2)
+            and milestone_revision1.source == DataSource.ATF4_BID
+        )
 
 
 class TestMilestoneRevisionRepr:

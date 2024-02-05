@@ -15,6 +15,7 @@ from schemes.domain.schemes import (
     MilestoneRevision,
     ObservationType,
     Scheme,
+    SchemeMilestones,
 )
 from schemes.views.schemes.funding import DataSourceRepr
 from schemes.views.schemes.observations import ObservationTypeRepr
@@ -93,6 +94,16 @@ class ChangeMilestoneDatesContext:
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
     date = DateField(widget=GovDateInput(), format="%d %m %Y")
+
+    def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
+        if self.date.data:
+            # TODO: support all milestones and observation types
+            milestones.update_milestone_date(
+                now=now,
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=self.date.data,
+            )
 
 
 @dataclass(frozen=True)

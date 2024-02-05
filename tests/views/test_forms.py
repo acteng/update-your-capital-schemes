@@ -4,7 +4,7 @@ import pytest
 from werkzeug.datastructures import MultiDict
 from wtforms.form import Form
 
-from schemes.views.fields import CustomMessageIntegerField
+from schemes.views.forms import CustomMessageIntegerField
 
 
 class TestCustomMessageIntegerField:

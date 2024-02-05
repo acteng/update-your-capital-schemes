@@ -17,7 +17,7 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeFunding,
 )
-from schemes.views.fields import CustomMessageIntegerField
+from schemes.views.forms import CustomMessageIntegerField
 
 
 @dataclass(frozen=True)

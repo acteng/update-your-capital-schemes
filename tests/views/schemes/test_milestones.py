@@ -260,7 +260,7 @@ class TestChangeMilestoneDatesForm:
 
         form.validate()
 
-        assert "Not a valid date value." in form.errors["date"]
+        assert "Construction started actual date must be a real date" in form.errors["date"]
 
 
 class TestMilestoneRevisionRepr:

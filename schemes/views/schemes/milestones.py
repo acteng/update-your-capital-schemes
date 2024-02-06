@@ -6,7 +6,6 @@ from enum import Enum, unique
 
 from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovDateInput
-from wtforms.fields.datetime import DateField
 
 from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
@@ -17,7 +16,7 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeMilestones,
 )
-from schemes.views.forms import MultivalueOptional
+from schemes.views.forms import CustomMessageDateField, MultivalueOptional
 from schemes.views.schemes.funding import DataSourceRepr
 from schemes.views.schemes.observations import ObservationTypeRepr
 
@@ -94,7 +93,12 @@ class ChangeMilestoneDatesContext:
 
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
-    date = DateField(widget=GovDateInput(), format="%d %m %Y", validators=[MultivalueOptional()])
+    date = CustomMessageDateField(
+        widget=GovDateInput(),
+        format="%d %m %Y",
+        validators=[MultivalueOptional()],
+        message="Construction started actual date must be a real date",
+    )
 
     @classmethod
     def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:

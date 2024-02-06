@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+import datetime
+
 import pytest
 from werkzeug.datastructures import MultiDict
 from wtforms.form import Form
 from wtforms.validators import StopValidation
 
-from schemes.views.forms import CustomMessageIntegerField, MultivalueOptional
+from schemes.views.forms import (
+    CustomMessageDateField,
+    CustomMessageIntegerField,
+    MultivalueOptional,
+)
 
 
 @pytest.fixture(name="form")
@@ -63,6 +69,32 @@ class TestCustomMessageIntegerField:
         assert form.custom_message_field.process_errors == ["My custom message"]
 
 
+class TestCustomMessageDateField:
+    def test_process_formdata_with_no_value(self, form: FakeForm) -> None:
+        form.process(formdata=MultiDict())
+
+        assert form.date_field.data is None
+        assert form.date_field.process_errors == []
+
+    def test_process_formdata_with_date(self, form: FakeForm) -> None:
+        form.process(formdata=MultiDict([("date_field", "2000-01-01")]))
+
+        assert form.date_field.data == datetime.date(2000, 1, 1)
+        assert form.date_field.process_errors == []
+
+    def test_cannot_process_formdata_with_invalid_value(self, form: FakeForm) -> None:
+        form.process(formdata=MultiDict([("date_field", "2000-01-one")]))
+
+        assert form.date_field.data is None
+        assert form.date_field.process_errors == ["Not a valid date value."]
+
+    def test_cannot_process_formdata_with_invalid_date_uses_custom_message(self, form: FakeForm) -> None:
+        form.process(formdata=MultiDict([("custom_message_date_field", "2000-01-one")]))
+
+        assert form.custom_message_date_field.data is None
+        assert form.custom_message_date_field.process_errors == ["My custom message"]
+
+
 class TestMultivalueOptional:
     @pytest.mark.parametrize(
         "raw_data",
@@ -108,3 +140,5 @@ class TestMultivalueOptional:
 class FakeForm(Form):
     field = CustomMessageIntegerField()
     custom_message_field = CustomMessageIntegerField(message="My custom message")
+    date_field = CustomMessageDateField()
+    custom_message_date_field = CustomMessageDateField(message="My custom message")

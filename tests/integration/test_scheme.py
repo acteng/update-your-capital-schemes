@@ -751,16 +751,12 @@ def test_cannot_milestones_when_error(schemes: SchemeRepository, client: FlaskCl
 
     assert change_milestone_dates_page.title == "Error: Schemes - Active Travel England - GOV.UK"
     assert change_milestone_dates_page.errors and list(change_milestone_dates_page.errors) == [
-        # TODO: expect custom error message
-        # "Construction started actual date must be a real date"
-        "Not a valid date value."
+        "Construction started actual date must be a real date"
     ]
     assert (
         change_milestone_dates_page.form.construction_started.actual.is_errored
         and change_milestone_dates_page.form.construction_started.actual.error
-        # TODO: expect custom error message
-        # == "Error: Construction started actual date must be a real date"
-        == "Error: Not a valid date value."
+        == "Error: Construction started actual date must be a real date"
         and change_milestone_dates_page.form.construction_started.actual.value == "x x x"
     )
     actual_scheme = schemes.get(1)

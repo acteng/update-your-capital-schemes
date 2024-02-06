@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, Callable
 
-from wtforms import Field
+from wtforms import DateField, Field
 from wtforms.fields.numeric import IntegerField
 from wtforms.form import BaseForm
 from wtforms.validators import Optional, StopValidation
@@ -40,6 +41,33 @@ class CustomMessageIntegerField(IntegerField):
             int(value)
         except ValueError:
             raise ValueError(self.message)
+
+
+class CustomMessageDateField(DateField):
+    def __init__(
+        self,
+        label: str | None = None,
+        validators: tuple[Callable[[BaseForm, CustomMessageDateField], object], ...] | list[Any] | None = None,
+        format: str = "%Y-%m-%d",
+        message: str = "Not a valid date value.",
+        **kwargs: Any,
+    ):
+        super().__init__(label, validators, format, **kwargs)
+        self.message = message
+
+    def process_formdata(self, valuelist: list[Any]) -> None:
+        if not valuelist:
+            return
+
+        date_str = " ".join(valuelist)
+        for format in self.strptime_format:
+            try:
+                self.data = datetime.strptime(date_str, format).date()
+                return
+            except ValueError:
+                self.data = None
+
+        raise ValueError(self.message)
 
 
 class MultivalueOptional(Optional):

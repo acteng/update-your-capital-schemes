@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
+from wtforms import Field
 from wtforms.fields.numeric import IntegerField
 from wtforms.form import BaseForm
+from wtforms.validators import Optional, StopValidation
 
 
 class CustomMessageIntegerField(IntegerField):
@@ -38,3 +40,17 @@ class CustomMessageIntegerField(IntegerField):
             int(value)
         except ValueError:
             raise ValueError(self.message)
+
+
+class MultivalueOptional(Optional):
+    """
+    A validator that allows empty input and supports multivalued fields.
+    """
+
+    def __call__(self, form: BaseForm, field: Field) -> None:
+        if not field.raw_data or all(self._is_empty(value) for value in field.raw_data):
+            field.errors = []
+            raise StopValidation()
+
+    def _is_empty(self, value: Any) -> bool:
+        return isinstance(value, str) and not self.string_check(value)

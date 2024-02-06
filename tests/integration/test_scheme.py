@@ -675,6 +675,7 @@ def test_milestones_form_shows_actual_date(schemes: SchemeRepository, client: Fl
 
     change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
+    assert change_milestone_dates_page.title == "Schemes - Active Travel England - GOV.UK"
     # TODO: remove leading zeros
     # assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
     assert change_milestone_dates_page.form.construction_started.actual.value == "02 01 2020"
@@ -728,6 +729,52 @@ def test_milestones_shows_scheme(schemes: SchemeRepository, client: FlaskClient,
     response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token, "date": ["3", "1", "2020"]})
 
     assert response.status_code == 302 and response.location == "/schemes/1"
+
+
+def test_cannot_milestones_when_error(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
+    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+    scheme.milestones.update_milestones(
+        MilestoneRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1, 12), None),
+            milestone=Milestone.CONSTRUCTION_STARTED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 2),
+            source=DataSource.ATF4_BID,
+        )
+    )
+    schemes.add(scheme)
+
+    change_milestone_dates_page = ChangeMilestoneDatesPage(
+        client.post("/schemes/1/milestones", data={"csrf_token": csrf_token, "date": ["x", "x", "x"]})
+    )
+
+    assert change_milestone_dates_page.title == "Error: Schemes - Active Travel England - GOV.UK"
+    assert change_milestone_dates_page.errors and list(change_milestone_dates_page.errors) == [
+        # TODO: expect custom error message
+        # "Construction started actual date must be a real date"
+        "Not a valid date value."
+    ]
+    assert (
+        change_milestone_dates_page.form.construction_started.actual.is_errored
+        and change_milestone_dates_page.form.construction_started.actual.error
+        # TODO: expect custom error message
+        # == "Error: Construction started actual date must be a real date"
+        == "Error: Not a valid date value."
+        and change_milestone_dates_page.form.construction_started.actual.value == "x x x"
+    )
+    actual_scheme = schemes.get(1)
+    assert actual_scheme
+    milestone_revision1: MilestoneRevision
+    (milestone_revision1,) = actual_scheme.milestones.milestone_revisions
+    assert (
+        milestone_revision1.id == 1
+        and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
+        and milestone_revision1.milestone == Milestone.CONSTRUCTION_STARTED
+        and milestone_revision1.observation_type == ObservationType.ACTUAL
+        and milestone_revision1.status_date == date(2020, 1, 2)
+        and milestone_revision1.source == DataSource.ATF4_BID
+    )
 
 
 def test_cannot_milestones_when_no_csrf_token(schemes: SchemeRepository, client: FlaskClient) -> None:

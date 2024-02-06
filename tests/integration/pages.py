@@ -310,6 +310,8 @@ class ChangeSpendToDatePage(PageObject):
 class ChangeMilestoneDatesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
+        alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
+        self.errors = ErrorSummaryComponent(alert) if alert else None
         notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
         self.notification_banner = (
             NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
@@ -378,6 +380,9 @@ class DateComponent:
         self.month = TextComponent(inputs[1])
         self.year = TextComponent(inputs[2])
         self.value = f"{self.day.value} {self.month.value} {self.year.value}"
+        self.is_errored = self.day.is_errored and self.month.is_errored and self.year.is_errored
+        error_message = fieldset.select_one(".govuk-error-message")
+        self.error = error_message.text.strip() if error_message else None
 
 
 class TextComponent:

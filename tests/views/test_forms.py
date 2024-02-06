@@ -3,15 +3,17 @@ from __future__ import annotations
 import pytest
 from werkzeug.datastructures import MultiDict
 from wtforms.form import Form
+from wtforms.validators import StopValidation
 
-from schemes.views.forms import CustomMessageIntegerField
+from schemes.views.forms import CustomMessageIntegerField, MultivalueOptional
+
+
+@pytest.fixture(name="form")
+def form_fixture() -> FakeForm:
+    return FakeForm()
 
 
 class TestCustomMessageIntegerField:
-    @pytest.fixture(name="form")
-    def form_fixture(self) -> FakeForm:
-        return FakeForm()
-
     def test_process_data_with_no_value(self, form: FakeForm) -> None:
         form.process(data={})
 
@@ -59,6 +61,48 @@ class TestCustomMessageIntegerField:
 
         assert form.custom_message_field.data is None
         assert form.custom_message_field.process_errors == ["My custom message"]
+
+
+class TestMultivalueOptional:
+    @pytest.mark.parametrize(
+        "raw_data",
+        [
+            ["x"],
+            ["x", "y"],
+            ["", "y"],
+            [" ", "y"],
+            ["x", ""],
+            ["x", " "],
+        ],
+    )
+    def test_continue_when_at_least_one_value_present(self, form: FakeForm, raw_data: list[str]) -> None:
+        multivalue_optional = MultivalueOptional()
+        form.field.errors = ["error"]
+        form.field.raw_data = raw_data
+
+        multivalue_optional(form, form.field)
+
+        assert form.field.errors == ["error"]
+
+    @pytest.mark.parametrize(
+        "raw_data",
+        [
+            [],
+            [""],
+            [" "],
+            ["", ""],
+            [" ", " "],
+        ],
+    )
+    def test_stop_when_all_values_empty(self, form: FakeForm, raw_data: list[str]) -> None:
+        multivalue_optional = MultivalueOptional()
+        form.field.errors = ["error"]
+        form.field.raw_data = raw_data
+
+        with pytest.raises(StopValidation):
+            multivalue_optional(form, form.field)
+
+        assert not form.field.errors
 
 
 class FakeForm(Form):

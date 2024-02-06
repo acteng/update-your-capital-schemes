@@ -37,7 +37,6 @@ from schemes.views.schemes.funding import (
 )
 from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,
-    ChangeMilestoneDatesForm,
     MilestoneContext,
     MilestoneRevisionRepr,
     SchemeMilestonesContext,
@@ -261,8 +260,13 @@ def milestones(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseR
     scheme = schemes.get(scheme_id)
     assert scheme
 
-    form = ChangeMilestoneDatesForm(formdata=request.form)
-    form.update_domain(scheme.milestones, clock.now)
+    context = ChangeMilestoneDatesContext.from_domain(scheme)
+    context.form.process(formdata=request.form)
+
+    if not context.form.validate():
+        return Response(render_template("scheme/milestones.html", **as_shallow_dict(context)))
+
+    context.form.update_domain(scheme.milestones, clock.now)
     schemes.update(scheme)
 
     return redirect(url_for("schemes.get", scheme_id=scheme_id))

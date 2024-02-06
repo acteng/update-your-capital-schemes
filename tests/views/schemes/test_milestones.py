@@ -2,6 +2,8 @@ from datetime import date, datetime
 
 import pytest
 from flask import Flask
+from flask_wtf.csrf import generate_csrf
+from werkzeug.datastructures import MultiDict
 
 from schemes.domain.schemes import (
     DataSource,
@@ -221,6 +223,44 @@ class TestChangeMilestoneDatesForm:
             and milestone_revision1.status_date == date(2020, 1, 2)
             and milestone_revision1.source == DataSource.ATF4_BID
         )
+
+    def test_no_errors_when_valid(self, app: Flask) -> None:
+        form = ChangeMilestoneDatesForm(
+            formdata=MultiDict([("csrf_token", generate_csrf()), ("date", "2"), ("date", "1"), ("date", "2020")])
+        )
+
+        form.validate()
+
+        assert not form.errors
+
+    def test_date_is_optional(self, app: Flask) -> None:
+        form = ChangeMilestoneDatesForm(formdata=MultiDict([("date", ""), ("date", ""), ("date", "")]))
+
+        form.validate()
+
+        assert "date" not in form.errors
+
+    @pytest.mark.parametrize(
+        "date_",
+        [
+            ("x", "x", "x"),
+            ("99", "1", "2020"),
+            ("", "1", "2020"),
+            ("2", "", "2020"),
+            ("2", "1", ""),
+            ("", "", "2020"),
+            ("", "1", ""),
+            ("2", "", ""),
+        ],
+    )
+    def test_date_is_a_date(self, app: Flask, date_: tuple[str, str, str]) -> None:
+        form = ChangeMilestoneDatesForm(
+            formdata=MultiDict([("date", date_[0]), ("date", date_[1]), ("date", date_[2])])
+        )
+
+        form.validate()
+
+        assert "Not a valid date value." in form.errors["date"]
 
 
 class TestMilestoneRevisionRepr:

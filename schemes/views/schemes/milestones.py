@@ -17,6 +17,7 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeMilestones,
 )
+from schemes.views.forms import MultivalueOptional
 from schemes.views.schemes.funding import DataSourceRepr
 from schemes.views.schemes.observations import ObservationTypeRepr
 
@@ -93,7 +94,7 @@ class ChangeMilestoneDatesContext:
 
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
-    date = DateField(widget=GovDateInput(), format="%d %m %Y")
+    date = DateField(widget=GovDateInput(), format="%d %m %Y", validators=[MultivalueOptional()])
 
     @classmethod
     def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:

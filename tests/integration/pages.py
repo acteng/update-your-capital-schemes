@@ -368,9 +368,21 @@ class ChangeMilestoneDatesFormRowComponent:
     def __init__(self, heading: Tag):
         grid_row = heading.find_next_sibling("div", class_="govuk-grid-row")
         assert isinstance(grid_row, Tag)
+        planned_tag = grid_row.select_one("fieldset:has(legend:-soup-contains('Planned date'))")
+        assert planned_tag
+        self.planned = DateComponent(planned_tag)
         actual_tag = grid_row.select_one("fieldset:has(legend:-soup-contains('Actual date'))")
         assert actual_tag
         self.actual = DateComponent(actual_tag)
+
+    def __getitem__(self, item: str) -> DateComponent:
+        match item:
+            case "planned":
+                return self.planned
+            case "actual":
+                return self.actual
+            case _:
+                raise ValueError(f"Unknown item: {item}")
 
 
 class DateComponent:

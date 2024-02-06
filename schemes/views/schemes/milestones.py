@@ -93,7 +93,13 @@ class ChangeMilestoneDatesContext:
 
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
-    date = CustomMessageDateField(
+    planned = CustomMessageDateField(
+        widget=GovDateInput(),
+        format="%d %m %Y",
+        validators=[MultivalueOptional()],
+        message="Construction started planned date must be a real date",
+    )
+    actual = CustomMessageDateField(
         widget=GovDateInput(),
         format="%d %m %Y",
         validators=[MultivalueOptional()],
@@ -102,27 +108,30 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
 
     @classmethod
     def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:
-        # TODO: support all milestones and observation types
-        return cls(
-            date=next(
-                (
-                    revision.status_date
-                    for revision in milestones.current_milestone_revisions
-                    if revision.milestone == Milestone.CONSTRUCTION_STARTED
-                    and revision.observation_type == ObservationType.ACTUAL
-                ),
-                None,
+        def get_status_date(milestone: Milestone, observation_type: ObservationType) -> date | None:
+            revisions = (
+                revision.status_date
+                for revision in milestones.current_milestone_revisions
+                if revision.milestone == milestone and revision.observation_type == observation_type
             )
+            return next(revisions, None)
+
+        # TODO: support all milestones
+        return cls(
+            planned=get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
+            actual=get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
         )
 
     def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
-        if self.date.data:
-            # TODO: support all milestones and observation types
+        # TODO: support all milestones
+        if self.planned.data:
             milestones.update_milestone_date(
-                now=now,
-                milestone=Milestone.CONSTRUCTION_STARTED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=self.date.data,
+                now, Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED, self.planned.data
+            )
+
+        if self.actual.data:
+            milestones.update_milestone_date(
+                now, Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL, self.actual.data
             )
 
 

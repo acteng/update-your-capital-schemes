@@ -148,16 +148,16 @@ def test_scheme_change_milestones(app_client: AppClient, oidc_client: OidcClient
     scheme_page = (
         SchemePage.open(page, id_=1)
         .milestones.change_milestone_dates()
-        .form.enter_construction_started(actual="5 7 2023")
-        # .enter_construction_completed(planned="31 9 2023")
+        .form.enter_construction_started(planned="30 9 2023", actual="5 7 2023")
+        # .enter_construction_completed(planned="30 9 2023")
         .confirm()
     )
 
     assert scheme_page.name == "Wirral Package"
     assert (
-        scheme_page.milestones.milestones["Construction started"].actual
-        == "5 Jul 2023"
-        # and scheme_page.milestones.milestones["Construction completed"].planned == "31 Sep 2023"
+        scheme_page.milestones.milestones["Construction started"].actual == "5 Jul 2023"
+        # and scheme_page.milestones.milestones["Construction completed"].planned == "30 Sep 2023"
+        and scheme_page.milestones.milestones["Construction started"].planned == "30 Sep 2023"
     )
     assert app_client.get_scheme(id_=1).milestone_revisions == [
         MilestoneRevisionRepr(
@@ -190,7 +190,8 @@ def test_scheme_change_milestones(app_client: AppClient, oidc_client: OidcClient
         MilestoneRevisionRepr(
             id=4,
             effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
+            # effective_date_to=None,
+            effective_date_to="2023-08-01T13:00:00",
             milestone="construction started",
             observation_type="Planned",
             status_date="2023-06-05",
@@ -199,7 +200,6 @@ def test_scheme_change_milestones(app_client: AppClient, oidc_client: OidcClient
         MilestoneRevisionRepr(
             id=5,
             effective_date_from="2020-01-01T12:00:00",
-            # effective_date_to="2023-08-01T13:00:00",
             effective_date_to=None,
             milestone="construction completed",
             observation_type="Planned",
@@ -210,17 +210,19 @@ def test_scheme_change_milestones(app_client: AppClient, oidc_client: OidcClient
             id=6,
             effective_date_from="2023-08-01T13:00:00",
             effective_date_to=None,
+            # milestone="construction completed",
+            milestone="construction started",
+            observation_type="Planned",
+            status_date="2023-09-30",
+            source="Authority Update",
+        ),
+        MilestoneRevisionRepr(
+            id=7,
+            effective_date_from="2023-08-01T13:00:00",
+            effective_date_to=None,
             milestone="construction started",
             observation_type="Actual",
             status_date="2023-07-05",
             source="Authority Update",
         ),
-        # MilestoneRevisionRepr(
-        #     id=7,
-        #     effective_date_from="2023-08-01T13:00:00",
-        #     effective_date_to=None,
-        #     milestone="construction completed",
-        #     observation_type="Planned",
-        #     status_date="2023-09-31",
-        # ),
     ]

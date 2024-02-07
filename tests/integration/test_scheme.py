@@ -756,7 +756,9 @@ def test_milestones_updates_milestones(
 def test_milestones_shows_scheme(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token, "date": ["3", "1", "2020"]})
+    response = client.post(
+        "/schemes/1/milestones", data={"csrf_token": csrf_token, "planned": ["3", "1", "2020"], "actual": ["", "", ""]}
+    )
 
     assert response.status_code == 302 and response.location == "/schemes/1"
 
@@ -821,7 +823,9 @@ def test_cannot_milestones_when_no_csrf_token(schemes: SchemeRepository, client:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
     change_milestone_dates_page = ChangeMilestoneDatesPage(
-        client.post("/schemes/1/milestones", data={"date": ["3", "1", "2020"]}, follow_redirects=True)
+        client.post(
+            "/schemes/1/milestones", data={"planned": ["3", "1", "2020"], "actual": ["", "", ""]}, follow_redirects=True
+        )
     )
 
     assert change_milestone_dates_page.is_visible
@@ -839,7 +843,9 @@ def test_cannot_milestones_when_incorrect_csrf_token(
 
     change_milestone_dates_page = ChangeMilestoneDatesPage(
         client.post(
-            "/schemes/1/milestones", data={"csrf_token": "x", "date": ["3", "1", "2020"]}, follow_redirects=True
+            "/schemes/1/milestones",
+            data={"csrf_token": "x", "planned": ["3", "1", "2020"], "actual": ["", "", ""]},
+            follow_redirects=True,
         )
     )
 

@@ -659,6 +659,14 @@ def test_cannot_spend_to_date_when_different_authority(
     assert response.status_code == 403
 
 
+def test_milestones_form_shows_back(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+    assert change_milestone_dates_page.back_url == "/schemes/1"
+
+
 @pytest.mark.parametrize(
     "observation_type, observation_type_item",
     [(ObservationType.PLANNED, "planned"), (ObservationType.ACTUAL, "actual")],

@@ -244,10 +244,16 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
 
 @bp.get("<int:scheme_id>/milestones")
 @bearer_auth
-@inject.autoparams("schemes")
-def milestones_form(schemes: SchemeRepository, scheme_id: int) -> str:
+@inject.autoparams("users", "schemes")
+def milestones_form(users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> str:
+    user_info = session["user"]
+    user = users.get_by_email(user_info["email"])
+    assert user
     scheme = schemes.get(scheme_id)
     assert scheme
+
+    if user.authority_id != scheme.authority_id:
+        abort(403)
 
     context = ChangeMilestoneDatesContext.from_domain(scheme)
     return render_template("scheme/milestones.html", **as_shallow_dict(context))
@@ -255,10 +261,16 @@ def milestones_form(schemes: SchemeRepository, scheme_id: int) -> str:
 
 @bp.post("<int:scheme_id>/milestones")
 @bearer_auth
-@inject.autoparams("clock", "schemes")
-def milestones(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+@inject.autoparams("users", "clock", "schemes")
+def milestones(users: UserRepository, clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+    user_info = session["user"]
+    user = users.get_by_email(user_info["email"])
+    assert user
     scheme = schemes.get(scheme_id)
     assert scheme
+
+    if user.authority_id != scheme.authority_id:
+        abort(403)
 
     context = ChangeMilestoneDatesContext.from_domain(scheme)
     context.form.process(formdata=request.form)

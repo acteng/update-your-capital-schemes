@@ -327,6 +327,11 @@ class ChangeMilestoneDatesPage(PageObject):
         response = client.get(f"/schemes/{id_}/milestones")
         return cls(response)
 
+    @classmethod
+    def open_when_unauthorized(cls, client: FlaskClient, id_: int) -> ForbiddenPage:
+        response = client.get(f"/schemes/{id_}/milestones")
+        return ForbiddenPage(response)
+
     @property
     def is_visible(self) -> bool:
         heading = self._soup.select_one("main h1")

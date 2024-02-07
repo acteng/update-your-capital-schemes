@@ -711,6 +711,17 @@ def test_milestones_form_shows_cancel(schemes: SchemeRepository, client: FlaskCl
     assert change_milestone_dates_page.form.cancel_url == "/schemes/1"
 
 
+def test_cannot_milestones_form_when_different_authority(
+    authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
+) -> None:
+    authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
+    schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+
+    forbidden_page = ChangeMilestoneDatesPage.open_when_unauthorized(client, id_=2)
+
+    assert forbidden_page.is_visible and forbidden_page.is_forbidden
+
+
 @pytest.mark.parametrize(
     "observation_type, field_name", [(ObservationType.PLANNED, "planned"), (ObservationType.ACTUAL, "actual")]
 )
@@ -855,6 +866,19 @@ def test_cannot_milestones_when_incorrect_csrf_token(
         and change_milestone_dates_page.notification_banner.heading
         == "The form you were submitting has expired. Please try again."
     )
+
+
+def test_cannot_milestones_when_different_authority(
+    authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+) -> None:
+    authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
+    schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+
+    response = client.post(
+        "/schemes/2/milestones", data={"csrf_token": csrf_token, "planned": ["3", "1", "2020"], "actual": ["", "", ""]}
+    )
+
+    assert response.status_code == 403
 
 
 class TestApiEnabled:

@@ -364,6 +364,8 @@ class ChangeMilestoneDatesFormComponent:
         construction_started_tag = form.select_one("h2:-soup-contains('Construction started')")
         assert construction_started_tag
         self.construction_started = ChangeMilestoneDatesFormRowComponent(construction_started_tag)
+        cancel = form.select_one("a")
+        self.cancel_url = cancel["href"] if cancel else None
 
 
 class ChangeMilestoneDatesFormRowComponent:

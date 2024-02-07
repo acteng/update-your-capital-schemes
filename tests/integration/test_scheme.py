@@ -703,6 +703,14 @@ def test_milestones_form_shows_confirm(schemes: SchemeRepository, client: FlaskC
     assert change_milestone_dates_page.form.confirm_url == "/schemes/1/milestones"
 
 
+def test_milestones_form_shows_cancel(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+    assert change_milestone_dates_page.form.cancel_url == "/schemes/1"
+
+
 @pytest.mark.parametrize(
     "observation_type, field_name", [(ObservationType.PLANNED, "planned"), (ObservationType.ACTUAL, "actual")]
 )

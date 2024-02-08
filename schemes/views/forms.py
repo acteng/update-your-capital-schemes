@@ -12,6 +12,8 @@ from wtforms.validators import Optional, StopValidation
 class CustomMessageIntegerField(IntegerField):
     """
     An integer field that allows the error message for invalid values to be customised.
+
+    See: https://github.com/wtforms/wtforms/issues/832
     """
 
     def __init__(
@@ -44,6 +46,12 @@ class CustomMessageIntegerField(IntegerField):
 
 
 class CustomMessageDateField(DateField):
+    """
+    A date field that allows the error message for invalid values to be customised.
+
+    See: https://github.com/wtforms/wtforms/issues/832
+    """
+
     def __init__(
         self,
         label: str | None = None,
@@ -73,6 +81,8 @@ class CustomMessageDateField(DateField):
 class MultivalueOptional(Optional):
     """
     A validator that allows empty input and supports multivalued fields.
+
+    See: https://github.com/wtforms/wtforms/issues/835
     """
 
     def __call__(self, form: BaseForm, field: Field) -> None:

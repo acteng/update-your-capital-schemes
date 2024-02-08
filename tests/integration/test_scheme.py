@@ -767,9 +767,7 @@ def test_milestones_updates_milestones(
 def test_milestones_shows_scheme(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    response = client.post(
-        "/schemes/1/milestones", data={"csrf_token": csrf_token, "planned": ["3", "1", "2020"], "actual": ["", "", ""]}
-    )
+    response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token})
 
     assert response.status_code == 302 and response.location == "/schemes/1"
 
@@ -833,11 +831,7 @@ def test_cannot_milestones_when_error(
 def test_cannot_milestones_when_no_csrf_token(schemes: SchemeRepository, client: FlaskClient) -> None:
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    change_milestone_dates_page = ChangeMilestoneDatesPage(
-        client.post(
-            "/schemes/1/milestones", data={"planned": ["3", "1", "2020"], "actual": ["", "", ""]}, follow_redirects=True
-        )
-    )
+    change_milestone_dates_page = ChangeMilestoneDatesPage(client.post("/schemes/1/milestones", follow_redirects=True))
 
     assert change_milestone_dates_page.is_visible
     assert (
@@ -853,11 +847,7 @@ def test_cannot_milestones_when_incorrect_csrf_token(
     schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
     change_milestone_dates_page = ChangeMilestoneDatesPage(
-        client.post(
-            "/schemes/1/milestones",
-            data={"csrf_token": "x", "planned": ["3", "1", "2020"], "actual": ["", "", ""]},
-            follow_redirects=True,
-        )
+        client.post("/schemes/1/milestones", data={"csrf_token": "x"}, follow_redirects=True)
     )
 
     assert change_milestone_dates_page.is_visible
@@ -874,9 +864,7 @@ def test_cannot_milestones_when_different_authority(
     authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
     schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
 
-    response = client.post(
-        "/schemes/2/milestones", data={"csrf_token": csrf_token, "planned": ["3", "1", "2020"], "actual": ["", "", ""]}
-    )
+    response = client.post("/schemes/2/milestones", data={"csrf_token": csrf_token})
 
     assert response.status_code == 403
 

@@ -667,6 +667,19 @@ def test_milestones_form_shows_back(schemes: SchemeRepository, client: FlaskClie
     assert change_milestone_dates_page.back_url == "/schemes/1"
 
 
+def test_milestones_form_shows_fields(schemes: SchemeRepository, client: FlaskClient) -> None:
+    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+    change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+    assert (
+        change_milestone_dates_page.form.construction_started.planned.name == "construction_started_planned"
+        and change_milestone_dates_page.form.construction_started.actual.name == "construction_started_actual"
+        and change_milestone_dates_page.form.construction_completed.planned.name == "construction_completed_planned"
+        and change_milestone_dates_page.form.construction_completed.actual.name == "construction_completed_actual"
+    )
+
+
 def test_milestones_form_shows_date(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.milestones.update_milestones(

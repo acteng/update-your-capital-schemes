@@ -369,6 +369,9 @@ class ChangeMilestoneDatesFormComponent:
         construction_started_tag = form.select_one("h2:-soup-contains('Construction started')")
         assert construction_started_tag
         self.construction_started = ChangeMilestoneDatesFormRowComponent(construction_started_tag)
+        construction_completed_tag = form.select_one("h2:-soup-contains('Construction completed')")
+        assert construction_completed_tag
+        self.construction_completed = ChangeMilestoneDatesFormRowComponent(construction_completed_tag)
         cancel = form.select_one("a")
         self.cancel_url = cancel["href"] if cancel else None
 
@@ -391,6 +394,7 @@ class DateComponent:
         self.day = TextComponent(inputs[0])
         self.month = TextComponent(inputs[1])
         self.year = TextComponent(inputs[2])
+        self.name = self.day.name
         self.value = f"{self.day.value} {self.month.value} {self.year.value}"
         self.is_errored = self.day.is_errored and self.month.is_errored and self.year.is_errored
         error_message = fieldset.select_one(".govuk-error-message")
@@ -399,6 +403,7 @@ class DateComponent:
 
 class TextComponent:
     def __init__(self, input_: Tag):
+        self.name = input_.get("name")
         self.value = input_.get("value")
         self.is_errored = "govuk-input--error" in input_.get_attribute_list("class")
         form_group = input_.find_parent("div", class_="govuk-form-group")

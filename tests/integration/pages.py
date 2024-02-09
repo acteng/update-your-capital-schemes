@@ -288,6 +288,15 @@ class ChangeSpendToDateFormComponent:
 class ChangeMilestoneDatesFormComponent:
     def __init__(self, form: Tag):
         self.confirm_url = form["action"]
+        self.feasibility_design_completed = ChangeMilestoneDatesFormRowComponent(
+            one(form.select("h2:-soup-contains('Feasibility design completed')"))
+        )
+        self.preliminary_design_completed = ChangeMilestoneDatesFormRowComponent(
+            one(form.select("h2:-soup-contains('Preliminary design completed')"))
+        )
+        self.detailed_design_completed = ChangeMilestoneDatesFormRowComponent(
+            one(form.select("h2:-soup-contains('Detailed design completed')"))
+        )
         self.construction_started = ChangeMilestoneDatesFormRowComponent(
             one(form.select("h2:-soup-contains('Construction started')"))
         )

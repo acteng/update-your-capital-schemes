@@ -673,7 +673,18 @@ def test_milestones_form_shows_fields(schemes: SchemeRepository, client: FlaskCl
     change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
     assert (
-        change_milestone_dates_page.form.construction_started.planned.name == "construction_started_planned"
+        change_milestone_dates_page.form.feasibility_design_completed.planned.name
+        == "feasibility_design_completed_planned"
+        and change_milestone_dates_page.form.feasibility_design_completed.actual.name
+        == "feasibility_design_completed_actual"
+        and change_milestone_dates_page.form.preliminary_design_completed.planned.name
+        == "preliminary_design_completed_planned"
+        and change_milestone_dates_page.form.preliminary_design_completed.actual.name
+        == "preliminary_design_completed_actual"
+        and change_milestone_dates_page.form.detailed_design_completed.planned.name
+        == "detailed_design_completed_planned"
+        and change_milestone_dates_page.form.detailed_design_completed.actual.name == "detailed_design_completed_actual"
+        and change_milestone_dates_page.form.construction_started.planned.name == "construction_started_planned"
         and change_milestone_dates_page.form.construction_started.actual.name == "construction_started_actual"
         and change_milestone_dates_page.form.construction_completed.planned.name == "construction_completed_planned"
         and change_milestone_dates_page.form.construction_completed.actual.name == "construction_completed_actual"
@@ -863,6 +874,12 @@ def test_cannot_milestones_when_different_authority(
 def empty_change_milestone_dates_form() -> dict[str, list[str]]:
     empty_date = ["", "", ""]
     return {
+        "feasibility_design_completed_planned": empty_date,
+        "feasibility_design_completed_actual": empty_date,
+        "preliminary_design_completed_planned": empty_date,
+        "preliminary_design_completed_actual": empty_date,
+        "detailed_design_completed_planned": empty_date,
+        "detailed_design_completed_actual": empty_date,
         "construction_started_planned": empty_date,
         "construction_started_actual": empty_date,
         "construction_completed_planned": empty_date,

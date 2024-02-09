@@ -100,6 +100,24 @@ class MilestoneDateField(CustomMessageDateField):
 
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
+    feasibility_design_completed_planned = MilestoneDateField(
+        message="Feasibility design completed planned date must be a real date"
+    )
+    feasibility_design_completed_actual = MilestoneDateField(
+        message="Feasibility design completed actual date must be a real date"
+    )
+    preliminary_design_completed_planned = MilestoneDateField(
+        message="Preliminary design completed planned date must be a real date"
+    )
+    preliminary_design_completed_actual = MilestoneDateField(
+        message="Preliminary design completed actual date must be a real date"
+    )
+    detailed_design_completed_planned = MilestoneDateField(
+        message="Detailed design completed planned date must be a real date"
+    )
+    detailed_design_completed_actual = MilestoneDateField(
+        message="Detailed design completed actual date must be a real date"
+    )
     construction_started_planned = MilestoneDateField(message="Construction started planned date must be a real date")
     construction_started_actual = MilestoneDateField(message="Construction started actual date must be a real date")
     construction_completed_planned = MilestoneDateField(
@@ -117,8 +135,25 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
             )
             return next(revisions, None)
 
-        # TODO: support all milestones
         return cls(
+            feasibility_design_completed_planned=get_status_date(
+                Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED
+            ),
+            feasibility_design_completed_actual=get_status_date(
+                Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL
+            ),
+            preliminary_design_completed_planned=get_status_date(
+                Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED
+            ),
+            preliminary_design_completed_actual=get_status_date(
+                Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL
+            ),
+            detailed_design_completed_planned=get_status_date(
+                Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED
+            ),
+            detailed_design_completed_actual=get_status_date(
+                Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL
+            ),
             construction_started_planned=get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
             construction_started_actual=get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
             construction_completed_planned=get_status_date(Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
@@ -130,7 +165,24 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
             if field.data:
                 milestones.update_milestone_date(now, milestone, observation_type, field.data)
 
-        # TODO: support all milestones
+        update_milestone(
+            self.feasibility_design_completed_planned, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED
+        )
+        update_milestone(
+            self.feasibility_design_completed_actual, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL
+        )
+        update_milestone(
+            self.preliminary_design_completed_planned, Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED
+        )
+        update_milestone(
+            self.preliminary_design_completed_actual, Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL
+        )
+        update_milestone(
+            self.detailed_design_completed_planned, Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED
+        )
+        update_milestone(
+            self.detailed_design_completed_actual, Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL
+        )
         update_milestone(self.construction_started_planned, Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED)
         update_milestone(self.construction_started_actual, Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL)
         update_milestone(self.construction_completed_planned, Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED)

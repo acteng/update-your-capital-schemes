@@ -146,6 +146,12 @@ class TestChangeMilestoneDatesContext:
 
 class TestChangeMilestoneDatesForm:
     field_names = [
+        "feasibility_design_completed_planned",
+        "feasibility_design_completed_actual",
+        "preliminary_design_completed_planned",
+        "preliminary_design_completed_actual",
+        "detailed_design_completed_planned",
+        "detailed_design_completed_actual",
         "construction_started_planned",
         "construction_started_actual",
         "construction_completed_planned",
@@ -155,6 +161,12 @@ class TestChangeMilestoneDatesForm:
     @pytest.mark.parametrize(
         "milestone, observation_type, field_name",
         [
+            (Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED, "feasibility_design_completed_planned"),
+            (Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL, "feasibility_design_completed_actual"),
+            (Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED, "preliminary_design_completed_planned"),
+            (Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL, "preliminary_design_completed_actual"),
+            (Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED, "detailed_design_completed_planned"),
+            (Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL, "detailed_design_completed_actual"),
             (Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED, "construction_started_planned"),
             (Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL, "construction_started_actual"),
             (Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED, "construction_completed_planned"),
@@ -194,7 +206,13 @@ class TestChangeMilestoneDatesForm:
         form = ChangeMilestoneDatesForm.from_domain(milestones)
 
         assert (
-            form.construction_started_planned.data is None
+            form.feasibility_design_completed_planned.data is None
+            and form.feasibility_design_completed_actual.data is None
+            and form.preliminary_design_completed_planned.data is None
+            and form.preliminary_design_completed_actual.data is None
+            and form.detailed_design_completed_planned.data is None
+            and form.detailed_design_completed_actual.data is None
+            and form.construction_started_planned.data is None
             and form.construction_started_actual.data is None
             and form.construction_completed_planned.data is None
             and form.construction_completed_actual.data is None
@@ -203,6 +221,12 @@ class TestChangeMilestoneDatesForm:
     @pytest.mark.parametrize(
         "field_name, milestone, observation_type",
         [
+            ("feasibility_design_completed_planned", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED),
+            ("feasibility_design_completed_actual", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL),
+            ("preliminary_design_completed_planned", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED),
+            ("preliminary_design_completed_actual", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL),
+            ("detailed_design_completed_planned", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED),
+            ("detailed_design_completed_actual", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL),
             ("construction_started_planned", Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
             ("construction_started_actual", Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
             ("construction_completed_planned", Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
@@ -244,6 +268,12 @@ class TestChangeMilestoneDatesForm:
     @pytest.mark.parametrize(
         "field_name, milestone, observation_type",
         [
+            ("feasibility_design_completed_planned", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED),
+            ("feasibility_design_completed_actual", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL),
+            ("preliminary_design_completed_planned", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED),
+            ("preliminary_design_completed_actual", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL),
+            ("detailed_design_completed_planned", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED),
+            ("detailed_design_completed_actual", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL),
             ("construction_started_planned", Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
             ("construction_started_actual", Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
             ("construction_completed_planned", Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
@@ -302,6 +332,12 @@ class TestChangeMilestoneDatesForm:
     @pytest.mark.parametrize(
         "field_name, expected_error",
         [
+            ("feasibility_design_completed_planned", "Feasibility design completed planned date must be a real date"),
+            ("feasibility_design_completed_actual", "Feasibility design completed actual date must be a real date"),
+            ("preliminary_design_completed_planned", "Preliminary design completed planned date must be a real date"),
+            ("preliminary_design_completed_actual", "Preliminary design completed actual date must be a real date"),
+            ("detailed_design_completed_planned", "Detailed design completed planned date must be a real date"),
+            ("detailed_design_completed_actual", "Detailed design completed actual date must be a real date"),
             ("construction_started_planned", "Construction started planned date must be a real date"),
             ("construction_started_actual", "Construction started actual date must be a real date"),
             ("construction_completed_planned", "Construction completed planned date must be a real date"),

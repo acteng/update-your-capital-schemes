@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Iterator
 
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup, ResultSet, Tag
 from flask.testing import FlaskClient
 from werkzeug.test import TestResponse
 
@@ -13,9 +13,8 @@ class PageObject:
         self._soup = BeautifulSoup(response.text, "html.parser")
 
     @property
-    def title(self) -> str | None:
-        title = self._soup.select_one("title")
-        return title.text if title else None
+    def title(self) -> str:
+        return one(self._soup.select("title")).text
 
 
 class StartPage(PageObject):
@@ -31,15 +30,12 @@ class StartPage(PageObject):
 
     @property
     def header(self) -> HeaderComponent:
-        header_ = self._soup.select_one("header")
-        assert header_
-        return HeaderComponent(header_)
+        return HeaderComponent(one(self._soup.select("header")))
 
 
 class HeaderComponent:
     def __init__(self, header: Tag):
-        home = header.select_one("a.govuk-header__link")
-        self.home_url = home["href"] if home else None
+        self.home_url = one(header.select("a.govuk-header__link"))["href"]
 
 
 class ForbiddenPage(PageObject):
@@ -61,14 +57,11 @@ class SchemesPage(PageObject):
 
     @property
     def header(self) -> ServiceHeaderComponent:
-        header_ = self._soup.select_one("header")
-        assert header_
-        return ServiceHeaderComponent(header_)
+        return ServiceHeaderComponent(one(self._soup.select("header")))
 
     @property
     def authority(self) -> str | None:
-        caption = self._soup.select_one("main h1 .govuk-caption-xl")
-        return caption.string if caption else None
+        return one(self._soup.select("main h1 .govuk-caption-xl")).string
 
     @property
     def schemes(self) -> SchemesTableComponent | None:
@@ -83,12 +76,9 @@ class SchemesPage(PageObject):
 
 class ServiceHeaderComponent:
     def __init__(self, header: Tag):
-        home = header.select_one("a.one-login-header__link")
-        profile = header.select_one("a:-soup-contains('GOV.UK One Login')")
-        sign_out = header.select_one("a:-soup-contains('Sign out')")
-        self.home_url = home["href"] if home else None
-        self.profile_url = profile["href"] if profile else None
-        self.sign_out_url = sign_out["href"] if sign_out else None
+        self.home_url = one(header.select("a.one-login-header__link"))["href"]
+        self.profile_url = one(header.select("a:-soup-contains('GOV.UK One Login')"))["href"]
+        self.sign_out_url = one(header.select("a:-soup-contains('Sign out')"))["href"]
 
 
 class SchemesTableComponent:
@@ -110,8 +100,7 @@ class SchemeRowComponent:
         cells = row.select("td")
         reference = cells[0]
         self.reference = reference.string
-        reference_link = reference.select_one("a")
-        self.reference_url = reference_link.get("href") if reference_link else None
+        self.reference_url = one(reference.select("a")).get("href")
         self.funding_programme = cells[1].string or ""
         self.name = cells[2].string
 
@@ -132,42 +121,31 @@ class SchemePage(PageObject):
 
     @property
     def back_url(self) -> str | list[str] | None:
-        back = self._soup.select_one("a.govuk-back-link")
-        return back["href"] if back else None
+        return one(self._soup.select("a.govuk-back-link"))["href"]
 
     @property
     def authority(self) -> str | None:
-        caption = self._soup.select_one("main h1 .govuk-caption-xl")
-        return caption.string if caption else None
+        return one(self._soup.select("main h1 .govuk-caption-xl")).string
 
     @property
     def name(self) -> str | None:
-        heading = self._soup.select_one("main h1 span:nth-child(2)")
-        return heading.string if heading else None
+        return one(self._soup.select("main h1 span:nth-child(2)")).string
 
     @property
     def overview(self) -> SchemeOverviewComponent:
-        title = self._soup.select_one("main h2:-soup-contains('Overview')")
-        assert title
-        return SchemeOverviewComponent(title)
+        return SchemeOverviewComponent(one(self._soup.select("main h2:-soup-contains('Overview')")))
 
     @property
     def funding(self) -> SchemeFundingComponent:
-        title = self._soup.select_one("main h2:-soup-contains('Funding')")
-        assert title
-        return SchemeFundingComponent(title)
+        return SchemeFundingComponent(one(self._soup.select("main h2:-soup-contains('Funding')")))
 
     @property
     def milestones(self) -> SchemeMilestonesComponent:
-        title = self._soup.select_one("main h2:-soup-contains('Milestones')")
-        assert title
-        return SchemeMilestonesComponent(title)
+        return SchemeMilestonesComponent(one(self._soup.select("main h2:-soup-contains('Milestones')")))
 
     @property
     def outputs(self) -> SchemeOutputsComponent:
-        title = self._soup.select_one("main h2:-soup-contains('Outputs')")
-        assert title
-        return SchemeOutputsComponent(title)
+        return SchemeOutputsComponent(one(self._soup.select("main h2:-soup-contains('Outputs')")))
 
 
 class SummaryCardComponent:
@@ -195,8 +173,7 @@ class SchemeFundingComponent(SummaryCardComponent):
         self.funding_allocation = (self._get_definition("Funding allocation")[0].string or "").strip()
         self.change_control_adjustment = (self._get_definition("Change control adjustment")[0].string or "").strip()
         self.spend_to_date = (self._get_definition("Spend to date")[0].string or "").strip()
-        spend_to_date_link = self._get_definition("Spend to date")[1].select_one("a")
-        self.change_spend_to_date_url = spend_to_date_link.get("href") if spend_to_date_link else None
+        self.change_spend_to_date_url = one(self._get_definition("Spend to date")[1].select("a")).get("href")
         self.allocation_still_to_spend = (self._get_definition("Allocation still to spend")[0].string or "").strip()
 
 
@@ -204,13 +181,10 @@ class SchemeMilestonesComponent:
     def __init__(self, title: Tag):
         title_wrapper = title.find_parent("div", class_="govuk-summary-card__title-wrapper")
         assert title_wrapper
-        change_milestones = title_wrapper.select_one("a:-soup-contains('Change')")
-        self.change_milestones_url = change_milestones["href"] if change_milestones else None
+        self.change_milestones_url = one(title_wrapper.select("a:-soup-contains('Change')"))["href"]
         card = title_wrapper.find_parent("div", class_="govuk-summary-card")
         assert card
-        table = card.select_one("table")
-        assert table
-        self.milestones = SchemeMilestonesTableComponent(table)
+        self.milestones = SchemeMilestonesTableComponent(one(card.select("table")))
 
 
 class SchemeMilestonesTableComponent:
@@ -226,8 +200,7 @@ class SchemeMilestonesTableComponent:
 
 class SchemeMilestoneRowComponent:
     def __init__(self, row: Tag):
-        header = row.select_one("th")
-        self.milestone = header.string if header else None
+        self.milestone = one(row.select("th")).string
         cells = row.select("td")
         self.planned = cells[0].string or ""
         self.actual = cells[1].string or ""
@@ -277,19 +250,15 @@ class SchemeOutputRowComponent:
 class ChangeSpendToDatePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
-        back = self._soup.select_one("a.govuk-back-link")
-        self.back_url = back["href"] if back else None
+        self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
         notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
         self.notification_banner = (
             NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
         )
-        paragraph = self._soup.select_one("main h1 ~ p")
-        self.funding_summary = (paragraph.string or "").strip() if paragraph else None
-        form_tag = self._soup.select_one("form")
-        assert form_tag
-        self.form = ChangeSpendToDateFormComponent(form_tag)
+        self.funding_summary = (one(self._soup.select("main h1 ~ p")).string or "").strip()
+        self.form = ChangeSpendToDateFormComponent(one(self._soup.select("form")))
 
     @classmethod
     def open(cls, client: FlaskClient, id_: int) -> ChangeSpendToDatePage:
@@ -310,17 +279,14 @@ class ChangeSpendToDatePage(PageObject):
 class ChangeMilestoneDatesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
-        back = self._soup.select_one("a.govuk-back-link")
-        self.back_url = back["href"] if back else None
+        self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
         notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
         self.notification_banner = (
             NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
         )
-        form_tag = self._soup.select_one("form")
-        assert form_tag
-        self.form = ChangeMilestoneDatesFormComponent(form_tag)
+        self.form = ChangeMilestoneDatesFormComponent(one(self._soup.select("form")))
 
     @classmethod
     def open(cls, client: FlaskClient, id_: int) -> ChangeMilestoneDatesPage:
@@ -348,44 +314,35 @@ class ErrorSummaryComponent:
 
 class NotificationBannerComponent:
     def __init__(self, banner: Tag):
-        heading_tag = banner.select_one("p")
-        self.heading = heading_tag.string if heading_tag else None
+        self.heading = one(banner.select("p")).string
 
 
 class ChangeSpendToDateFormComponent:
     def __init__(self, form: Tag):
         self._form = form
         self.confirm_url = form.get("action")
-        amount_input = form.select_one("input[name='amount']")
-        assert amount_input
-        self.amount = TextComponent(amount_input)
-        cancel = self._form.select_one("a")
-        self.cancel_url = cancel["href"] if cancel else None
+        self.amount = TextComponent(one(form.select("input[name='amount']")))
+        self.cancel_url = one(self._form.select("a"))["href"]
 
 
 class ChangeMilestoneDatesFormComponent:
     def __init__(self, form: Tag):
         self.confirm_url = form.get("action")
-        construction_started_tag = form.select_one("h2:-soup-contains('Construction started')")
-        assert construction_started_tag
-        self.construction_started = ChangeMilestoneDatesFormRowComponent(construction_started_tag)
-        construction_completed_tag = form.select_one("h2:-soup-contains('Construction completed')")
-        assert construction_completed_tag
-        self.construction_completed = ChangeMilestoneDatesFormRowComponent(construction_completed_tag)
-        cancel = form.select_one("a")
-        self.cancel_url = cancel["href"] if cancel else None
+        self.construction_started = ChangeMilestoneDatesFormRowComponent(
+            one(form.select("h2:-soup-contains('Construction started')"))
+        )
+        self.construction_completed = ChangeMilestoneDatesFormRowComponent(
+            one(form.select("h2:-soup-contains('Construction completed')"))
+        )
+        self.cancel_url = one(form.select("a"))["href"]
 
 
 class ChangeMilestoneDatesFormRowComponent:
     def __init__(self, heading: Tag):
         grid_row = heading.find_next_sibling("div", class_="govuk-grid-row")
         assert isinstance(grid_row, Tag)
-        planned_tag = grid_row.select_one("fieldset:has(legend:-soup-contains('Planned date'))")
-        assert planned_tag
-        self.planned = DateComponent(planned_tag)
-        actual_tag = grid_row.select_one("fieldset:has(legend:-soup-contains('Actual date'))")
-        assert actual_tag
-        self.actual = DateComponent(actual_tag)
+        self.planned = DateComponent(one(grid_row.select("fieldset:has(legend:-soup-contains('Planned date'))")))
+        self.actual = DateComponent(one(grid_row.select("fieldset:has(legend:-soup-contains('Actual date'))")))
 
 
 class DateComponent:
@@ -410,3 +367,8 @@ class TextComponent:
         assert form_group
         error_message = form_group.select_one(".govuk-error-message")
         self.error = error_message.text.strip() if error_message else None
+
+
+def one(tags: ResultSet[Tag]) -> Tag:
+    (tag,) = tags
+    return tag

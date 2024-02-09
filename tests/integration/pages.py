@@ -320,14 +320,14 @@ class NotificationBannerComponent:
 class ChangeSpendToDateFormComponent:
     def __init__(self, form: Tag):
         self._form = form
-        self.confirm_url = form.get("action")
+        self.confirm_url = form["action"]
         self.amount = TextComponent(one(form.select("input[name='amount']")))
         self.cancel_url = one(self._form.select("a"))["href"]
 
 
 class ChangeMilestoneDatesFormComponent:
     def __init__(self, form: Tag):
-        self.confirm_url = form.get("action")
+        self.confirm_url = form["action"]
         self.construction_started = ChangeMilestoneDatesFormRowComponent(
             one(form.select("h2:-soup-contains('Construction started')"))
         )
@@ -360,7 +360,7 @@ class DateComponent:
 
 class TextComponent:
     def __init__(self, input_: Tag):
-        self.name = input_.get("name")
+        self.name = input_["name"]
         self.value = input_.get("value")
         self.is_errored = "govuk-input--error" in input_.get_attribute_list("class")
         form_group = input_.find_parent("div", class_="govuk-form-group")

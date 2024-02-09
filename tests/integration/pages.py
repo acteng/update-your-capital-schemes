@@ -285,7 +285,7 @@ class ChangeSpendToDatePage(PageObject):
         self.notification_banner = (
             NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
         )
-        paragraph = self._soup.select_one("main p")
+        paragraph = self._soup.select_one("main h1 ~ p")
         self.funding_summary = (paragraph.string or "").strip() if paragraph else None
         form_tag = self._soup.select_one("form")
         assert form_tag

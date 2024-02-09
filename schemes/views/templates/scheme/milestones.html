@@ -34,27 +34,8 @@
             <form method="post" action="{{ url_for('schemes.milestones', scheme_id=id) }}" aria-label="Change milestone dates">
                 {{ form.csrf_token }}
 
-                <h2 class="govuk-heading-m">Construction started</h2>
-                <div class="govuk-grid-row">
-                    <div class="govuk-grid-column-one-half">
-                        {{ form.planned(params={
-                            "fieldset": {
-                                "legend": {
-                                    "text": "Planned date"
-                                }
-                            }
-                        }) }}
-                    </div>
-                    <div class="govuk-grid-column-one-half">
-                        {{ form.actual(params={
-                            "fieldset": {
-                                "legend": {
-                                    "text": "Actual date"
-                                }
-                            }
-                        }) }}
-                    </div>
-                </div>
+                {{ milestone("Construction started", form.construction_started_planned, form.construction_started_actual) }}
+                {{ milestone("Construction completed", form.construction_completed_planned, form.construction_completed_actual) }}
 
                 <div class="govuk-button-group">
                     {{ govukButton({
@@ -67,3 +48,27 @@
         </div>
     </div>
 {% endblock %}
+
+{% macro milestone(name, planned_field, actual_field) -%}
+    <h2 class="govuk-heading-m">{{ name }}</h2>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+            {{ planned_field(params={
+                "fieldset": {
+                    "legend": {
+                        "text": "Planned date"
+                    }
+                }
+            }) }}
+        </div>
+        <div class="govuk-grid-column-one-half">
+            {{ actual_field(params={
+                "fieldset": {
+                    "legend": {
+                        "text": "Actual date"
+                    }
+                }
+            }) }}
+        </div>
+    </div>
+{%- endmacro %}

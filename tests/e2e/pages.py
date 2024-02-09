@@ -358,8 +358,7 @@ class ChangeMilestoneDatesFormComponent:
         )
         self._confirm = form.get_by_role("button", name="Confirm")
 
-    def enter_construction_started(self, planned: str, actual: str) -> ChangeMilestoneDatesFormComponent:
-        self._construction_started.planned.value = planned
+    def enter_construction_started(self, actual: str) -> ChangeMilestoneDatesFormComponent:
         self._construction_started.actual.value = actual
         return self
 
@@ -374,7 +373,7 @@ class ChangeMilestoneDatesFormComponent:
 
 class ChangeMilestoneDateFormRowComponent:
     def __init__(self, heading: Locator):
-        grid_row = heading.locator("xpath=following-sibling::*")
+        grid_row = heading.locator("xpath=following-sibling::*").first
         self.planned = DateComponent(grid_row.get_by_role("group", name="Planned date"))
         self.actual = DateComponent(grid_row.get_by_role("group", name="Actual date"))
 

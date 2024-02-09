@@ -667,20 +667,14 @@ def test_milestones_form_shows_back(schemes: SchemeRepository, client: FlaskClie
     assert change_milestone_dates_page.back_url == "/schemes/1"
 
 
-@pytest.mark.parametrize(
-    "observation_type, observation_type_item",
-    [(ObservationType.PLANNED, "planned"), (ObservationType.ACTUAL, "actual")],
-)
-def test_milestones_form_shows_date(
-    schemes: SchemeRepository, client: FlaskClient, observation_type: ObservationType, observation_type_item: str
-) -> None:
+def test_milestones_form_shows_date(schemes: SchemeRepository, client: FlaskClient) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.milestones.update_milestones(
         MilestoneRevision(
             id_=1,
             effective=DateRange(datetime(2020, 1, 1, 12), None),
             milestone=Milestone.CONSTRUCTION_STARTED,
-            observation_type=observation_type,
+            observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 2),
             source=DataSource.ATF4_BID,
         )
@@ -691,8 +685,8 @@ def test_milestones_form_shows_date(
 
     assert change_milestone_dates_page.title == "Schemes - Active Travel England - GOV.UK"
     # TODO: remove leading zeros, see: https://github.com/LandRegistry/govuk-frontend-wtf/issues/85
-    # assert change_milestone_dates_page.form.construction_started[observation_type_item].value == "2 1 2020"
-    assert change_milestone_dates_page.form.construction_started[observation_type_item].value == "02 01 2020"
+    # assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
+    assert change_milestone_dates_page.form.construction_started.actual.value == "02 01 2020"
 
 
 def test_milestones_form_shows_confirm(schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -722,16 +716,8 @@ def test_cannot_milestones_form_when_different_authority(
     assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
 
-@pytest.mark.parametrize(
-    "observation_type, field_name", [(ObservationType.PLANNED, "planned"), (ObservationType.ACTUAL, "actual")]
-)
 def test_milestones_updates_milestones(
-    clock: Clock,
-    schemes: SchemeRepository,
-    client: FlaskClient,
-    csrf_token: str,
-    observation_type: ObservationType,
-    field_name: str,
+    clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
 ) -> None:
     clock.now = datetime(2020, 1, 31, 13)
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
@@ -740,14 +726,16 @@ def test_milestones_updates_milestones(
             id_=1,
             effective=DateRange(datetime(2020, 1, 1, 12), None),
             milestone=Milestone.CONSTRUCTION_STARTED,
-            observation_type=observation_type,
+            observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 2),
             source=DataSource.ATF4_BID,
         )
     )
     schemes.add(scheme)
 
-    client.post("/schemes/1/milestones", data={"csrf_token": csrf_token, field_name: ["3", "1", "2020"]})
+    client.post(
+        "/schemes/1/milestones", data={"csrf_token": csrf_token, "construction_started_actual": ["3", "1", "2020"]}
+    )
 
     actual_scheme = schemes.get(1)
     assert actual_scheme
@@ -758,7 +746,7 @@ def test_milestones_updates_milestones(
     assert (
         milestone_revision2.effective == DateRange(datetime(2020, 1, 31, 13), None)
         and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
-        and milestone_revision2.observation_type == observation_type
+        and milestone_revision2.observation_type == ObservationType.ACTUAL
         and milestone_revision2.status_date == date(2020, 1, 3)
         and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
     )
@@ -772,47 +760,37 @@ def test_milestones_shows_scheme(schemes: SchemeRepository, client: FlaskClient,
     assert response.status_code == 302 and response.location == "/schemes/1"
 
 
-@pytest.mark.parametrize(
-    "observation_type, field_name, observation_type_item, expected_error",
-    [
-        (ObservationType.PLANNED, "planned", "planned", "Construction started planned date must be a real date"),
-        (ObservationType.ACTUAL, "actual", "actual", "Construction started actual date must be a real date"),
-    ],
-)
-def test_cannot_milestones_when_error(
-    schemes: SchemeRepository,
-    client: FlaskClient,
-    csrf_token: str,
-    observation_type: ObservationType,
-    field_name: str,
-    observation_type_item: str,
-    expected_error: str,
-) -> None:
+def test_cannot_milestones_when_error(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
     scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
     scheme.milestones.update_milestones(
         MilestoneRevision(
             id_=1,
             effective=DateRange(datetime(2020, 1, 1, 12), None),
             milestone=Milestone.CONSTRUCTION_STARTED,
-            observation_type=observation_type,
+            observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 2),
             source=DataSource.ATF4_BID,
         )
     )
     schemes.add(scheme)
-    empty_data = {"csrf_token": csrf_token, "planned": ["", "", ""], "actual": ["", "", ""]}
 
     change_milestone_dates_page = ChangeMilestoneDatesPage(
-        client.post("/schemes/1/milestones", data=empty_data | {field_name: ["x", "x", "x"]})
+        client.post(
+            "/schemes/1/milestones",
+            data=empty_change_milestone_dates_form()
+            | {"csrf_token": csrf_token, "construction_started_actual": ["x", "x", "x"]},
+        )
     )
 
     assert change_milestone_dates_page.title == "Error: Schemes - Active Travel England - GOV.UK"
-    assert change_milestone_dates_page.errors and list(change_milestone_dates_page.errors) == [expected_error]
+    assert change_milestone_dates_page.errors and list(change_milestone_dates_page.errors) == [
+        "Construction started actual date must be a real date"
+    ]
     assert (
-        change_milestone_dates_page.form.construction_started[observation_type_item].is_errored
-        and change_milestone_dates_page.form.construction_started[observation_type_item].error
-        == f"Error: {expected_error}"
-        and change_milestone_dates_page.form.construction_started[observation_type_item].value == "x x x"
+        change_milestone_dates_page.form.construction_started.actual.is_errored
+        and change_milestone_dates_page.form.construction_started.actual.error
+        == "Error: Construction started actual date must be a real date"
+        and change_milestone_dates_page.form.construction_started.actual.value == "x x x"
     )
     actual_scheme = schemes.get(1)
     assert actual_scheme
@@ -822,7 +800,7 @@ def test_cannot_milestones_when_error(
         milestone_revision1.id == 1
         and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
         and milestone_revision1.milestone == Milestone.CONSTRUCTION_STARTED
-        and milestone_revision1.observation_type == observation_type
+        and milestone_revision1.observation_type == ObservationType.ACTUAL
         and milestone_revision1.status_date == date(2020, 1, 2)
         and milestone_revision1.source == DataSource.ATF4_BID
     )
@@ -867,6 +845,16 @@ def test_cannot_milestones_when_different_authority(
     response = client.post("/schemes/2/milestones", data={"csrf_token": csrf_token})
 
     assert response.status_code == 403
+
+
+def empty_change_milestone_dates_form() -> dict[str, list[str]]:
+    empty_date = ["", "", ""]
+    return {
+        "construction_started_planned": empty_date,
+        "construction_started_actual": empty_date,
+        "construction_completed_planned": empty_date,
+        "construction_completed_actual": empty_date,
+    }
 
 
 class TestApiEnabled:

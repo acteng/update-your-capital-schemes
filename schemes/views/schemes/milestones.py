@@ -3,9 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date, datetime
 from enum import Enum, unique
+from typing import Any
 
 from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovDateInput
+from wtforms.fields.datetime import DateField
 
 from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
@@ -92,19 +94,18 @@ class ChangeMilestoneDatesContext:
         return ChangeMilestoneDatesContext(id=scheme.id, form=ChangeMilestoneDatesForm.from_domain(scheme.milestones))
 
 
+class MilestoneDateField(CustomMessageDateField):
+    def __init__(self, **kwargs: Any):
+        super().__init__(widget=GovDateInput(), format="%d %m %Y", validators=[MultivalueOptional()], **kwargs)
+
+
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
-    planned = CustomMessageDateField(
-        widget=GovDateInput(),
-        format="%d %m %Y",
-        validators=[MultivalueOptional()],
-        message="Construction started planned date must be a real date",
+    construction_started_planned = MilestoneDateField(message="Construction started planned date must be a real date")
+    construction_started_actual = MilestoneDateField(message="Construction started actual date must be a real date")
+    construction_completed_planned = MilestoneDateField(
+        message="Construction completed planned date must be a real date"
     )
-    actual = CustomMessageDateField(
-        widget=GovDateInput(),
-        format="%d %m %Y",
-        validators=[MultivalueOptional()],
-        message="Construction started actual date must be a real date",
-    )
+    construction_completed_actual = MilestoneDateField(message="Construction completed actual date must be a real date")
 
     @classmethod
     def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:
@@ -118,21 +119,22 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
 
         # TODO: support all milestones
         return cls(
-            planned=get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
-            actual=get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
+            construction_started_planned=get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
+            construction_started_actual=get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
+            construction_completed_planned=get_status_date(Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
+            construction_completed_actual=get_status_date(Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL),
         )
 
     def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
-        # TODO: support all milestones
-        if self.planned.data:
-            milestones.update_milestone_date(
-                now, Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED, self.planned.data
-            )
+        def update_milestone(field: DateField, milestone: Milestone, observation_type: ObservationType) -> None:
+            if field.data:
+                milestones.update_milestone_date(now, milestone, observation_type, field.data)
 
-        if self.actual.data:
-            milestones.update_milestone_date(
-                now, Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL, self.actual.data
-            )
+        # TODO: support all milestones
+        update_milestone(self.construction_started_planned, Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED)
+        update_milestone(self.construction_started_actual, Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL)
+        update_milestone(self.construction_completed_planned, Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED)
+        update_milestone(self.construction_completed_actual, Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL)
 
 
 @dataclass(frozen=True)

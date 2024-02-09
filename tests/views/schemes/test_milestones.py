@@ -141,20 +141,35 @@ class TestChangeMilestoneDatesContext:
 
         context = ChangeMilestoneDatesContext.from_domain(scheme)
 
-        assert context.id == 1 and context.form.planned.data == date(2020, 1, 2)
+        assert context.id == 1 and context.form.construction_started_planned.data == date(2020, 1, 2)
 
 
 class TestChangeMilestoneDatesForm:
+    field_names = [
+        "construction_started_planned",
+        "construction_started_actual",
+        "construction_completed_planned",
+        "construction_completed_actual",
+    ]
+
     @pytest.mark.parametrize(
-        "observation_type, field_name", [(ObservationType.PLANNED, "planned"), (ObservationType.ACTUAL, "actual")]
+        "milestone, observation_type, field_name",
+        [
+            (Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED, "construction_started_planned"),
+            (Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL, "construction_started_actual"),
+            (Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED, "construction_completed_planned"),
+            (Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL, "construction_completed_actual"),
+        ],
     )
-    def test_from_domain(self, app: Flask, observation_type: ObservationType, field_name: str) -> None:
+    def test_from_domain(
+        self, app: Flask, milestone: Milestone, observation_type: ObservationType, field_name: str
+    ) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
-                milestone=Milestone.CONSTRUCTION_STARTED,
+                milestone=milestone,
                 observation_type=observation_type,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
@@ -162,7 +177,7 @@ class TestChangeMilestoneDatesForm:
             MilestoneRevision(
                 id_=2,
                 effective=DateRange(datetime(2020, 2, 1), None),
-                milestone=Milestone.CONSTRUCTION_STARTED,
+                milestone=milestone,
                 observation_type=observation_type,
                 status_date=date(2020, 2, 1),
                 source=DataSource.ATF4_BID,
@@ -178,19 +193,34 @@ class TestChangeMilestoneDatesForm:
 
         form = ChangeMilestoneDatesForm.from_domain(milestones)
 
-        assert form.planned.data is None and form.actual.data is None
+        assert (
+            form.construction_started_planned.data is None
+            and form.construction_started_actual.data is None
+            and form.construction_completed_planned.data is None
+            and form.construction_completed_actual.data is None
+        )
 
     @pytest.mark.parametrize(
-        "observation_type, field_name", [(ObservationType.PLANNED, "planned"), (ObservationType.ACTUAL, "actual")]
+        "field_name, milestone, observation_type",
+        [
+            ("construction_started_planned", Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
+            ("construction_started_actual", Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
+            ("construction_completed_planned", Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
+            ("construction_completed_actual", Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL),
+        ],
     )
-    def test_update_domain(self, app: Flask, observation_type: ObservationType, field_name: str) -> None:
-        form = ChangeMilestoneDatesForm(data={field_name: date(2020, 1, 3)})
+    def test_update_domain(
+        self, app: Flask, field_name: str, milestone: Milestone, observation_type: ObservationType
+    ) -> None:
+        form = ChangeMilestoneDatesForm(
+            formdata=MultiDict([(field_name, "3"), (field_name, "1"), (field_name, "2020")])
+        )
         milestones = SchemeMilestones()
         milestones.update_milestone(
             MilestoneRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                milestone=Milestone.CONSTRUCTION_STARTED,
+                milestone=milestone,
                 observation_type=observation_type,
                 status_date=date(2020, 1, 2),
                 source=DataSource.ATF4_BID,
@@ -205,25 +235,31 @@ class TestChangeMilestoneDatesForm:
         assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 1, 31, 13)
         assert (
             milestone_revision2.effective == DateRange(datetime(2020, 1, 31, 13), None)
-            and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
+            and milestone_revision2.milestone == milestone
             and milestone_revision2.observation_type == observation_type
             and milestone_revision2.status_date == date(2020, 1, 3)
             and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
         )
 
     @pytest.mark.parametrize(
-        "observation_type, field_name", [(ObservationType.PLANNED, "planned"), (ObservationType.ACTUAL, "actual")]
+        "field_name, milestone, observation_type",
+        [
+            ("construction_started_planned", Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
+            ("construction_started_actual", Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
+            ("construction_completed_planned", Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
+            ("construction_completed_actual", Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL),
+        ],
     )
     def test_update_domain_preserves_dates_with_empty_date(
-        self, app: Flask, observation_type: ObservationType, field_name: str
+        self, app: Flask, field_name: str, milestone: Milestone, observation_type: ObservationType
     ) -> None:
-        form = ChangeMilestoneDatesForm(data={field_name: None})
+        form = ChangeMilestoneDatesForm(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
         milestones = SchemeMilestones()
         milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1, 12), None),
-                milestone=Milestone.CONSTRUCTION_STARTED,
+                milestone=milestone,
                 observation_type=observation_type,
                 status_date=date(2020, 1, 2),
                 source=DataSource.ATF4_BID,
@@ -237,13 +273,13 @@ class TestChangeMilestoneDatesForm:
         assert (
             milestone_revision1.id == 1
             and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
-            and milestone_revision1.milestone == Milestone.CONSTRUCTION_STARTED
+            and milestone_revision1.milestone == milestone
             and milestone_revision1.observation_type == observation_type
             and milestone_revision1.status_date == date(2020, 1, 2)
             and milestone_revision1.source == DataSource.ATF4_BID
         )
 
-    @pytest.mark.parametrize("field_name", ["planned", "actual"])
+    @pytest.mark.parametrize("field_name", field_names)
     def test_no_errors_when_valid(self, app: Flask, field_name: str) -> None:
         form = ChangeMilestoneDatesForm(
             formdata=MultiDict(
@@ -255,7 +291,7 @@ class TestChangeMilestoneDatesForm:
 
         assert not form.errors
 
-    @pytest.mark.parametrize("field_name", ["planned", "actual"])
+    @pytest.mark.parametrize("field_name", field_names)
     def test_date_is_optional(self, app: Flask, field_name: str) -> None:
         form = ChangeMilestoneDatesForm(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
 
@@ -266,8 +302,10 @@ class TestChangeMilestoneDatesForm:
     @pytest.mark.parametrize(
         "field_name, expected_error",
         [
-            ("planned", "Construction started planned date must be a real date"),
-            ("actual", "Construction started actual date must be a real date"),
+            ("construction_started_planned", "Construction started planned date must be a real date"),
+            ("construction_started_actual", "Construction started actual date must be a real date"),
+            ("construction_completed_planned", "Construction completed planned date must be a real date"),
+            ("construction_completed_actual", "Construction completed actual date must be a real date"),
         ],
     )
     @pytest.mark.parametrize(

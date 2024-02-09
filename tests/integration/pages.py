@@ -384,15 +384,6 @@ class ChangeMilestoneDatesFormRowComponent:
         assert actual_tag
         self.actual = DateComponent(actual_tag)
 
-    def __getitem__(self, item: str) -> DateComponent:
-        match item:
-            case "planned":
-                return self.planned
-            case "actual":
-                return self.actual
-            case _:
-                raise ValueError(f"Unknown item: {item}")
-
 
 class DateComponent:
     def __init__(self, fieldset: Tag):

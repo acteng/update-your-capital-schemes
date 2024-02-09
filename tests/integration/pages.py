@@ -84,7 +84,7 @@ class SchemesPage(PageObject):
 class ServiceHeaderComponent:
     def __init__(self, header: Tag):
         home = header.select_one("a.one-login-header__link")
-        profile = header.select_one("a.one-login-header__nav__link")
+        profile = header.select_one("a:-soup-contains('GOV.UK One Login')")
         sign_out = header.select_one("a:-soup-contains('Sign out')")
         self.home_url = home["href"] if home else None
         self.profile_url = profile["href"] if profile else None

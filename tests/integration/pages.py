@@ -11,26 +11,20 @@ class PageObject:
     def __init__(self, response: TestResponse):
         self._response = response
         self._soup = BeautifulSoup(response.text, "html.parser")
-
-    @property
-    def title(self) -> str:
-        return one(self._soup.select("title")).text
+        self.title = one(self._soup.select("title")).text
 
 
 class StartPage(PageObject):
+    def __init__(self, response: TestResponse):
+        super().__init__(response)
+        self.header = HeaderComponent(one(self._soup.select("header")))
+        heading = self._soup.select_one("main h1")
+        self.is_visible = heading.string == "Schemes" if heading else False
+
     @classmethod
     def open(cls, client: FlaskClient) -> StartPage:
         response = client.get("/")
         return cls(response)
-
-    @property
-    def is_visible(self) -> bool:
-        heading = self._soup.select_one("main h1")
-        return heading.string == "Schemes" if heading else False
-
-    @property
-    def header(self) -> HeaderComponent:
-        return HeaderComponent(one(self._soup.select("header")))
 
 
 class HeaderComponent:
@@ -39,39 +33,29 @@ class HeaderComponent:
 
 
 class ForbiddenPage(PageObject):
-    @property
-    def is_visible(self) -> bool:
+    def __init__(self, response: TestResponse):
+        super().__init__(response)
         heading = self._soup.select_one("main h1")
-        return heading.string == "Forbidden" if heading else False
-
-    @property
-    def is_forbidden(self) -> bool:
-        return self._response.status_code == 403
+        self.is_visible = heading.string == "Forbidden" if heading else False
+        self.is_forbidden = response.status_code == 403
 
 
 class SchemesPage(PageObject):
+    def __init__(self, response: TestResponse):
+        super().__init__(response)
+        self.header = ServiceHeaderComponent(one(self._soup.select("header")))
+        self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
+        table = self._soup.select_one("main table")
+        self.schemes = SchemesTableComponent(table) if table else None
+        paragraph = self._soup.select_one("main p")
+        self.is_no_schemes_message_visible = (
+            paragraph.string == "There are no schemes for your authority to update." if paragraph else False
+        )
+
     @classmethod
     def open(cls, client: FlaskClient) -> SchemesPage:
         response = client.get("/schemes")
         return cls(response)
-
-    @property
-    def header(self) -> ServiceHeaderComponent:
-        return ServiceHeaderComponent(one(self._soup.select("header")))
-
-    @property
-    def authority(self) -> str | None:
-        return one(self._soup.select("main h1 .govuk-caption-xl")).string
-
-    @property
-    def schemes(self) -> SchemesTableComponent | None:
-        table = self._soup.select_one("main table")
-        return SchemesTableComponent(table) if table else None
-
-    @property
-    def is_no_schemes_message_visible(self) -> bool:
-        paragraph = self._soup.select_one("main p")
-        return paragraph.string == "There are no schemes for your authority to update." if paragraph else False
 
 
 class ServiceHeaderComponent:
@@ -109,6 +93,16 @@ class SchemeRowComponent:
 
 
 class SchemePage(PageObject):
+    def __init__(self, response: TestResponse):
+        super().__init__(response)
+        self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
+        self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
+        self.name = one(self._soup.select("main h1 span:nth-child(2)")).string
+        self.overview = SchemeOverviewComponent(one(self._soup.select("main h2:-soup-contains('Overview')")))
+        self.funding = SchemeFundingComponent(one(self._soup.select("main h2:-soup-contains('Funding')")))
+        self.milestones = SchemeMilestonesComponent(one(self._soup.select("main h2:-soup-contains('Milestones')")))
+        self.outputs = SchemeOutputsComponent(one(self._soup.select("main h2:-soup-contains('Outputs')")))
+
     @classmethod
     def open(cls, client: FlaskClient, id_: int) -> SchemePage:
         response = client.get(f"/schemes/{id_}")
@@ -118,34 +112,6 @@ class SchemePage(PageObject):
     def open_when_unauthorized(cls, client: FlaskClient, id_: int) -> ForbiddenPage:
         response = client.get(f"/schemes/{id_}")
         return ForbiddenPage(response)
-
-    @property
-    def back_url(self) -> str | list[str] | None:
-        return one(self._soup.select("a.govuk-back-link"))["href"]
-
-    @property
-    def authority(self) -> str | None:
-        return one(self._soup.select("main h1 .govuk-caption-xl")).string
-
-    @property
-    def name(self) -> str | None:
-        return one(self._soup.select("main h1 span:nth-child(2)")).string
-
-    @property
-    def overview(self) -> SchemeOverviewComponent:
-        return SchemeOverviewComponent(one(self._soup.select("main h2:-soup-contains('Overview')")))
-
-    @property
-    def funding(self) -> SchemeFundingComponent:
-        return SchemeFundingComponent(one(self._soup.select("main h2:-soup-contains('Funding')")))
-
-    @property
-    def milestones(self) -> SchemeMilestonesComponent:
-        return SchemeMilestonesComponent(one(self._soup.select("main h2:-soup-contains('Milestones')")))
-
-    @property
-    def outputs(self) -> SchemeOutputsComponent:
-        return SchemeOutputsComponent(one(self._soup.select("main h2:-soup-contains('Outputs')")))
 
 
 class SummaryCardComponent:
@@ -250,6 +216,8 @@ class SchemeOutputRowComponent:
 class ChangeSpendToDatePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
+        heading = self._soup.select_one("main h1")
+        self.is_visible = heading.string == "Change spend to date" if heading else False
         self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
@@ -270,15 +238,12 @@ class ChangeSpendToDatePage(PageObject):
         response = client.get(f"/schemes/{id_}/spend-to-date")
         return ForbiddenPage(response)
 
-    @property
-    def is_visible(self) -> bool:
-        heading = self._soup.select_one("main h1")
-        return heading.string == "Change spend to date" if heading else False
-
 
 class ChangeMilestoneDatesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
+        heading = self._soup.select_one("main h1")
+        self.is_visible = heading.string == "Change milestone dates" if heading else False
         self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
@@ -297,11 +262,6 @@ class ChangeMilestoneDatesPage(PageObject):
     def open_when_unauthorized(cls, client: FlaskClient, id_: int) -> ForbiddenPage:
         response = client.get(f"/schemes/{id_}/milestones")
         return ForbiddenPage(response)
-
-    @property
-    def is_visible(self) -> bool:
-        heading = self._soup.select_one("main h1")
-        return heading.string == "Change milestone dates" if heading else False
 
 
 class ErrorSummaryComponent:

@@ -165,7 +165,7 @@ class TestChangeSpendToDateForm:
         assert form.amount.data == 50_000 and form.max_amount == 110_000
 
     def test_update_domain(self, app: Flask) -> None:
-        form = ChangeSpendToDateForm(max_amount=0, data={"amount": 60_000})
+        form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "60000")]))
         funding = SchemeFunding()
         funding.update_financial(
             FinancialRevision(
@@ -191,7 +191,7 @@ class TestChangeSpendToDateForm:
         )
 
     def test_update_domain_with_zero_amount(self, app: Flask) -> None:
-        form = ChangeSpendToDateForm(max_amount=0, data={"amount": 0})
+        form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "0")]))
         funding = SchemeFunding()
 
         form.update_domain(funding, now=datetime(2020, 1, 31))

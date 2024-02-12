@@ -157,22 +157,20 @@ class TestChangeMilestoneDatesForm:
         "construction_completed_planned",
         "construction_completed_actual",
     ]
+    field_names_milestones_observation_types = [
+        ("feasibility_design_completed_planned", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED),
+        ("feasibility_design_completed_actual", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL),
+        ("preliminary_design_completed_planned", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED),
+        ("preliminary_design_completed_actual", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL),
+        ("detailed_design_completed_planned", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED),
+        ("detailed_design_completed_actual", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL),
+        ("construction_started_planned", Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
+        ("construction_started_actual", Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
+        ("construction_completed_planned", Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
+        ("construction_completed_actual", Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL),
+    ]
 
-    @pytest.mark.parametrize(
-        "milestone, observation_type, field_name",
-        [
-            (Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED, "feasibility_design_completed_planned"),
-            (Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL, "feasibility_design_completed_actual"),
-            (Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED, "preliminary_design_completed_planned"),
-            (Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL, "preliminary_design_completed_actual"),
-            (Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED, "detailed_design_completed_planned"),
-            (Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL, "detailed_design_completed_actual"),
-            (Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED, "construction_started_planned"),
-            (Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL, "construction_started_actual"),
-            (Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED, "construction_completed_planned"),
-            (Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL, "construction_completed_actual"),
-        ],
-    )
+    @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
     def test_from_domain(
         self, app: Flask, milestone: Milestone, observation_type: ObservationType, field_name: str
     ) -> None:
@@ -218,21 +216,7 @@ class TestChangeMilestoneDatesForm:
             and form.construction_completed_actual.data is None
         )
 
-    @pytest.mark.parametrize(
-        "field_name, milestone, observation_type",
-        [
-            ("feasibility_design_completed_planned", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED),
-            ("feasibility_design_completed_actual", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL),
-            ("preliminary_design_completed_planned", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED),
-            ("preliminary_design_completed_actual", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL),
-            ("detailed_design_completed_planned", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED),
-            ("detailed_design_completed_actual", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL),
-            ("construction_started_planned", Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
-            ("construction_started_actual", Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
-            ("construction_completed_planned", Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
-            ("construction_completed_actual", Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL),
-        ],
-    )
+    @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
     def test_update_domain(
         self, app: Flask, field_name: str, milestone: Milestone, observation_type: ObservationType
     ) -> None:
@@ -265,21 +249,7 @@ class TestChangeMilestoneDatesForm:
             and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
         )
 
-    @pytest.mark.parametrize(
-        "field_name, milestone, observation_type",
-        [
-            ("feasibility_design_completed_planned", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED),
-            ("feasibility_design_completed_actual", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL),
-            ("preliminary_design_completed_planned", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED),
-            ("preliminary_design_completed_actual", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL),
-            ("detailed_design_completed_planned", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED),
-            ("detailed_design_completed_actual", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL),
-            ("construction_started_planned", Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
-            ("construction_started_actual", Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
-            ("construction_completed_planned", Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
-            ("construction_completed_actual", Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL),
-        ],
-    )
+    @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
     def test_update_domain_preserves_dates_with_empty_date(
         self, app: Flask, field_name: str, milestone: Milestone, observation_type: ObservationType
     ) -> None:

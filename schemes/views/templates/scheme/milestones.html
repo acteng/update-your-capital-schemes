@@ -30,6 +30,9 @@
             {% endwith %}
 
             <h1 class="govuk-heading-l">Change milestone dates</h1>
+            <div id="date-hint" class="govuk-hint govuk-!-margin-bottom-6">
+                For example, 27 3 2007
+            </div>
 
             <form method="post" action="{{ url_for('schemes.milestones', scheme_id=id) }}" aria-label="Change milestone dates">
                 {{ form.csrf_token }}
@@ -58,6 +61,7 @@
         <div class="govuk-grid-column-one-half">
             {{ planned_field(params={
                 "fieldset": {
+                    "describedBy": "date-hint",
                     "legend": {
                         "text": "Planned date"
                     }
@@ -67,6 +71,7 @@
         <div class="govuk-grid-column-one-half">
             {{ actual_field(params={
                 "fieldset": {
+                    "describedBy": "date-hint",
                     "legend": {
                         "text": "Actual date"
                     }

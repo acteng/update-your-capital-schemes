@@ -6,7 +6,6 @@ from enum import Enum, unique
 from typing import Any
 
 from flask_wtf import FlaskForm
-from govuk_frontend_wtf.wtforms_widgets import GovDateInput
 from wtforms.fields.datetime import DateField
 
 from schemes.dicts import inverse_dict
@@ -18,7 +17,11 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeMilestones,
 )
-from schemes.views.forms import CustomMessageDateField, MultivalueOptional
+from schemes.views.forms import (
+    CustomMessageDateField,
+    MultivalueOptional,
+    RemoveLeadingZerosGovDateInput,
+)
 from schemes.views.schemes.funding import DataSourceRepr
 from schemes.views.schemes.observations import ObservationTypeRepr
 
@@ -96,7 +99,9 @@ class ChangeMilestoneDatesContext:
 
 class MilestoneDateField(CustomMessageDateField):
     def __init__(self, **kwargs: Any):
-        super().__init__(widget=GovDateInput(), format="%d %m %Y", validators=[MultivalueOptional()], **kwargs)
+        super().__init__(
+            widget=RemoveLeadingZerosGovDateInput(), format="%d %m %Y", validators=[MultivalueOptional()], **kwargs
+        )
 
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore

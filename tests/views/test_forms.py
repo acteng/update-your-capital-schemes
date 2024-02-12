@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import datetime
+from datetime import date, datetime
 
 import pytest
 from werkzeug.datastructures import MultiDict
@@ -11,6 +11,7 @@ from schemes.views.forms import (
     CustomMessageDateField,
     CustomMessageIntegerField,
     MultivalueOptional,
+    RemoveLeadingZerosGovDateInput,
 )
 
 
@@ -79,7 +80,7 @@ class TestCustomMessageDateField:
     def test_process_formdata_with_date(self, form: FakeForm) -> None:
         form.process(formdata=MultiDict([("date_field", "2000-01-01")]))
 
-        assert form.date_field.data == datetime.date(2000, 1, 1)
+        assert form.date_field.data == date(2000, 1, 1)
         assert form.date_field.process_errors == []
 
     def test_cannot_process_formdata_with_invalid_value(self, form: FakeForm) -> None:
@@ -93,6 +94,32 @@ class TestCustomMessageDateField:
 
         assert form.custom_message_date_field.data is None
         assert form.custom_message_date_field.process_errors == ["My custom message"]
+
+
+class TestRemoveLeadingZerosGovDateInput:
+    def test_date_values_when_missing(self, form: FakeForm) -> None:
+        widget = RemoveLeadingZerosGovDateInput()
+
+        params = widget.map_gov_params(form.date_field, id="date_field")
+
+        assert [item["value"] for item in params["items"]] == [None, None, None]
+
+    def test_date_values_have_no_leading_zeros(self, form: FakeForm) -> None:
+        form.date_field.data = datetime(2000, 1, 2)
+        widget = RemoveLeadingZerosGovDateInput()
+
+        params = widget.map_gov_params(form.date_field, id="date_field")
+
+        assert [item["value"] for item in params["items"]] == ["2", "1", "2000"]
+
+    def test_date_values_when_raw_data(self, form: FakeForm) -> None:
+        form.date_field.data = datetime(2000, 1, 2)
+        form.date_field.raw_data = ["02", "01", "2000"]
+        widget = RemoveLeadingZerosGovDateInput()
+
+        params = widget.map_gov_params(form.date_field, id="date_field")
+
+        assert [item["value"] for item in params["items"]] == ["02", "01", "2000"]
 
 
 class TestMultivalueOptional:

@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Callable
 
+from govuk_frontend_wtf.wtforms_widgets import GovDateInput
 from wtforms import DateField, Field
 from wtforms.fields.numeric import IntegerField
 from wtforms.form import BaseForm
@@ -76,6 +77,24 @@ class CustomMessageDateField(DateField):
                 self.data = None
 
         raise ValueError(self.message)
+
+
+class RemoveLeadingZerosGovDateInput(GovDateInput):  # type: ignore
+    """
+    A GOV.UK date input widget that removes leading zeros from day and month fields.
+
+    See: https://github.com/LandRegistry/govuk-frontend-wtf/issues/85
+    """
+
+    def map_gov_params(self, field: Field, **kwargs: str) -> dict[str, Any]:
+        params: dict[str, Any] = super().map_gov_params(field, **kwargs)
+
+        if field.raw_data is None and field.data:
+            day, month = field.data.strftime("%-d %-m").split(" ")
+            params["items"][0]["value"] = day
+            params["items"][1]["value"] = month
+
+        return params
 
 
 class MultivalueOptional(Optional):

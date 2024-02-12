@@ -708,9 +708,7 @@ def test_milestones_form_shows_date(schemes: SchemeRepository, client: FlaskClie
     change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
     assert change_milestone_dates_page.title == "Update your capital schemes - Active Travel England - GOV.UK"
-    # TODO: remove leading zeros, see: https://github.com/LandRegistry/govuk-frontend-wtf/issues/85
-    # assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
-    assert change_milestone_dates_page.form.construction_started.actual.value == "02 01 2020"
+    assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
 
 
 def test_milestones_form_shows_confirm(schemes: SchemeRepository, client: FlaskClient) -> None:

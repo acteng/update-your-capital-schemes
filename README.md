@@ -273,22 +273,22 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/mana
 ### Dev
 
 * Service name: ATE Schemes (Dev)
-* Service redirect URLs: https://schemes-a552yllyya-ew.a.run.app/auth, https://schemes-ijnazoz5mq-ew.a.run.app/auth, http://127.0.0.1:5000/auth
+* Service redirect URLs: https://dev.update-your-capital-schemes.activetravelengland.gov.uk/auth, http://127.0.0.1:5000/auth
 * Service contact email address: mark.hobson@activetravelengland.gov.uk
 * Scopes: openid email
 * Public key: (see "Schemes GOV.UK One Login Public Key (Dev)" in Bitwarden)
-* Logout URLs: https://schemes-a552yllyya-ew.a.run.app/, https://schemes-ijnazoz5mq-ew.a.run.app/, http://127.0.0.1:5000/
-* Sector identifier URI: https://schemes-ijnazoz5mq-ew.a.run.app/
+* Logout URLs: https://dev.update-your-capital-schemes.activetravelengland.gov.uk/, http://127.0.0.1:5000/
+* Sector identifier URI: https://dev.update-your-capital-schemes.activetravelengland.gov.uk/
 
 ### Test
 
 * Service name: ATE Schemes (Test)
-* Service redirect URLs: https://schemes-d7yho5f3pa-ew.a.run.app/auth, https://schemes-dcmtqc7uca-ew.a.run.app/auth
+* Service redirect URLs: https://test.update-your-capital-schemes.activetravelengland.gov.uk/auth
 * Service contact email address: mark.hobson@activetravelengland.gov.uk
 * Scopes: openid email
 * Public key: (see "Schemes GOV.UK One Login Public Key (Test)" in Bitwarden)
-* Logout URLs: https://schemes-d7yho5f3pa-ew.a.run.app/, https://schemes-dcmtqc7uca-ew.a.run.app/
-* Sector identifier URI: https://schemes-dcmtqc7uca-ew.a.run.app/
+* Logout URLs: https://test.update-your-capital-schemes.activetravelengland.gov.uk/
+* Sector identifier URI: https://test.update-your-capital-schemes.activetravelengland.gov.uk/
 
 ## See also
 

@@ -76,6 +76,10 @@ class SchemeMilestones:
         ]
         return sorted(actual_milestones)[-1] if actual_milestones else None
 
+    def get_current_status_date(self, milestone: Milestone, observation_type: ObservationType) -> date | None:
+        current_milestone_revision = self._current_milestone_revision(milestone, observation_type)
+        return current_milestone_revision.status_date if current_milestone_revision else None
+
 
 class MilestoneRevision:
     # TODO: domain identifier should be mandatory for transient instances

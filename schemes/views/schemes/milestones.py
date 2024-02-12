@@ -32,20 +32,12 @@ class SchemeMilestonesContext:
 
     @classmethod
     def from_domain(cls, milestones: SchemeMilestones) -> SchemeMilestonesContext:
-        def get_status_date(milestone: Milestone, observation_type: ObservationType) -> date | None:
-            revisions = (
-                revision.status_date
-                for revision in milestones.current_milestone_revisions
-                if revision.milestone == milestone and revision.observation_type == observation_type
-            )
-            return next(revisions, None)
-
         return cls(
             milestones=[
                 SchemeMilestoneRowContext(
                     milestone=MilestoneContext.from_domain(milestone),
-                    planned=get_status_date(milestone, ObservationType.PLANNED),
-                    actual=get_status_date(milestone, ObservationType.ACTUAL),
+                    planned=milestones.get_current_status_date(milestone, ObservationType.PLANNED),
+                    actual=milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
                 )
                 for milestone in [
                     Milestone.FEASIBILITY_DESIGN_COMPLETED,
@@ -132,37 +124,37 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
 
     @classmethod
     def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:
-        def get_status_date(milestone: Milestone, observation_type: ObservationType) -> date | None:
-            revisions = (
-                revision.status_date
-                for revision in milestones.current_milestone_revisions
-                if revision.milestone == milestone and revision.observation_type == observation_type
-            )
-            return next(revisions, None)
-
         return cls(
-            feasibility_design_completed_planned=get_status_date(
+            feasibility_design_completed_planned=milestones.get_current_status_date(
                 Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED
             ),
-            feasibility_design_completed_actual=get_status_date(
+            feasibility_design_completed_actual=milestones.get_current_status_date(
                 Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL
             ),
-            preliminary_design_completed_planned=get_status_date(
+            preliminary_design_completed_planned=milestones.get_current_status_date(
                 Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED
             ),
-            preliminary_design_completed_actual=get_status_date(
+            preliminary_design_completed_actual=milestones.get_current_status_date(
                 Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL
             ),
-            detailed_design_completed_planned=get_status_date(
+            detailed_design_completed_planned=milestones.get_current_status_date(
                 Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED
             ),
-            detailed_design_completed_actual=get_status_date(
+            detailed_design_completed_actual=milestones.get_current_status_date(
                 Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL
             ),
-            construction_started_planned=get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
-            construction_started_actual=get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
-            construction_completed_planned=get_status_date(Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
-            construction_completed_actual=get_status_date(Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL),
+            construction_started_planned=milestones.get_current_status_date(
+                Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED
+            ),
+            construction_started_actual=milestones.get_current_status_date(
+                Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL
+            ),
+            construction_completed_planned=milestones.get_current_status_date(
+                Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED
+            ),
+            construction_completed_actual=milestones.get_current_status_date(
+                Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL
+            ),
         )
 
     def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:

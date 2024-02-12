@@ -161,32 +161,33 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
         )
 
     def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
-        def update_milestone(field: DateField, milestone: Milestone, observation_type: ObservationType) -> None:
-            if field.data:
-                milestones.update_milestone_date(now, milestone, observation_type, field.data)
+        def update_milestone(planned_field: DateField, actual_field: DateField, milestone: Milestone) -> None:
+            if planned_field.data:
+                milestones.update_milestone_date(now, milestone, ObservationType.PLANNED, planned_field.data)
+            if actual_field.data:
+                milestones.update_milestone_date(now, milestone, ObservationType.ACTUAL, actual_field.data)
 
         update_milestone(
-            self.feasibility_design_completed_planned, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED
+            self.feasibility_design_completed_planned,
+            self.feasibility_design_completed_actual,
+            Milestone.FEASIBILITY_DESIGN_COMPLETED,
         )
         update_milestone(
-            self.feasibility_design_completed_actual, Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL
+            self.preliminary_design_completed_planned,
+            self.preliminary_design_completed_actual,
+            Milestone.PRELIMINARY_DESIGN_COMPLETED,
         )
         update_milestone(
-            self.preliminary_design_completed_planned, Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED
+            self.detailed_design_completed_planned,
+            self.detailed_design_completed_actual,
+            Milestone.DETAILED_DESIGN_COMPLETED,
         )
         update_milestone(
-            self.preliminary_design_completed_actual, Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL
+            self.construction_started_planned, self.construction_started_actual, Milestone.CONSTRUCTION_STARTED
         )
         update_milestone(
-            self.detailed_design_completed_planned, Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED
+            self.construction_completed_planned, self.construction_completed_actual, Milestone.CONSTRUCTION_COMPLETED
         )
-        update_milestone(
-            self.detailed_design_completed_actual, Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL
-        )
-        update_milestone(self.construction_started_planned, Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED)
-        update_milestone(self.construction_started_actual, Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL)
-        update_milestone(self.construction_completed_planned, Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED)
-        update_milestone(self.construction_completed_actual, Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL)
 
 
 @dataclass(frozen=True)

@@ -95,14 +95,6 @@ class TestSchemeContext:
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
-                milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 1, 1),
-                source=DataSource.ATF4_BID,
-            ),
-            MilestoneRevision(
-                id_=2,
                 effective=DateRange(datetime(2020, 2, 1), None),
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,

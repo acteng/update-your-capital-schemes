@@ -31,11 +31,11 @@ class SchemeMilestonesContext:
     milestones: list[SchemeMilestoneRowContext]
 
     @classmethod
-    def from_domain(cls, milestone_revisions: list[MilestoneRevision]) -> SchemeMilestonesContext:
+    def from_domain(cls, milestones: SchemeMilestones) -> SchemeMilestonesContext:
         def get_status_date(milestone: Milestone, observation_type: ObservationType) -> date | None:
             revisions = (
                 revision.status_date
-                for revision in milestone_revisions
+                for revision in milestones.current_milestone_revisions
                 if revision.milestone == milestone and revision.observation_type == observation_type
             )
             return next(revisions, None)

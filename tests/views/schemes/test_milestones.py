@@ -29,7 +29,9 @@ from schemes.views.schemes.observations import ObservationTypeRepr
 
 class TestSchemeMilestonesContext:
     def test_from_domain_sets_milestones(self) -> None:
-        context = SchemeMilestonesContext.from_domain([])
+        milestones = SchemeMilestones()
+
+        context = SchemeMilestonesContext.from_domain(milestones)
 
         assert [row.milestone for row in context.milestones] == [
             MilestoneContext(name="Feasibility design completed"),
@@ -49,11 +51,12 @@ class TestSchemeMilestonesContext:
             (Milestone.CONSTRUCTION_COMPLETED, "Construction completed"),
         ],
     )
-    def test_from_domain_sets_milestone_dates(self, milestone: Milestone, expected_milestone_name: str) -> None:
-        milestone_revisions = [
+    def test_from_domain_sets_current_milestone_dates(self, milestone: Milestone, expected_milestone_name: str) -> None:
+        milestones = SchemeMilestones()
+        milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
                 milestone=milestone,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
@@ -61,21 +64,37 @@ class TestSchemeMilestonesContext:
             ),
             MilestoneRevision(
                 id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
+                effective=DateRange(datetime(2020, 2, 1), None),
                 milestone=milestone,
-                observation_type=ObservationType.ACTUAL,
+                observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 3, 1),
                 source=DataSource.ATF4_BID,
             ),
-        ]
+            MilestoneRevision(
+                id_=3,
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
+                milestone=milestone,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 4, 1),
+                source=DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                id_=4,
+                effective=DateRange(datetime(2020, 2, 1), None),
+                milestone=milestone,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 5, 1),
+                source=DataSource.ATF4_BID,
+            ),
+        )
 
-        context = SchemeMilestonesContext.from_domain(milestone_revisions)
+        context = SchemeMilestonesContext.from_domain(milestones)
 
         assert (
             SchemeMilestoneRowContext(
                 milestone=MilestoneContext(name=expected_milestone_name),
-                planned=date(2020, 2, 1),
-                actual=date(2020, 3, 1),
+                planned=date(2020, 3, 1),
+                actual=date(2020, 5, 1),
             )
             in context.milestones
         )
@@ -91,7 +110,9 @@ class TestSchemeMilestonesContext:
         ],
     )
     def test_from_domain_sets_milestone_dates_when_no_revisions(self, expected_milestone_name: str) -> None:
-        context = SchemeMilestonesContext.from_domain([])
+        milestones = SchemeMilestones()
+
+        context = SchemeMilestonesContext.from_domain(milestones)
 
         assert (
             SchemeMilestoneRowContext(

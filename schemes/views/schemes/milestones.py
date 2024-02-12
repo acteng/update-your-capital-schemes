@@ -6,7 +6,6 @@ from enum import Enum, unique
 from typing import Any
 
 from flask_wtf import FlaskForm
-from wtforms.fields.datetime import DateField
 
 from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
@@ -158,32 +157,36 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
         )
 
     def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
-        def update_milestone(planned_field: DateField, actual_field: DateField, milestone: Milestone) -> None:
-            if planned_field.data:
-                milestones.update_milestone_date(now, milestone, ObservationType.PLANNED, planned_field.data)
-            if actual_field.data:
-                milestones.update_milestone_date(now, milestone, ObservationType.ACTUAL, actual_field.data)
+        def update_milestone(planned: date | None, actual: date | None, milestone: Milestone) -> None:
+            if planned:
+                milestones.update_milestone_date(now, milestone, ObservationType.PLANNED, planned)
+            if actual:
+                milestones.update_milestone_date(now, milestone, ObservationType.ACTUAL, actual)
 
         update_milestone(
-            self.feasibility_design_completed_planned,
-            self.feasibility_design_completed_actual,
+            self.feasibility_design_completed_planned.data,
+            self.feasibility_design_completed_actual.data,
             Milestone.FEASIBILITY_DESIGN_COMPLETED,
         )
         update_milestone(
-            self.preliminary_design_completed_planned,
-            self.preliminary_design_completed_actual,
+            self.preliminary_design_completed_planned.data,
+            self.preliminary_design_completed_actual.data,
             Milestone.PRELIMINARY_DESIGN_COMPLETED,
         )
         update_milestone(
-            self.detailed_design_completed_planned,
-            self.detailed_design_completed_actual,
+            self.detailed_design_completed_planned.data,
+            self.detailed_design_completed_actual.data,
             Milestone.DETAILED_DESIGN_COMPLETED,
         )
         update_milestone(
-            self.construction_started_planned, self.construction_started_actual, Milestone.CONSTRUCTION_STARTED
+            self.construction_started_planned.data,
+            self.construction_started_actual.data,
+            Milestone.CONSTRUCTION_STARTED,
         )
         update_milestone(
-            self.construction_completed_planned, self.construction_completed_actual, Milestone.CONSTRUCTION_COMPLETED
+            self.construction_completed_planned.data,
+            self.construction_completed_actual.data,
+            Milestone.CONSTRUCTION_COMPLETED,
         )
 
 

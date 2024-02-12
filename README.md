@@ -1,4 +1,4 @@
-# Schemes
+# Update your capital schemes
 
 [![CI](https://github.com/acteng/schemes/actions/workflows/ci.yml/badge.svg)](https://github.com/acteng/schemes/actions/workflows/ci.yml)
 

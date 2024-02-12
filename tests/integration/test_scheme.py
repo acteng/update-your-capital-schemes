@@ -464,7 +464,7 @@ def test_spend_to_date_form_shows_amount(schemes: SchemeRepository, client: Flas
 
     change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-    assert change_spend_to_date_page.title == "Schemes - Active Travel England - GOV.UK"
+    assert change_spend_to_date_page.title == "Update your capital schemes - Active Travel England - GOV.UK"
     assert change_spend_to_date_page.form.amount.value == "50000"
 
 
@@ -596,7 +596,7 @@ def test_cannot_spend_to_date_when_error(schemes: SchemeRepository, client: Flas
         client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": ""})
     )
 
-    assert change_spend_to_date_page.title == "Error: Schemes - Active Travel England - GOV.UK"
+    assert change_spend_to_date_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
     assert change_spend_to_date_page.errors and list(change_spend_to_date_page.errors) == ["Enter spend to date"]
     assert (
         change_spend_to_date_page.form.amount.is_errored
@@ -707,7 +707,7 @@ def test_milestones_form_shows_date(schemes: SchemeRepository, client: FlaskClie
 
     change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
-    assert change_milestone_dates_page.title == "Schemes - Active Travel England - GOV.UK"
+    assert change_milestone_dates_page.title == "Update your capital schemes - Active Travel England - GOV.UK"
     # TODO: remove leading zeros, see: https://github.com/LandRegistry/govuk-frontend-wtf/issues/85
     # assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
     assert change_milestone_dates_page.form.construction_started.actual.value == "02 01 2020"
@@ -806,7 +806,7 @@ def test_cannot_milestones_when_error(schemes: SchemeRepository, client: FlaskCl
         )
     )
 
-    assert change_milestone_dates_page.title == "Error: Schemes - Active Travel England - GOV.UK"
+    assert change_milestone_dates_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
     assert change_milestone_dates_page.errors and list(change_milestone_dates_page.errors) == [
         "Construction started actual date must be a real date"
     ]

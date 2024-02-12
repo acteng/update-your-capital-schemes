@@ -19,7 +19,7 @@ class StartPage(PageObject):
         super().__init__(response)
         self.header = HeaderComponent(one(self._soup.select("header")))
         heading = self._soup.select_one("main h1")
-        self.is_visible = heading.string == "Schemes" if heading else False
+        self.is_visible = heading.string == "Update your capital schemes" if heading else False
 
     @classmethod
     def open(cls, client: FlaskClient) -> StartPage:

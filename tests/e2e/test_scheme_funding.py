@@ -160,7 +160,7 @@ def test_cannot_change_spend_to_date_when_error(app_client: AppClient, oidc_clie
         SchemePage.open(page, id_=1).funding.change_spend_to_date().form.enter_amount("").confirm_when_error()
     )
 
-    assert change_spend_to_date_page.title == "Error: Schemes - Active Travel England - GOV.UK"
+    assert change_spend_to_date_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
     assert list(change_spend_to_date_page.errors) == ["Enter spend to date"]
     assert (
         change_spend_to_date_page.form.amount.is_errored

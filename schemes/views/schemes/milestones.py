@@ -158,9 +158,9 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
 
     def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
         def update_milestone(planned: date | None, actual: date | None, milestone: Milestone) -> None:
-            if planned:
+            if planned and milestones.get_current_status_date(milestone, ObservationType.PLANNED) != planned:
                 milestones.update_milestone_date(now, milestone, ObservationType.PLANNED, planned)
-            if actual:
+            if actual and milestones.get_current_status_date(milestone, ObservationType.ACTUAL) != actual:
                 milestones.update_milestone_date(now, milestone, ObservationType.ACTUAL, actual)
 
         update_milestone(

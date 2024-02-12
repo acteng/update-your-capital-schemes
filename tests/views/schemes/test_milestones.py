@@ -300,6 +300,38 @@ class TestChangeMilestoneDatesForm:
             and milestone_revision1.source == DataSource.ATF4_BID
         )
 
+    @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
+    def test_update_domain_ignores_unchanged_dates(
+        self, app: Flask, field_name: str, milestone: Milestone, observation_type: ObservationType
+    ) -> None:
+        form = ChangeMilestoneDatesForm(
+            formdata=MultiDict([(field_name, "2"), (field_name, "1"), (field_name, "2020")])
+        )
+        milestones = SchemeMilestones()
+        milestones.update_milestones(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                milestone=milestone,
+                observation_type=observation_type,
+                status_date=date(2020, 1, 2),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        form.update_domain(milestones, now=datetime(2020, 1, 31, 13))
+
+        milestone_revision1: MilestoneRevision
+        (milestone_revision1,) = milestones.milestone_revisions
+        assert (
+            milestone_revision1.id == 1
+            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
+            and milestone_revision1.milestone == milestone
+            and milestone_revision1.observation_type == observation_type
+            and milestone_revision1.status_date == date(2020, 1, 2)
+            and milestone_revision1.source == DataSource.ATF4_BID
+        )
+
     @pytest.mark.parametrize("field_name", field_names)
     def test_no_errors_when_valid(self, app: Flask, field_name: str) -> None:
         form = ChangeMilestoneDatesForm(

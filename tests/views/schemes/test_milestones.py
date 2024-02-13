@@ -345,12 +345,35 @@ class TestChangeMilestoneDatesForm:
         assert not form.errors
 
     @pytest.mark.parametrize("field_name", field_names)
-    def test_date_is_optional(self, app: Flask, field_name: str) -> None:
+    def test_date_without_initial_value_is_optional(self, app: Flask, field_name: str) -> None:
         form = ChangeMilestoneDatesForm(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
 
         form.validate()
 
         assert field_name not in form.errors
+
+    @pytest.mark.parametrize(
+        "field_name, expected_error",
+        [
+            ("feasibility_design_completed_planned", "Enter a feasibility design completed planned date"),
+            ("feasibility_design_completed_actual", "Enter a feasibility design completed actual date"),
+            ("preliminary_design_completed_planned", "Enter a preliminary design completed planned date"),
+            ("preliminary_design_completed_actual", "Enter a preliminary design completed actual date"),
+            ("detailed_design_completed_planned", "Enter a detailed design completed planned date"),
+            ("detailed_design_completed_actual", "Enter a detailed design completed actual date"),
+            ("construction_started_planned", "Enter a construction started planned date"),
+            ("construction_started_actual", "Enter a construction started actual date"),
+            ("construction_completed_planned", "Enter a construction completed planned date"),
+            ("construction_completed_actual", "Enter a construction completed actual date"),
+        ],
+    )
+    def test_date_with_initial_value_is_required(self, app: Flask, field_name: str, expected_error: str) -> None:
+        form = ChangeMilestoneDatesForm(data={field_name: date(2020, 1, 2)})
+        form.process(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
+
+        form.validate()
+
+        assert expected_error in form.errors[field_name]
 
     @pytest.mark.parametrize(
         "field_name, expected_error",

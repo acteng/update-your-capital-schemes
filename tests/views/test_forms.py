@@ -166,6 +166,6 @@ class TestMultivalueOptional:
 
 class FakeForm(Form):
     field = CustomMessageIntegerField()
-    custom_message_field = CustomMessageIntegerField(message="My custom message")
+    custom_message_field = CustomMessageIntegerField(invalid_message="My custom message")
     date_field = CustomMessageDateField()
-    custom_message_date_field = CustomMessageDateField(message="My custom message")
+    custom_message_date_field = CustomMessageDateField(invalid_message="My custom message")

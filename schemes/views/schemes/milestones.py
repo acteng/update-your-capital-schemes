@@ -97,29 +97,35 @@ class MilestoneDateField(CustomMessageDateField):
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
     feasibility_design_completed_planned = MilestoneDateField(
-        message="Feasibility design completed planned date must be a real date"
+        invalid_message="Feasibility design completed planned date must be a real date"
     )
     feasibility_design_completed_actual = MilestoneDateField(
-        message="Feasibility design completed actual date must be a real date"
+        invalid_message="Feasibility design completed actual date must be a real date"
     )
     preliminary_design_completed_planned = MilestoneDateField(
-        message="Preliminary design completed planned date must be a real date"
+        invalid_message="Preliminary design completed planned date must be a real date"
     )
     preliminary_design_completed_actual = MilestoneDateField(
-        message="Preliminary design completed actual date must be a real date"
+        invalid_message="Preliminary design completed actual date must be a real date"
     )
     detailed_design_completed_planned = MilestoneDateField(
-        message="Detailed design completed planned date must be a real date"
+        invalid_message="Detailed design completed planned date must be a real date"
     )
     detailed_design_completed_actual = MilestoneDateField(
-        message="Detailed design completed actual date must be a real date"
+        invalid_message="Detailed design completed actual date must be a real date"
     )
-    construction_started_planned = MilestoneDateField(message="Construction started planned date must be a real date")
-    construction_started_actual = MilestoneDateField(message="Construction started actual date must be a real date")
+    construction_started_planned = MilestoneDateField(
+        invalid_message="Construction started planned date must be a real date"
+    )
+    construction_started_actual = MilestoneDateField(
+        invalid_message="Construction started actual date must be a real date"
+    )
     construction_completed_planned = MilestoneDateField(
-        message="Construction completed planned date must be a real date"
+        invalid_message="Construction completed planned date must be a real date"
     )
-    construction_completed_actual = MilestoneDateField(message="Construction completed actual date must be a real date")
+    construction_completed_actual = MilestoneDateField(
+        invalid_message="Construction completed actual date must be a real date"
+    )
 
     @classmethod
     def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:

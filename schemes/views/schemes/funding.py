@@ -61,7 +61,7 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
             InputRequired(message="Enter spend to date"),
             NumberRange(min=0, message="Spend to date must be £0 or more"),
         ],
-        message="Spend to date must be a number",
+        invalid_message="Spend to date must be a number",
     )
 
     def __init__(self, max_amount: int, **kwargs: object):

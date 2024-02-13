@@ -21,11 +21,11 @@ class CustomMessageIntegerField(IntegerField):
         self,
         label: str | None = None,
         validators: tuple[Callable[[BaseForm, CustomMessageIntegerField], object], ...] | list[Any] | None = None,
-        message: str = "Not a valid integer value.",
+        invalid_message: str = "Not a valid integer value.",
         **kwargs: Any,
     ):
         super().__init__(label, validators, **kwargs)
-        self.message = message
+        self.invalid_message = invalid_message
 
     def process_data(self, value: Any) -> None:
         if value is not None:
@@ -43,7 +43,7 @@ class CustomMessageIntegerField(IntegerField):
         try:
             int(value)
         except ValueError:
-            raise ValueError(self.message)
+            raise ValueError(self.invalid_message)
 
 
 class CustomMessageDateField(DateField):
@@ -58,11 +58,11 @@ class CustomMessageDateField(DateField):
         label: str | None = None,
         validators: tuple[Callable[[BaseForm, CustomMessageDateField], object], ...] | list[Any] | None = None,
         format: str = "%Y-%m-%d",
-        message: str = "Not a valid date value.",
+        invalid_message: str = "Not a valid date value.",
         **kwargs: Any,
     ):
         super().__init__(label, validators, format, **kwargs)
-        self.message = message
+        self.invalid_message = invalid_message
 
     def process_formdata(self, valuelist: list[Any]) -> None:
         if not valuelist:
@@ -76,7 +76,7 @@ class CustomMessageDateField(DateField):
             except ValueError:
                 self.data = None
 
-        raise ValueError(self.message)
+        raise ValueError(self.invalid_message)
 
 
 class RemoveLeadingZerosGovDateInput(GovDateInput):  # type: ignore

@@ -116,6 +116,8 @@ class MultivalueOptional(Optional):
 class MultivalueInputRequired(InputRequired):
     """
     A validator that ensures input was provided and supports multivalued fields.
+
+    See: https://github.com/wtforms/wtforms/issues/835
     """
 
     def __call__(self, form: BaseForm, field: Field) -> None:

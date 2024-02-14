@@ -8,7 +8,6 @@ from typing import Any
 from flask_wtf import FlaskForm
 from wtforms.form import BaseForm
 from wtforms.utils import unset_value
-from wtforms.validators import InputRequired
 
 from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
@@ -21,6 +20,7 @@ from schemes.domain.schemes import (
 )
 from schemes.views.forms import (
     CustomMessageDateField,
+    MultivalueInputRequired,
     MultivalueOptional,
     RemoveLeadingZerosGovDateInput,
 )
@@ -106,7 +106,7 @@ class MilestoneDateField(CustomMessageDateField):
         if self._initial_value is unset_value or self._initial_value is None:
             MultivalueOptional()(form, self)
         else:
-            InputRequired(message=self._required_message)(form, self)
+            MultivalueInputRequired(message=self._required_message)(form, self)
 
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore

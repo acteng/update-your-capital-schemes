@@ -10,6 +10,7 @@ from wtforms.validators import StopValidation
 from schemes.views.forms import (
     CustomMessageDateField,
     CustomMessageIntegerField,
+    MultivalueInputRequired,
     MultivalueOptional,
     RemoveLeadingZerosGovDateInput,
 )
@@ -162,6 +163,50 @@ class TestMultivalueOptional:
             multivalue_optional(form, form.field)
 
         assert not form.field.errors
+
+
+class TestMultivalueInputRequired:
+    @pytest.mark.parametrize(
+        "raw_data",
+        [
+            ["x"],
+            ["x", "y"],
+        ],
+    )
+    def test_continue_when_all_values_present(self, form: FakeForm, raw_data: list[str]) -> None:
+        multivalue_input_required = MultivalueInputRequired()
+        form.field.errors = ["error"]
+        form.field.raw_data = raw_data
+
+        multivalue_input_required(form, form.field)
+
+        assert form.field.errors == ["error"]
+
+    @pytest.mark.parametrize(
+        "raw_data",
+        [
+            [],
+            [""],
+            ["", "y"],
+            ["x", ""],
+        ],
+    )
+    def test_stop_when_at_least_one_value_empty(self, form: FakeForm, raw_data: list[str]) -> None:
+        multivalue_input_required = MultivalueInputRequired()
+        form.field.errors = ["error"]
+        form.field.raw_data = raw_data
+
+        with pytest.raises(StopValidation, match="This field is required."):
+            multivalue_input_required(form, form.field)
+
+        assert not form.field.errors
+
+    def test_stop_when_at_least_one_value_empty_with_custom_message(self, form: FakeForm) -> None:
+        multivalue_input_required = MultivalueInputRequired(message="Enter a field")
+        form.field.raw_data = ["x", ""]
+
+        with pytest.raises(StopValidation, match="Enter a field"):
+            multivalue_input_required(form, form.field)
 
 
 class FakeForm(Form):

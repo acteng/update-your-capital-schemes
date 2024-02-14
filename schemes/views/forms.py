@@ -7,7 +7,7 @@ from govuk_frontend_wtf.wtforms_widgets import GovDateInput
 from wtforms import DateField, Field
 from wtforms.fields.numeric import IntegerField
 from wtforms.form import BaseForm
-from wtforms.validators import Optional, StopValidation
+from wtforms.validators import InputRequired, Optional, StopValidation
 
 
 class CustomMessageIntegerField(IntegerField):
@@ -111,3 +111,21 @@ class MultivalueOptional(Optional):
 
     def _is_empty(self, value: Any) -> bool:
         return isinstance(value, str) and not self.string_check(value)
+
+
+class MultivalueInputRequired(InputRequired):
+    """
+    A validator that ensures input was provided and supports multivalued fields.
+    """
+
+    def __call__(self, form: BaseForm, field: Field) -> None:
+        if field.raw_data and all(field.raw_data):
+            return
+
+        if self.message is None:
+            message = field.gettext("This field is required.")
+        else:
+            message = self.message
+
+        field.errors = []
+        raise StopValidation(message)

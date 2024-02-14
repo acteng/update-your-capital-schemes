@@ -367,9 +367,23 @@ class TestChangeMilestoneDatesForm:
             ("construction_completed_actual", "Enter a construction completed actual date"),
         ],
     )
-    def test_date_with_initial_value_is_required(self, app: Flask, field_name: str, expected_error: str) -> None:
+    @pytest.mark.parametrize(
+        "date_",
+        [
+            ("", "1", "2020"),
+            ("2", "", "2020"),
+            ("2", "1", ""),
+            ("", "", "2020"),
+            ("", "1", ""),
+            ("2", "", ""),
+            ("", "", ""),
+        ],
+    )
+    def test_date_with_initial_value_is_required(
+        self, app: Flask, field_name: str, expected_error: str, date_: tuple[str, str, str]
+    ) -> None:
         form = ChangeMilestoneDatesForm(data={field_name: date(2020, 1, 2)})
-        form.process(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
+        form.process(formdata=MultiDict([(field_name, date_[0]), (field_name, date_[1]), (field_name, date_[2])]))
 
         form.validate()
 

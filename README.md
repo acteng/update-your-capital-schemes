@@ -278,7 +278,7 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/mana
 * Scopes: openid email
 * Public key: (see "Schemes GOV.UK One Login Public Key (Dev)" in Bitwarden)
 * Logout URLs: https://dev.update-your-capital-schemes.activetravelengland.gov.uk/, http://127.0.0.1:5000/
-* Sector identifier URI: https://dev.update-your-capital-schemes.activetravelengland.gov.uk/
+* Sector identifier URI: https://dev.update-your-capital-schemes.activetravelengland.gov.uk
 
 ### Test
 
@@ -288,7 +288,7 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/mana
 * Scopes: openid email
 * Public key: (see "Schemes GOV.UK One Login Public Key (Test)" in Bitwarden)
 * Logout URLs: https://test.update-your-capital-schemes.activetravelengland.gov.uk/
-* Sector identifier URI: https://test.update-your-capital-schemes.activetravelengland.gov.uk/
+* Sector identifier URI: https://test.update-your-capital-schemes.activetravelengland.gov.uk
 
 ## See also
 

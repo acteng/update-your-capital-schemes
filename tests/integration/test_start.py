@@ -1,16 +1,23 @@
+import pytest
 from flask.testing import FlaskClient
+from playwright.sync_api import Page
 
-from tests.integration.pages import StartPage
+from tests.e2e.page_adapter import FlaskPage
+from tests.e2e.pages import StartPage
 
 
 class TestStart:
-    def test_start(self, client: FlaskClient) -> None:
-        start_page = StartPage.open(client)
+    @pytest.fixture(name="page")
+    def page_fixture(self, client: FlaskClient) -> Page:
+        return FlaskPage(client)
+
+    def test_start(self, page: Page) -> None:
+        start_page = StartPage.open(page)
 
         assert start_page.is_visible
 
-    def test_header_home_shows_start(self, client: FlaskClient) -> None:
-        start_page = StartPage.open(client)
+    def test_header_home_shows_start(self, page: Page) -> None:
+        start_page = StartPage.open(page)
 
         assert start_page.header.home_url == "/"
 

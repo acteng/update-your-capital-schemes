@@ -56,6 +56,7 @@ class SchemesPage:
         self._page = page
         self.header = ServiceHeaderComponent(page.get_by_role("banner"))
         self._main = page.get_by_role("main")
+        self.notification_banner = NotificationBannerComponent(self._main.get_by_role("region", name="Important"))
         self._authority = self._main.get_by_role("heading").locator(".govuk-caption-xl")
         self.schemes = SchemesTableComponent(self._main.get_by_role("table"))
 
@@ -86,6 +87,15 @@ class ServiceHeaderComponent:
     def sign_out(self) -> StartPage:
         self._header.get_by_role("link", name="Sign out").click()
         return StartPage(self._header.page)
+
+
+class NotificationBannerComponent:
+    def __init__(self, banner: Locator):
+        self._heading = banner.get_by_role("paragraph")
+
+    @property
+    def heading(self) -> str | None:
+        return self._heading.text_content()
 
 
 class SchemesTableComponent:

@@ -31,6 +31,10 @@ from werkzeug import Response as BaseResponse
 
 from schemes.config import DevConfig
 from schemes.domain.authorities import AuthorityRepository
+from schemes.domain.reporting_window import (
+    DefaultReportingWindowService,
+    ReportingWindowService,
+)
 from schemes.domain.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock, FakeClock, SystemClock
@@ -89,6 +93,7 @@ def destroy_app(_app: Flask) -> None:
 
 
 def _bindings(binder: Binder) -> None:
+    binder.bind_to_constructor(ReportingWindowService, DefaultReportingWindowService)
     binder.bind_to_constructor(Engine, _create_engine)
     binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
     binder.bind_to_constructor(UserRepository, DatabaseUserRepository)

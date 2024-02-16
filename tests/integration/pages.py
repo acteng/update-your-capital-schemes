@@ -44,10 +44,14 @@ class SchemesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
         self.header = ServiceHeaderComponent(one(self._soup.select("header")))
+        notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
+        self.notification_banner = (
+            NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
+        )
         self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
         table = self._soup.select_one("main table")
         self.schemes = SchemesTableComponent(table) if table else None
-        paragraph = self._soup.select_one("main p")
+        paragraph = self._soup.select_one("main h1 ~ p")
         self.is_no_schemes_message_visible = (
             paragraph.string == "There are no schemes for your authority to update." if paragraph else False
         )

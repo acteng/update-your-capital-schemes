@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum, unique
 
 import dataclass_wizard
@@ -20,6 +21,7 @@ from werkzeug import Response as BaseResponse
 
 from schemes.dicts import as_shallow_dict, inverse_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
+from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
 from schemes.domain.schemes import (
     FundingProgramme,
     Scheme,
@@ -49,26 +51,38 @@ bp = Blueprint("schemes", __name__)
 @bp.get("")
 @bearer_auth
 @inject.autoparams()
-def index(users: UserRepository, authorities: AuthorityRepository, schemes: SchemeRepository) -> str:
+def index(
+    clock: Clock,
+    users: UserRepository,
+    reporting_window_service: ReportingWindowService,
+    authorities: AuthorityRepository,
+    schemes: SchemeRepository,
+) -> str:
     user_info = session["user"]
     user = users.get_by_email(user_info["email"])
     assert user
+    now = clock.now
+    reporting_window = reporting_window_service.get_by_date(now)
     authority = authorities.get(user.authority_id)
     assert authority
     authority_schemes = schemes.get_by_authority(authority.id)
 
-    context = SchemesContext.from_domain(authority, authority_schemes)
+    context = SchemesContext.from_domain(now, reporting_window, authority, authority_schemes)
     return render_template("schemes.html", **as_shallow_dict(context))
 
 
 @dataclass(frozen=True)
 class SchemesContext:
+    reporting_window_days_left: int | None
     authority_name: str
     schemes: list[SchemeRowContext]
 
     @classmethod
-    def from_domain(cls, authority: Authority, schemes: list[Scheme]) -> SchemesContext:
+    def from_domain(
+        cls, now: datetime, reporting_window: ReportingWindow | None, authority: Authority, schemes: list[Scheme]
+    ) -> SchemesContext:
         return cls(
+            reporting_window_days_left=reporting_window.days_left(now) if reporting_window else None,
             authority_name=authority.name,
             schemes=[SchemeRowContext.from_domain(scheme) for scheme in schemes],
         )

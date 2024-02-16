@@ -1,7 +1,15 @@
 {% extends "service_base.html" %}
+{% from "govuk_frontend_jinja/components/notification-banner/macro.html" import govukNotificationBanner %}
 {% from "govuk_frontend_jinja/components/table/macro.html" import govukTable -%}
 
 {% block content %}
+
+    {% if reporting_window_days_left %}
+        {{ govukNotificationBanner({
+            "text": "You have " ~ reporting_window_days_left ~ " day" ~ ('s' if reporting_window_days_left > 1) ~ " left to update your schemes"
+        }) }}
+    {% endif %}
+
     <h1 class="govuk-heading-xl">
         <span class="govuk-caption-xl">{{ authority_name }}</span>
         Your schemes

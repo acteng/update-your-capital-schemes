@@ -53,6 +53,14 @@ class TestAuthenticated:
 
         assert start_page.is_visible
 
+    def test_schemes_shows_update_schemes_notification(self, app_client: AppClient, page: Page) -> None:
+        app_client.set_clock("2023-04-24T12:00:00")
+        app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
+        app_client.add_users(1, UserRepr(email="boardman@example.com"))
+        schemes_page = SchemesPage.open(page)
+
+        assert schemes_page.notification_banner.heading == "You have 7 days left to update your schemes"
+
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 class TestUnauthenticated:

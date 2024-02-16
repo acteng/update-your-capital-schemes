@@ -4,6 +4,7 @@ from decimal import Decimal
 import pytest
 
 from schemes.domain.authorities import Authority
+from schemes.domain.reporting_window import ReportingWindow
 from schemes.domain.schemes import (
     DataSource,
     DateRange,
@@ -55,13 +56,21 @@ class TestSchemesContext:
             Scheme(id_=2, name="School Streets", authority_id=1),
         ]
 
-        context = SchemesContext.from_domain(authority, schemes)
+        context = SchemesContext.from_domain(datetime(1970, 1, 1), None, authority, schemes)
 
         assert (
-            context.authority_name == "Liverpool City Region Combined Authority"
+            context.reporting_window_days_left is None
+            and context.authority_name == "Liverpool City Region Combined Authority"
             and context.schemes[0].reference == "ATE00001"
             and context.schemes[1].reference == "ATE00002"
         )
+
+    def test_from_domain_sets_reporting_window_days_left(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
+
+        context = SchemesContext.from_domain(datetime(2020, 4, 24, 12), reporting_window, Authority(id_=0, name=""), [])
+
+        assert context.reporting_window_days_left == 7
 
 
 class TestSchemesRowContext:

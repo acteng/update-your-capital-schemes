@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Mapping
 
 import pytest
@@ -6,6 +7,7 @@ from flask.testing import FlaskClient
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import FundingProgramme, Scheme, SchemeRepository
 from schemes.domain.users import User, UserRepository
+from schemes.infrastructure.clock import Clock
 from tests.integration.pages import SchemesPage
 
 
@@ -38,6 +40,29 @@ def test_header_sign_out_signs_out(client: FlaskClient) -> None:
     schemes_page = SchemesPage.open(client)
 
     assert schemes_page.header.sign_out_url == "/auth/logout"
+
+
+@pytest.mark.parametrize(
+    "now, expected_notification_banner",
+    [
+        (datetime(2020, 4, 24, 12), "You have 7 days left to update your schemes"),
+        (datetime(2020, 4, 30, 12), "You have 1 day left to update your schemes"),
+    ],
+)
+def test_schemes_shows_update_schemes_notification(
+    client: FlaskClient, clock: Clock, now: datetime, expected_notification_banner: str
+) -> None:
+    clock.now = now
+    schemes_page = SchemesPage.open(client)
+
+    assert schemes_page.notification_banner and schemes_page.notification_banner.heading == expected_notification_banner
+
+
+def test_schemes_does_not_show_notification_outside_reporting_window(client: FlaskClient, clock: Clock) -> None:
+    clock.now = datetime(2020, 3, 1)
+    schemes_page = SchemesPage.open(client)
+
+    assert not schemes_page.notification_banner
 
 
 def test_schemes_shows_authority(client: FlaskClient) -> None:

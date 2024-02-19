@@ -19,6 +19,7 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeType,
 )
+from schemes.domain.schemes.schemes import AuthorityReview
 from schemes.views.schemes import SchemeRepr
 from schemes.views.schemes.funding import (
     DataSourceRepr,
@@ -37,6 +38,7 @@ from schemes.views.schemes.outputs import (
     OutputTypeRepr,
 )
 from schemes.views.schemes.schemes import (
+    AuthorityReviewRepr,
     FundingProgrammeContext,
     FundingProgrammeRepr,
     SchemeContext,
@@ -197,6 +199,26 @@ class TestSchemeOverviewContext:
 
         assert context.current_milestone == MilestoneContext(name=None)
 
+    def test_from_domain_sets_last_reviewed(self) -> None:
+        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
+        )
+        scheme.update_authority_review(
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+        )
+
+        context = SchemeOverviewContext.from_domain(scheme)
+
+        assert context.last_reviewed == datetime(2020, 1, 2)
+
+    def test_from_domain_sets_last_reviewed_when_no_authority_reviews(self) -> None:
+        scheme = Scheme(id_=0, name="", authority_id=0)
+
+        context = SchemeOverviewContext.from_domain(scheme)
+
+        assert context.last_reviewed is None
+
 
 class TestSchemeTypeContext:
     @pytest.mark.parametrize(
@@ -248,6 +270,30 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr.from_domain(scheme)
 
         assert scheme_repr == SchemeRepr(id=1, name="Wirral Package", type=None, funding_programme=None)
+
+    def test_from_domain_sets_authority_reviews(self) -> None:
+        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
+        )
+        scheme.update_authority_review(
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.PULSE_6)
+        )
+
+        scheme_repr = SchemeRepr.from_domain(scheme)
+
+        assert scheme_repr.authority_reviews == [
+            AuthorityReviewRepr(
+                id=1,
+                review_date="2020-01-02T12:00:00",
+                source=DataSourceRepr.ATF4_BID,
+            ),
+            AuthorityReviewRepr(
+                id=2,
+                review_date="2020-01-03T12:00:00",
+                source=DataSourceRepr.PULSE_6,
+            ),
+        ]
 
     def test_from_domain_sets_financial_revisions(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
@@ -388,6 +434,7 @@ class TestSchemeRepr:
             and scheme.authority_id == 2
             and scheme.type == SchemeType.CONSTRUCTION
             and scheme.funding_programme == FundingProgramme.ATF4
+            and scheme.authority_reviews == []
         )
 
     def test_to_domain_when_minimal(self) -> None:
@@ -401,6 +448,41 @@ class TestSchemeRepr:
             and scheme.authority_id == 2
             and scheme.type is None
             and scheme.funding_programme is None
+            and scheme.authority_reviews == []
+        )
+
+    def test_to_domain_sets_authority_reviews(self) -> None:
+        scheme_repr = SchemeRepr(
+            id=0,
+            name="",
+            authority_reviews=[
+                AuthorityReviewRepr(
+                    id=2,
+                    review_date="2020-01-01T12:00:00",
+                    source=DataSourceRepr.ATF4_BID,
+                ),
+                AuthorityReviewRepr(
+                    id=3,
+                    review_date="2020-01-02T12:00:00",
+                    source=DataSourceRepr.PULSE_6,
+                ),
+            ],
+        )
+
+        scheme = scheme_repr.to_domain(0)
+
+        authority_review1: AuthorityReview
+        authority_review2: AuthorityReview
+        authority_review1, authority_review2 = scheme.authority_reviews
+        assert (
+            authority_review1.id == 2
+            and authority_review1.review_date == datetime(2020, 1, 1, 12)
+            and authority_review1.source == DataSource.ATF4_BID
+        )
+        assert (
+            authority_review2.id == 3
+            and authority_review2.review_date == datetime(2020, 1, 2, 12)
+            and authority_review2.source == DataSource.PULSE_6
         )
 
     def test_to_domain_sets_financial_revisions(self) -> None:
@@ -573,3 +655,27 @@ class TestFundingProgrammeRepr:
 
     def test_to_domain(self, funding_programme: FundingProgramme, funding_programme_repr: str) -> None:
         assert FundingProgrammeRepr(funding_programme_repr).to_domain() == funding_programme
+
+
+class TestAuthorityReviewRepr:
+    def test_from_domain(self) -> None:
+        authority_review = AuthorityReview(id_=1, review_date=datetime(2020, 1, 1, 12), source=DataSource.ATF4_BID)
+
+        authority_review_repr = AuthorityReviewRepr.from_domain(authority_review)
+
+        assert authority_review_repr == AuthorityReviewRepr(
+            id=1, review_date="2020-01-01T12:00:00", source=DataSourceRepr.ATF4_BID
+        )
+
+    def test_to_domain(self) -> None:
+        authority_review_repr = AuthorityReviewRepr(
+            id=1, review_date="2020-01-01T12:00:00", source=DataSourceRepr.ATF4_BID
+        )
+
+        authority_review = authority_review_repr.to_domain()
+
+        assert (
+            authority_review.id == 1
+            and authority_review.review_date == datetime(2020, 1, 1, 12)
+            and authority_review.source == DataSource.ATF4_BID
+        )

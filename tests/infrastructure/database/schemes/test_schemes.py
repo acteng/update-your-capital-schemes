@@ -20,7 +20,9 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeType,
 )
+from schemes.domain.schemes.schemes import AuthorityReview
 from schemes.infrastructure.database import (
+    CapitalSchemeAuthorityReviewEntity,
     CapitalSchemeEntity,
     CapitalSchemeFinancialEntity,
     SchemeInterventionEntity,
@@ -74,6 +76,38 @@ class TestDatabaseSchemeRepository:
             row2.capital_scheme_id == 2
             and row2.scheme_name == "School Streets"
             and row2.bid_submitting_authority_id == 1
+        )
+
+    def test_add_schemes_authority_reviews(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1.update_authority_review(
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
+        )
+        scheme1.update_authority_review(
+            AuthorityReview(id_=3, review_date=datetime(2020, 2, 1), source=DataSource.PULSE_6)
+        )
+
+        schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
+
+        row1: CapitalSchemeAuthorityReviewEntity
+        row2: CapitalSchemeAuthorityReviewEntity
+        with Session(engine) as session:
+            row1, row2 = session.scalars(
+                select(CapitalSchemeAuthorityReviewEntity).order_by(
+                    CapitalSchemeAuthorityReviewEntity.capital_scheme_authority_review_id
+                )
+            )
+        assert (
+            row1.capital_scheme_authority_review_id == 2
+            and row1.capital_scheme_id == 1
+            and row1.review_date == datetime(2020, 1, 1)
+            and row1.data_source_id == 3
+        )
+        assert (
+            row2.capital_scheme_authority_review_id == 3
+            and row2.capital_scheme_id == 1
+            and row2.review_date == datetime(2020, 2, 1)
+            and row2.data_source_id == 2
         )
 
     def test_add_schemes_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
@@ -240,6 +274,48 @@ class TestDatabaseSchemeRepository:
             and scheme.authority_id == 1
             and scheme.type == SchemeType.DEVELOPMENT
             and scheme.funding_programme == FundingProgramme.ATF3
+        )
+
+    def test_get_scheme_authority_reviews(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+        with Session(engine) as session:
+            session.add_all(
+                [
+                    CapitalSchemeEntity(
+                        capital_scheme_id=1,
+                        scheme_name="Wirral Package",
+                        bid_submitting_authority_id=1,
+                    ),
+                    CapitalSchemeAuthorityReviewEntity(
+                        capital_scheme_authority_review_id=2,
+                        capital_scheme_id=1,
+                        review_date=datetime(2020, 1, 1),
+                        data_source_id=3,
+                    ),
+                    CapitalSchemeAuthorityReviewEntity(
+                        capital_scheme_authority_review_id=3,
+                        capital_scheme_id=1,
+                        review_date=datetime(2020, 2, 1),
+                        data_source_id=2,
+                    ),
+                ]
+            )
+            session.commit()
+
+        scheme = schemes.get(1)
+
+        assert scheme
+        authority_review1: AuthorityReview
+        authority_review2: AuthorityReview
+        authority_review1, authority_review2 = scheme.authority_reviews
+        assert (
+            authority_review1.id == 2
+            and authority_review1.review_date == datetime(2020, 1, 1)
+            and authority_review1.source == DataSource.ATF4_BID
+        )
+        assert (
+            authority_review2.id == 3
+            and authority_review2.review_date == datetime(2020, 2, 1)
+            and authority_review2.source == DataSource.PULSE_6
         )
 
     def test_get_scheme_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
@@ -647,6 +723,9 @@ class TestDatabaseSchemeRepository:
                 [
                     CapitalSchemeEntity(
                         capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
+                    ),
+                    CapitalSchemeAuthorityReviewEntity(
+                        capital_scheme_id=1, review_date=datetime(2020, 1, 1, 12), data_source_id=3
                     ),
                     CapitalSchemeFinancialEntity(
                         capital_scheme_id=1,

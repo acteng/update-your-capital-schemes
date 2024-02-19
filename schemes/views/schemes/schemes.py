@@ -28,12 +28,14 @@ from schemes.domain.schemes import (
     SchemeRepository,
     SchemeType,
 )
+from schemes.domain.schemes.schemes import AuthorityReview
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
 from schemes.views.auth.api_key import api_key_auth
 from schemes.views.auth.bearer import bearer_auth
 from schemes.views.schemes.funding import (
     ChangeSpendToDateContext,
+    DataSourceRepr,
     FinancialRevisionRepr,
     SchemeFundingContext,
 )
@@ -171,6 +173,7 @@ class SchemeOverviewContext:
     type: SchemeTypeContext
     funding_programme: FundingProgrammeContext
     current_milestone: MilestoneContext
+    last_reviewed: datetime | None
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> SchemeOverviewContext:
@@ -179,6 +182,7 @@ class SchemeOverviewContext:
             type=SchemeTypeContext.from_domain(scheme.type),
             funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
             current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
+            last_reviewed=scheme.last_reviewed,
         )
 
 
@@ -312,6 +316,7 @@ class SchemeRepr:
     name: str
     type: SchemeTypeRepr | None = None
     funding_programme: FundingProgrammeRepr | None = None
+    authority_reviews: list[AuthorityReviewRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
     output_revisions: list[OutputRevisionRepr] = field(default_factory=list)
@@ -322,6 +327,9 @@ class SchemeRepr:
             id=scheme.id,
             name=scheme.name,
             type=SchemeTypeRepr.from_domain(scheme.type) if scheme.type else None,
+            authority_reviews=[
+                AuthorityReviewRepr.from_domain(authority_review) for authority_review in scheme.authority_reviews
+            ],
             funding_programme=(
                 FundingProgrammeRepr.from_domain(scheme.funding_programme) if scheme.funding_programme else None
             ),
@@ -342,6 +350,9 @@ class SchemeRepr:
         scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
         scheme.type = self.type.to_domain() if self.type else None
         scheme.funding_programme = self.funding_programme.to_domain() if self.funding_programme else None
+
+        for authority_review_repr in self.authority_reviews:
+            scheme.update_authority_review(authority_review_repr.to_domain())
 
         for financial_revision_repr in self.financial_revisions:
             scheme.funding.update_financial(financial_revision_repr.to_domain())
@@ -405,3 +416,23 @@ class FundingProgrammeRepr(Enum):
             FundingProgramme.LUF: FundingProgrammeRepr.LUF,
             FundingProgramme.CRSTS: FundingProgrammeRepr.CRSTS,
         }
+
+
+@dataclass(frozen=True)
+class AuthorityReviewRepr:
+    id: int
+    review_date: str
+    source: DataSourceRepr
+
+    @classmethod
+    def from_domain(cls, authority_review: AuthorityReview) -> AuthorityReviewRepr:
+        return AuthorityReviewRepr(
+            id=authority_review.id,
+            review_date=authority_review.review_date.isoformat(),
+            source=DataSourceRepr.from_domain(authority_review.source),
+        )
+
+    def to_domain(self) -> AuthorityReview:
+        return AuthorityReview(
+            id_=self.id, review_date=datetime.fromisoformat(self.review_date), source=self.source.to_domain()
+        )

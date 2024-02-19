@@ -20,6 +20,7 @@ from schemes.domain.schemes import (
     SchemeRepository,
     SchemeType,
 )
+from schemes.domain.schemes.schemes import AuthorityReview
 from schemes.domain.users import UserRepository
 
 
@@ -135,6 +136,36 @@ class TestAuthoritiesApi:
             and scheme1.funding_programme == FundingProgramme.ATF4
         )
         assert scheme2 and scheme2.id == 2 and scheme2.name == "School Streets" and scheme2.authority_id == 1
+
+    def test_add_schemes_authority_reviews(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        response = client.post(
+            "/authorities/1/schemes",
+            headers={"Authorization": "API-Key boardman"},
+            json=[
+                {
+                    "id": 1,
+                    "name": "Wirral Package",
+                    "authority_reviews": [
+                        {
+                            "id": 2,
+                            "review_date": "2020-01-01T12:00:00",
+                            "source": "ATF4 Bid",
+                        }
+                    ],
+                },
+            ],
+        )
+
+        assert response.status_code == 201
+        scheme1 = schemes.get(1)
+        assert scheme1 and scheme1.id == 1
+        authority_review1: AuthorityReview
+        (authority_review1,) = scheme1.authority_reviews
+        assert (
+            authority_review1.id == 2
+            and authority_review1.review_date == datetime(2020, 1, 1, 12)
+            and authority_review1.source == DataSource.ATF4_BID
+        )
 
     def test_add_schemes_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(

@@ -135,6 +135,7 @@ class SchemeOverviewComponent(SummaryCardComponent):
         self.scheme_type = (self._get_definition("Scheme type")[0].string or "").strip()
         self.funding_programme = (self._get_definition("Funding programme")[0].string or "").strip()
         self.current_milestone = (self._get_definition("Current milestone")[0].string or "").strip()
+        self.last_reviewed = (self._get_definition("Last reviewed")[0].string or "").strip()
 
 
 class SchemeFundingComponent(SummaryCardComponent):

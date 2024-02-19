@@ -4,6 +4,7 @@ from playwright.sync_api import Page
 from tests.e2e.app_client import (
     AppClient,
     AuthorityRepr,
+    AuthorityReviewRepr,
     MilestoneRevisionRepr,
     SchemeRepr,
     UserRepr,
@@ -24,6 +25,7 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: P
             name="Wirral Package",
             type="construction",
             funding_programme="ATF4",
+            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02", source="ATF4 Bid")],
             milestone_revisions=[
                 MilestoneRevisionRepr(
                     id=1,
@@ -48,4 +50,5 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: P
         and scheme_page.overview.scheme_type == "Construction"
         and scheme_page.overview.funding_programme == "ATF4"
         and scheme_page.overview.current_milestone == "Detailed design completed"
+        and scheme_page.overview.last_reviewed == "2 Jan 2020"
     )

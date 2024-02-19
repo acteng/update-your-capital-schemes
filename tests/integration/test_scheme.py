@@ -21,6 +21,7 @@ from schemes.domain.schemes import (
     SchemeRepository,
     SchemeType,
 )
+from schemes.domain.schemes.schemes import AuthorityReview
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.pages import (
@@ -79,12 +80,16 @@ class TestScheme:
             and scheme_page.overview.scheme_type == ""
             and scheme_page.overview.funding_programme == ""
             and scheme_page.overview.current_milestone == ""
+            and scheme_page.overview.last_reviewed == ""
         )
 
     def test_scheme_shows_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.type = SchemeType.CONSTRUCTION
         scheme.funding_programme = FundingProgramme.ATF4
+        scheme.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+        )
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=1,
@@ -104,6 +109,7 @@ class TestScheme:
             and scheme_page.overview.scheme_type == "Construction"
             and scheme_page.overview.funding_programme == "ATF4"
             and scheme_page.overview.current_milestone == "Detailed design completed"
+            and scheme_page.overview.last_reviewed == "2 Jan 2020"
         )
 
     def test_scheme_shows_minimal_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -891,10 +897,29 @@ class TestSchemeApi:
             "name": "Wirral Package",
             "type": "construction",
             "funding_programme": "ATF4",
+            "authority_reviews": [],
             "financial_revisions": [],
             "milestone_revisions": [],
             "output_revisions": [],
         }
+
+    def test_get_scheme_authority_reviews(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.update_authority_review(
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 1, 12), source=DataSource.ATF4_BID)
+        )
+        schemes.add(scheme)
+
+        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+
+        assert response.json and response.json["id"] == 1
+        assert response.json["authority_reviews"] == [
+            {
+                "id": 2,
+                "review_date": "2020-01-01T12:00:00",
+                "source": "ATF4 Bid",
+            }
+        ]
 
     def test_get_scheme_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)

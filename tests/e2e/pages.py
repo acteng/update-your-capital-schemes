@@ -184,6 +184,7 @@ class SchemeOverviewComponent(SummaryCardComponent):
         self._scheme_type = self._get_definition("Scheme type")
         self._funding_programme = self._get_definition("Funding programme")
         self._current_milestone = self._get_definition("Current milestone")
+        self._last_reviewed = self._get_definition("Last reviewed")
 
     @property
     def reference(self) -> str:
@@ -200,6 +201,10 @@ class SchemeOverviewComponent(SummaryCardComponent):
     @property
     def current_milestone(self) -> str:
         return (self._current_milestone.text_content() or "").strip()
+
+    @property
+    def last_reviewed(self) -> str:
+        return (self._last_reviewed.text_content() or "").strip()
 
 
 class SchemeFundingComponent(SummaryCardComponent):

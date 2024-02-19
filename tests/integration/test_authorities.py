@@ -136,6 +136,41 @@ class TestApiEnabled:
         )
         assert scheme2 and scheme2.id == 2 and scheme2.name == "School Streets" and scheme2.authority_id == 1
 
+    def test_add_schemes_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        response = client.post(
+            "/authorities/1/schemes",
+            headers={"Authorization": "API-Key boardman"},
+            json=[
+                {
+                    "id": 1,
+                    "name": "Wirral Package",
+                    "financial_revisions": [
+                        {
+                            "id": 2,
+                            "effective_date_from": "2020-01-01T12:00:00",
+                            "effective_date_to": None,
+                            "type": "funding allocation",
+                            "amount": 100_000,
+                            "source": "ATF4 Bid",
+                        }
+                    ],
+                },
+            ],
+        )
+
+        assert response.status_code == 201
+        scheme1 = schemes.get(1)
+        assert scheme1 and scheme1.id == 1
+        financial_revision1: FinancialRevision
+        (financial_revision1,) = scheme1.funding.financial_revisions
+        assert (
+            financial_revision1.id == 2
+            and financial_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
+            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision1.amount == 100_000
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
+
     def test_add_schemes_milestone_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
             "/authorities/1/schemes",
@@ -171,41 +206,6 @@ class TestApiEnabled:
             and milestone_revision1.observation_type == ObservationType.ACTUAL
             and milestone_revision1.status_date == date(2020, 1, 1)
             and milestone_revision1.source == DataSource.ATF4_BID
-        )
-
-    def test_add_schemes_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
-            "/authorities/1/schemes",
-            headers={"Authorization": "API-Key boardman"},
-            json=[
-                {
-                    "id": 1,
-                    "name": "Wirral Package",
-                    "financial_revisions": [
-                        {
-                            "id": 2,
-                            "effective_date_from": "2020-01-01T12:00:00",
-                            "effective_date_to": None,
-                            "type": "funding allocation",
-                            "amount": 100_000,
-                            "source": "ATF4 Bid",
-                        }
-                    ],
-                },
-            ],
-        )
-
-        assert response.status_code == 201
-        scheme1 = schemes.get(1)
-        assert scheme1 and scheme1.id == 1
-        financial_revision1: FinancialRevision
-        (financial_revision1,) = scheme1.funding.financial_revisions
-        assert (
-            financial_revision1.id == 2
-            and financial_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
-            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
-            and financial_revision1.amount == 100_000
-            and financial_revision1.source == DataSource.ATF4_BID
         )
 
     def test_add_schemes_output_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:

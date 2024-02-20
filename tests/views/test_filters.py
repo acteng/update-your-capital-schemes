@@ -1,8 +1,21 @@
+import datetime
 from decimal import Decimal
 
 import pytest
 
-from schemes.views.filters import pounds, remove_exponent
+from schemes.views.filters import date, pounds, remove_exponent
+
+
+@pytest.mark.parametrize(
+    "value, expected_value",
+    [
+        (datetime.date(2020, 1, 2), "2 Jan 2020"),
+        (datetime.date(2020, 1, 10), "10 Jan 2020"),
+        (datetime.datetime(2020, 1, 10, 12), "10 Jan 2020"),
+    ],
+)
+def test_date(value: datetime.date, expected_value: str) -> None:
+    assert date(value) == expected_value
 
 
 @pytest.mark.parametrize(

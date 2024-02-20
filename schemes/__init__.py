@@ -42,7 +42,7 @@ from schemes.infrastructure.database.authorities import DatabaseAuthorityReposit
 from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.database.users import DatabaseUserRepository
 from schemes.views import auth, authorities, clock, schemes, start, users
-from schemes.views.filters import pounds, remove_exponent
+from schemes.views.filters import date, pounds, remove_exponent
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -125,6 +125,7 @@ def _configure_dataclass_wizard() -> None:
 def _configure_jinja(app: Flask) -> None:
     app.jinja_options["extensions"] = ["jinja2.ext.do"]
 
+    app.jinja_env.filters[date.__name__] = date
     app.jinja_env.filters[pounds.__name__] = pounds
     app.jinja_env.filters[remove_exponent.__name__] = remove_exponent
 

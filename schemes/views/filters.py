@@ -1,4 +1,9 @@
+import datetime
 from decimal import Decimal
+
+
+def date(d: datetime.date) -> str:
+    return "{:%-d %b %Y}".format(d)
 
 
 def pounds(i: int) -> str:

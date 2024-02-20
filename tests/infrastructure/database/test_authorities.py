@@ -19,6 +19,8 @@ class TestDatabaseAuthorityRepository:
             Authority(id_=2, name="West Yorkshire Combined Authority"),
         )
 
+        row1: AuthorityEntity
+        row2: AuthorityEntity
         with Session(engine) as session:
             row1, row2 = session.scalars(select(AuthorityEntity).order_by(AuthorityEntity.authority_id))
         assert row1.authority_id == 1 and row1.authority_name == "Liverpool City Region Combined Authority"

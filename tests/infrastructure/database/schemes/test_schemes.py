@@ -59,6 +59,8 @@ class TestDatabaseSchemeRepository:
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
+        row1: CapitalSchemeEntity
+        row2: CapitalSchemeEntity
         with Session(engine) as session:
             row1, row2 = session.scalars(select(CapitalSchemeEntity).order_by(CapitalSchemeEntity.capital_scheme_id))
         assert (
@@ -95,6 +97,8 @@ class TestDatabaseSchemeRepository:
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
+        row1: CapitalSchemeFinancialEntity
+        row2: CapitalSchemeFinancialEntity
         with Session(engine) as session:
             row1, row2 = session.scalars(
                 select(CapitalSchemeFinancialEntity).order_by(CapitalSchemeFinancialEntity.capital_scheme_financial_id)
@@ -141,6 +145,8 @@ class TestDatabaseSchemeRepository:
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
+        row1: SchemeMilestoneEntity
+        row2: SchemeMilestoneEntity
         with Session(engine) as session:
             row1, row2 = session.scalars(
                 select(SchemeMilestoneEntity).order_by(SchemeMilestoneEntity.scheme_milestone_id)
@@ -187,6 +193,8 @@ class TestDatabaseSchemeRepository:
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
+        row1: SchemeInterventionEntity
+        row2: SchemeInterventionEntity
         with Session(engine) as session:
             row1, row2 = session.scalars(
                 select(SchemeInterventionEntity).order_by(SchemeInterventionEntity.scheme_intervention_id)

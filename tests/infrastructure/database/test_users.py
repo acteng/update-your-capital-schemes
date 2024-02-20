@@ -27,6 +27,8 @@ class TestDatabaseUserRepository:
     def test_add_users(self, users: DatabaseUserRepository, engine: Engine) -> None:
         users.add(User(email="boardman@example.com", authority_id=1), User(email="obree@example.com", authority_id=1))
 
+        row1: UserEntity
+        row2: UserEntity
         with Session(engine) as session:
             row1, row2 = session.scalars(select(UserEntity).order_by(UserEntity.user_id))
         assert row1.email == "boardman@example.com" and row1.authority_id == 1

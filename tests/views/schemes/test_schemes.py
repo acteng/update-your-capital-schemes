@@ -73,7 +73,7 @@ class TestSchemesContext:
         assert context.reporting_window_days_left == 7
 
 
-class TestSchemesRowContext:
+class TestSchemeRowContext:
     def test_from_domain(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding_programme = FundingProgramme.ATF4

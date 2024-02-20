@@ -908,6 +908,90 @@ class TestApiEnabled:
             "output_revisions": [],
         }
 
+    def test_get_scheme_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding.update_financial(
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=100_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+        schemes.add(scheme)
+
+        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+
+        assert response.json and response.json["id"] == 1
+        assert response.json["financial_revisions"] == [
+            {
+                "id": 2,
+                "effective_date_from": "2020-01-01T12:00:00",
+                "effective_date_to": None,
+                "type": "funding allocation",
+                "amount": 100_000,
+                "source": "ATF4 Bid",
+            }
+        ]
+
+    def test_get_scheme_milestone_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.milestones.update_milestone(
+            MilestoneRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        schemes.add(scheme)
+
+        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+
+        assert response.json and response.json["id"] == 1
+        assert response.json["milestone_revisions"] == [
+            {
+                "id": 2,
+                "effective_date_from": "2020-01-01T12:00:00",
+                "effective_date_to": None,
+                "milestone": "detailed design completed",
+                "observation_type": "Actual",
+                "status_date": "2020-01-01",
+                "source": "ATF4 Bid",
+            }
+        ]
+
+    def test_get_scheme_output_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.outputs.update_output(
+            OutputRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+                value=Decimal(10),
+                observation_type=ObservationType.ACTUAL,
+            )
+        )
+        schemes.add(scheme)
+
+        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+
+        assert response.json and response.json["id"] == 1
+        assert response.json["output_revisions"] == [
+            {
+                "id": 2,
+                "effective_date_from": "2020-01-01T12:00:00",
+                "effective_date_to": None,
+                "type": "Improvements to make an existing walking/cycle route safer",
+                "measure": "miles",
+                "value": "10",
+                "observation_type": "Actual",
+            }
+        ]
+
     def test_cannot_get_scheme_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 

@@ -167,7 +167,7 @@ class TestSchemeOverviewContext:
 
     def test_from_domain_sets_current_milestone(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.milestones.update_milestone(
+        scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
@@ -175,12 +175,20 @@ class TestSchemeOverviewContext:
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
-            )
+            ),
+            MilestoneRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
+            ),
         )
 
         context = SchemeOverviewContext.from_domain(scheme)
 
-        assert context.current_milestone == MilestoneContext(name="Detailed design completed")
+        assert context.current_milestone == MilestoneContext(name="Construction started")
 
     def test_from_domain_sets_current_milestone_when_no_revisions(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)

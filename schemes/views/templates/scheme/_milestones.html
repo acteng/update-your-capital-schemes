@@ -7,10 +7,10 @@
             "text": milestone.milestone.name
         },
         {
-            "text": "{:%-d %b %Y}".format(milestone.planned) if milestone.planned
+            "text": milestone.planned | date if milestone.planned
         },
         {
-            "text": "{:%-d %b %Y}".format(milestone.actual) if milestone.actual
+            "text": milestone.actual | date if milestone.actual
         }
     ]) %}
 {% endfor %}

@@ -102,7 +102,7 @@ class TestSchemes:
         assert schemes_page.is_no_schemes_message_visible
 
 
-class TestApiEnabled:
+class TestSchemesApi:
     @pytest.fixture(name="config")
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"API_KEY": "boardman"}
@@ -134,7 +134,7 @@ class TestApiEnabled:
         assert schemes.get(1)
 
 
-class TestApiDisabled:
+class TestSchemesApiWhenDisabled:
     def test_cannot_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 

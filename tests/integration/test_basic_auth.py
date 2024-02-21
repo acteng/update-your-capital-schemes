@@ -4,14 +4,14 @@ import pytest
 from flask.testing import FlaskClient
 
 
-class TestUnauthenticated:
+class TestBasicAuthWhenUnauthenticated:
     def test_access_when_no_basic_auth(self, client: FlaskClient) -> None:
         response = client.get("/")
 
         assert response.status_code == 200
 
 
-class TestAuthenticated:
+class TestBasicAuthWhenAuthenticated:
     @pytest.fixture(name="config")
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"BASIC_AUTH_USERNAME": "boardman", "BASIC_AUTH_PASSWORD": "letmein"}

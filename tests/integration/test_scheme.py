@@ -873,7 +873,7 @@ class TestScheme:
         }
 
 
-class TestApiEnabled:
+class TestSchemeApi:
     @pytest.fixture(name="config")
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"API_KEY": "boardman"}
@@ -995,7 +995,7 @@ class TestApiEnabled:
         assert response.status_code == 401
 
 
-class TestApiDisabled:
+class TestSchemeApiWhenDisabled:
     def test_cannot_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 

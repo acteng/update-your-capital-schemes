@@ -6,7 +6,7 @@ from flask.testing import FlaskClient
 from schemes.domain.users import User, UserRepository
 
 
-class TestApiEnabled:
+class TestUsersApi:
     @pytest.fixture(name="config")
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"API_KEY": "boardman"}
@@ -36,7 +36,7 @@ class TestApiEnabled:
         assert users.get_by_email("boardman@example.com")
 
 
-class TestApiDisabled:
+class TestUsersApiWhenDisabled:
     def test_cannot_clear_users(self, users: UserRepository, client: FlaskClient) -> None:
         users.add(User("boardman@example.com", authority_id=1))
 

@@ -7,7 +7,7 @@ from schemes.domain.users import User, UserRepository
 
 
 class TestUsersApi:
-    @pytest.fixture(name="config")
+    @pytest.fixture(name="config", scope="class")
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"API_KEY": "boardman"}
 

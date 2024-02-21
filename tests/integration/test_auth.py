@@ -11,7 +11,7 @@ from schemes.domain.users import User, UserRepository
 
 
 class TestAuth:
-    @pytest.fixture(name="config")
+    @pytest.fixture(name="config", scope="class")
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
 

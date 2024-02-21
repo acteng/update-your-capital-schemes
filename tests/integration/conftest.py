@@ -23,7 +23,7 @@ from tests.integration.fakes import (
 )
 
 
-@pytest.fixture(name="config")
+@pytest.fixture(name="config", scope="class")
 def config_fixture() -> Mapping[str, Any]:
     return {
         "TESTING": True,
@@ -37,7 +37,7 @@ def config_fixture() -> Mapping[str, Any]:
     }
 
 
-@pytest.fixture(name="app")
+@pytest.fixture(name="app", scope="class")
 def app_fixture(config: Mapping[str, Any]) -> Generator[Flask, Any, Any]:
     app = create_app(config)
     inject.clear_and_configure(_bindings, bind_in_runtime=False)
@@ -64,18 +64,24 @@ def clock_fixture(app: Flask) -> Clock:
 
 
 @pytest.fixture(name="authorities")
-def authorities_fixture(app: Flask) -> AuthorityRepository:
-    return inject.instance(AuthorityRepository)
+def authorities_fixture(app: Flask) -> Generator[AuthorityRepository, None, None]:
+    authorities: AuthorityRepository = inject.instance(AuthorityRepository)
+    yield authorities
+    authorities.clear()
 
 
 @pytest.fixture(name="users")
-def users_fixture(app: Flask) -> UserRepository:
-    return inject.instance(UserRepository)
+def users_fixture(app: Flask) -> Generator[UserRepository, None, None]:
+    users: UserRepository = inject.instance(UserRepository)
+    yield users
+    users.clear()
 
 
 @pytest.fixture(name="schemes")
-def schemes_fixture(app: Flask) -> SchemeRepository:
-    return inject.instance(SchemeRepository)
+def schemes_fixture(app: Flask) -> Generator[SchemeRepository, None, None]:
+    schemes: SchemeRepository = inject.instance(SchemeRepository)
+    yield schemes
+    schemes.clear()
 
 
 def _bindings(binder: Binder) -> None:

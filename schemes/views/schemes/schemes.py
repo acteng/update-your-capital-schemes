@@ -96,6 +96,7 @@ class SchemeRowContext:
     reference: str
     funding_programme: FundingProgrammeContext
     name: str
+    last_reviewed: datetime | None
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> SchemeRowContext:
@@ -104,6 +105,7 @@ class SchemeRowContext:
             reference=scheme.reference,
             funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
             name=scheme.name,
+            last_reviewed=scheme.last_reviewed,
         )
 
 

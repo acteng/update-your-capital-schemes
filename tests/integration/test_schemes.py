@@ -5,7 +5,13 @@ import pytest
 from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
-from schemes.domain.schemes import FundingProgramme, Scheme, SchemeRepository
+from schemes.domain.schemes import (
+    DataSource,
+    FundingProgramme,
+    Scheme,
+    SchemeRepository,
+)
+from schemes.domain.schemes.schemes import AuthorityReview
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.pages import SchemesPage
@@ -72,6 +78,9 @@ class TestSchemes:
     def test_schemes_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.funding_programme = FundingProgramme.ATF3
+        scheme1.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
+        )
         schemes.add(
             scheme1,
             Scheme(id_=2, name="School Streets", authority_id=1),
@@ -82,8 +91,13 @@ class TestSchemes:
 
         assert schemes_page.schemes
         assert schemes_page.schemes.to_dicts() == [
-            {"reference": "ATE00001", "funding_programme": "ATF3", "name": "Wirral Package"},
-            {"reference": "ATE00002", "funding_programme": "", "name": "School Streets"},
+            {
+                "reference": "ATE00001",
+                "funding_programme": "ATF3",
+                "name": "Wirral Package",
+                "last_reviewed": "2 Jan 2020",
+            },
+            {"reference": "ATE00002", "funding_programme": "", "name": "School Streets", "last_reviewed": ""},
         ]
         assert not schemes_page.is_no_schemes_message_visible
 

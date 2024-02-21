@@ -1,7 +1,13 @@
 import pytest
 from playwright.sync_api import Page
 
-from tests.e2e.app_client import AppClient, AuthorityRepr, SchemeRepr, UserRepr
+from tests.e2e.app_client import (
+    AppClient,
+    AuthorityRepr,
+    AuthorityReviewRepr,
+    SchemeRepr,
+    UserRepr,
+)
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemesPage
@@ -18,16 +24,36 @@ class TestAuthenticated:
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
             1,
-            SchemeRepr(id=1, name="Wirral Package", funding_programme="ATF3"),
-            SchemeRepr(id=2, name="School Streets", funding_programme="ATF4"),
+            SchemeRepr(
+                id=1,
+                name="Wirral Package",
+                funding_programme="ATF3",
+                authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02", source="ATF3 Bid")],
+            ),
+            SchemeRepr(
+                id=2,
+                name="School Streets",
+                funding_programme="ATF4",
+                authority_reviews=[AuthorityReviewRepr(id=2, review_date="2020-01-03", source="ATF4 Bid")],
+            ),
         )
 
         schemes_page = SchemesPage.open(page)
 
         assert schemes_page.authority == "Liverpool City Region Combined Authority"
         assert schemes_page.schemes.to_dicts() == [
-            {"reference": "ATE00001", "funding_programme": "ATF3", "name": "Wirral Package"},
-            {"reference": "ATE00002", "funding_programme": "ATF4", "name": "School Streets"},
+            {
+                "reference": "ATE00001",
+                "funding_programme": "ATF3",
+                "name": "Wirral Package",
+                "last_reviewed": "2 Jan 2020",
+            },
+            {
+                "reference": "ATE00002",
+                "funding_programme": "ATF4",
+                "name": "School Streets",
+                "last_reviewed": "3 Jan 2020",
+            },
         ]
 
     def test_schemes_when_unauthorized(self, page: Page) -> None:

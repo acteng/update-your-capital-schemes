@@ -30,6 +30,9 @@
                 },
                 {
                     "text": scheme.name
+                },
+                {
+                    "text": scheme.last_reviewed | date if scheme.last_reviewed
                 }
             ]) %}
         {% endfor %}
@@ -43,6 +46,9 @@
                 },
                 {
                     "text": "Name"
+                },
+                {
+                    "text": "Last reviewed"
                 }
             ],
             "rows": rows

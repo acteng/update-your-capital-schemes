@@ -91,9 +91,15 @@ class SchemeRowComponent:
         self.reference_url = one(reference.select("a")).get("href")
         self.funding_programme = cells[1].string or ""
         self.name = cells[2].string
+        self.last_reviewed = cells[3].string or ""
 
     def to_dict(self) -> dict[str, str | None]:
-        return {"reference": self.reference, "funding_programme": self.funding_programme, "name": self.name}
+        return {
+            "reference": self.reference,
+            "funding_programme": self.funding_programme,
+            "name": self.name,
+            "last_reviewed": self.last_reviewed,
+        }
 
 
 class SchemePage(PageObject):

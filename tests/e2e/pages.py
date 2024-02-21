@@ -130,12 +130,21 @@ class SchemeRowComponent:
     def name(self) -> str | None:
         return self._cells.nth(2).text_content()
 
+    @property
+    def last_reviewed(self) -> str | None:
+        return self._cells.nth(3).text_content()
+
     def open(self) -> SchemePage:
         self._reference.get_by_role("link").click()
         return SchemePage(self._row.page)
 
     def to_dict(self) -> dict[str, str | None]:
-        return {"reference": self.reference, "funding_programme": self.funding_programme, "name": self.name}
+        return {
+            "reference": self.reference,
+            "funding_programme": self.funding_programme,
+            "name": self.name,
+            "last_reviewed": self.last_reviewed,
+        }
 
 
 class SchemePage:

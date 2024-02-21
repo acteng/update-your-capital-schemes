@@ -11,99 +11,95 @@ from schemes.infrastructure.clock import Clock
 from tests.integration.pages import SchemesPage
 
 
-@pytest.fixture(name="config")
-def config_fixture(config: Mapping[str, Any]) -> Mapping[str, Any]:
-    return dict(config) | {"GOVUK_PROFILE_URL": "https://example.com/profile"}
+class TestSchemes:
+    @pytest.fixture(name="config")
+    def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
+        return dict(config) | {"GOVUK_PROFILE_URL": "https://example.com/profile"}
 
+    @pytest.fixture(name="auth", autouse=True)
+    def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
+        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
+        users.add(User(email="boardman@example.com", authority_id=1))
+        with client.session_transaction() as session:
+            session["user"] = {"email": "boardman@example.com"}
 
-@pytest.fixture(name="auth", autouse=True)
-def auth_fixture(authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
-    authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
-    users.add(User(email="boardman@example.com", authority_id=1))
-    with client.session_transaction() as session:
-        session["user"] = {"email": "boardman@example.com"}
+    def test_header_home_shows_start(self, client: FlaskClient) -> None:
+        schemes_page = SchemesPage.open(client)
 
+        assert schemes_page.header.home_url == "/"
 
-def test_header_home_shows_start(client: FlaskClient) -> None:
-    schemes_page = SchemesPage.open(client)
+    def test_header_profile_shows_profile(self, client: FlaskClient) -> None:
+        schemes_page = SchemesPage.open(client)
 
-    assert schemes_page.header.home_url == "/"
+        assert schemes_page.header.profile_url == "https://example.com/profile"
 
+    def test_header_sign_out_signs_out(self, client: FlaskClient) -> None:
+        schemes_page = SchemesPage.open(client)
 
-def test_header_profile_shows_profile(client: FlaskClient) -> None:
-    schemes_page = SchemesPage.open(client)
+        assert schemes_page.header.sign_out_url == "/auth/logout"
 
-    assert schemes_page.header.profile_url == "https://example.com/profile"
-
-
-def test_header_sign_out_signs_out(client: FlaskClient) -> None:
-    schemes_page = SchemesPage.open(client)
-
-    assert schemes_page.header.sign_out_url == "/auth/logout"
-
-
-@pytest.mark.parametrize(
-    "now, expected_notification_banner",
-    [
-        (datetime(2020, 4, 24, 12), "You have 7 days left to update your schemes"),
-        (datetime(2020, 4, 30, 12), "You have 1 day left to update your schemes"),
-    ],
-)
-def test_schemes_shows_update_schemes_notification(
-    client: FlaskClient, clock: Clock, now: datetime, expected_notification_banner: str
-) -> None:
-    clock.now = now
-    schemes_page = SchemesPage.open(client)
-
-    assert schemes_page.notification_banner and schemes_page.notification_banner.heading == expected_notification_banner
-
-
-def test_schemes_does_not_show_notification_outside_reporting_window(client: FlaskClient, clock: Clock) -> None:
-    clock.now = datetime(2020, 3, 1)
-    schemes_page = SchemesPage.open(client)
-
-    assert not schemes_page.notification_banner
-
-
-def test_schemes_shows_authority(client: FlaskClient) -> None:
-    schemes_page = SchemesPage.open(client)
-
-    assert schemes_page.authority == "Liverpool City Region Combined Authority"
-
-
-def test_schemes_shows_schemes(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme1.funding_programme = FundingProgramme.ATF3
-    schemes.add(
-        scheme1,
-        Scheme(id_=2, name="School Streets", authority_id=1),
-        Scheme(id_=3, name="Hospital Fields Road", authority_id=2),
+    @pytest.mark.parametrize(
+        "now, expected_notification_banner",
+        [
+            (datetime(2020, 4, 24, 12), "You have 7 days left to update your schemes"),
+            (datetime(2020, 4, 30, 12), "You have 1 day left to update your schemes"),
+        ],
     )
+    def test_schemes_shows_update_schemes_notification(
+        self, client: FlaskClient, clock: Clock, now: datetime, expected_notification_banner: str
+    ) -> None:
+        clock.now = now
+        schemes_page = SchemesPage.open(client)
 
-    schemes_page = SchemesPage.open(client)
+        assert (
+            schemes_page.notification_banner
+            and schemes_page.notification_banner.heading == expected_notification_banner
+        )
 
-    assert schemes_page.schemes
-    assert schemes_page.schemes.to_dicts() == [
-        {"reference": "ATE00001", "funding_programme": "ATF3", "name": "Wirral Package"},
-        {"reference": "ATE00002", "funding_programme": "", "name": "School Streets"},
-    ]
-    assert not schemes_page.is_no_schemes_message_visible
+    def test_schemes_does_not_show_notification_outside_reporting_window(
+        self, client: FlaskClient, clock: Clock
+    ) -> None:
+        clock.now = datetime(2020, 3, 1)
+        schemes_page = SchemesPage.open(client)
 
+        assert not schemes_page.notification_banner
 
-def test_scheme_shows_scheme(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+    def test_schemes_shows_authority(self, client: FlaskClient) -> None:
+        schemes_page = SchemesPage.open(client)
 
-    schemes_page = SchemesPage.open(client)
+        assert schemes_page.authority == "Liverpool City Region Combined Authority"
 
-    assert schemes_page.schemes
-    assert schemes_page.schemes["ATE00001"].reference_url == "/schemes/1"
+    def test_schemes_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1.funding_programme = FundingProgramme.ATF3
+        schemes.add(
+            scheme1,
+            Scheme(id_=2, name="School Streets", authority_id=1),
+            Scheme(id_=3, name="Hospital Fields Road", authority_id=2),
+        )
 
+        schemes_page = SchemesPage.open(client)
 
-def test_schemes_shows_message_when_no_schemes(client: FlaskClient) -> None:
-    schemes_page = SchemesPage.open(client)
+        assert schemes_page.schemes
+        assert schemes_page.schemes.to_dicts() == [
+            {"reference": "ATE00001", "funding_programme": "ATF3", "name": "Wirral Package"},
+            {"reference": "ATE00002", "funding_programme": "", "name": "School Streets"},
+        ]
+        assert not schemes_page.is_no_schemes_message_visible
 
-    assert not schemes_page.schemes
-    assert schemes_page.is_no_schemes_message_visible
+    def test_scheme_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        schemes_page = SchemesPage.open(client)
+
+        assert schemes_page.schemes
+        assert schemes_page.schemes["ATE00001"].reference_url == "/schemes/1"
+
+    def test_schemes_shows_message_when_no_schemes(self, client: FlaskClient) -> None:
+        schemes_page = SchemesPage.open(client)
+
+        assert not schemes_page.schemes
+        assert schemes_page.is_no_schemes_message_visible
 
 
 class TestApiEnabled:

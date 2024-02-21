@@ -30,859 +30,847 @@ from tests.integration.pages import (
 )
 
 
-@pytest.fixture(name="auth", autouse=True)
-def auth_fixture(authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
-    authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
-    users.add(User(email="boardman@example.com", authority_id=1))
-    with client.session_transaction() as session:
-        session["user"] = {"email": "boardman@example.com"}
+class TestScheme:
+    @pytest.fixture(name="auth", autouse=True)
+    def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
+        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
+        users.add(User(email="boardman@example.com", authority_id=1))
+        with client.session_transaction() as session:
+            session["user"] = {"email": "boardman@example.com"}
 
-
-def test_scheme_shows_html(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-    chromium_default_accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
-
-    response = client.get("/schemes/1", headers={"Accept": chromium_default_accept})
-
-    assert response.status_code == 200 and response.content_type == "text/html; charset=utf-8"
-
-
-def test_scheme_shows_back(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    scheme_page = SchemePage.open(client, id_=1)
-
-    assert scheme_page.back_url == "/schemes"
-
-
-def test_scheme_shows_authority(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    scheme_page = SchemePage.open(client, id_=1)
-
-    assert scheme_page.authority == "Liverpool City Region Combined Authority"
-
-
-def test_scheme_shows_name(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    scheme_page = SchemePage.open(client, id_=1)
-
-    assert scheme_page.name == "Wirral Package"
-
-
-def test_scheme_shows_minimal_overview(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    scheme_page = SchemePage.open(client, id_=1)
-
-    assert (
-        scheme_page.overview.reference == "ATE00001"
-        and scheme_page.overview.scheme_type == ""
-        and scheme_page.overview.funding_programme == ""
-        and scheme_page.overview.current_milestone == ""
-    )
-
-
-def test_scheme_shows_overview(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.type = SchemeType.CONSTRUCTION
-    scheme.funding_programme = FundingProgramme.ATF4
-    scheme.milestones.update_milestone(
-        MilestoneRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-            observation_type=ObservationType.ACTUAL,
-            status_date=date(2020, 1, 1),
-            source=DataSource.ATF4_BID,
+    def test_scheme_shows_html(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        chromium_default_accept = (
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
         )
-    )
-    schemes.add(scheme)
 
-    scheme_page = SchemePage.open(client, id_=1)
+        response = client.get("/schemes/1", headers={"Accept": chromium_default_accept})
 
-    assert (
-        scheme_page.overview.reference == "ATE00001"
-        and scheme_page.overview.scheme_type == "Construction"
-        and scheme_page.overview.funding_programme == "ATF4"
-        and scheme_page.overview.current_milestone == "Detailed design completed"
-    )
+        assert response.status_code == 200 and response.content_type == "text/html; charset=utf-8"
 
+    def test_scheme_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-def test_scheme_shows_minimal_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        scheme_page = SchemePage.open(client, id_=1)
 
-    scheme_page = SchemePage.open(client, id_=1)
+        assert scheme_page.back_url == "/schemes"
 
-    assert (
-        scheme_page.funding.funding_allocation == ""
-        and scheme_page.funding.change_control_adjustment == ""
-        and scheme_page.funding.spend_to_date == ""
-        and scheme_page.funding.allocation_still_to_spend == "£0"
-    )
+    def test_scheme_shows_authority(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
+        scheme_page = SchemePage.open(client, id_=1)
 
-def test_scheme_shows_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.funding.update_financials(
-        FinancialRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_=FinancialType.FUNDING_ALLOCATION,
-            amount=100_000,
-            source=DataSource.ATF4_BID,
-        ),
-        FinancialRevision(
-            id_=2,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_=FinancialType.FUNDING_ALLOCATION,
-            amount=10_000,
-            source=DataSource.CHANGE_CONTROL,
-        ),
-        FinancialRevision(
-            id_=3,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_=FinancialType.SPENT_TO_DATE,
-            amount=50_000,
-            source=DataSource.ATF4_BID,
-        ),
-    )
-    schemes.add(scheme)
+        assert scheme_page.authority == "Liverpool City Region Combined Authority"
 
-    scheme_page = SchemePage.open(client, id_=1)
+    def test_scheme_shows_name(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    assert (
-        scheme_page.funding.funding_allocation == "£100,000"
-        and scheme_page.funding.change_control_adjustment == "£10,000"
-        and scheme_page.funding.spend_to_date == "£50,000"
-        and scheme_page.funding.allocation_still_to_spend == "£60,000"
-    )
+        scheme_page = SchemePage.open(client, id_=1)
 
+        assert scheme_page.name == "Wirral Package"
 
-def test_scheme_shows_zero_funding(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.funding.update_financials(
-        FinancialRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_=FinancialType.FUNDING_ALLOCATION,
-            amount=0,
-            source=DataSource.ATF4_BID,
-        ),
-        FinancialRevision(
-            id_=2,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_=FinancialType.SPENT_TO_DATE,
-            amount=0,
-            source=DataSource.ATF4_BID,
-        ),
-        FinancialRevision(
-            id_=3,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_=FinancialType.FUNDING_ALLOCATION,
-            amount=0,
-            source=DataSource.CHANGE_CONTROL,
-        ),
-    )
-    schemes.add(scheme)
+    def test_scheme_shows_minimal_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, id_=1)
 
-    assert (
-        scheme_page.funding.funding_allocation == "£0"
-        and scheme_page.funding.change_control_adjustment == "£0"
-        and scheme_page.funding.spend_to_date == "£0"
-        and scheme_page.funding.allocation_still_to_spend == "£0"
-    )
-
-
-def test_scheme_shows_change_spend_to_date(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    scheme_page = SchemePage.open(client, id_=1)
-
-    assert scheme_page.funding.change_spend_to_date_url == "/schemes/1/spend-to-date"
-
-
-def test_scheme_shows_change_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    scheme_page = SchemePage.open(client, id_=1)
-
-    assert scheme_page.milestones.change_milestones_url == "/schemes/1/milestones"
-
-
-def test_scheme_shows_minimal_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    scheme_page = SchemePage.open(client, id_=1)
-
-    assert scheme_page.milestones.milestones.to_dicts() == [
-        {"milestone": "Feasibility design completed", "planned": "", "actual": ""},
-        {"milestone": "Preliminary design completed", "planned": "", "actual": ""},
-        {"milestone": "Detailed design completed", "planned": "", "actual": ""},
-        {"milestone": "Construction started", "planned": "", "actual": ""},
-        {"milestone": "Construction completed", "planned": "", "actual": ""},
-    ]
-
-
-def test_scheme_shows_milestones(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    current = DateRange(datetime(2020, 1, 1), None)
-    scheme.milestones.update_milestones(
-        MilestoneRevision(
-            1,
-            current,
-            Milestone.FEASIBILITY_DESIGN_COMPLETED,
-            ObservationType.PLANNED,
-            date(2020, 2, 1),
-            DataSource.ATF4_BID,
-        ),
-        MilestoneRevision(
-            2,
-            current,
-            Milestone.FEASIBILITY_DESIGN_COMPLETED,
-            ObservationType.ACTUAL,
-            date(2020, 2, 2),
-            DataSource.ATF4_BID,
-        ),
-        MilestoneRevision(
-            3,
-            current,
-            Milestone.PRELIMINARY_DESIGN_COMPLETED,
-            ObservationType.PLANNED,
-            date(2020, 3, 1),
-            DataSource.ATF4_BID,
-        ),
-        MilestoneRevision(
-            4,
-            current,
-            Milestone.PRELIMINARY_DESIGN_COMPLETED,
-            ObservationType.ACTUAL,
-            date(2020, 3, 2),
-            DataSource.ATF4_BID,
-        ),
-        MilestoneRevision(
-            5,
-            current,
-            Milestone.DETAILED_DESIGN_COMPLETED,
-            ObservationType.PLANNED,
-            date(2020, 4, 1),
-            DataSource.ATF4_BID,
-        ),
-        MilestoneRevision(
-            6,
-            current,
-            Milestone.DETAILED_DESIGN_COMPLETED,
-            ObservationType.ACTUAL,
-            date(2020, 4, 2),
-            DataSource.ATF4_BID,
-        ),
-        MilestoneRevision(
-            7, current, Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED, date(2020, 5, 1), DataSource.ATF4_BID
-        ),
-        MilestoneRevision(
-            8, current, Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL, date(2020, 5, 2), DataSource.ATF4_BID
-        ),
-        MilestoneRevision(
-            9, current, Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED, date(2020, 6, 1), DataSource.ATF4_BID
-        ),
-        MilestoneRevision(
-            10, current, Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL, date(2020, 6, 2), DataSource.ATF4_BID
-        ),
-    )
-    schemes.add(scheme)
-
-    scheme_page = SchemePage.open(client, id_=1)
-
-    assert scheme_page.milestones.milestones.to_dicts() == [
-        {"milestone": "Feasibility design completed", "planned": "1 Feb 2020", "actual": "2 Feb 2020"},
-        {"milestone": "Preliminary design completed", "planned": "1 Mar 2020", "actual": "2 Mar 2020"},
-        {"milestone": "Detailed design completed", "planned": "1 Apr 2020", "actual": "2 Apr 2020"},
-        {"milestone": "Construction started", "planned": "1 May 2020", "actual": "2 May 2020"},
-        {"milestone": "Construction completed", "planned": "1 Jun 2020", "actual": "2 Jun 2020"},
-    ]
-
-
-def test_scheme_shows_minimal_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.outputs.update_outputs(
-        OutputRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
-            value=Decimal(1),
-            observation_type=ObservationType.ACTUAL,
+        assert (
+            scheme_page.overview.reference == "ATE00001"
+            and scheme_page.overview.scheme_type == ""
+            and scheme_page.overview.funding_programme == ""
+            and scheme_page.overview.current_milestone == ""
         )
-    )
-    schemes.add(scheme)
 
-    scheme_page = SchemePage.open(client, id_=1)
-
-    assert scheme_page.outputs.outputs
-    outputs = list(scheme_page.outputs.outputs)
-    assert outputs[0].planned == ""
-
-
-def test_scheme_shows_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.outputs.update_outputs(
-        OutputRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES,
-            value=Decimal("3.000000"),
-            observation_type=ObservationType.PLANNED,
-        ),
-        OutputRevision(
-            id_=2,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
-            value=Decimal("2.600000"),
-            observation_type=ObservationType.PLANNED,
-        ),
-    )
-    schemes.add(scheme)
-
-    scheme_page = SchemePage.open(client, id_=1)
-
-    assert scheme_page.outputs.outputs
-    assert scheme_page.outputs.outputs.to_dicts() == [
-        {
-            "infrastructure": "New segregated cycling facility",
-            "measurement": "Miles",
-            "planned": "3",
-        },
-        {
-            "infrastructure": "Improvements to make an existing walking/cycle route safer",
-            "measurement": "Number of junctions",
-            "planned": "2.6",
-        },
-    ]
-
-
-def test_scheme_shows_zero_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.outputs.update_outputs(
-        OutputRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
-            value=Decimal("0.000000"),
-            observation_type=ObservationType.PLANNED,
+    def test_scheme_shows_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.type = SchemeType.CONSTRUCTION
+        scheme.funding_programme = FundingProgramme.ATF4
+        scheme.milestones.update_milestone(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
+            )
         )
-    )
-    schemes.add(scheme)
+        schemes.add(scheme)
 
-    scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, id_=1)
 
-    assert scheme_page.outputs.outputs
-    outputs = list(scheme_page.outputs.outputs)
-    assert outputs[0].planned == "0"
-
-
-def test_scheme_shows_message_when_no_outputs(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    scheme_page = SchemePage.open(client, id_=1)
-
-    assert not scheme_page.outputs.outputs
-    assert scheme_page.outputs.is_no_outputs_message_visible
-
-
-def test_cannot_scheme_when_different_authority(
-    authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
-) -> None:
-    authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-    schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
-
-    forbidden_page = SchemePage.open_when_unauthorized(client, id_=2)
-
-    assert forbidden_page.is_visible and forbidden_page.is_forbidden
-
-
-def test_spend_to_date_form_shows_back(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
-
-    assert change_spend_to_date_page.back_url == "/schemes/1"
-
-
-def test_spend_to_date_form_shows_funding_summary(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.funding.update_financials(
-        FinancialRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_=FinancialType.FUNDING_ALLOCATION,
-            amount=100_000,
-            source=DataSource.ATF4_BID,
-        ),
-        FinancialRevision(
-            id_=2,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_=FinancialType.FUNDING_ALLOCATION,
-            amount=10_000,
-            source=DataSource.CHANGE_CONTROL,
-        ),
-    )
-    schemes.add(scheme)
-
-    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
-
-    assert (
-        change_spend_to_date_page.funding_summary
-        == "This scheme has £100,000 of funding allocation and £10,000 of change control adjustment."
-    )
-
-
-def test_spend_to_date_form_shows_minimal_funding_summary(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
-
-    assert (
-        change_spend_to_date_page.funding_summary
-        == "This scheme has no funding allocation and no change control adjustment."
-    )
-
-
-def test_spend_to_date_form_shows_amount(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.funding.update_financial(
-        FinancialRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1, 12), None),
-            type_=FinancialType.SPENT_TO_DATE,
-            amount=50_000,
-            source=DataSource.ATF4_BID,
+        assert (
+            scheme_page.overview.reference == "ATE00001"
+            and scheme_page.overview.scheme_type == "Construction"
+            and scheme_page.overview.funding_programme == "ATF4"
+            and scheme_page.overview.current_milestone == "Detailed design completed"
         )
-    )
-    schemes.add(scheme)
 
-    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
+    def test_scheme_shows_minimal_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    assert change_spend_to_date_page.title == "Update your capital schemes - Active Travel England - GOV.UK"
-    assert change_spend_to_date_page.form.amount.value == "50000"
+        scheme_page = SchemePage.open(client, id_=1)
 
-
-def test_spend_to_date_form_shows_zero_amount(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.funding.update_financial(
-        FinancialRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1, 12), None),
-            type_=FinancialType.SPENT_TO_DATE,
-            amount=0,
-            source=DataSource.ATF4_BID,
+        assert (
+            scheme_page.funding.funding_allocation == ""
+            and scheme_page.funding.change_control_adjustment == ""
+            and scheme_page.funding.spend_to_date == ""
+            and scheme_page.funding.allocation_still_to_spend == "£0"
         )
-    )
-    schemes.add(scheme)
 
-    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
-
-    assert change_spend_to_date_page.form.amount.value == "0"
-
-
-def test_spend_to_date_form_shows_empty_amount(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
-
-    assert not change_spend_to_date_page.form.amount.value
-
-
-def test_spend_to_date_form_shows_confirm(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
-
-    assert change_spend_to_date_page.form.confirm_url == "/schemes/1/spend-to-date"
-
-
-def test_spend_to_date_form_shows_cancel(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
-
-    assert change_spend_to_date_page.form.cancel_url == "/schemes/1"
-
-
-def test_cannot_spend_to_date_form_when_different_authority(
-    authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
-) -> None:
-    authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-    schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
-
-    forbidden_page = ChangeSpendToDatePage.open_when_unauthorized(client, id_=2)
-
-    assert forbidden_page.is_visible and forbidden_page.is_forbidden
-
-
-def test_spend_to_date_updates_spend_to_date(
-    clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
-) -> None:
-    clock.now = datetime(2020, 1, 31, 13)
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.funding.update_financials(
-        FinancialRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1, 12), None),
-            type_=FinancialType.FUNDING_ALLOCATION,
-            amount=100_000,
-            source=DataSource.ATF4_BID,
-        ),
-        FinancialRevision(
-            id_=2,
-            effective=DateRange(datetime(2020, 1, 1, 12), None),
-            type_=FinancialType.SPENT_TO_DATE,
-            amount=50_000,
-            source=DataSource.ATF4_BID,
-        ),
-    )
-    schemes.add(scheme)
-
-    client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
-
-    actual_scheme = schemes.get(1)
-    assert actual_scheme
-    financial_revision1: FinancialRevision
-    financial_revision2: FinancialRevision
-    financial_revision3: FinancialRevision
-    financial_revision1, financial_revision2, financial_revision3 = actual_scheme.funding.financial_revisions
-    assert financial_revision2.id == 2 and financial_revision2.effective.date_to == datetime(2020, 1, 31, 13)
-    assert (
-        financial_revision3.effective == DateRange(datetime(2020, 1, 31, 13), None)
-        and financial_revision3.type == FinancialType.SPENT_TO_DATE
-        and financial_revision3.amount == 60_000
-        and financial_revision3.source == DataSource.AUTHORITY_UPDATE
-    )
-
-
-def test_spend_to_date_shows_scheme(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.funding.update_financial(
-        FinancialRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1, 12), None),
-            type_=FinancialType.FUNDING_ALLOCATION,
-            amount=100_000,
-            source=DataSource.ATF4_BID,
+    def test_scheme_shows_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding.update_financials(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=100_000,
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=10_000,
+                source=DataSource.CHANGE_CONTROL,
+            ),
+            FinancialRevision(
+                id_=3,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            ),
         )
-    )
-    schemes.add(scheme)
+        schemes.add(scheme)
 
-    response = client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+        scheme_page = SchemePage.open(client, id_=1)
 
-    assert response.status_code == 302 and response.location == "/schemes/1"
-
-
-def test_cannot_spend_to_date_when_error(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.funding.update_financial(
-        FinancialRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1, 12), None),
-            type_=FinancialType.SPENT_TO_DATE,
-            amount=50_000,
-            source=DataSource.ATF4_BID,
+        assert (
+            scheme_page.funding.funding_allocation == "£100,000"
+            and scheme_page.funding.change_control_adjustment == "£10,000"
+            and scheme_page.funding.spend_to_date == "£50,000"
+            and scheme_page.funding.allocation_still_to_spend == "£60,000"
         )
-    )
-    schemes.add(scheme)
 
-    change_spend_to_date_page = ChangeSpendToDatePage(
-        client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": ""})
-    )
-
-    assert change_spend_to_date_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
-    assert change_spend_to_date_page.errors and list(change_spend_to_date_page.errors) == ["Enter spend to date"]
-    assert (
-        change_spend_to_date_page.form.amount.is_errored
-        and change_spend_to_date_page.form.amount.error == "Error: Enter spend to date"
-        and change_spend_to_date_page.form.amount.value is None
-    )
-    actual_scheme = schemes.get(1)
-    assert actual_scheme
-    financial_revision1: FinancialRevision
-    (financial_revision1,) = actual_scheme.funding.financial_revisions
-    assert (
-        financial_revision1.id == 1
-        and financial_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
-        and financial_revision1.type == FinancialType.SPENT_TO_DATE
-        and financial_revision1.amount == 50_000
-        and financial_revision1.source == DataSource.ATF4_BID
-    )
-
-
-def test_cannot_spend_to_date_when_no_csrf_token(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_spend_to_date_page = ChangeSpendToDatePage(
-        client.post("/schemes/1/spend-to-date", data={"amount": "60000"}, follow_redirects=True)
-    )
-
-    assert change_spend_to_date_page.is_visible
-    assert (
-        change_spend_to_date_page.notification_banner
-        and change_spend_to_date_page.notification_banner.heading
-        == "The form you were submitting has expired. Please try again."
-    )
-
-
-def test_cannot_spend_to_date_when_incorrect_csrf_token(
-    schemes: SchemeRepository, client: FlaskClient, csrf_token: str
-) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_spend_to_date_page = ChangeSpendToDatePage(
-        client.post("/schemes/1/spend-to-date", data={"csrf_token": "x", "amount": "60000"}, follow_redirects=True)
-    )
-
-    assert change_spend_to_date_page.is_visible
-    assert (
-        change_spend_to_date_page.notification_banner
-        and change_spend_to_date_page.notification_banner.heading
-        == "The form you were submitting has expired. Please try again."
-    )
-
-
-def test_cannot_spend_to_date_when_different_authority(
-    authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
-) -> None:
-    authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-    schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
-
-    response = client.post("/schemes/2/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
-
-    assert response.status_code == 403
-
-
-def test_milestones_form_shows_back(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
-
-    assert change_milestone_dates_page.back_url == "/schemes/1"
-
-
-def test_milestones_form_shows_fields(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
-
-    assert (
-        change_milestone_dates_page.form.feasibility_design_completed.planned.name
-        == "feasibility_design_completed_planned"
-        and change_milestone_dates_page.form.feasibility_design_completed.actual.name
-        == "feasibility_design_completed_actual"
-        and change_milestone_dates_page.form.preliminary_design_completed.planned.name
-        == "preliminary_design_completed_planned"
-        and change_milestone_dates_page.form.preliminary_design_completed.actual.name
-        == "preliminary_design_completed_actual"
-        and change_milestone_dates_page.form.detailed_design_completed.planned.name
-        == "detailed_design_completed_planned"
-        and change_milestone_dates_page.form.detailed_design_completed.actual.name == "detailed_design_completed_actual"
-        and change_milestone_dates_page.form.construction_started.planned.name == "construction_started_planned"
-        and change_milestone_dates_page.form.construction_started.actual.name == "construction_started_actual"
-        and change_milestone_dates_page.form.construction_completed.planned.name == "construction_completed_planned"
-        and change_milestone_dates_page.form.construction_completed.actual.name == "construction_completed_actual"
-    )
-
-
-def test_milestones_form_shows_date(schemes: SchemeRepository, client: FlaskClient) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.milestones.update_milestones(
-        MilestoneRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1, 12), None),
-            milestone=Milestone.CONSTRUCTION_STARTED,
-            observation_type=ObservationType.ACTUAL,
-            status_date=date(2020, 1, 2),
-            source=DataSource.ATF4_BID,
+    def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding.update_financials(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=0,
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=0,
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                id_=3,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=0,
+                source=DataSource.CHANGE_CONTROL,
+            ),
         )
-    )
-    schemes.add(scheme)
+        schemes.add(scheme)
 
-    change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, id_=1)
 
-    assert change_milestone_dates_page.title == "Update your capital schemes - Active Travel England - GOV.UK"
-    assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
-
-
-def test_milestones_form_shows_confirm(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
-
-    assert change_milestone_dates_page.form.confirm_url == "/schemes/1/milestones"
-
-
-def test_milestones_form_shows_cancel(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
-
-    change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
-
-    assert change_milestone_dates_page.form.cancel_url == "/schemes/1"
-
-
-def test_cannot_milestones_form_when_different_authority(
-    authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
-) -> None:
-    authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-    schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
-
-    forbidden_page = ChangeMilestoneDatesPage.open_when_unauthorized(client, id_=2)
-
-    assert forbidden_page.is_visible and forbidden_page.is_forbidden
-
-
-def test_milestones_updates_milestones(
-    clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
-) -> None:
-    clock.now = datetime(2020, 1, 31, 13)
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.milestones.update_milestones(
-        MilestoneRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1, 12), None),
-            milestone=Milestone.CONSTRUCTION_STARTED,
-            observation_type=ObservationType.ACTUAL,
-            status_date=date(2020, 1, 2),
-            source=DataSource.ATF4_BID,
+        assert (
+            scheme_page.funding.funding_allocation == "£0"
+            and scheme_page.funding.change_control_adjustment == "£0"
+            and scheme_page.funding.spend_to_date == "£0"
+            and scheme_page.funding.allocation_still_to_spend == "£0"
         )
-    )
-    schemes.add(scheme)
 
-    client.post(
-        "/schemes/1/milestones", data={"csrf_token": csrf_token, "construction_started_actual": ["3", "1", "2020"]}
-    )
+    def test_scheme_shows_change_spend_to_date(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    actual_scheme = schemes.get(1)
-    assert actual_scheme
-    milestone_revision1: MilestoneRevision
-    milestone_revision2: MilestoneRevision
-    milestone_revision1, milestone_revision2 = actual_scheme.milestones.milestone_revisions
-    assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 1, 31, 13)
-    assert (
-        milestone_revision2.effective == DateRange(datetime(2020, 1, 31, 13), None)
-        and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
-        and milestone_revision2.observation_type == ObservationType.ACTUAL
-        and milestone_revision2.status_date == date(2020, 1, 3)
-        and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
-    )
+        scheme_page = SchemePage.open(client, id_=1)
 
+        assert scheme_page.funding.change_spend_to_date_url == "/schemes/1/spend-to-date"
 
-def test_milestones_shows_scheme(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+    def test_scheme_shows_change_milestones(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token})
+        scheme_page = SchemePage.open(client, id_=1)
 
-    assert response.status_code == 302 and response.location == "/schemes/1"
+        assert scheme_page.milestones.change_milestones_url == "/schemes/1/milestones"
 
+    def test_scheme_shows_minimal_milestones(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-def test_cannot_milestones_when_error(schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
-    scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-    scheme.milestones.update_milestones(
-        MilestoneRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1, 12), None),
-            milestone=Milestone.CONSTRUCTION_STARTED,
-            observation_type=ObservationType.ACTUAL,
-            status_date=date(2020, 1, 2),
-            source=DataSource.ATF4_BID,
+        scheme_page = SchemePage.open(client, id_=1)
+
+        assert scheme_page.milestones.milestones.to_dicts() == [
+            {"milestone": "Feasibility design completed", "planned": "", "actual": ""},
+            {"milestone": "Preliminary design completed", "planned": "", "actual": ""},
+            {"milestone": "Detailed design completed", "planned": "", "actual": ""},
+            {"milestone": "Construction started", "planned": "", "actual": ""},
+            {"milestone": "Construction completed", "planned": "", "actual": ""},
+        ]
+
+    def test_scheme_shows_milestones(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        current = DateRange(datetime(2020, 1, 1), None)
+        scheme.milestones.update_milestones(
+            MilestoneRevision(
+                1,
+                current,
+                Milestone.FEASIBILITY_DESIGN_COMPLETED,
+                ObservationType.PLANNED,
+                date(2020, 2, 1),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                2,
+                current,
+                Milestone.FEASIBILITY_DESIGN_COMPLETED,
+                ObservationType.ACTUAL,
+                date(2020, 2, 2),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                3,
+                current,
+                Milestone.PRELIMINARY_DESIGN_COMPLETED,
+                ObservationType.PLANNED,
+                date(2020, 3, 1),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                4,
+                current,
+                Milestone.PRELIMINARY_DESIGN_COMPLETED,
+                ObservationType.ACTUAL,
+                date(2020, 3, 2),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                5,
+                current,
+                Milestone.DETAILED_DESIGN_COMPLETED,
+                ObservationType.PLANNED,
+                date(2020, 4, 1),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                6,
+                current,
+                Milestone.DETAILED_DESIGN_COMPLETED,
+                ObservationType.ACTUAL,
+                date(2020, 4, 2),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                7,
+                current,
+                Milestone.CONSTRUCTION_STARTED,
+                ObservationType.PLANNED,
+                date(2020, 5, 1),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                8,
+                current,
+                Milestone.CONSTRUCTION_STARTED,
+                ObservationType.ACTUAL,
+                date(2020, 5, 2),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                9,
+                current,
+                Milestone.CONSTRUCTION_COMPLETED,
+                ObservationType.PLANNED,
+                date(2020, 6, 1),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                10,
+                current,
+                Milestone.CONSTRUCTION_COMPLETED,
+                ObservationType.ACTUAL,
+                date(2020, 6, 2),
+                DataSource.ATF4_BID,
+            ),
         )
-    )
-    schemes.add(scheme)
+        schemes.add(scheme)
 
-    change_milestone_dates_page = ChangeMilestoneDatesPage(
+        scheme_page = SchemePage.open(client, id_=1)
+
+        assert scheme_page.milestones.milestones.to_dicts() == [
+            {"milestone": "Feasibility design completed", "planned": "1 Feb 2020", "actual": "2 Feb 2020"},
+            {"milestone": "Preliminary design completed", "planned": "1 Mar 2020", "actual": "2 Mar 2020"},
+            {"milestone": "Detailed design completed", "planned": "1 Apr 2020", "actual": "2 Apr 2020"},
+            {"milestone": "Construction started", "planned": "1 May 2020", "actual": "2 May 2020"},
+            {"milestone": "Construction completed", "planned": "1 Jun 2020", "actual": "2 Jun 2020"},
+        ]
+
+    def test_scheme_shows_minimal_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.outputs.update_outputs(
+            OutputRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
+                value=Decimal(1),
+                observation_type=ObservationType.ACTUAL,
+            )
+        )
+        schemes.add(scheme)
+
+        scheme_page = SchemePage.open(client, id_=1)
+
+        assert scheme_page.outputs.outputs
+        outputs = list(scheme_page.outputs.outputs)
+        assert outputs[0].planned == ""
+
+    def test_scheme_shows_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.outputs.update_outputs(
+            OutputRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES,
+                value=Decimal("3.000000"),
+                observation_type=ObservationType.PLANNED,
+            ),
+            OutputRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
+                value=Decimal("2.600000"),
+                observation_type=ObservationType.PLANNED,
+            ),
+        )
+        schemes.add(scheme)
+
+        scheme_page = SchemePage.open(client, id_=1)
+
+        assert scheme_page.outputs.outputs
+        assert scheme_page.outputs.outputs.to_dicts() == [
+            {
+                "infrastructure": "New segregated cycling facility",
+                "measurement": "Miles",
+                "planned": "3",
+            },
+            {
+                "infrastructure": "Improvements to make an existing walking/cycle route safer",
+                "measurement": "Number of junctions",
+                "planned": "2.6",
+            },
+        ]
+
+    def test_scheme_shows_zero_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.outputs.update_outputs(
+            OutputRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
+                value=Decimal("0.000000"),
+                observation_type=ObservationType.PLANNED,
+            )
+        )
+        schemes.add(scheme)
+
+        scheme_page = SchemePage.open(client, id_=1)
+
+        assert scheme_page.outputs.outputs
+        outputs = list(scheme_page.outputs.outputs)
+        assert outputs[0].planned == "0"
+
+    def test_scheme_shows_message_when_no_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        scheme_page = SchemePage.open(client, id_=1)
+
+        assert not scheme_page.outputs.outputs
+        assert scheme_page.outputs.is_no_outputs_message_visible
+
+    def test_cannot_scheme_when_different_authority(
+        self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
+    ) -> None:
+        authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
+        schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+
+        forbidden_page = SchemePage.open_when_unauthorized(client, id_=2)
+
+        assert forbidden_page.is_visible and forbidden_page.is_forbidden
+
+    def test_spend_to_date_form_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
+
+        assert change_spend_to_date_page.back_url == "/schemes/1"
+
+    def test_spend_to_date_form_shows_funding_summary(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding.update_financials(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=100_000,
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=10_000,
+                source=DataSource.CHANGE_CONTROL,
+            ),
+        )
+        schemes.add(scheme)
+
+        change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
+
+        assert (
+            change_spend_to_date_page.funding_summary
+            == "This scheme has £100,000 of funding allocation and £10,000 of change control adjustment."
+        )
+
+    def test_spend_to_date_form_shows_minimal_funding_summary(
+        self, schemes: SchemeRepository, client: FlaskClient
+    ) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
+
+        assert (
+            change_spend_to_date_page.funding_summary
+            == "This scheme has no funding allocation and no change control adjustment."
+        )
+
+    def test_spend_to_date_form_shows_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding.update_financial(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+        schemes.add(scheme)
+
+        change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
+
+        assert change_spend_to_date_page.title == "Update your capital schemes - Active Travel England - GOV.UK"
+        assert change_spend_to_date_page.form.amount.value == "50000"
+
+    def test_spend_to_date_form_shows_zero_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding.update_financial(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=0,
+                source=DataSource.ATF4_BID,
+            )
+        )
+        schemes.add(scheme)
+
+        change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
+
+        assert change_spend_to_date_page.form.amount.value == "0"
+
+    def test_spend_to_date_form_shows_empty_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
+
+        assert not change_spend_to_date_page.form.amount.value
+
+    def test_spend_to_date_form_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
+
+        assert change_spend_to_date_page.form.confirm_url == "/schemes/1/spend-to-date"
+
+    def test_spend_to_date_form_shows_cancel(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
+
+        assert change_spend_to_date_page.form.cancel_url == "/schemes/1"
+
+    def test_cannot_spend_to_date_form_when_different_authority(
+        self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
+    ) -> None:
+        authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
+        schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+
+        forbidden_page = ChangeSpendToDatePage.open_when_unauthorized(client, id_=2)
+
+        assert forbidden_page.is_visible and forbidden_page.is_forbidden
+
+    def test_spend_to_date_updates_spend_to_date(
+        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        clock.now = datetime(2020, 1, 31, 13)
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding.update_financials(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=100_000,
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            ),
+        )
+        schemes.add(scheme)
+
+        client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+
+        actual_scheme = schemes.get(1)
+        assert actual_scheme
+        financial_revision1: FinancialRevision
+        financial_revision2: FinancialRevision
+        financial_revision3: FinancialRevision
+        financial_revision1, financial_revision2, financial_revision3 = actual_scheme.funding.financial_revisions
+        assert financial_revision2.id == 2 and financial_revision2.effective.date_to == datetime(2020, 1, 31, 13)
+        assert (
+            financial_revision3.effective == DateRange(datetime(2020, 1, 31, 13), None)
+            and financial_revision3.type == FinancialType.SPENT_TO_DATE
+            and financial_revision3.amount == 60_000
+            and financial_revision3.source == DataSource.AUTHORITY_UPDATE
+        )
+
+    def test_spend_to_date_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding.update_financial(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=100_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+        schemes.add(scheme)
+
+        response = client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+
+        assert response.status_code == 302 and response.location == "/schemes/1"
+
+    def test_cannot_spend_to_date_when_error(
+        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding.update_financial(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+        schemes.add(scheme)
+
+        change_spend_to_date_page = ChangeSpendToDatePage(
+            client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": ""})
+        )
+
+        assert change_spend_to_date_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
+        assert change_spend_to_date_page.errors and list(change_spend_to_date_page.errors) == ["Enter spend to date"]
+        assert (
+            change_spend_to_date_page.form.amount.is_errored
+            and change_spend_to_date_page.form.amount.error == "Error: Enter spend to date"
+            and change_spend_to_date_page.form.amount.value is None
+        )
+        actual_scheme = schemes.get(1)
+        assert actual_scheme
+        financial_revision1: FinancialRevision
+        (financial_revision1,) = actual_scheme.funding.financial_revisions
+        assert (
+            financial_revision1.id == 1
+            and financial_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
+            and financial_revision1.type == FinancialType.SPENT_TO_DATE
+            and financial_revision1.amount == 50_000
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
+
+    def test_cannot_spend_to_date_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_spend_to_date_page = ChangeSpendToDatePage(
+            client.post("/schemes/1/spend-to-date", data={"amount": "60000"}, follow_redirects=True)
+        )
+
+        assert change_spend_to_date_page.is_visible
+        assert (
+            change_spend_to_date_page.notification_banner
+            and change_spend_to_date_page.notification_banner.heading
+            == "The form you were submitting has expired. Please try again."
+        )
+
+    def test_cannot_spend_to_date_when_incorrect_csrf_token(
+        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_spend_to_date_page = ChangeSpendToDatePage(
+            client.post("/schemes/1/spend-to-date", data={"csrf_token": "x", "amount": "60000"}, follow_redirects=True)
+        )
+
+        assert change_spend_to_date_page.is_visible
+        assert (
+            change_spend_to_date_page.notification_banner
+            and change_spend_to_date_page.notification_banner.heading
+            == "The form you were submitting has expired. Please try again."
+        )
+
+    def test_cannot_spend_to_date_when_different_authority(
+        self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
+        schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+
+        response = client.post("/schemes/2/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+
+        assert response.status_code == 403
+
+    def test_milestones_form_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+        assert change_milestone_dates_page.back_url == "/schemes/1"
+
+    def test_milestones_form_shows_fields(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+        assert (
+            change_milestone_dates_page.form.feasibility_design_completed.planned.name
+            == "feasibility_design_completed_planned"
+            and change_milestone_dates_page.form.feasibility_design_completed.actual.name
+            == "feasibility_design_completed_actual"
+            and change_milestone_dates_page.form.preliminary_design_completed.planned.name
+            == "preliminary_design_completed_planned"
+            and change_milestone_dates_page.form.preliminary_design_completed.actual.name
+            == "preliminary_design_completed_actual"
+            and change_milestone_dates_page.form.detailed_design_completed.planned.name
+            == "detailed_design_completed_planned"
+            and change_milestone_dates_page.form.detailed_design_completed.actual.name
+            == "detailed_design_completed_actual"
+            and change_milestone_dates_page.form.construction_started.planned.name == "construction_started_planned"
+            and change_milestone_dates_page.form.construction_started.actual.name == "construction_started_actual"
+            and change_milestone_dates_page.form.construction_completed.planned.name == "construction_completed_planned"
+            and change_milestone_dates_page.form.construction_completed.actual.name == "construction_completed_actual"
+        )
+
+    def test_milestones_form_shows_date(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.milestones.update_milestones(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 2),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        schemes.add(scheme)
+
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+        assert change_milestone_dates_page.title == "Update your capital schemes - Active Travel England - GOV.UK"
+        assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
+
+    def test_milestones_form_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+        assert change_milestone_dates_page.form.confirm_url == "/schemes/1/milestones"
+
+    def test_milestones_form_shows_cancel(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+        assert change_milestone_dates_page.form.cancel_url == "/schemes/1"
+
+    def test_cannot_milestones_form_when_different_authority(
+        self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
+    ) -> None:
+        authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
+        schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+
+        forbidden_page = ChangeMilestoneDatesPage.open_when_unauthorized(client, id_=2)
+
+        assert forbidden_page.is_visible and forbidden_page.is_forbidden
+
+    def test_milestones_updates_milestones(
+        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        clock.now = datetime(2020, 1, 31, 13)
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.milestones.update_milestones(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 2),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        schemes.add(scheme)
+
         client.post(
-            "/schemes/1/milestones",
-            data=empty_change_milestone_dates_form()
-            | {"csrf_token": csrf_token, "construction_started_actual": ["x", "x", "x"]},
+            "/schemes/1/milestones", data={"csrf_token": csrf_token, "construction_started_actual": ["3", "1", "2020"]}
         )
-    )
 
-    assert change_milestone_dates_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
-    assert change_milestone_dates_page.errors and list(change_milestone_dates_page.errors) == [
-        "Construction started actual date must be a real date"
-    ]
-    assert (
-        change_milestone_dates_page.form.construction_started.actual.is_errored
-        and change_milestone_dates_page.form.construction_started.actual.error
-        == "Error: Construction started actual date must be a real date"
-        and change_milestone_dates_page.form.construction_started.actual.value == "x x x"
-    )
-    actual_scheme = schemes.get(1)
-    assert actual_scheme
-    milestone_revision1: MilestoneRevision
-    (milestone_revision1,) = actual_scheme.milestones.milestone_revisions
-    assert (
-        milestone_revision1.id == 1
-        and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
-        and milestone_revision1.milestone == Milestone.CONSTRUCTION_STARTED
-        and milestone_revision1.observation_type == ObservationType.ACTUAL
-        and milestone_revision1.status_date == date(2020, 1, 2)
-        and milestone_revision1.source == DataSource.ATF4_BID
-    )
+        actual_scheme = schemes.get(1)
+        assert actual_scheme
+        milestone_revision1: MilestoneRevision
+        milestone_revision2: MilestoneRevision
+        milestone_revision1, milestone_revision2 = actual_scheme.milestones.milestone_revisions
+        assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 1, 31, 13)
+        assert (
+            milestone_revision2.effective == DateRange(datetime(2020, 1, 31, 13), None)
+            and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
+            and milestone_revision2.observation_type == ObservationType.ACTUAL
+            and milestone_revision2.status_date == date(2020, 1, 3)
+            and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
+        )
 
+    def test_milestones_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-def test_cannot_milestones_when_no_csrf_token(schemes: SchemeRepository, client: FlaskClient) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token})
 
-    change_milestone_dates_page = ChangeMilestoneDatesPage(client.post("/schemes/1/milestones", follow_redirects=True))
+        assert response.status_code == 302 and response.location == "/schemes/1"
 
-    assert change_milestone_dates_page.is_visible
-    assert (
-        change_milestone_dates_page.notification_banner
-        and change_milestone_dates_page.notification_banner.heading
-        == "The form you were submitting has expired. Please try again."
-    )
+    def test_cannot_milestones_when_error(
+        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.milestones.update_milestones(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1, 12), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 2),
+                source=DataSource.ATF4_BID,
+            )
+        )
+        schemes.add(scheme)
 
+        change_milestone_dates_page = ChangeMilestoneDatesPage(
+            client.post(
+                "/schemes/1/milestones",
+                data=self.empty_change_milestone_dates_form()
+                | {"csrf_token": csrf_token, "construction_started_actual": ["x", "x", "x"]},
+            )
+        )
 
-def test_cannot_milestones_when_incorrect_csrf_token(
-    schemes: SchemeRepository, client: FlaskClient, csrf_token: str
-) -> None:
-    schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        assert (
+            change_milestone_dates_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
+        )
+        assert change_milestone_dates_page.errors and list(change_milestone_dates_page.errors) == [
+            "Construction started actual date must be a real date"
+        ]
+        assert (
+            change_milestone_dates_page.form.construction_started.actual.is_errored
+            and change_milestone_dates_page.form.construction_started.actual.error
+            == "Error: Construction started actual date must be a real date"
+            and change_milestone_dates_page.form.construction_started.actual.value == "x x x"
+        )
+        actual_scheme = schemes.get(1)
+        assert actual_scheme
+        milestone_revision1: MilestoneRevision
+        (milestone_revision1,) = actual_scheme.milestones.milestone_revisions
+        assert (
+            milestone_revision1.id == 1
+            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
+            and milestone_revision1.milestone == Milestone.CONSTRUCTION_STARTED
+            and milestone_revision1.observation_type == ObservationType.ACTUAL
+            and milestone_revision1.status_date == date(2020, 1, 2)
+            and milestone_revision1.source == DataSource.ATF4_BID
+        )
 
-    change_milestone_dates_page = ChangeMilestoneDatesPage(
-        client.post("/schemes/1/milestones", data={"csrf_token": "x"}, follow_redirects=True)
-    )
+    def test_cannot_milestones_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    assert change_milestone_dates_page.is_visible
-    assert (
-        change_milestone_dates_page.notification_banner
-        and change_milestone_dates_page.notification_banner.heading
-        == "The form you were submitting has expired. Please try again."
-    )
+        change_milestone_dates_page = ChangeMilestoneDatesPage(
+            client.post("/schemes/1/milestones", follow_redirects=True)
+        )
 
+        assert change_milestone_dates_page.is_visible
+        assert (
+            change_milestone_dates_page.notification_banner
+            and change_milestone_dates_page.notification_banner.heading
+            == "The form you were submitting has expired. Please try again."
+        )
 
-def test_cannot_milestones_when_different_authority(
-    authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
-) -> None:
-    authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-    schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+    def test_cannot_milestones_when_incorrect_csrf_token(
+        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-    response = client.post("/schemes/2/milestones", data={"csrf_token": csrf_token})
+        change_milestone_dates_page = ChangeMilestoneDatesPage(
+            client.post("/schemes/1/milestones", data={"csrf_token": "x"}, follow_redirects=True)
+        )
 
-    assert response.status_code == 403
+        assert change_milestone_dates_page.is_visible
+        assert (
+            change_milestone_dates_page.notification_banner
+            and change_milestone_dates_page.notification_banner.heading
+            == "The form you were submitting has expired. Please try again."
+        )
 
+    def test_cannot_milestones_when_different_authority(
+        self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
+        schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
 
-def empty_change_milestone_dates_form() -> dict[str, list[str]]:
-    empty_date = ["", "", ""]
-    return {
-        "feasibility_design_completed_planned": empty_date,
-        "feasibility_design_completed_actual": empty_date,
-        "preliminary_design_completed_planned": empty_date,
-        "preliminary_design_completed_actual": empty_date,
-        "detailed_design_completed_planned": empty_date,
-        "detailed_design_completed_actual": empty_date,
-        "construction_started_planned": empty_date,
-        "construction_started_actual": empty_date,
-        "construction_completed_planned": empty_date,
-        "construction_completed_actual": empty_date,
-    }
+        response = client.post("/schemes/2/milestones", data={"csrf_token": csrf_token})
+
+        assert response.status_code == 403
+
+    def empty_change_milestone_dates_form(self) -> dict[str, list[str]]:
+        empty_date = ["", "", ""]
+        return {
+            "feasibility_design_completed_planned": empty_date,
+            "feasibility_design_completed_actual": empty_date,
+            "preliminary_design_completed_planned": empty_date,
+            "preliminary_design_completed_actual": empty_date,
+            "detailed_design_completed_planned": empty_date,
+            "detailed_design_completed_actual": empty_date,
+            "construction_started_planned": empty_date,
+            "construction_started_actual": empty_date,
+            "construction_completed_planned": empty_date,
+            "construction_completed_actual": empty_date,
+        }
 
 
 class TestApiEnabled:

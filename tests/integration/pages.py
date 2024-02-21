@@ -11,7 +11,7 @@ class PageObject:
     def __init__(self, response: TestResponse):
         self._response = response
         self._soup = BeautifulSoup(response.text, "html.parser")
-        self.title = one(self._soup.select("title")).text
+        self.title = one(self._soup.select("head > title")).text
 
 
 class StartPage(PageObject):

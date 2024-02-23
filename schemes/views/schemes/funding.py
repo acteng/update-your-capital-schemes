@@ -160,6 +160,8 @@ class DataSourceRepr(Enum):
     ATF4E_BID = "ATF4e Bid"
     ATF4E_MODERATION = "ATF4e Moderation"
     PULSE_2023_24_Q2 = "Pulse 2023/24 Q2"
+    PULSE_2023_24_Q3 = "Pulse 2023/24 Q3"
+    PULSE_2023_24_Q4 = "Pulse 2023/24 Q4"
     INITIAL_SCHEME_LIST = "Initial Scheme List"
     AUTHORITY_UPDATE = "Authority Update"
     PULSE_2023_24_Q2_DATA_CLEANSE = "Pulse 2023/24 Q2 Data Cleanse"
@@ -186,6 +188,8 @@ class DataSourceRepr(Enum):
             DataSource.ATF4E_BID: DataSourceRepr.ATF4E_BID,
             DataSource.ATF4E_MODERATION: DataSourceRepr.ATF4E_MODERATION,
             DataSource.PULSE_2023_24_Q2: DataSourceRepr.PULSE_2023_24_Q2,
+            DataSource.PULSE_2023_24_Q3: DataSourceRepr.PULSE_2023_24_Q3,
+            DataSource.PULSE_2023_24_Q4: DataSourceRepr.PULSE_2023_24_Q4,
             DataSource.INITIAL_SCHEME_LIST: DataSourceRepr.INITIAL_SCHEME_LIST,
             DataSource.AUTHORITY_UPDATE: DataSourceRepr.AUTHORITY_UPDATE,
             DataSource.PULSE_2023_24_Q2_DATA_CLEANSE: DataSourceRepr.PULSE_2023_24_Q2_DATA_CLEANSE,

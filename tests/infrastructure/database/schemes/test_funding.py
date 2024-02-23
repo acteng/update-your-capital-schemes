@@ -40,9 +40,11 @@ class TestFinancialTypeMapper:
         (DataSource.ATF4E_BID, 10),
         (DataSource.ATF4E_MODERATION, 11),
         (DataSource.PULSE_2023_24_Q2, 12),
-        (DataSource.INITIAL_SCHEME_LIST, 13),
-        (DataSource.AUTHORITY_UPDATE, 14),
-        (DataSource.PULSE_2023_24_Q2_DATA_CLEANSE, 15),
+        (DataSource.PULSE_2023_24_Q3, 13),
+        (DataSource.PULSE_2023_24_Q4, 14),
+        (DataSource.INITIAL_SCHEME_LIST, 15),
+        (DataSource.AUTHORITY_UPDATE, 16),
+        (DataSource.PULSE_2023_24_Q2_DATA_CLEANSE, 17),
     ],
 )
 class TestDataSourceMapper:

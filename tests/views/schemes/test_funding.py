@@ -364,6 +364,8 @@ class TestFinancialTypeRepr:
         (DataSource.ATF4E_BID, "ATF4e Bid"),
         (DataSource.ATF4E_MODERATION, "ATF4e Moderation"),
         (DataSource.PULSE_2023_24_Q2, "Pulse 2023/24 Q2"),
+        (DataSource.PULSE_2023_24_Q3, "Pulse 2023/24 Q3"),
+        (DataSource.PULSE_2023_24_Q4, "Pulse 2023/24 Q4"),
         (DataSource.INITIAL_SCHEME_LIST, "Initial Scheme List"),
         (DataSource.AUTHORITY_UPDATE, "Authority Update"),
         (DataSource.PULSE_2023_24_Q2_DATA_CLEANSE, "Pulse 2023/24 Q2 Data Cleanse"),

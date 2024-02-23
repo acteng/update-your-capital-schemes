@@ -737,7 +737,7 @@ class TestDatabaseSchemeRepository:
             and capital_scheme_financial2.effective_date_to is None
             and capital_scheme_financial2.financial_type_id == 4
             and capital_scheme_financial2.amount == 60_000
-            and capital_scheme_financial2.data_source_id == 14
+            and capital_scheme_financial2.data_source_id == 16
         )
 
     def test_update_scheme_milestone_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
@@ -794,7 +794,7 @@ class TestDatabaseSchemeRepository:
             and scheme_milestone2.milestone_id == 6
             and scheme_milestone2.observation_type_id == 1
             and scheme_milestone2.status_date == date(2020, 3, 1)
-            and scheme_milestone2.data_source_id == 14
+            and scheme_milestone2.data_source_id == 16
         )
 
 

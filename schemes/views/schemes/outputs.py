@@ -8,8 +8,8 @@ from itertools import groupby
 from typing import Iterator
 
 from schemes.dicts import inverse_dict
+from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
-    DateRange,
     ObservationType,
     OutputMeasure,
     OutputRevision,

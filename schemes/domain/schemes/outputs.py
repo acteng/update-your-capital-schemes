@@ -3,7 +3,7 @@ from __future__ import annotations
 from decimal import Decimal
 from enum import Enum, IntEnum, auto, unique
 
-from schemes.domain.schemes.dates import DateRange
+from schemes.domain.dates import DateRange
 from schemes.domain.schemes.observations import ObservationType
 
 

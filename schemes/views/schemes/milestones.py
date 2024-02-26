@@ -10,8 +10,8 @@ from wtforms.form import BaseForm
 from wtforms.utils import unset_value
 
 from schemes.dicts import inverse_dict
+from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
-    DateRange,
     Milestone,
     MilestoneRevision,
     ObservationType,

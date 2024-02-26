@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from schemes.domain.schemes import DateRange
+from schemes.domain.dates import DateRange
 
 
 class TestDateRange:

@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import Enum, auto, unique
 
-from schemes.domain.schemes.dates import DateRange
+from schemes.domain.dates import DateRange
 
 
 class SchemeFunding:

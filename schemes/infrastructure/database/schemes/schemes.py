@@ -3,9 +3,9 @@ from sqlalchemy import Engine, delete, select
 from sqlalchemy.orm import Session, selectinload
 
 from schemes.dicts import inverse_dict
+from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     AuthorityReview,
-    DateRange,
     FinancialRevision,
     FundingProgramme,
     MilestoneRevision,

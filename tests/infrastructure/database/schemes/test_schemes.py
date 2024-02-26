@@ -6,10 +6,10 @@ from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session
 
 from schemes.domain.authorities import Authority
+from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     AuthorityReview,
     DataSource,
-    DateRange,
     FinancialRevision,
     FinancialType,
     FundingProgramme,

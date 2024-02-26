@@ -1,4 +1,3 @@
-from schemes.domain.schemes.dates import DateRange as DateRange
 from schemes.domain.schemes.funding import DataSource as DataSource
 from schemes.domain.schemes.funding import FinancialRevision as FinancialRevision
 from schemes.domain.schemes.funding import FinancialType as FinancialType

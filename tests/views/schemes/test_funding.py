@@ -5,9 +5,9 @@ from flask import Flask
 from flask_wtf.csrf import generate_csrf
 from werkzeug.datastructures import MultiDict
 
+from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     DataSource,
-    DateRange,
     FinancialRevision,
     FinancialType,
     Scheme,

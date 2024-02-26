@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Generator
 
-from schemes.domain.schemes import DateRange
+from schemes.domain.dates import DateRange
 
 
 @dataclass(frozen=True)

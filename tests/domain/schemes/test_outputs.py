@@ -3,8 +3,8 @@ from decimal import Decimal
 
 import pytest
 
+from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
-    DateRange,
     ObservationType,
     OutputMeasure,
     OutputRevision,

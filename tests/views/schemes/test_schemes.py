@@ -4,11 +4,11 @@ from decimal import Decimal
 import pytest
 
 from schemes.domain.authorities import Authority
+from schemes.domain.dates import DateRange
 from schemes.domain.reporting_window import ReportingWindow
 from schemes.domain.schemes import (
     AuthorityReview,
     DataSource,
-    DateRange,
     FinancialRevision,
     FinancialType,
     FundingProgramme,

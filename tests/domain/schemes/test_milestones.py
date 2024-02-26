@@ -3,9 +3,9 @@ from datetime import date, datetime
 
 import pytest
 
+from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     DataSource,
-    DateRange,
     Milestone,
     MilestoneRevision,
     ObservationType,

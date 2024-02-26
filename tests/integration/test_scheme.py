@@ -6,10 +6,10 @@ import pytest
 from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
+from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     AuthorityReview,
     DataSource,
-    DateRange,
     FinancialRevision,
     FinancialType,
     FundingProgramme,

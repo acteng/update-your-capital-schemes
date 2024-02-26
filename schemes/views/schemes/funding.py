@@ -9,9 +9,9 @@ from govuk_frontend_wtf.wtforms_widgets import GovTextInput
 from wtforms.validators import InputRequired, NumberRange, ValidationError
 
 from schemes.dicts import inverse_dict
+from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     DataSource,
-    DateRange,
     FinancialRevision,
     FinancialType,
     Scheme,

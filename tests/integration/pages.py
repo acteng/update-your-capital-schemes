@@ -108,6 +108,8 @@ class SchemePage(PageObject):
         self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
         self.name = one(self._soup.select("main h1 span:nth-child(2)")).string
+        tag = self._soup.select_one("main h1 .govuk-tag")
+        self.needs_review = (tag.string or "").strip() == "Needs review" if tag else False
         self.overview = SchemeOverviewComponent(one(self._soup.select("main h2:-soup-contains('Overview')")))
         self.funding = SchemeFundingComponent(one(self._soup.select("main h2:-soup-contains('Funding')")))
         self.milestones = SchemeMilestonesComponent(one(self._soup.select("main h2:-soup-contains('Milestones')")))

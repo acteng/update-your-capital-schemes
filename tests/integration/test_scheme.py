@@ -70,6 +70,26 @@ class TestScheme:
 
         assert scheme_page.name == "Wirral Package"
 
+    @pytest.mark.parametrize(
+        "review_date, expected_needs_review", [(datetime(2023, 1, 2), True), (datetime(2023, 4, 1), False)]
+    )
+    def test_scheme_shows_needs_review(
+        self,
+        clock: Clock,
+        schemes: SchemeRepository,
+        client: FlaskClient,
+        review_date: datetime,
+        expected_needs_review: bool,
+    ) -> None:
+        clock.now = datetime(2023, 4, 24)
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.update_authority_review(AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID))
+        schemes.add(scheme)
+
+        scheme_page = SchemePage.open(client, id_=1)
+
+        assert scheme_page.needs_review == expected_needs_review
+
     def test_scheme_shows_minimal_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 

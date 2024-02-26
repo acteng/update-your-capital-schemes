@@ -116,13 +116,20 @@ def get(scheme_id: int) -> Response:
 
 
 @bearer_auth
-@inject.autoparams("users", "authorities", "schemes")
+@inject.autoparams("clock", "reporting_window_service", "users", "authorities", "schemes")
 def get_html(
-    scheme_id: int, users: UserRepository, authorities: AuthorityRepository, schemes: SchemeRepository
+    scheme_id: int,
+    clock: Clock,
+    reporting_window_service: ReportingWindowService,
+    users: UserRepository,
+    authorities: AuthorityRepository,
+    schemes: SchemeRepository,
 ) -> Response:
     user_info = session["user"]
     user = users.get_by_email(user_info["email"])
     assert user
+    now = clock.now
+    reporting_window = reporting_window_service.get_by_date(now)
     authority = authorities.get(user.authority_id)
     assert authority
     scheme = schemes.get(scheme_id)
@@ -131,7 +138,7 @@ def get_html(
     if user.authority_id != scheme.authority_id:
         abort(403)
 
-    context = SchemeContext.from_domain(authority, scheme)
+    context = SchemeContext.from_domain(reporting_window, authority, scheme)
     return Response(render_template("scheme/index.html", **as_shallow_dict(context)))
 
 
@@ -151,17 +158,21 @@ class SchemeContext:
     id: int
     authority_name: str
     name: str
+    needs_review: bool
     overview: SchemeOverviewContext
     funding: SchemeFundingContext
     milestones: SchemeMilestonesContext
     outputs: SchemeOutputsContext
 
     @classmethod
-    def from_domain(cls, authority: Authority, scheme: Scheme) -> SchemeContext:
+    def from_domain(
+        cls, reporting_window: ReportingWindow | None, authority: Authority, scheme: Scheme
+    ) -> SchemeContext:
         return cls(
             id=scheme.id,
             authority_name=authority.name,
             name=scheme.name,
+            needs_review=scheme.needs_review(reporting_window) if reporting_window else False,
             overview=SchemeOverviewContext.from_domain(scheme),
             funding=SchemeFundingContext.from_domain(scheme.funding),
             milestones=SchemeMilestonesContext.from_domain(scheme.milestones),

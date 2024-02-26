@@ -1,5 +1,9 @@
 from datetime import datetime
 
+import pytest
+
+from schemes.domain.dates import DateRange
+from schemes.domain.reporting_window import ReportingWindow
 from schemes.domain.schemes import (
     AuthorityReview,
     DataSource,
@@ -59,6 +63,28 @@ class TestScheme:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
 
         assert scheme.last_reviewed is None
+
+    @pytest.mark.parametrize(
+        "review_date, expected_needs_review",
+        [
+            (datetime(2023, 3, 31), True),
+            (datetime(2023, 4, 1), False),
+            (datetime(2023, 4, 30), False),
+            (datetime(2023, 5, 1), False),
+        ],
+    )
+    def test_needs_review(self, review_date: datetime, expected_needs_review: bool) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 4, 30)))
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.update_authority_review(AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID))
+
+        assert scheme.needs_review(reporting_window) == expected_needs_review
+
+    def test_needs_review_when_no_authority_reviews(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 4, 30)))
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+
+        assert scheme.needs_review(reporting_window)
 
     def test_get_reference(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)

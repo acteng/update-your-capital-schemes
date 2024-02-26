@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import Enum, auto, unique
 
+from schemes.domain.reporting_window import ReportingWindow
 from schemes.domain.schemes.funding import DataSource, SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
@@ -38,6 +39,10 @@ class Scheme:
             if self._authority_reviews
             else None
         )
+
+    def needs_review(self, reporting_window: ReportingWindow) -> bool:
+        last_reviewed = self.last_reviewed
+        return last_reviewed < reporting_window.window.date_from if last_reviewed else True
 
     @property
     def funding(self) -> SchemeFunding:

@@ -109,14 +109,47 @@ class TestSchemeContext:
         authority = Authority(id_=2, name="Liverpool City Region Combined Authority")
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
 
-        context = SchemeContext.from_domain(authority, scheme)
+        context = SchemeContext.from_domain(None, authority, scheme)
 
         assert (
             context.id == 1
             and context.authority_name == "Liverpool City Region Combined Authority"
             and context.name == "Wirral Package"
+            and not context.needs_review
             and context.overview.reference == "ATE00001"
         )
+
+    @pytest.mark.parametrize(
+        "review_date, expected_needs_review", [(datetime(2023, 1, 2), True), (datetime(2023, 4, 1), False)]
+    )
+    def test_from_domain_sets_needs_review(self, review_date: datetime, expected_needs_review: bool) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 4, 30)))
+        authority = Authority(id_=2, name="")
+        scheme = Scheme(id_=1, name="", authority_id=2)
+        scheme.update_authority_review(AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID))
+
+        context = SchemeContext.from_domain(reporting_window, authority, scheme)
+
+        assert context.needs_review == expected_needs_review
+
+    def test_from_domain_sets_needs_review_when_outside_reporting_window(self) -> None:
+        authority = Authority(id_=2, name="")
+        scheme = Scheme(id_=1, name="", authority_id=2)
+        scheme.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2023, 4, 1), source=DataSource.ATF4_BID)
+        )
+
+        context = SchemeContext.from_domain(None, authority, scheme)
+
+        assert not context.needs_review
+
+    def test_from_domain_sets_needs_review_when_outside_reporting_window_and_no_authority_reviews(self) -> None:
+        authority = Authority(id_=2, name="")
+        scheme = Scheme(id_=1, name="", authority_id=2)
+
+        context = SchemeContext.from_domain(None, authority, scheme)
+
+        assert not context.needs_review
 
     def test_from_domain_sets_funding(self) -> None:
         authority = Authority(id_=2, name="")
@@ -131,7 +164,7 @@ class TestSchemeContext:
             )
         )
 
-        context = SchemeContext.from_domain(authority, scheme)
+        context = SchemeContext.from_domain(None, authority, scheme)
 
         assert context.funding.funding_allocation == 100_000
 
@@ -149,7 +182,7 @@ class TestSchemeContext:
             ),
         )
 
-        context = SchemeContext.from_domain(authority, scheme)
+        context = SchemeContext.from_domain(None, authority, scheme)
 
         assert context.milestones.milestones[0].planned == date(2020, 2, 1)
 
@@ -173,7 +206,7 @@ class TestSchemeContext:
             ),
         )
 
-        context = SchemeContext.from_domain(authority, scheme)
+        context = SchemeContext.from_domain(None, authority, scheme)
 
         assert context.outputs.outputs[0].planned == Decimal(20)
 

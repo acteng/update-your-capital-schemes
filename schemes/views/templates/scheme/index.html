@@ -1,5 +1,6 @@
 {% extends "service_base.html" %}
 {% from "govuk_frontend_jinja/components/back-link/macro.html" import govukBackLink %}
+{% from "govuk_frontend_jinja/components/tag/macro.html" import govukTag %}
 
 {% block beforeContent %}
     {{ super() }}
@@ -12,6 +13,12 @@
     <h1 class="govuk-heading-xl">
         <span class="govuk-caption-xl">{{ authority_name }}</span>
         <span>{{ name }}</span>
+        {% if needs_review %}
+            {{ govukTag({
+                "classes": "govuk-tag--red app-vertical-align-middle",
+                "text": "Needs review"
+            }) }}
+        {% endif %}
     </h1>
 
     <div class="govuk-grid-row">

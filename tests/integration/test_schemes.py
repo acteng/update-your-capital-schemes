@@ -76,16 +76,35 @@ class TestSchemes:
         assert schemes_page.authority == "Liverpool City Region Combined Authority"
 
     def test_schemes_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.funding_programme = FundingProgramme.ATF3
-        scheme1.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
-        )
         schemes.add(
-            scheme1,
+            Scheme(id_=1, name="Wirral Package", authority_id=1),
             Scheme(id_=2, name="School Streets", authority_id=1),
             Scheme(id_=3, name="Hospital Fields Road", authority_id=2),
         )
+
+        schemes_page = SchemesPage.open(client)
+
+        assert schemes_page.schemes
+        assert [row.reference for row in schemes_page.schemes] == ["ATE00001", "ATE00002"]
+        assert not schemes_page.is_no_schemes_message_visible
+
+    def test_schemes_shows_minimal_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        schemes_page = SchemesPage.open(client)
+
+        assert schemes_page.schemes
+        assert schemes_page.schemes.to_dicts() == [
+            {"reference": "ATE00001", "funding_programme": "", "name": "Wirral Package", "last_reviewed": ""}
+        ]
+
+    def test_schemes_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding_programme = FundingProgramme.ATF3
+        scheme.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
+        )
+        schemes.add(scheme)
 
         schemes_page = SchemesPage.open(client)
 
@@ -96,10 +115,8 @@ class TestSchemes:
                 "funding_programme": "ATF3",
                 "name": "Wirral Package",
                 "last_reviewed": "2 Jan 2020",
-            },
-            {"reference": "ATE00002", "funding_programme": "", "name": "School Streets", "last_reviewed": ""},
+            }
         ]
-        assert not schemes_page.is_no_schemes_message_visible
 
     def test_scheme_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))

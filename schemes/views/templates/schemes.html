@@ -18,12 +18,12 @@
     {% if schemes %}
         {% set rows = [] %}
         {% for scheme in schemes %}
+            {% set referenceHtml -%}
+                <a class="govuk-link" href="{{ url_for("schemes.get", scheme_id=scheme.id) }}">{{ scheme.reference }}</a>
+            {%- endset %}
             {% do rows.append([
                 {
-                    "html": '<a class="govuk-link" href="{}">{}</a>'.format(
-                        url_for("schemes.get", scheme_id=scheme.id),
-                        scheme.reference
-                    )
+                    "html": referenceHtml
                 },
                 {
                     "text": scheme.funding_programme.name | d("", true)

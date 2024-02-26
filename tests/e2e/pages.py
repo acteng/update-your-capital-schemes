@@ -154,7 +154,7 @@ class SchemePage:
         heading = self._main.get_by_role("heading").first
         self._authority = heading.locator(".govuk-caption-xl")
         self._name = heading.locator("span").nth(1)
-        self._tag = heading.locator(".govuk-tag")
+        self._tags = heading.locator(".govuk-tag")
         self.overview = SchemeOverviewComponent(self._main.get_by_role("heading", name="Overview"))
         self.funding = SchemeFundingComponent(self._main.get_by_role("heading", name="Funding"))
         self.milestones = SchemeMilestonesComponent(self._main.get_by_role("heading", name="Milestones"))
@@ -177,7 +177,7 @@ class SchemePage:
 
     @property
     def needs_review(self) -> bool:
-        return (self._tag.text_content() or "").strip() == "Needs review"
+        return "Needs review" in (text_content.strip() for text_content in self._tags.all_text_contents())
 
 
 class SummaryCardComponent:

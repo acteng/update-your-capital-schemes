@@ -1,13 +1,13 @@
 from datetime import datetime
 
 from schemes.domain.schemes import (
+    AuthorityReview,
     DataSource,
     Scheme,
     SchemeFunding,
     SchemeMilestones,
     SchemeOutputs,
 )
-from schemes.domain.schemes.schemes import AuthorityReview
 
 
 class TestScheme:

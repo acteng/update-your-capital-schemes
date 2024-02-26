@@ -7,6 +7,7 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import (
+    AuthorityReview,
     DataSource,
     DateRange,
     FinancialRevision,
@@ -20,7 +21,6 @@ from schemes.domain.schemes import (
     SchemeRepository,
     SchemeType,
 )
-from schemes.domain.schemes.schemes import AuthorityReview
 from schemes.domain.users import UserRepository
 
 

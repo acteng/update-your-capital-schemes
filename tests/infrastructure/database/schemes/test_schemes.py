@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from schemes.domain.authorities import Authority
 from schemes.domain.schemes import (
+    AuthorityReview,
     DataSource,
     DateRange,
     FinancialRevision,
@@ -20,7 +21,6 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeType,
 )
-from schemes.domain.schemes.schemes import AuthorityReview
 from schemes.infrastructure.database import (
     CapitalSchemeAuthorityReviewEntity,
     CapitalSchemeEntity,

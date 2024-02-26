@@ -6,6 +6,7 @@ import pytest
 from schemes.domain.authorities import Authority
 from schemes.domain.reporting_window import ReportingWindow
 from schemes.domain.schemes import (
+    AuthorityReview,
     DataSource,
     DateRange,
     FinancialRevision,
@@ -19,7 +20,6 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeType,
 )
-from schemes.domain.schemes.schemes import AuthorityReview
 from schemes.views.schemes import SchemeRepr
 from schemes.views.schemes.funding import (
     DataSourceRepr,

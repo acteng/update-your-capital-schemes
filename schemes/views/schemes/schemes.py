@@ -23,12 +23,12 @@ from schemes.dicts import as_shallow_dict, inverse_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
 from schemes.domain.schemes import (
+    AuthorityReview,
     FundingProgramme,
     Scheme,
     SchemeRepository,
     SchemeType,
 )
-from schemes.domain.schemes.schemes import AuthorityReview
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
 from schemes.views.auth.api_key import api_key_auth

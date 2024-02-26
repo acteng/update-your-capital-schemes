@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from schemes.dicts import inverse_dict
 from schemes.domain.schemes import (
+    AuthorityReview,
     DateRange,
     FinancialRevision,
     FundingProgramme,
@@ -13,7 +14,6 @@ from schemes.domain.schemes import (
     SchemeRepository,
     SchemeType,
 )
-from schemes.domain.schemes.schemes import AuthorityReview
 from schemes.infrastructure.database import (
     CapitalSchemeAuthorityReviewEntity,
     CapitalSchemeEntity,

@@ -35,5 +35,3 @@ class DefaultReportingWindowService(ReportingWindowService):
     def _reporting_windows(year: int) -> Generator[ReportingWindow, None, None]:
         for month in range(1, 12, 3):
             yield ReportingWindow(DateRange(datetime(year, month, 1), datetime(year, month + 1, 1)))
-        # TODO: remove once showcased
-        yield ReportingWindow(DateRange(datetime(2024, 2, 1), datetime(2024, 3, 1)))

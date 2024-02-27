@@ -1,0 +1,13 @@
+@import "../../../node_modules/govuk-frontend/dist/govuk/settings/spacing";
+@import "../../../node_modules/govuk-frontend/dist/govuk/helpers/spacing";
+
+.scheme-name {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.scheme-name__tag {
+  margin-left: govuk-spacing(1);
+  white-space: nowrap;
+}

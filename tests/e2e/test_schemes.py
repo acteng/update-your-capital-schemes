@@ -20,6 +20,7 @@ class TestAuthenticated:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     def test_schemes(self, app_client: AppClient, page: Page) -> None:
+        app_client.set_clock("2023-04-24T12:00:00")
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
@@ -46,12 +47,14 @@ class TestAuthenticated:
                 "reference": "ATE00001",
                 "funding_programme": "ATF3",
                 "name": "Wirral Package",
+                "needs_review": True,
                 "last_reviewed": "2 Jan 2020",
             },
             {
                 "reference": "ATE00002",
                 "funding_programme": "ATF4",
                 "name": "School Streets",
+                "needs_review": True,
                 "last_reviewed": "3 Jan 2020",
             },
         ]

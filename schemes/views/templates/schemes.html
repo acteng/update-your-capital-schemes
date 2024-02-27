@@ -1,6 +1,7 @@
 {% extends "service_base.html" %}
 {% from "govuk_frontend_jinja/components/notification-banner/macro.html" import govukNotificationBanner %}
 {% from "govuk_frontend_jinja/components/table/macro.html" import govukTable -%}
+{% from "govuk_frontend_jinja/components/tag/macro.html" import govukTag %}
 
 {% block content %}
 
@@ -21,6 +22,17 @@
             {% set referenceHtml -%}
                 <a class="govuk-link" href="{{ url_for("schemes.get", scheme_id=scheme.id) }}">{{ scheme.reference }}</a>
             {%- endset %}
+            {% set nameHtml -%}
+                <div class="scheme-name">
+                    <span>{{ scheme.name }}</span>
+                    {% if scheme.needs_review %}
+                        {{ govukTag({
+                            "classes": "scheme-name__tag govuk-tag--red",
+                            "text": "Needs review"
+                        }) }}
+                    {% endif %}
+                </div>
+            {%- endset %}
             {% do rows.append([
                 {
                     "html": referenceHtml
@@ -29,7 +41,7 @@
                     "text": scheme.funding_programme.name | d("", true)
                 },
                 {
-                    "text": scheme.name
+                    "html": nameHtml
                 },
                 {
                     "text": scheme.last_reviewed | date if scheme.last_reviewed

@@ -74,21 +74,50 @@ class TestSchemesContext:
 
         assert context.reporting_window_days_left == 7
 
+    def test_from_domain_sets_scheme_needs_review(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
+        authority = Authority(id_=1, name="")
+        scheme = Scheme(id_=1, name="", authority_id=1)
+        scheme.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+        )
+
+        context = SchemesContext.from_domain(datetime(1970, 1, 1), reporting_window, authority, [scheme])
+
+        assert context.schemes[0].needs_review
+
 
 class TestSchemeRowContext:
     def test_from_domain(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding_programme = FundingProgramme.ATF4
 
-        context = SchemeRowContext.from_domain(scheme)
+        context = SchemeRowContext.from_domain(None, scheme)
 
         assert context == SchemeRowContext(
             id=1,
             reference="ATE00001",
             funding_programme=FundingProgrammeContext(name="ATF4"),
             name="Wirral Package",
+            needs_review=False,
             last_reviewed=None,
         )
+
+    @pytest.mark.parametrize(
+        "review_date, expected_needs_review",
+        [
+            (datetime(2020, 1, 2), True),
+            (datetime(2020, 4, 2), False),
+        ],
+    )
+    def test_from_domain_sets_needs_review(self, review_date: datetime, expected_needs_review: bool) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.update_authority_review(AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID))
+
+        context = SchemeRowContext.from_domain(reporting_window, scheme)
+
+        assert context.needs_review == expected_needs_review
 
     def test_from_domain_sets_last_reviewed(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
@@ -99,7 +128,7 @@ class TestSchemeRowContext:
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.ATF4_BID)
         )
 
-        context = SchemeRowContext.from_domain(scheme)
+        context = SchemeRowContext.from_domain(None, scheme)
 
         assert context.last_reviewed == datetime(2020, 1, 3, 12)
 

@@ -79,7 +79,7 @@ class SchemesTableComponent:
     def __getitem__(self, reference: str) -> SchemeRowComponent:
         return next((scheme for scheme in self if scheme.reference == reference))
 
-    def to_dicts(self) -> list[dict[str, str | None]]:
+    def to_dicts(self) -> list[dict[str, str | bool | None]]:
         return [scheme.to_dict() for scheme in self]
 
 
@@ -90,14 +90,18 @@ class SchemeRowComponent:
         self.reference = reference.string
         self.reference_url = one(reference.select("a")).get("href")
         self.funding_programme = cells[1].string or ""
-        self.name = cells[2].string
+        name_cell = cells[2]
+        self.name = one(name_cell.select("span")).string
+        tag = name_cell.select_one(".govuk-tag")
+        self.needs_review = (tag.string or "").strip() == "Needs review" if tag else False
         self.last_reviewed = cells[3].string or ""
 
-    def to_dict(self) -> dict[str, str | None]:
+    def to_dict(self) -> dict[str, str | bool | None]:
         return {
             "reference": self.reference,
             "funding_programme": self.funding_programme,
             "name": self.name,
+            "needs_review": self.needs_review,
             "last_reviewed": self.last_reviewed,
         }
 

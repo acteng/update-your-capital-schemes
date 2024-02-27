@@ -86,7 +86,7 @@ class SchemesContext:
         return cls(
             reporting_window_days_left=reporting_window.days_left(now) if reporting_window else None,
             authority_name=authority.name,
-            schemes=[SchemeRowContext.from_domain(scheme) for scheme in schemes],
+            schemes=[SchemeRowContext.from_domain(reporting_window, scheme) for scheme in schemes],
         )
 
 
@@ -96,15 +96,17 @@ class SchemeRowContext:
     reference: str
     funding_programme: FundingProgrammeContext
     name: str
+    needs_review: bool
     last_reviewed: datetime | None
 
     @classmethod
-    def from_domain(cls, scheme: Scheme) -> SchemeRowContext:
+    def from_domain(cls, reporting_window: ReportingWindow | None, scheme: Scheme) -> SchemeRowContext:
         return cls(
             id=scheme.id,
             reference=scheme.reference,
             funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
             name=scheme.name,
+            needs_review=scheme.needs_review(reporting_window) if reporting_window else False,
             last_reviewed=scheme.last_reviewed,
         )
 

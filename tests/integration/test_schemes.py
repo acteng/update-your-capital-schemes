@@ -95,7 +95,13 @@ class TestSchemes:
 
         assert schemes_page.schemes
         assert schemes_page.schemes.to_dicts() == [
-            {"reference": "ATE00001", "funding_programme": "", "name": "Wirral Package", "last_reviewed": ""}
+            {
+                "reference": "ATE00001",
+                "funding_programme": "",
+                "name": "Wirral Package",
+                "needs_review": False,
+                "last_reviewed": "",
+            }
         ]
 
     def test_schemes_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -114,9 +120,25 @@ class TestSchemes:
                 "reference": "ATE00001",
                 "funding_programme": "ATF3",
                 "name": "Wirral Package",
+                "needs_review": False,
                 "last_reviewed": "2 Jan 2020",
             }
         ]
+
+    def test_schemes_shows_scheme_needs_review(
+        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient
+    ) -> None:
+        clock.now = datetime(2023, 4, 24)
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2023, 1, 2), source=DataSource.ATF3_BID)
+        )
+        schemes.add(scheme)
+
+        schemes_page = SchemesPage.open(client)
+
+        assert schemes_page.schemes
+        assert [row.needs_review for row in schemes_page.schemes] == [True]
 
     def test_scheme_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))

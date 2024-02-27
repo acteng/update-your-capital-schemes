@@ -108,7 +108,7 @@ class SchemesTableComponent:
     def __getitem__(self, reference: str) -> SchemeRowComponent:
         return next((scheme for scheme in self if scheme.reference == reference))
 
-    def to_dicts(self) -> list[dict[str, str | None]]:
+    def to_dicts(self) -> list[dict[str, str | bool | None]]:
         return [scheme.to_dict() for scheme in self]
 
 
@@ -117,6 +117,9 @@ class SchemeRowComponent:
         self._row = row
         self._cells = row.get_by_role("cell")
         self._reference = self._cells.nth(0)
+        name_cell = self._cells.nth(2)
+        self._name = name_cell.locator("span")
+        self._tags = name_cell.locator(".govuk-tag")
 
     @property
     def reference(self) -> str | None:
@@ -128,7 +131,11 @@ class SchemeRowComponent:
 
     @property
     def name(self) -> str | None:
-        return self._cells.nth(2).text_content()
+        return self._name.text_content()
+
+    @property
+    def needs_review(self) -> bool:
+        return "Needs review" in (text_content.strip() for text_content in self._tags.all_text_contents())
 
     @property
     def last_reviewed(self) -> str | None:
@@ -138,11 +145,12 @@ class SchemeRowComponent:
         self._reference.get_by_role("link").click()
         return SchemePage(self._row.page)
 
-    def to_dict(self) -> dict[str, str | None]:
+    def to_dict(self) -> dict[str, str | bool | None]:
         return {
             "reference": self.reference,
             "funding_programme": self.funding_programme,
             "name": self.name,
+            "needs_review": self.needs_review,
             "last_reviewed": self.last_reviewed,
         }
 

@@ -119,7 +119,7 @@ class SchemeRowComponent:
         self._reference = self._cells.nth(0)
         name_cell = self._cells.nth(2)
         self._name = name_cell.locator("span")
-        self._tags = name_cell.locator(".govuk-tag")
+        self._tag = TagComponent(name_cell.locator(".govuk-tag"))
 
     @property
     def reference(self) -> str | None:
@@ -135,7 +135,7 @@ class SchemeRowComponent:
 
     @property
     def needs_review(self) -> bool:
-        return "Needs review" in (text_content.strip() for text_content in self._tags.all_text_contents())
+        return self._tag.text == "Needs review"
 
     @property
     def last_reviewed(self) -> str | None:
@@ -153,6 +153,16 @@ class SchemeRowComponent:
             "needs_review": self.needs_review,
             "last_reviewed": self.last_reviewed,
         }
+
+
+class TagComponent:
+    def __init__(self, tag: Locator):
+        self._tag = tag
+
+    @property
+    def text(self) -> str:
+        texts = self._tag.all_text_contents()
+        return texts[0].strip() if texts else ""
 
 
 class SchemePage:

@@ -93,7 +93,7 @@ class SchemeRowComponent:
         name_cell = cells[2]
         self.name = one(name_cell.select("span")).string
         tag = name_cell.select_one(".govuk-tag")
-        self.needs_review = (tag.string or "").strip() == "Needs review" if tag else False
+        self.needs_review = TagComponent(tag).text == "Needs review" if tag else False
         self.last_reviewed = cells[3].string or ""
 
     def to_dict(self) -> dict[str, str | bool | None]:
@@ -106,6 +106,11 @@ class SchemeRowComponent:
         }
 
 
+class TagComponent:
+    def __init__(self, tag: Tag):
+        self.text = (tag.string or "").strip()
+
+
 class SchemePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
@@ -113,7 +118,7 @@ class SchemePage(PageObject):
         self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
         self.name = one(self._soup.select("main h1 span:nth-child(2)")).string
         tag = self._soup.select_one("main h1 .govuk-tag")
-        self.needs_review = (tag.string or "").strip() == "Needs review" if tag else False
+        self.needs_review = TagComponent(tag).text == "Needs review" if tag else False
         self.overview = SchemeOverviewComponent(one(self._soup.select("main h2:-soup-contains('Overview')")))
         self.funding = SchemeFundingComponent(one(self._soup.select("main h2:-soup-contains('Funding')")))
         self.milestones = SchemeMilestonesComponent(one(self._soup.select("main h2:-soup-contains('Milestones')")))

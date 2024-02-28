@@ -58,7 +58,7 @@ class TestSchemesContext:
             Scheme(id_=2, name="School Streets", authority_id=1),
         ]
 
-        context = SchemesContext.from_domain(datetime(1970, 1, 1), None, authority, schemes)
+        context = SchemesContext.from_domain(datetime.min, None, authority, schemes)
 
         assert (
             context.reporting_window_days_left is None
@@ -82,7 +82,7 @@ class TestSchemesContext:
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
 
-        context = SchemesContext.from_domain(datetime(1970, 1, 1), reporting_window, authority, [scheme])
+        context = SchemesContext.from_domain(datetime.min, reporting_window, authority, [scheme])
 
         assert context.schemes[0].needs_review
 

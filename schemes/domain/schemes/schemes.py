@@ -42,7 +42,7 @@ class Scheme:
 
     def needs_review(self, reporting_window: ReportingWindow) -> bool:
         last_reviewed = self.last_reviewed
-        return last_reviewed < reporting_window.window.date_from if last_reviewed else True
+        return last_reviewed is None or last_reviewed < reporting_window.window.date_from
 
     @property
     def funding(self) -> SchemeFunding:

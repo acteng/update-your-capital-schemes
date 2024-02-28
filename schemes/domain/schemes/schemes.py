@@ -32,6 +32,10 @@ class Scheme:
     def update_authority_review(self, authority_review: AuthorityReview) -> None:
         self._authority_reviews.append(authority_review)
 
+    def update_authority_reviews(self, *authority_reviews: AuthorityReview) -> None:
+        for authority_review in authority_reviews:
+            self.update_authority_review(authority_review)
+
     @property
     def last_reviewed(self) -> datetime | None:
         return (

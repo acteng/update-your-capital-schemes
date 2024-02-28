@@ -121,11 +121,9 @@ class TestSchemeRowContext:
 
     def test_from_domain_sets_last_reviewed(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
-        )
-        scheme.update_authority_review(
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.ATF4_BID)
+        scheme.update_authority_reviews(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID),
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.ATF4_BID),
         )
 
         context = SchemeRowContext.from_domain(None, scheme)
@@ -298,11 +296,9 @@ class TestSchemeOverviewContext:
 
     def test_from_domain_sets_last_reviewed(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
-        )
-        scheme.update_authority_review(
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+        scheme.update_authority_reviews(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID),
         )
 
         context = SchemeOverviewContext.from_domain(scheme)
@@ -370,11 +366,9 @@ class TestSchemeRepr:
 
     def test_from_domain_sets_authority_reviews(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
-        )
-        scheme.update_authority_review(
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.PULSE_6)
+        scheme.update_authority_reviews(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID),
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.PULSE_6),
         )
 
         scheme_repr = SchemeRepr.from_domain(scheme)

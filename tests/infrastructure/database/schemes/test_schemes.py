@@ -80,11 +80,9 @@ class TestDatabaseSchemeRepository:
 
     def test_add_schemes_authority_reviews(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.update_authority_review(
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
-        )
-        scheme1.update_authority_review(
-            AuthorityReview(id_=3, review_date=datetime(2020, 2, 1), source=DataSource.PULSE_6)
+        scheme1.update_authority_reviews(
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
+            AuthorityReview(id_=3, review_date=datetime(2020, 2, 1), source=DataSource.PULSE_6),
         )
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))

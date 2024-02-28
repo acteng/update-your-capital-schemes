@@ -45,16 +45,21 @@ class TestScheme:
 
         assert scheme.authority_reviews == [authority_review]
 
+    def test_update_authority_reviews(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        authority_review1 = AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+        authority_review2 = AuthorityReview(id_=2, review_date=datetime(2020, 1, 3), source=DataSource.ATF4_BID)
+
+        scheme.update_authority_reviews(authority_review1, authority_review2)
+
+        assert scheme.authority_reviews == [authority_review1, authority_review2]
+
     def test_last_reviewed(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
-        )
-        scheme.update_authority_review(
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 4), source=DataSource.ATF4_BID)
-        )
-        scheme.update_authority_review(
-            AuthorityReview(id_=3, review_date=datetime(2020, 1, 3), source=DataSource.ATF4_BID)
+        scheme.update_authority_reviews(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID),
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 4), source=DataSource.ATF4_BID),
+            AuthorityReview(id_=3, review_date=datetime(2020, 1, 3), source=DataSource.ATF4_BID),
         )
 
         assert scheme.last_reviewed == datetime(2020, 1, 4)

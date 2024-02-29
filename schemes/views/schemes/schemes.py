@@ -24,6 +24,7 @@ from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
 from schemes.domain.schemes import (
     AuthorityReview,
+    DataSource,
     FundingProgramme,
     Scheme,
     SchemeRepository,
@@ -317,6 +318,19 @@ def milestones(users: UserRepository, clock: Clock, schemes: SchemeRepository, s
     return redirect(url_for("schemes.get", scheme_id=scheme_id))
 
 
+@bp.post("<int:scheme_id>/review")
+@bearer_auth
+@inject.autoparams("clock", "schemes")
+def review(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+    scheme = schemes.get(scheme_id)
+    assert scheme
+
+    scheme.update_authority_review(AuthorityReview(id_=None, review_date=clock.now, source=DataSource.AUTHORITY_UPDATE))
+    schemes.update(scheme)
+
+    return redirect(url_for("schemes.index"))
+
+
 @bp.delete("")
 @api_key_auth
 @inject.autoparams()
@@ -441,6 +455,9 @@ class AuthorityReviewRepr:
 
     @classmethod
     def from_domain(cls, authority_review: AuthorityReview) -> AuthorityReviewRepr:
+        if not authority_review.id:
+            raise ValueError("Authority review must be persistent")
+
         return AuthorityReviewRepr(
             id=authority_review.id,
             review_date=authority_review.review_date.isoformat(),

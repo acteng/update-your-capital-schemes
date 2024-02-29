@@ -177,6 +177,7 @@ class SchemePage:
         self.funding = SchemeFundingComponent(self._main.get_by_role("heading", name="Funding"))
         self.milestones = SchemeMilestonesComponent(self._main.get_by_role("heading", name="Milestones"))
         self.outputs = SchemeOutputsComponent(self._main.get_by_role("heading", name="Outputs"))
+        self.review = SchemeReviewFormComponent(self._main.get_by_role("form"))
 
     @classmethod
     def open(cls, page: Page, id_: int) -> SchemePage:
@@ -357,6 +358,22 @@ class SchemeOutputRowComponent:
             "measurement": self.measurement,
             "planned": self.planned,
         }
+
+
+class SchemeReviewFormComponent:
+    def __init__(self, form: Locator):
+        self._up_to_date = form.get_by_label(
+            "I confirm that the details in this scheme have been reviewed and are all up-to-date"
+        )
+        self._confirm = form.get_by_role("button", name="Confirm")
+
+    def up_to_date(self) -> SchemeReviewFormComponent:
+        self._up_to_date.check(force=True)
+        return self
+
+    def confirm(self) -> SchemesPage:
+        self._confirm.click()
+        return SchemesPage(self._up_to_date.page)
 
 
 class ChangeSpendToDatePage:

@@ -78,6 +78,8 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     csrf.exempt(authorities.add_schemes)
     csrf.exempt(authorities.clear)
     app.register_blueprint(schemes.bp, url_prefix="/schemes")
+    # TODO: add CSRF to scheme review form
+    csrf.exempt(schemes.schemes.review)
     csrf.exempt(schemes.schemes.clear)
     app.register_blueprint(users.bp, url_prefix="/users")
     csrf.exempt(users.clear)

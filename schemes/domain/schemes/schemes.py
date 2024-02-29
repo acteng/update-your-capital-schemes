@@ -80,7 +80,8 @@ class FundingProgramme(Enum):
 
 
 class AuthorityReview:
-    def __init__(self, id_: int, review_date: datetime, source: DataSource):
+    # TODO: domain identifier should be mandatory for transient instances
+    def __init__(self, id_: int | None, review_date: datetime, source: DataSource):
         self.id = id_
         self.review_date = review_date
         self.source = source

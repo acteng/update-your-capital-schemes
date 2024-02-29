@@ -762,6 +762,44 @@ class TestDatabaseSchemeRepository:
         with Session(engine) as session:
             assert session.execute(select(func.count()).select_from(CapitalSchemeEntity)).scalar_one() == 0
 
+    def test_update_scheme_authority_reviews(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+        with Session(engine) as session:
+            session.add_all(
+                [
+                    CapitalSchemeEntity(
+                        capital_scheme_id=1,
+                        scheme_name="Wirral Package",
+                        bid_submitting_authority_id=1,
+                    ),
+                    CapitalSchemeAuthorityReviewEntity(
+                        capital_scheme_authority_review_id=2,
+                        capital_scheme_id=1,
+                        review_date=datetime(2020, 1, 1),
+                        data_source_id=3,
+                    ),
+                ]
+            )
+            session.commit()
+        scheme = schemes.get(1)
+        assert scheme
+        scheme.update_authority_review(
+            AuthorityReview(id_=3, review_date=datetime(2020, 1, 2), source=DataSource.AUTHORITY_UPDATE)
+        )
+
+        schemes.update(scheme)
+
+        with Session(engine) as session:
+            row = session.get_one(CapitalSchemeEntity, 1)
+            capital_scheme_authority_review1: CapitalSchemeAuthorityReviewEntity
+            capital_scheme_authority_review2: CapitalSchemeAuthorityReviewEntity
+            capital_scheme_authority_review1, capital_scheme_authority_review2 = row.capital_scheme_authority_reviews
+        assert (
+            capital_scheme_authority_review2.capital_scheme_authority_review_id == 3
+            and capital_scheme_authority_review2.capital_scheme_id == 1
+            and capital_scheme_authority_review2.review_date == datetime(2020, 1, 2)
+            and capital_scheme_authority_review2.data_source_id == 16
+        )
+
     def test_update_scheme_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with Session(engine) as session:
             session.add_all(

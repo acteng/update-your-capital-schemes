@@ -123,6 +123,7 @@ class SchemePage(PageObject):
         self.funding = SchemeFundingComponent(one(self._soup.select("main h2:-soup-contains('Funding')")))
         self.milestones = SchemeMilestonesComponent(one(self._soup.select("main h2:-soup-contains('Milestones')")))
         self.outputs = SchemeOutputsComponent(one(self._soup.select("main h2:-soup-contains('Outputs')")))
+        self.review = SchemeReviewFormComponent(one(self._soup.select("main form")))
 
     @classmethod
     def open(cls, client: FlaskClient, id_: int) -> SchemePage:
@@ -233,6 +234,12 @@ class SchemeOutputRowComponent:
             "measurement": self.measurement,
             "planned": self.planned,
         }
+
+
+class SchemeReviewFormComponent:
+    def __init__(self, form: Tag):
+        self._form = form
+        self.confirm_url = form["action"]
 
 
 class ChangeSpendToDatePage(PageObject):

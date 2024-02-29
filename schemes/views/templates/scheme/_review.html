@@ -2,6 +2,8 @@
 {% from "govuk_frontend_jinja/components/checkboxes/macro.html" import govukCheckboxes %}
 
 <form method="post" action="{{ url_for('schemes.review', scheme_id=id) }}" aria-label="Review scheme">
+    {{ review.form.csrf_token }}
+
     {{ govukCheckboxes({
         "name": "review",
         "fieldset": {

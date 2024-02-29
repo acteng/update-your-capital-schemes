@@ -115,6 +115,10 @@ class SchemePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
         self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
+        notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
+        self.notification_banner = (
+            NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
+        )
         self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
         self.name = one(self._soup.select("main h1 span:nth-child(2)")).string
         tag = self._soup.select_one("main h1 .govuk-tag")

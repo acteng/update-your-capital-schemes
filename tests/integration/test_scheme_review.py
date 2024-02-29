@@ -23,9 +23,11 @@ class TestSchemeReview:
 
         scheme_page = SchemePage.open(client, id_=1)
 
-        assert scheme_page.review.confirm_url == "/schemes/1/review"
+        assert scheme_page.review.confirm_url == "/schemes/1"
 
-    def test_review_updates_last_reviewed(self, clock: Clock, schemes: SchemeRepository, client: FlaskClient) -> None:
+    def test_review_updates_last_reviewed(
+        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
         clock.now = datetime(2023, 4, 24, 12)
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.update_authority_review(
@@ -33,7 +35,7 @@ class TestSchemeReview:
         )
         schemes.add(scheme)
 
-        client.post("/schemes/1/review", data={})
+        client.post("/schemes/1", data={"csrf_token": csrf_token})
 
         actual_scheme = schemes.get(1)
         assert actual_scheme
@@ -45,9 +47,31 @@ class TestSchemeReview:
             and authority_review2.source == DataSource.AUTHORITY_UPDATE
         )
 
-    def test_review_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    def test_review_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-        response = client.post("/schemes/1/review", data={})
+        response = client.post("/schemes/1", data={"csrf_token": csrf_token})
 
         assert response.status_code == 302 and response.location == "/schemes"
+
+    def test_cannot_review_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        scheme_page = SchemePage(client.post("/schemes/1", data={}, follow_redirects=True))
+
+        assert scheme_page.name == "Wirral Package"
+        assert (
+            scheme_page.notification_banner
+            and scheme_page.notification_banner.heading == "The form you were submitting has expired. Please try again."
+        )
+
+    def test_cannot_review_when_incorrect_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        scheme_page = SchemePage(client.post("/schemes/1", data={"csrf_token": "x"}, follow_redirects=True))
+
+        assert scheme_page.name == "Wirral Package"
+        assert (
+            scheme_page.notification_banner
+            and scheme_page.notification_banner.heading == "The form you were submitting has expired. Please try again."
+        )

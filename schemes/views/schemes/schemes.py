@@ -17,6 +17,7 @@ from flask import (
     session,
     url_for,
 )
+from flask_wtf import FlaskForm
 from werkzeug import Response as BaseResponse
 
 from schemes.dicts import as_shallow_dict, inverse_dict
@@ -166,6 +167,7 @@ class SchemeContext:
     funding: SchemeFundingContext
     milestones: SchemeMilestonesContext
     outputs: SchemeOutputsContext
+    review: SchemeReviewContext
 
     @classmethod
     def from_domain(
@@ -180,6 +182,7 @@ class SchemeContext:
             funding=SchemeFundingContext.from_domain(scheme.funding),
             milestones=SchemeMilestonesContext.from_domain(scheme.milestones),
             outputs=SchemeOutputsContext.from_domain(scheme.outputs.current_output_revisions),
+            review=SchemeReviewContext(),
         )
 
 
@@ -232,6 +235,15 @@ class FundingProgrammeContext:
     @classmethod
     def from_domain(cls, funding_programme: FundingProgramme | None) -> FundingProgrammeContext:
         return cls(name=cls._NAMES[funding_programme] if funding_programme else None)
+
+
+class SchemeReviewForm(FlaskForm):  # type: ignore
+    pass
+
+
+@dataclass(frozen=True)
+class SchemeReviewContext:
+    form: SchemeReviewForm = field(default_factory=SchemeReviewForm)
 
 
 @bp.get("<int:scheme_id>/spend-to-date")
@@ -318,7 +330,7 @@ def milestones(users: UserRepository, clock: Clock, schemes: SchemeRepository, s
     return redirect(url_for("schemes.get", scheme_id=scheme_id))
 
 
-@bp.post("<int:scheme_id>/review")
+@bp.post("<int:scheme_id>")
 @bearer_auth
 @inject.autoparams("clock", "schemes")
 def review(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:

@@ -2,6 +2,7 @@ from datetime import date, datetime
 from decimal import Decimal
 
 import pytest
+from flask_wtf import FlaskForm
 
 from schemes.domain.authorities import Authority
 from schemes.domain.dates import DateRange
@@ -43,6 +44,8 @@ from schemes.views.schemes.schemes import (
     FundingProgrammeRepr,
     SchemeContext,
     SchemeOverviewContext,
+    SchemeReviewContext,
+    SchemeReviewForm,
     SchemeRowContext,
     SchemesContext,
     SchemeTypeContext,
@@ -131,6 +134,7 @@ class TestSchemeRowContext:
         assert context.last_reviewed == datetime(2020, 1, 3, 12)
 
 
+@pytest.mark.usefixtures("app")
 class TestSchemeContext:
     def test_from_domain(self) -> None:
         authority = Authority(id_=2, name="Liverpool City Region Combined Authority")
@@ -144,6 +148,7 @@ class TestSchemeContext:
             and context.name == "Wirral Package"
             and not context.needs_review
             and context.overview.reference == "ATE00001"
+            and isinstance(context.review.form, SchemeReviewForm)
         )
 
     @pytest.mark.parametrize(
@@ -343,6 +348,22 @@ class TestFundingProgrammeContext:
         context = FundingProgrammeContext.from_domain(funding_programme)
 
         assert context == FundingProgrammeContext(name=expected_name)
+
+
+@pytest.mark.usefixtures("app")
+class TestSchemeReviewContext:
+    def test_create(self) -> None:
+        context = SchemeReviewContext()
+
+        assert isinstance(context.form, SchemeReviewForm)
+
+
+@pytest.mark.usefixtures("app")
+class TestSchemeReviewForm:
+    def test_create(self) -> None:
+        form = SchemeReviewForm()
+
+        assert isinstance(form, FlaskForm)
 
 
 class TestSchemeRepr:

@@ -590,8 +590,7 @@ class CheckboxComponent:
 
     @value.setter
     def value(self, value: bool) -> None:
-        # TODO: don't force action when govuk-frontend upgraded to 5.2.0 (see #4768)
-        self._input.set_checked(value, force=True)
+        self._input.set_checked(value)
 
     @property
     def is_errored(self) -> bool:

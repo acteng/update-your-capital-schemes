@@ -49,10 +49,10 @@ class DatabaseSchemeRepository(SchemeRepository):
 
     def clear(self) -> None:
         with Session(self._engine) as session:
+            session.execute(delete(CapitalSchemeAuthorityReviewEntity))
             session.execute(delete(SchemeInterventionEntity))
             session.execute(delete(SchemeMilestoneEntity))
             session.execute(delete(CapitalSchemeFinancialEntity))
-            session.execute(delete(CapitalSchemeAuthorityReviewEntity))
             session.execute(delete(CapitalSchemeEntity))
             session.commit()
 
@@ -88,10 +88,6 @@ class DatabaseSchemeRepository(SchemeRepository):
             bid_submitting_authority_id=scheme.authority_id,
             scheme_type_id=self._scheme_type_mapper.to_id(scheme.type),
             funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
-            capital_scheme_authority_reviews=[
-                self._capital_scheme_authority_review_from_domain(authority_review)
-                for authority_review in scheme.reviews.authority_reviews
-            ],
             capital_scheme_financials=[
                 self._capital_scheme_financial_from_domain(financial_revision)
                 for financial_revision in scheme.funding.financial_revisions
@@ -104,6 +100,10 @@ class DatabaseSchemeRepository(SchemeRepository):
                 self._scheme_intervention_from_domain(output_revision)
                 for output_revision in scheme.outputs.output_revisions
             ],
+            capital_scheme_authority_reviews=[
+                self._capital_scheme_authority_review_from_domain(authority_review)
+                for authority_review in scheme.reviews.authority_reviews
+            ],
         )
 
     def _capital_scheme_to_domain(self, capital_scheme: CapitalSchemeEntity) -> Scheme:
@@ -115,11 +115,6 @@ class DatabaseSchemeRepository(SchemeRepository):
         scheme.type = self._scheme_type_mapper.to_domain(capital_scheme.scheme_type_id)
         scheme.funding_programme = self._funding_programme_mapper.to_domain(capital_scheme.funding_programme_id)
 
-        for capital_scheme_authority_review in capital_scheme.capital_scheme_authority_reviews:
-            scheme.reviews.update_authority_review(
-                self._capital_scheme_authority_review_to_domain(capital_scheme_authority_review)
-            )
-
         for capital_scheme_financial in capital_scheme.capital_scheme_financials:
             scheme.funding.update_financial(self._capital_scheme_financial_to_domain(capital_scheme_financial))
 
@@ -129,25 +124,12 @@ class DatabaseSchemeRepository(SchemeRepository):
         for scheme_intervention in capital_scheme.scheme_interventions:
             scheme.outputs.update_output(self._scheme_intervention_to_domain(scheme_intervention))
 
+        for capital_scheme_authority_review in capital_scheme.capital_scheme_authority_reviews:
+            scheme.reviews.update_authority_review(
+                self._capital_scheme_authority_review_to_domain(capital_scheme_authority_review)
+            )
+
         return scheme
-
-    def _capital_scheme_authority_review_from_domain(
-        self, authority_review: AuthorityReview
-    ) -> CapitalSchemeAuthorityReviewEntity:
-        return CapitalSchemeAuthorityReviewEntity(
-            capital_scheme_authority_review_id=authority_review.id,
-            review_date=authority_review.review_date,
-            data_source_id=self._data_source_mapper.to_id(authority_review.source),
-        )
-
-    def _capital_scheme_authority_review_to_domain(
-        self, capital_scheme_authority_review: CapitalSchemeAuthorityReviewEntity
-    ) -> AuthorityReview:
-        return AuthorityReview(
-            id_=capital_scheme_authority_review.capital_scheme_authority_review_id,
-            review_date=capital_scheme_authority_review.review_date,
-            source=self._data_source_mapper.to_domain(capital_scheme_authority_review.data_source_id),
-        )
 
     def _capital_scheme_financial_from_domain(
         self, financial_revision: FinancialRevision
@@ -212,6 +194,24 @@ class DatabaseSchemeRepository(SchemeRepository):
             type_measure=self._output_type_measure_mapper.to_domain(scheme_intervention.intervention_type_measure_id),
             value=scheme_intervention.intervention_value,
             observation_type=self._observation_type_mapper.to_domain(scheme_intervention.observation_type_id),
+        )
+
+    def _capital_scheme_authority_review_from_domain(
+        self, authority_review: AuthorityReview
+    ) -> CapitalSchemeAuthorityReviewEntity:
+        return CapitalSchemeAuthorityReviewEntity(
+            capital_scheme_authority_review_id=authority_review.id,
+            review_date=authority_review.review_date,
+            data_source_id=self._data_source_mapper.to_id(authority_review.source),
+        )
+
+    def _capital_scheme_authority_review_to_domain(
+        self, capital_scheme_authority_review: CapitalSchemeAuthorityReviewEntity
+    ) -> AuthorityReview:
+        return AuthorityReview(
+            id_=capital_scheme_authority_review.capital_scheme_authority_review_id,
+            review_date=capital_scheme_authority_review.review_date,
+            source=self._data_source_mapper.to_domain(capital_scheme_authority_review.data_source_id),
         )
 
 

@@ -36,22 +36,10 @@ class CapitalSchemeEntity(Base):
     )
     scheme_type_id: Mapped[int | None]
     funding_programme_id: Mapped[int | None]
-    capital_scheme_authority_reviews: Mapped[list[CapitalSchemeAuthorityReviewEntity]] = relationship()
     capital_scheme_financials: Mapped[list[CapitalSchemeFinancialEntity]] = relationship()
     scheme_milestones: Mapped[list[SchemeMilestoneEntity]] = relationship()
     scheme_interventions: Mapped[list[SchemeInterventionEntity]] = relationship()
-
-
-class CapitalSchemeAuthorityReviewEntity(Base):
-    __tablename__ = "capital_scheme_authority_review"
-
-    capital_scheme_authority_review_id: Mapped[int] = mapped_column(primary_key=True)
-    capital_scheme_id = mapped_column(
-        ForeignKey("capital_scheme.capital_scheme_id", name="capital_scheme_authority_review_capital_scheme_id_fkey"),
-        nullable=False,
-    )
-    review_date: Mapped[datetime]
-    data_source_id: Mapped[int]
+    capital_scheme_authority_reviews: Mapped[list[CapitalSchemeAuthorityReviewEntity]] = relationship()
 
 
 class CapitalSchemeFinancialEntity(Base):
@@ -97,3 +85,15 @@ class SchemeInterventionEntity(Base):
     observation_type_id: Mapped[int]
     effective_date_from: Mapped[datetime]
     effective_date_to: Mapped[datetime | None]
+
+
+class CapitalSchemeAuthorityReviewEntity(Base):
+    __tablename__ = "capital_scheme_authority_review"
+
+    capital_scheme_authority_review_id: Mapped[int] = mapped_column(primary_key=True)
+    capital_scheme_id = mapped_column(
+        ForeignKey("capital_scheme.capital_scheme_id", name="capital_scheme_authority_review_capital_scheme_id_fkey"),
+        nullable=False,
+    )
+    review_date: Mapped[datetime]
+    data_source_id: Mapped[int]

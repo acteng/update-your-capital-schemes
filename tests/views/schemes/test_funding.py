@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import pytest
-from flask import Flask
 from flask_wtf.csrf import generate_csrf
 from werkzeug.datastructures import MultiDict
 
@@ -96,8 +95,9 @@ class TestSchemeFundingContext:
         assert context.allocation_still_to_spend == 60_000
 
 
+@pytest.mark.usefixtures("app")
 class TestChangeSpendToDateContext:
-    def test_from_domain(self, app: Flask) -> None:
+    def test_from_domain(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.funding.update_financials(
             FinancialRevision(
@@ -133,8 +133,9 @@ class TestChangeSpendToDateContext:
         )
 
 
+@pytest.mark.usefixtures("app")
 class TestChangeSpendToDateForm:
-    def test_from_domain(self, app: Flask) -> None:
+    def test_from_domain(self) -> None:
         funding = SchemeFunding()
         funding.update_financials(
             FinancialRevision(
@@ -164,7 +165,7 @@ class TestChangeSpendToDateForm:
 
         assert form.amount.data == 50_000 and form.max_amount == 110_000
 
-    def test_update_domain(self, app: Flask) -> None:
+    def test_update_domain(self) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "60000")]))
         funding = SchemeFunding()
         funding.update_financial(
@@ -190,7 +191,7 @@ class TestChangeSpendToDateForm:
             and financial_revision2.source == DataSource.AUTHORITY_UPDATE
         )
 
-    def test_update_domain_with_zero_amount(self, app: Flask) -> None:
+    def test_update_domain_with_zero_amount(self) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "0")]))
         funding = SchemeFunding()
 
@@ -198,7 +199,7 @@ class TestChangeSpendToDateForm:
 
         assert funding.financial_revisions[0].amount == 0
 
-    def test_no_errors_when_valid(self, app: Flask) -> None:
+    def test_no_errors_when_valid(self) -> None:
         form = ChangeSpendToDateForm(
             max_amount=110_000, formdata=MultiDict([("csrf_token", generate_csrf()), ("amount", "50000")])
         )
@@ -207,42 +208,42 @@ class TestChangeSpendToDateForm:
 
         assert not form.errors
 
-    def test_amount_is_required(self, app: Flask) -> None:
+    def test_amount_is_required(self) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "")]))
 
         form.validate()
 
         assert "Enter spend to date" in form.errors["amount"]
 
-    def test_amount_is_an_integer(self, app: Flask) -> None:
+    def test_amount_is_an_integer(self) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "x")]))
 
         form.validate()
 
         assert "Spend to date must be a number" in form.errors["amount"]
 
-    def test_amount_can_be_zero(self, app: Flask) -> None:
+    def test_amount_can_be_zero(self) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "0")]))
 
         form.validate()
 
         assert "amount" not in form.errors
 
-    def test_amount_cannot_be_negative(self, app: Flask) -> None:
+    def test_amount_cannot_be_negative(self) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "-100")]))
 
         form.validate()
 
         assert "Spend to date must be £0 or more" in form.errors["amount"]
 
-    def test_amount_can_be_adjusted_funding_allocation(self, app: Flask) -> None:
+    def test_amount_can_be_adjusted_funding_allocation(self) -> None:
         form = ChangeSpendToDateForm(max_amount=110_000, formdata=MultiDict([("amount", "110000")]))
 
         form.validate()
 
         assert "amount" not in form.errors
 
-    def test_amount_cannot_exceed_adjusted_funding_allocation(self, app: Flask) -> None:
+    def test_amount_cannot_exceed_adjusted_funding_allocation(self) -> None:
         form = ChangeSpendToDateForm(max_amount=110_000, formdata=MultiDict([("amount", "120000")]))
 
         form.validate()

@@ -1,7 +1,6 @@
 from datetime import date, datetime
 
 import pytest
-from flask import Flask
 from flask_wtf.csrf import generate_csrf
 from werkzeug.datastructures import MultiDict
 
@@ -146,8 +145,9 @@ class TestMilestoneContext:
         assert context == MilestoneContext(name=expected_name)
 
 
+@pytest.mark.usefixtures("app")
 class TestChangeMilestoneDatesContext:
-    def test_from_domain(self, app: Flask) -> None:
+    def test_from_domain(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.milestones.update_milestone(
             MilestoneRevision(
@@ -165,6 +165,7 @@ class TestChangeMilestoneDatesContext:
         assert context.id == 1 and context.form.construction_started_planned.data == date(2020, 1, 2)
 
 
+@pytest.mark.usefixtures("app")
 class TestChangeMilestoneDatesForm:
     field_names = [
         "feasibility_design_completed_planned",
@@ -192,9 +193,7 @@ class TestChangeMilestoneDatesForm:
     ]
 
     @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
-    def test_from_domain(
-        self, app: Flask, milestone: Milestone, observation_type: ObservationType, field_name: str
-    ) -> None:
+    def test_from_domain(self, milestone: Milestone, observation_type: ObservationType, field_name: str) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             MilestoneRevision(
@@ -219,7 +218,7 @@ class TestChangeMilestoneDatesForm:
 
         assert form[field_name].data == date(2020, 2, 1)
 
-    def test_from_domain_when_minimal(self, app: Flask) -> None:
+    def test_from_domain_when_minimal(self) -> None:
         milestones = SchemeMilestones()
 
         form = ChangeMilestoneDatesForm.from_domain(milestones)
@@ -238,9 +237,7 @@ class TestChangeMilestoneDatesForm:
         )
 
     @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
-    def test_update_domain(
-        self, app: Flask, field_name: str, milestone: Milestone, observation_type: ObservationType
-    ) -> None:
+    def test_update_domain(self, field_name: str, milestone: Milestone, observation_type: ObservationType) -> None:
         form = ChangeMilestoneDatesForm(
             formdata=MultiDict([(field_name, "3"), (field_name, "1"), (field_name, "2020")])
         )
@@ -272,7 +269,7 @@ class TestChangeMilestoneDatesForm:
 
     @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
     def test_update_domain_preserves_dates_with_empty_date(
-        self, app: Flask, field_name: str, milestone: Milestone, observation_type: ObservationType
+        self, field_name: str, milestone: Milestone, observation_type: ObservationType
     ) -> None:
         form = ChangeMilestoneDatesForm(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
         milestones = SchemeMilestones()
@@ -302,7 +299,7 @@ class TestChangeMilestoneDatesForm:
 
     @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
     def test_update_domain_ignores_unchanged_dates(
-        self, app: Flask, field_name: str, milestone: Milestone, observation_type: ObservationType
+        self, field_name: str, milestone: Milestone, observation_type: ObservationType
     ) -> None:
         form = ChangeMilestoneDatesForm(
             formdata=MultiDict([(field_name, "2"), (field_name, "1"), (field_name, "2020")])
@@ -333,7 +330,7 @@ class TestChangeMilestoneDatesForm:
         )
 
     @pytest.mark.parametrize("field_name", field_names)
-    def test_no_errors_when_valid(self, app: Flask, field_name: str) -> None:
+    def test_no_errors_when_valid(self, field_name: str) -> None:
         form = ChangeMilestoneDatesForm(
             formdata=MultiDict(
                 [("csrf_token", generate_csrf()), (field_name, "2"), (field_name, "1"), (field_name, "2020")]
@@ -345,7 +342,7 @@ class TestChangeMilestoneDatesForm:
         assert not form.errors
 
     @pytest.mark.parametrize("field_name", field_names)
-    def test_date_without_initial_value_is_optional(self, app: Flask, field_name: str) -> None:
+    def test_date_without_initial_value_is_optional(self, field_name: str) -> None:
         form = ChangeMilestoneDatesForm(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
 
         form.validate()
@@ -380,7 +377,7 @@ class TestChangeMilestoneDatesForm:
         ],
     )
     def test_date_with_initial_value_is_required(
-        self, app: Flask, field_name: str, expected_error: str, date_: tuple[str, str, str]
+        self, field_name: str, expected_error: str, date_: tuple[str, str, str]
     ) -> None:
         form = ChangeMilestoneDatesForm(data={field_name: date(2020, 1, 2)})
         form.process(formdata=MultiDict([(field_name, date_[0]), (field_name, date_[1]), (field_name, date_[2])]))
@@ -417,9 +414,7 @@ class TestChangeMilestoneDatesForm:
             ("2", "", ""),
         ],
     )
-    def test_date_is_a_date(
-        self, app: Flask, field_name: str, expected_error: str, date_: tuple[str, str, str]
-    ) -> None:
+    def test_date_is_a_date(self, field_name: str, expected_error: str, date_: tuple[str, str, str]) -> None:
         form = ChangeMilestoneDatesForm(
             formdata=MultiDict([(field_name, date_[0]), (field_name, date_[1]), (field_name, date_[2])])
         )

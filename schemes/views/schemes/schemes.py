@@ -37,7 +37,6 @@ from schemes.views.auth.api_key import api_key_auth
 from schemes.views.auth.bearer import bearer_auth
 from schemes.views.schemes.funding import (
     ChangeSpendToDateContext,
-    DataSourceRepr,
     FinancialRevisionRepr,
     SchemeFundingContext,
 )
@@ -48,6 +47,7 @@ from schemes.views.schemes.milestones import (
     SchemeMilestonesContext,
 )
 from schemes.views.schemes.outputs import OutputRevisionRepr, SchemeOutputsContext
+from schemes.views.schemes.reviews import AuthorityReviewRepr
 
 bp = Blueprint("schemes", __name__)
 
@@ -460,26 +460,3 @@ class FundingProgrammeRepr(Enum):
             FundingProgramme.LUF: FundingProgrammeRepr.LUF,
             FundingProgramme.CRSTS: FundingProgrammeRepr.CRSTS,
         }
-
-
-@dataclass(frozen=True)
-class AuthorityReviewRepr:
-    id: int
-    review_date: str
-    source: DataSourceRepr
-
-    @classmethod
-    def from_domain(cls, authority_review: AuthorityReview) -> AuthorityReviewRepr:
-        if not authority_review.id:
-            raise ValueError("Authority review must be persistent")
-
-        return AuthorityReviewRepr(
-            id=authority_review.id,
-            review_date=authority_review.review_date.isoformat(),
-            source=DataSourceRepr.from_domain(authority_review.source),
-        )
-
-    def to_domain(self) -> AuthorityReview:
-        return AuthorityReview(
-            id_=self.id, review_date=datetime.fromisoformat(self.review_date), source=self.source.to_domain()
-        )

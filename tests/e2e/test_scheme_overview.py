@@ -25,7 +25,6 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: P
             name="Wirral Package",
             type="construction",
             funding_programme="ATF4",
-            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02", source="ATF4 Bid")],
             milestone_revisions=[
                 MilestoneRevisionRepr(
                     id=1,
@@ -37,6 +36,7 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: P
                     source="ATF4 Bid",
                 )
             ],
+            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02", source="ATF4 Bid")],
         ),
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

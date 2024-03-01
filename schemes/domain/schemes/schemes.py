@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from enum import Enum, auto, unique
 
-from schemes.domain.schemes import SchemeReviews
 from schemes.domain.schemes.funding import SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
+from schemes.domain.schemes.reviews import SchemeReviews
 
 
 class Scheme:

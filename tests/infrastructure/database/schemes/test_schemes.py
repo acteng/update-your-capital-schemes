@@ -715,6 +715,46 @@ class TestDatabaseSchemeRepository:
             and output_revision2.observation_type == ObservationType.PLANNED
         )
 
+    def test_get_all_schemes_authority_reviews_by_authority(
+        self, schemes: DatabaseSchemeRepository, engine: Engine
+    ) -> None:
+        with Session(engine) as session:
+            session.add_all(
+                [
+                    CapitalSchemeEntity(
+                        capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
+                    ),
+                    CapitalSchemeAuthorityReviewEntity(
+                        capital_scheme_authority_review_id=2,
+                        capital_scheme_id=1,
+                        review_date=datetime(2020, 1, 1),
+                        data_source_id=3,
+                    ),
+                    CapitalSchemeEntity(
+                        capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=2
+                    ),
+                    CapitalSchemeAuthorityReviewEntity(
+                        capital_scheme_authority_review_id=3,
+                        capital_scheme_id=2,
+                        review_date=datetime(2020, 2, 1),
+                        data_source_id=2,
+                    ),
+                ]
+            )
+            session.commit()
+
+        scheme1: Scheme
+        (scheme1,) = schemes.get_by_authority(1)
+
+        assert scheme1.id == 1
+        authority_review1: AuthorityReview
+        (authority_review1,) = scheme1.reviews.authority_reviews
+        assert (
+            authority_review1.id == 2
+            and authority_review1.review_date == datetime(2020, 1, 1)
+            and authority_review1.source == DataSource.ATF4_BID
+        )
+
     def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         with Session(engine) as session:
             session.add_all(

@@ -368,6 +368,7 @@ class SchemeReviewFormComponent:
         self._confirm = form.get_by_role("button", name="Confirm")
 
     def up_to_date(self) -> SchemeReviewFormComponent:
+        # TODO: don't force action when govuk-frontend upgraded to 5.2.0 (see #4768)
         self._up_to_date.check(force=True)
         return self
 

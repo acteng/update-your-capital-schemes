@@ -359,10 +359,10 @@ class SchemeRepr:
     name: str
     type: SchemeTypeRepr | None = None
     funding_programme: FundingProgrammeRepr | None = None
-    authority_reviews: list[AuthorityReviewRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
     output_revisions: list[OutputRevisionRepr] = field(default_factory=list)
+    authority_reviews: list[AuthorityReviewRepr] = field(default_factory=list)
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> SchemeRepr:
@@ -370,10 +370,6 @@ class SchemeRepr:
             id=scheme.id,
             name=scheme.name,
             type=SchemeTypeRepr.from_domain(scheme.type) if scheme.type else None,
-            authority_reviews=[
-                AuthorityReviewRepr.from_domain(authority_review)
-                for authority_review in scheme.reviews.authority_reviews
-            ],
             funding_programme=(
                 FundingProgrammeRepr.from_domain(scheme.funding_programme) if scheme.funding_programme else None
             ),
@@ -388,15 +384,16 @@ class SchemeRepr:
             output_revisions=[
                 OutputRevisionRepr.from_domain(output_revision) for output_revision in scheme.outputs.output_revisions
             ],
+            authority_reviews=[
+                AuthorityReviewRepr.from_domain(authority_review)
+                for authority_review in scheme.reviews.authority_reviews
+            ],
         )
 
     def to_domain(self, authority_id: int) -> Scheme:
         scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
         scheme.type = self.type.to_domain() if self.type else None
         scheme.funding_programme = self.funding_programme.to_domain() if self.funding_programme else None
-
-        for authority_review_repr in self.authority_reviews:
-            scheme.reviews.update_authority_review(authority_review_repr.to_domain())
 
         for financial_revision_repr in self.financial_revisions:
             scheme.funding.update_financial(financial_revision_repr.to_domain())
@@ -406,6 +403,9 @@ class SchemeRepr:
 
         for output_revision_repr in self.output_revisions:
             scheme.outputs.update_output(output_revision_repr.to_domain())
+
+        for authority_review_repr in self.authority_reviews:
+            scheme.reviews.update_authority_review(authority_review_repr.to_domain())
 
         return scheme
 

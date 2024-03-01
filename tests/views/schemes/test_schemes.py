@@ -389,28 +389,6 @@ class TestSchemeRepr:
 
         assert scheme_repr == SchemeRepr(id=1, name="Wirral Package", type=None, funding_programme=None)
 
-    def test_from_domain_sets_authority_reviews(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.reviews.update_authority_reviews(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID),
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.PULSE_6),
-        )
-
-        scheme_repr = SchemeRepr.from_domain(scheme)
-
-        assert scheme_repr.authority_reviews == [
-            AuthorityReviewRepr(
-                id=1,
-                review_date="2020-01-02T12:00:00",
-                source=DataSourceRepr.ATF4_BID,
-            ),
-            AuthorityReviewRepr(
-                id=2,
-                review_date="2020-01-03T12:00:00",
-                source=DataSourceRepr.PULSE_6,
-            ),
-        ]
-
     def test_from_domain_sets_financial_revisions(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.funding.update_financials(
@@ -537,6 +515,28 @@ class TestSchemeRepr:
             ),
         ]
 
+    def test_from_domain_sets_authority_reviews(self) -> None:
+        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme.reviews.update_authority_reviews(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID),
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.PULSE_6),
+        )
+
+        scheme_repr = SchemeRepr.from_domain(scheme)
+
+        assert scheme_repr.authority_reviews == [
+            AuthorityReviewRepr(
+                id=1,
+                review_date="2020-01-02T12:00:00",
+                source=DataSourceRepr.ATF4_BID,
+            ),
+            AuthorityReviewRepr(
+                id=2,
+                review_date="2020-01-03T12:00:00",
+                source=DataSourceRepr.PULSE_6,
+            ),
+        ]
+
     def test_to_domain(self) -> None:
         scheme_repr = SchemeRepr(
             id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION, funding_programme=FundingProgrammeRepr.ATF4
@@ -563,40 +563,6 @@ class TestSchemeRepr:
             and scheme.authority_id == 2
             and scheme.type is None
             and scheme.funding_programme is None
-        )
-
-    def test_to_domain_sets_authority_reviews(self) -> None:
-        scheme_repr = SchemeRepr(
-            id=0,
-            name="",
-            authority_reviews=[
-                AuthorityReviewRepr(
-                    id=2,
-                    review_date="2020-01-01T12:00:00",
-                    source=DataSourceRepr.ATF4_BID,
-                ),
-                AuthorityReviewRepr(
-                    id=3,
-                    review_date="2020-01-02T12:00:00",
-                    source=DataSourceRepr.PULSE_6,
-                ),
-            ],
-        )
-
-        scheme = scheme_repr.to_domain(0)
-
-        authority_review1: AuthorityReview
-        authority_review2: AuthorityReview
-        authority_review1, authority_review2 = scheme.reviews.authority_reviews
-        assert (
-            authority_review1.id == 2
-            and authority_review1.review_date == datetime(2020, 1, 1, 12)
-            and authority_review1.source == DataSource.ATF4_BID
-        )
-        assert (
-            authority_review2.id == 3
-            and authority_review2.review_date == datetime(2020, 1, 2, 12)
-            and authority_review2.source == DataSource.PULSE_6
         )
 
     def test_to_domain_sets_financial_revisions(self) -> None:
@@ -735,6 +701,40 @@ class TestSchemeRepr:
             and output_revision2.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS
             and output_revision2.value == Decimal(3)
             and output_revision2.observation_type == ObservationType.ACTUAL
+        )
+
+    def test_to_domain_sets_authority_reviews(self) -> None:
+        scheme_repr = SchemeRepr(
+            id=0,
+            name="",
+            authority_reviews=[
+                AuthorityReviewRepr(
+                    id=2,
+                    review_date="2020-01-01T12:00:00",
+                    source=DataSourceRepr.ATF4_BID,
+                ),
+                AuthorityReviewRepr(
+                    id=3,
+                    review_date="2020-01-02T12:00:00",
+                    source=DataSourceRepr.PULSE_6,
+                ),
+            ],
+        )
+
+        scheme = scheme_repr.to_domain(0)
+
+        authority_review1: AuthorityReview
+        authority_review2: AuthorityReview
+        authority_review1, authority_review2 = scheme.reviews.authority_reviews
+        assert (
+            authority_review1.id == 2
+            and authority_review1.review_date == datetime(2020, 1, 1, 12)
+            and authority_review1.source == DataSource.ATF4_BID
+        )
+        assert (
+            authority_review2.id == 3
+            and authority_review2.review_date == datetime(2020, 1, 2, 12)
+            and authority_review2.source == DataSource.PULSE_6
         )
 
 

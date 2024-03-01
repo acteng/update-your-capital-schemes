@@ -14,6 +14,11 @@ from schemes.domain.schemes import (
 
 
 class TestSchemeMilestones:
+    def test_create(self) -> None:
+        milestones = SchemeMilestones()
+
+        assert milestones.milestone_revisions == []
+
     def test_get_milestone_revisions_is_copy(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestone(

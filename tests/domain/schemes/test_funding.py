@@ -13,6 +13,11 @@ from schemes.domain.schemes import (
 
 
 class TestSchemeFunding:
+    def test_create(self) -> None:
+        funding = SchemeFunding()
+
+        assert funding.financial_revisions == []
+
     def test_get_financial_revisions_is_copy(self) -> None:
         funding = SchemeFunding()
         funding.update_financial(

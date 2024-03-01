@@ -15,6 +15,11 @@ from schemes.domain.schemes import (
 
 
 class TestSchemeOutputs:
+    def test_create(self) -> None:
+        outputs = SchemeOutputs()
+
+        assert outputs.output_revisions == []
+
     def test_get_output_revisions_is_copy(self) -> None:
         outputs = SchemeOutputs()
         outputs.update_output(

@@ -108,8 +108,8 @@ class SchemeRowContext:
             reference=scheme.reference,
             funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
             name=scheme.name,
-            needs_review=scheme.needs_review(reporting_window) if reporting_window else False,
-            last_reviewed=scheme.last_reviewed,
+            needs_review=scheme.reviews.needs_review(reporting_window) if reporting_window else False,
+            last_reviewed=scheme.reviews.last_reviewed,
         )
 
 
@@ -177,7 +177,7 @@ class SchemeContext:
             id=scheme.id,
             authority_name=authority.name,
             name=scheme.name,
-            needs_review=scheme.needs_review(reporting_window) if reporting_window else False,
+            needs_review=scheme.reviews.needs_review(reporting_window) if reporting_window else False,
             overview=SchemeOverviewContext.from_domain(scheme),
             funding=SchemeFundingContext.from_domain(scheme.funding),
             milestones=SchemeMilestonesContext.from_domain(scheme.milestones),
@@ -201,7 +201,7 @@ class SchemeOverviewContext:
             type=SchemeTypeContext.from_domain(scheme.type),
             funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
             current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
-            last_reviewed=scheme.last_reviewed,
+            last_reviewed=scheme.reviews.last_reviewed,
         )
 
 
@@ -337,7 +337,9 @@ def review(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseRespo
     scheme = schemes.get(scheme_id)
     assert scheme
 
-    scheme.update_authority_review(AuthorityReview(id_=None, review_date=clock.now, source=DataSource.AUTHORITY_UPDATE))
+    scheme.reviews.update_authority_review(
+        AuthorityReview(id_=None, review_date=clock.now, source=DataSource.AUTHORITY_UPDATE)
+    )
     schemes.update(scheme)
 
     return redirect(url_for("schemes.index"))
@@ -369,7 +371,8 @@ class SchemeRepr:
             name=scheme.name,
             type=SchemeTypeRepr.from_domain(scheme.type) if scheme.type else None,
             authority_reviews=[
-                AuthorityReviewRepr.from_domain(authority_review) for authority_review in scheme.authority_reviews
+                AuthorityReviewRepr.from_domain(authority_review)
+                for authority_review in scheme.reviews.authority_reviews
             ],
             funding_programme=(
                 FundingProgrammeRepr.from_domain(scheme.funding_programme) if scheme.funding_programme else None
@@ -393,7 +396,7 @@ class SchemeRepr:
         scheme.funding_programme = self.funding_programme.to_domain() if self.funding_programme else None
 
         for authority_review_repr in self.authority_reviews:
-            scheme.update_authority_review(authority_review_repr.to_domain())
+            scheme.reviews.update_authority_review(authority_review_repr.to_domain())
 
         for financial_revision_repr in self.financial_revisions:
             scheme.funding.update_financial(financial_revision_repr.to_domain())

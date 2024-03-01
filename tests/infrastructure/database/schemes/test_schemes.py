@@ -80,7 +80,7 @@ class TestDatabaseSchemeRepository:
 
     def test_add_schemes_authority_reviews(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.update_authority_reviews(
+        scheme1.reviews.update_authority_reviews(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
             AuthorityReview(id_=3, review_date=datetime(2020, 2, 1), source=DataSource.PULSE_6),
         )
@@ -304,7 +304,7 @@ class TestDatabaseSchemeRepository:
         assert scheme
         authority_review1: AuthorityReview
         authority_review2: AuthorityReview
-        authority_review1, authority_review2 = scheme.authority_reviews
+        authority_review1, authority_review2 = scheme.reviews.authority_reviews
         assert (
             authority_review1.id == 2
             and authority_review1.review_date == datetime(2020, 1, 1)
@@ -782,7 +782,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
         scheme = schemes.get(1)
         assert scheme
-        scheme.update_authority_review(
+        scheme.reviews.update_authority_review(
             AuthorityReview(id_=3, review_date=datetime(2020, 1, 2), source=DataSource.AUTHORITY_UPDATE)
         )
 

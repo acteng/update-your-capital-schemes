@@ -79,7 +79,9 @@ class TestScheme:
     ) -> None:
         clock.now = datetime(2023, 4, 24)
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.update_authority_review(AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID))
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
+        )
         schemes.add(scheme)
 
         scheme_page = SchemePage.open(client, id_=1)
@@ -123,7 +125,7 @@ class TestSchemeApi:
 
     def test_get_scheme_authority_reviews(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.update_authority_review(
+        scheme.reviews.update_authority_review(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1, 12), source=DataSource.ATF4_BID)
         )
         schemes.add(scheme)

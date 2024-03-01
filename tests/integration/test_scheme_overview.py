@@ -45,7 +45,7 @@ class TestSchemeOverview:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.type = SchemeType.CONSTRUCTION
         scheme.funding_programme = FundingProgramme.ATF4
-        scheme.update_authority_review(
+        scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
         scheme.milestones.update_milestone(

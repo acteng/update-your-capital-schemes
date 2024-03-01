@@ -90,7 +90,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
             capital_scheme_authority_reviews=[
                 self._capital_scheme_authority_review_from_domain(authority_review)
-                for authority_review in scheme.authority_reviews
+                for authority_review in scheme.reviews.authority_reviews
             ],
             capital_scheme_financials=[
                 self._capital_scheme_financial_from_domain(financial_revision)
@@ -116,7 +116,7 @@ class DatabaseSchemeRepository(SchemeRepository):
         scheme.funding_programme = self._funding_programme_mapper.to_domain(capital_scheme.funding_programme_id)
 
         for capital_scheme_authority_review in capital_scheme.capital_scheme_authority_reviews:
-            scheme.update_authority_review(
+            scheme.reviews.update_authority_review(
                 self._capital_scheme_authority_review_to_domain(capital_scheme_authority_review)
             )
 

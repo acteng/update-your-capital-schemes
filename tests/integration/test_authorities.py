@@ -160,7 +160,7 @@ class TestAuthoritiesApi:
         scheme1 = schemes.get(1)
         assert scheme1 and scheme1.id == 1
         authority_review1: AuthorityReview
-        (authority_review1,) = scheme1.authority_reviews
+        (authority_review1,) = scheme1.reviews.authority_reviews
         assert (
             authority_review1.id == 2
             and authority_review1.review_date == datetime(2020, 1, 1, 12)

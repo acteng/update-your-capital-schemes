@@ -107,7 +107,7 @@ class TestSchemes:
     def test_schemes_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding_programme = FundingProgramme.ATF3
-        scheme.update_authority_review(
+        scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
         )
         schemes.add(scheme)
@@ -130,7 +130,7 @@ class TestSchemes:
     ) -> None:
         clock.now = datetime(2023, 4, 24)
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.update_authority_review(
+        scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2023, 1, 2), source=DataSource.ATF3_BID)
         )
         schemes.add(scheme)

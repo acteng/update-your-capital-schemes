@@ -30,7 +30,7 @@ class TestSchemeReview:
     ) -> None:
         clock.now = datetime(2023, 4, 24, 12)
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.update_authority_review(
+        scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
         schemes.add(scheme)
@@ -41,7 +41,7 @@ class TestSchemeReview:
         assert actual_scheme
         authority_review1: AuthorityReview
         authority_review2: AuthorityReview
-        authority_review1, authority_review2 = actual_scheme.authority_reviews
+        authority_review1, authority_review2 = actual_scheme.reviews.authority_reviews
         assert (
             authority_review2.review_date == datetime(2023, 4, 24, 12)
             and authority_review2.source == DataSource.AUTHORITY_UPDATE

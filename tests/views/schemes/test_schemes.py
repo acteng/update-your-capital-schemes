@@ -81,7 +81,7 @@ class TestSchemesContext:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
         authority = Authority(id_=1, name="")
         scheme = Scheme(id_=1, name="", authority_id=1)
-        scheme.update_authority_review(
+        scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
 
@@ -116,7 +116,9 @@ class TestSchemeRowContext:
     def test_from_domain_sets_needs_review(self, review_date: datetime, expected_needs_review: bool) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.update_authority_review(AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID))
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
+        )
 
         context = SchemeRowContext.from_domain(reporting_window, scheme)
 
@@ -124,7 +126,7 @@ class TestSchemeRowContext:
 
     def test_from_domain_sets_last_reviewed(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.update_authority_reviews(
+        scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID),
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.ATF4_BID),
         )
@@ -158,7 +160,9 @@ class TestSchemeContext:
         reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 4, 30)))
         authority = Authority(id_=2, name="")
         scheme = Scheme(id_=1, name="", authority_id=2)
-        scheme.update_authority_review(AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID))
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
+        )
 
         context = SchemeContext.from_domain(reporting_window, authority, scheme)
 
@@ -167,7 +171,7 @@ class TestSchemeContext:
     def test_from_domain_sets_needs_review_when_outside_reporting_window(self) -> None:
         authority = Authority(id_=2, name="")
         scheme = Scheme(id_=1, name="", authority_id=2)
-        scheme.update_authority_review(
+        scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2023, 4, 1), source=DataSource.ATF4_BID)
         )
 
@@ -301,7 +305,7 @@ class TestSchemeOverviewContext:
 
     def test_from_domain_sets_last_reviewed(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.update_authority_reviews(
+        scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID),
         )
@@ -387,7 +391,7 @@ class TestSchemeRepr:
 
     def test_from_domain_sets_authority_reviews(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.update_authority_reviews(
+        scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID),
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.PULSE_6),
         )
@@ -546,7 +550,6 @@ class TestSchemeRepr:
             and scheme.authority_id == 2
             and scheme.type == SchemeType.CONSTRUCTION
             and scheme.funding_programme == FundingProgramme.ATF4
-            and scheme.authority_reviews == []
         )
 
     def test_to_domain_when_minimal(self) -> None:
@@ -560,7 +563,6 @@ class TestSchemeRepr:
             and scheme.authority_id == 2
             and scheme.type is None
             and scheme.funding_programme is None
-            and scheme.authority_reviews == []
         )
 
     def test_to_domain_sets_authority_reviews(self) -> None:
@@ -585,7 +587,7 @@ class TestSchemeRepr:
 
         authority_review1: AuthorityReview
         authority_review2: AuthorityReview
-        authority_review1, authority_review2 = scheme.authority_reviews
+        authority_review1, authority_review2 = scheme.reviews.authority_reviews
         assert (
             authority_review1.id == 2
             and authority_review1.review_date == datetime(2020, 1, 1, 12)

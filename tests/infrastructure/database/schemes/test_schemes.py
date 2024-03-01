@@ -533,6 +533,7 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
                     ),
                     CapitalSchemeFinancialEntity(
+                        capital_scheme_financial_id=3,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
@@ -544,6 +545,7 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=2
                     ),
                     CapitalSchemeFinancialEntity(
+                        capital_scheme_financial_id=4,
                         capital_scheme_id=2,
                         effective_date_from=datetime(2020, 2, 1),
                         effective_date_to=None,
@@ -562,7 +564,8 @@ class TestDatabaseSchemeRepository:
         financial_revision1: FinancialRevision
         (financial_revision1,) = scheme1.funding.financial_revisions
         assert (
-            financial_revision1.effective == DateRange(datetime(2020, 1, 1), None)
+            financial_revision1.id == 3
+            and financial_revision1.effective == DateRange(datetime(2020, 1, 1), None)
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
             and financial_revision1.source == DataSource.ATF4_BID

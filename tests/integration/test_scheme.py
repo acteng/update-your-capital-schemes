@@ -117,29 +117,11 @@ class TestSchemeApi:
             "name": "Wirral Package",
             "type": "construction",
             "funding_programme": "ATF4",
-            "authority_reviews": [],
             "financial_revisions": [],
             "milestone_revisions": [],
             "output_revisions": [],
+            "authority_reviews": [],
         }
-
-    def test_get_scheme_authority_reviews(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.reviews.update_authority_review(
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 1, 12), source=DataSource.ATF4_BID)
-        )
-        schemes.add(scheme)
-
-        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
-
-        assert response.json and response.json["id"] == 1
-        assert response.json["authority_reviews"] == [
-            {
-                "id": 2,
-                "review_date": "2020-01-01T12:00:00",
-                "source": "ATF4 Bid",
-            }
-        ]
 
     def test_get_scheme_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
@@ -222,6 +204,24 @@ class TestSchemeApi:
                 "measure": "miles",
                 "value": "10",
                 "observation_type": "Actual",
+            }
+        ]
+
+    def test_get_scheme_authority_reviews(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 1, 12), source=DataSource.ATF4_BID)
+        )
+        schemes.add(scheme)
+
+        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+
+        assert response.json and response.json["id"] == 1
+        assert response.json["authority_reviews"] == [
+            {
+                "id": 2,
+                "review_date": "2020-01-01T12:00:00",
+                "source": "ATF4 Bid",
             }
         ]
 

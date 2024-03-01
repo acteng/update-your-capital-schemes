@@ -21,10 +21,8 @@ from schemes.infrastructure.database import (
     SchemeInterventionEntity,
     SchemeMilestoneEntity,
 )
-from schemes.infrastructure.database.schemes.funding import (
-    DataSourceMapper,
-    FinancialTypeMapper,
-)
+from schemes.infrastructure.database.schemes.data_source import DataSourceMapper
+from schemes.infrastructure.database.schemes.funding import FinancialTypeMapper
 from schemes.infrastructure.database.schemes.milestones import MilestoneMapper
 from schemes.infrastructure.database.schemes.observations import ObservationTypeMapper
 from schemes.infrastructure.database.schemes.outputs import OutputTypeMeasureMapper

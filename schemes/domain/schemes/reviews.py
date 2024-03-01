@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from schemes.domain.reporting_window import ReportingWindow
-from schemes.domain.schemes.funding import DataSource
+from schemes.domain.schemes.data_source import DataSource
 
 
 class SchemeReviews:

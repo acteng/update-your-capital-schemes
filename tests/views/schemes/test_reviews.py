@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 
 from schemes.domain.schemes import AuthorityReview, DataSource
-from schemes.views.schemes.funding import DataSourceRepr
+from schemes.views.schemes.data_source import DataSourceRepr
 from schemes.views.schemes.reviews import AuthorityReviewRepr
 
 

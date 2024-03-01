@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from schemes.domain.schemes import AuthorityReview
-from schemes.views.schemes.funding import DataSourceRepr
+from schemes.views.schemes.data_source import DataSourceRepr
 
 
 @dataclass(frozen=True)

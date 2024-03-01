@@ -13,7 +13,7 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeMilestones,
 )
-from schemes.views.schemes.funding import DataSourceRepr
+from schemes.views.schemes.data_source import DataSourceRepr
 from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,
     ChangeMilestoneDatesForm,

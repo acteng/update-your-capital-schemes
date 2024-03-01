@@ -24,7 +24,7 @@ from schemes.views.forms import (
     MultivalueOptional,
     RemoveLeadingZerosGovDateInput,
 )
-from schemes.views.schemes.funding import DataSourceRepr
+from schemes.views.schemes.data_source import DataSourceRepr
 from schemes.views.schemes.observations import ObservationTypeRepr
 
 

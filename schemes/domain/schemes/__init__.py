@@ -1,4 +1,4 @@
-from schemes.domain.schemes.funding import DataSource as DataSource
+from schemes.domain.schemes.data_source import DataSource as DataSource
 from schemes.domain.schemes.funding import FinancialRevision as FinancialRevision
 from schemes.domain.schemes.funding import FinancialType as FinancialType
 from schemes.domain.schemes.funding import SchemeFunding as SchemeFunding

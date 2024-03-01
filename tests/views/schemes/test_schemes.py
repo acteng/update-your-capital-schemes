@@ -22,11 +22,8 @@ from schemes.domain.schemes import (
     SchemeType,
 )
 from schemes.views.schemes import SchemeRepr
-from schemes.views.schemes.funding import (
-    DataSourceRepr,
-    FinancialRevisionRepr,
-    FinancialTypeRepr,
-)
+from schemes.views.schemes.data_source import DataSourceRepr
+from schemes.views.schemes.funding import FinancialRevisionRepr, FinancialTypeRepr
 from schemes.views.schemes.milestones import (
     MilestoneContext,
     MilestoneRepr,

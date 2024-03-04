@@ -23,8 +23,6 @@ from schemes.dicts import as_shallow_dict, inverse_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
 from schemes.domain.schemes import (
-    AuthorityReview,
-    DataSource,
     FundingProgramme,
     Scheme,
     SchemeRepository,
@@ -322,14 +320,18 @@ def milestones(users: UserRepository, clock: Clock, schemes: SchemeRepository, s
 
 @bp.post("<int:scheme_id>")
 @bearer_auth
-@inject.autoparams("clock", "schemes")
-def review(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+@inject.autoparams("clock", "authorities", "schemes")
+def review(clock: Clock, authorities: AuthorityRepository, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
     scheme = schemes.get(scheme_id)
     assert scheme
+    authority = authorities.get(scheme.authority_id)
+    assert authority
 
-    scheme.reviews.update_authority_review(
-        AuthorityReview(id_=None, review_date=clock.now, source=DataSource.AUTHORITY_UPDATE)
-    )
+    # TODO: use real reporting window and user's authority
+    context = SchemeContext.from_domain(None, authority, scheme)
+    context.review.form.process(formdata=request.form)
+
+    context.review.form.update_domain(scheme.reviews, clock.now)
     schemes.update(scheme)
 
     return redirect(url_for("schemes.index"))

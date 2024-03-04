@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from schemes.domain.schemes import AuthorityReview, DataSource
+from schemes.domain.schemes import AuthorityReview, DataSource, SchemeReviews
 from schemes.views.schemes.data_source import DataSourceRepr
 from schemes.views.schemes.reviews import (
     AuthorityReviewRepr,
@@ -17,6 +17,20 @@ class TestSchemeReviewForm:
         form = SchemeReviewForm()
 
         assert not form.up_to_date.data
+
+    def test_update_domain(self) -> None:
+        form = SchemeReviewForm()
+        reviews = SchemeReviews()
+        reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2023, 1, 1, 12), source=DataSource.ATF4_BID)
+        )
+
+        form.update_domain(reviews, now=datetime(2023, 4, 24, 12))
+
+        review1: AuthorityReview
+        review2: AuthorityReview
+        review1, review2 = reviews.authority_reviews
+        assert review2.review_date == datetime(2023, 4, 24, 12) and review2.source == DataSource.AUTHORITY_UPDATE
 
 
 @pytest.mark.usefixtures("app")

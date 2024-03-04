@@ -1,10 +1,31 @@
 from datetime import datetime
 
 import pytest
+from flask_wtf import FlaskForm
 
 from schemes.domain.schemes import AuthorityReview, DataSource
 from schemes.views.schemes.data_source import DataSourceRepr
-from schemes.views.schemes.reviews import AuthorityReviewRepr
+from schemes.views.schemes.reviews import (
+    AuthorityReviewRepr,
+    SchemeReviewContext,
+    SchemeReviewForm,
+)
+
+
+@pytest.mark.usefixtures("app")
+class TestSchemeReviewForm:
+    def test_create(self) -> None:
+        form = SchemeReviewForm()
+
+        assert isinstance(form, FlaskForm)
+
+
+@pytest.mark.usefixtures("app")
+class TestSchemeReviewContext:
+    def test_create(self) -> None:
+        context = SchemeReviewContext()
+
+        assert isinstance(context.form, SchemeReviewForm)
 
 
 class TestAuthorityReviewRepr:

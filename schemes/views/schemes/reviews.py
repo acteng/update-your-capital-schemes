@@ -1,10 +1,21 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
+
+from flask_wtf import FlaskForm
 
 from schemes.domain.schemes import AuthorityReview
 from schemes.views.schemes.data_source import DataSourceRepr
+
+
+class SchemeReviewForm(FlaskForm):  # type: ignore
+    pass
+
+
+@dataclass(frozen=True)
+class SchemeReviewContext:
+    form: SchemeReviewForm = field(default_factory=SchemeReviewForm)
 
 
 @dataclass(frozen=True)

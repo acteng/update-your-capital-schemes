@@ -2,7 +2,6 @@ from datetime import date, datetime
 from decimal import Decimal
 
 import pytest
-from flask_wtf import FlaskForm
 
 from schemes.domain.authorities import Authority
 from schemes.domain.dates import DateRange
@@ -35,14 +34,12 @@ from schemes.views.schemes.outputs import (
     OutputRevisionRepr,
     OutputTypeRepr,
 )
-from schemes.views.schemes.reviews import AuthorityReviewRepr
+from schemes.views.schemes.reviews import AuthorityReviewRepr, SchemeReviewForm
 from schemes.views.schemes.schemes import (
     FundingProgrammeContext,
     FundingProgrammeRepr,
     SchemeContext,
     SchemeOverviewContext,
-    SchemeReviewContext,
-    SchemeReviewForm,
     SchemeRowContext,
     SchemesContext,
     SchemeTypeContext,
@@ -349,22 +346,6 @@ class TestFundingProgrammeContext:
         context = FundingProgrammeContext.from_domain(funding_programme)
 
         assert context == FundingProgrammeContext(name=expected_name)
-
-
-@pytest.mark.usefixtures("app")
-class TestSchemeReviewContext:
-    def test_create(self) -> None:
-        context = SchemeReviewContext()
-
-        assert isinstance(context.form, SchemeReviewForm)
-
-
-@pytest.mark.usefixtures("app")
-class TestSchemeReviewForm:
-    def test_create(self) -> None:
-        form = SchemeReviewForm()
-
-        assert isinstance(form, FlaskForm)
 
 
 class TestSchemeRepr:

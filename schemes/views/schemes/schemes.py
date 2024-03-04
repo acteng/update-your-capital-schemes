@@ -17,7 +17,6 @@ from flask import (
     session,
     url_for,
 )
-from flask_wtf import FlaskForm
 from werkzeug import Response as BaseResponse
 
 from schemes.dicts import as_shallow_dict, inverse_dict
@@ -47,7 +46,7 @@ from schemes.views.schemes.milestones import (
     SchemeMilestonesContext,
 )
 from schemes.views.schemes.outputs import OutputRevisionRepr, SchemeOutputsContext
-from schemes.views.schemes.reviews import AuthorityReviewRepr
+from schemes.views.schemes.reviews import AuthorityReviewRepr, SchemeReviewContext
 
 bp = Blueprint("schemes", __name__)
 
@@ -235,15 +234,6 @@ class FundingProgrammeContext:
     @classmethod
     def from_domain(cls, funding_programme: FundingProgramme | None) -> FundingProgrammeContext:
         return cls(name=cls._NAMES[funding_programme] if funding_programme else None)
-
-
-class SchemeReviewForm(FlaskForm):  # type: ignore
-    pass
-
-
-@dataclass(frozen=True)
-class SchemeReviewContext:
-    form: SchemeReviewForm = field(default_factory=SchemeReviewForm)
 
 
 @bp.get("<int:scheme_id>/spend-to-date")

@@ -4,15 +4,15 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 from flask_wtf import FlaskForm
-from govuk_frontend_wtf.wtforms_widgets import GovCheckboxInput
 from wtforms import BooleanField
 
 from schemes.domain.schemes import AuthorityReview, DataSource, SchemeReviews
+from schemes.views.forms import FieldsetGovCheckboxInput
 from schemes.views.schemes.data_source import DataSourceRepr
 
 
 class SchemeReviewForm(FlaskForm):  # type: ignore
-    up_to_date = BooleanField(widget=GovCheckboxInput())
+    up_to_date = BooleanField(widget=FieldsetGovCheckboxInput())
 
     def update_domain(self, reviews: SchemeReviews, now: datetime) -> None:
         reviews.update_authority_review(AuthorityReview(id_=None, review_date=now, source=DataSource.AUTHORITY_UPDATE))

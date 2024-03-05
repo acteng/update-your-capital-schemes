@@ -4,12 +4,14 @@ from datetime import date, datetime
 
 import pytest
 from werkzeug.datastructures import MultiDict
+from wtforms import BooleanField
 from wtforms.form import Form
 from wtforms.validators import StopValidation
 
 from schemes.views.forms import (
     CustomMessageDateField,
     CustomMessageIntegerField,
+    FieldsetGovCheckboxInput,
     MultivalueInputRequired,
     MultivalueOptional,
     RemoveLeadingZerosGovDateInput,
@@ -95,6 +97,23 @@ class TestCustomMessageDateField:
 
         assert form.custom_message_date_field.data is None
         assert form.custom_message_date_field.process_errors == ["My custom message"]
+
+
+class TestFieldsetGovCheckboxInput:
+    def test_fieldset_when_missing(self, form: FakeForm) -> None:
+        widget = FieldsetGovCheckboxInput()
+
+        params = widget.map_gov_params(form.boolean_field, items=[])
+
+        assert "fieldset" not in params
+
+    def test_fieldset_when_overridden(self, form: FakeForm) -> None:
+        widget = FieldsetGovCheckboxInput()
+        fieldset = {"legend": {"text": "My legend"}}
+
+        params = widget.map_gov_params(form.boolean_field, items=[], params={"fieldset": fieldset})
+
+        assert params["fieldset"] == fieldset
 
 
 class TestRemoveLeadingZerosGovDateInput:
@@ -212,5 +231,6 @@ class TestMultivalueInputRequired:
 class FakeForm(Form):
     field = CustomMessageIntegerField()
     custom_message_field = CustomMessageIntegerField(invalid_message="My custom message")
+    boolean_field = BooleanField()
     date_field = CustomMessageDateField()
     custom_message_date_field = CustomMessageDateField(invalid_message="My custom message")

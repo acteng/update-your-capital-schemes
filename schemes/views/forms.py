@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Callable
 
-from govuk_frontend_wtf.wtforms_widgets import GovDateInput
+from govuk_frontend_wtf.wtforms_widgets import GovCheckboxInput, GovDateInput
 from wtforms import DateField, Field
 from wtforms.fields.numeric import IntegerField
 from wtforms.form import BaseForm
@@ -77,6 +77,24 @@ class CustomMessageDateField(DateField):
                 self.data = None
 
         raise ValueError(self._invalid_message)
+
+
+class FieldsetGovCheckboxInput(GovCheckboxInput):  # type: ignore
+    """
+    A GOV.UK checkbox input widget that supports adding a fieldset.
+
+    See: https://github.com/LandRegistry/govuk-frontend-wtf/issues/89
+    """
+
+    def map_gov_params(self, field: Field, **kwargs: Any) -> dict[str, Any]:
+        params: dict[str, Any] = super().map_gov_params(field, **kwargs)
+
+        if "params" in kwargs:
+            override_params: dict[str, Any] = kwargs["params"]
+            if "fieldset" in override_params:
+                params["fieldset"] = override_params["fieldset"]
+
+        return params
 
 
 class RemoveLeadingZerosGovDateInput(GovDateInput):  # type: ignore

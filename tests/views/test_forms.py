@@ -100,6 +100,28 @@ class TestCustomMessageDateField:
 
 
 class TestFieldsetGovCheckboxInput:
+    def test_hint_when_missing_description(self, form: FakeForm) -> None:
+        widget = FieldsetGovCheckboxInput()
+
+        params = widget.map_gov_params(form.boolean_field, items=[])
+
+        assert "hint" not in params
+
+    def test_hint_when_description(self, form: FakeForm) -> None:
+        widget = FieldsetGovCheckboxInput()
+
+        params = widget.map_gov_params(form.description_boolean_field, items=[])
+
+        assert params["hint"] == {"text": "My description"}
+
+    def test_hint_when_overridden(self, form: FakeForm) -> None:
+        widget = FieldsetGovCheckboxInput()
+        hint = {"text": "My description"}
+
+        params = widget.map_gov_params(form.boolean_field, items=[], params={"hint": hint})
+
+        assert params["hint"] == hint
+
     def test_fieldset_when_missing(self, form: FakeForm) -> None:
         widget = FieldsetGovCheckboxInput()
 
@@ -232,5 +254,6 @@ class FakeForm(Form):
     field = CustomMessageIntegerField()
     custom_message_field = CustomMessageIntegerField(invalid_message="My custom message")
     boolean_field = BooleanField()
+    description_boolean_field = BooleanField(description="My description")
     date_field = CustomMessageDateField()
     custom_message_date_field = CustomMessageDateField(invalid_message="My custom message")

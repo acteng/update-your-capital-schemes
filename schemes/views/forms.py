@@ -81,13 +81,18 @@ class CustomMessageDateField(DateField):
 
 class FieldsetGovCheckboxInput(GovCheckboxInput):  # type: ignore
     """
-    A GOV.UK checkbox input widget that supports adding a fieldset.
+    A GOV.UK checkbox input widget that omits an empty hint and supports adding a fieldset.
 
-    See: https://github.com/LandRegistry/govuk-frontend-wtf/issues/89
+    See:
+    - https://github.com/LandRegistry/govuk-frontend-wtf/issues/89
+    - https://github.com/LandRegistry/govuk-frontend-wtf/pull/90
     """
 
     def map_gov_params(self, field: Field, **kwargs: Any) -> dict[str, Any]:
         params: dict[str, Any] = super().map_gov_params(field, **kwargs)
+
+        if params.get("hint") == {"text": ""} and not field.description:
+            del params["hint"]
 
         if "params" in kwargs:
             override_params: dict[str, Any] = kwargs["params"]

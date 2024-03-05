@@ -86,7 +86,7 @@ class RemoveLeadingZerosGovDateInput(GovDateInput):  # type: ignore
     See: https://github.com/LandRegistry/govuk-frontend-wtf/issues/85
     """
 
-    def map_gov_params(self, field: Field, **kwargs: str) -> dict[str, Any]:
+    def map_gov_params(self, field: Field, **kwargs: Any) -> dict[str, Any]:
         params: dict[str, Any] = super().map_gov_params(field, **kwargs)
 
         if field.raw_data is None and field.data:

@@ -1,7 +1,10 @@
 {% extends "service_base.html" %}
 {% from "govuk_frontend_jinja/components/back-link/macro.html" import govukBackLink %}
+{% from "govuk_frontend_jinja/components/error-summary/macro.html" import govukErrorSummary %}
 {% from "govuk_frontend_jinja/components/notification-banner/macro.html" import govukNotificationBanner %}
 {% from "govuk_frontend_jinja/components/tag/macro.html" import govukTag %}
+
+{% block pageTitle %}{% if review.form.errors %}Error: {% endif %}{{ super() }}{% endblock %}
 
 {% block beforeContent %}
     {{ super() }}
@@ -11,6 +14,10 @@
 {% endblock %}
 
 {% block content %}
+    {% if review.form.errors %}
+        {{ govukErrorSummary(wtforms_errors(review.form)) }}
+    {% endif %}
+
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {{ govukNotificationBanner(params={

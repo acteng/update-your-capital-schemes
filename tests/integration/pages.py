@@ -115,6 +115,8 @@ class SchemePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
         self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
+        alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
+        self.errors = ErrorSummaryComponent(alert) if alert else None
         notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
         self.notification_banner = (
             NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
@@ -244,6 +246,7 @@ class SchemeReviewFormComponent:
     def __init__(self, form: Tag):
         self._form = form
         self.confirm_url = form["action"]
+        self.up_to_date = CheckboxComponent(one(form.select("input[name='up_to_date']")))
 
 
 class ChangeSpendToDatePage(PageObject):
@@ -367,6 +370,17 @@ class TextComponent:
         self.is_errored = "govuk-input--error" in input_.get_attribute_list("class")
         form_group = input_.find_parent("div", class_="govuk-form-group")
         assert form_group
+        error_message = form_group.select_one(".govuk-error-message")
+        self.error = error_message.text.strip() if error_message else None
+
+
+class CheckboxComponent:
+    def __init__(self, input_: Tag):
+        self.name = input_["name"]
+        self.value = input_.has_attr("checked")
+        form_group = input_.find_parent("div", class_="govuk-form-group")
+        assert form_group
+        self.is_errored = "govuk-form-group--error" in form_group.get_attribute_list("class")
         error_message = form_group.select_one(".govuk-error-message")
         self.error = error_message.text.strip() if error_message else None
 

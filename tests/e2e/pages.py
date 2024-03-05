@@ -169,6 +169,7 @@ class SchemePage:
     def __init__(self, page: Page):
         self._page = page
         self._main = page.get_by_role("main")
+        self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
         heading = self._main.get_by_role("heading").first
         self._authority = heading.locator(".govuk-caption-xl")
         self._name = heading.locator("span").nth(1)
@@ -185,6 +186,10 @@ class SchemePage:
         page.goto("/schemes")
         page.goto(f"/schemes/{id_}")
         return cls(page)
+
+    @property
+    def title(self) -> str:
+        return self._page.title()
 
     @property
     def authority(self) -> str | None:
@@ -362,19 +367,23 @@ class SchemeOutputRowComponent:
 
 class SchemeReviewFormComponent:
     def __init__(self, form: Locator):
-        self._up_to_date = form.get_by_label(
-            "I confirm that the details in this scheme have been reviewed and are all up-to-date"
+        self._form = form
+        self.up_to_date = CheckboxComponent(
+            form.get_by_label("I confirm that the details in this scheme have been reviewed and are all up-to-date")
         )
         self._confirm = form.get_by_role("button", name="Confirm")
 
-    def up_to_date(self) -> SchemeReviewFormComponent:
-        # TODO: don't force action when govuk-frontend upgraded to 5.2.0 (see #4768)
-        self._up_to_date.check(force=True)
+    def check_up_to_date(self) -> SchemeReviewFormComponent:
+        self.up_to_date.value = True
         return self
 
     def confirm(self) -> SchemesPage:
         self._confirm.click()
-        return SchemesPage(self._up_to_date.page)
+        return SchemesPage(self._form.page)
+
+    def confirm_when_error(self) -> SchemePage:
+        self._confirm.click()
+        return SchemePage(self._form.page)
 
 
 class ChangeSpendToDatePage:
@@ -486,6 +495,31 @@ class TextComponent:
     @property
     def is_errored(self) -> bool:
         return "govuk-input--error" in (self._input.get_attribute("class") or "").split(" ")
+
+    @property
+    def error(self) -> str | None:
+        text_content = self._error.text_content()
+        return text_content.strip() if text_content else None
+
+
+class CheckboxComponent:
+    def __init__(self, input_: Locator):
+        self._input = input_
+        self._form_group = input_.locator("xpath=../../../..")
+        self._error = self._form_group.locator(".govuk-error-message")
+
+    @property
+    def value(self) -> bool:
+        return self._input.is_checked()
+
+    @value.setter
+    def value(self, value: bool) -> None:
+        # TODO: don't force action when govuk-frontend upgraded to 5.2.0 (see #4768)
+        self._input.set_checked(value, force=True)
+
+    @property
+    def is_errored(self) -> bool:
+        return "govuk-form-group--error" in (self._form_group.get_attribute("class") or "").split(" ")
 
     @property
     def error(self) -> str | None:

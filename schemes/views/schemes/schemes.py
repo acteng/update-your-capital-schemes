@@ -320,18 +320,29 @@ def milestones(users: UserRepository, clock: Clock, schemes: SchemeRepository, s
 
 @bp.post("<int:scheme_id>")
 @bearer_auth
-@inject.autoparams("clock", "authorities", "schemes")
-def review(clock: Clock, authorities: AuthorityRepository, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+@inject.autoparams("clock", "reporting_window_service", "authorities", "schemes")
+def review(
+    clock: Clock,
+    reporting_window_service: ReportingWindowService,
+    authorities: AuthorityRepository,
+    schemes: SchemeRepository,
+    scheme_id: int,
+) -> BaseResponse:
+    now = clock.now
+    reporting_window = reporting_window_service.get_by_date(now)
     scheme = schemes.get(scheme_id)
     assert scheme
     authority = authorities.get(scheme.authority_id)
     assert authority
 
-    # TODO: use real reporting window and user's authority
-    context = SchemeContext.from_domain(None, authority, scheme)
+    # TODO: use user's authority
+    context = SchemeContext.from_domain(reporting_window, authority, scheme)
     context.review.form.process(formdata=request.form)
 
-    context.review.form.update_domain(scheme.reviews, clock.now)
+    if not context.review.form.validate():
+        return Response(render_template("scheme/index.html", **as_shallow_dict(context)))
+
+    context.review.form.update_domain(scheme.reviews, now)
     schemes.update(scheme)
 
     return redirect(url_for("schemes.index"))

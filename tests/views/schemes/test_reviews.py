@@ -1,6 +1,8 @@
 from datetime import datetime
 
 import pytest
+from flask_wtf.csrf import generate_csrf
+from werkzeug.datastructures import MultiDict
 
 from schemes.domain.schemes import AuthorityReview, DataSource, SchemeReviews
 from schemes.views.schemes.data_source import DataSourceRepr
@@ -31,6 +33,23 @@ class TestSchemeReviewForm:
         review2: AuthorityReview
         review1, review2 = reviews.authority_reviews
         assert review2.review_date == datetime(2023, 4, 24, 12) and review2.source == DataSource.AUTHORITY_UPDATE
+
+    def test_no_errors_when_valid(self) -> None:
+        form = SchemeReviewForm(formdata=MultiDict([("csrf_token", generate_csrf()), ("up_to_date", "confirmed")]))
+
+        form.validate()
+
+        assert not form.errors
+
+    def test_up_to_date_is_required(self) -> None:
+        form = SchemeReviewForm(formdata=MultiDict([]))
+
+        form.validate()
+
+        assert (
+            "Confirm that the details in this scheme have been reviewed and are all up-to-date"
+            in form.errors["up_to_date"]
+        )
 
 
 @pytest.mark.usefixtures("app")

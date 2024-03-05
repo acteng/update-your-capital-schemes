@@ -35,7 +35,7 @@ class TestSchemeReview:
         )
         schemes.add(scheme)
 
-        client.post("/schemes/1", data={"csrf_token": csrf_token})
+        client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
         actual_scheme = schemes.get(1)
         assert actual_scheme
@@ -50,9 +50,52 @@ class TestSchemeReview:
     def test_review_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-        response = client.post("/schemes/1", data={"csrf_token": csrf_token})
+        response = client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
         assert response.status_code == 302 and response.location == "/schemes"
+
+    def test_cannot_review_when_error(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
+        )
+        schemes.add(scheme)
+
+        scheme_page = SchemePage(client.post("/schemes/1", data={"csrf_token": csrf_token}, follow_redirects=True))
+
+        assert scheme_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
+        assert scheme_page.errors and list(scheme_page.errors) == [
+            "Confirm that the details in this scheme have been reviewed and are all up-to-date"
+        ]
+        assert (
+            scheme_page.review.up_to_date.is_errored
+            and scheme_page.review.up_to_date.error
+            == "Error: Confirm that the details in this scheme have been reviewed and are all up-to-date"
+            and not scheme_page.review.up_to_date.value
+        )
+        actual_scheme = schemes.get(1)
+        assert actual_scheme
+        authority_review: AuthorityReview
+        (authority_review,) = actual_scheme.reviews.authority_reviews
+        assert (
+            authority_review.id == 1
+            and authority_review.review_date == datetime(2020, 1, 2, 12)
+            and authority_review.source == DataSource.ATF4_BID
+        )
+
+    def test_review_shows_needs_review_when_error(
+        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        clock.now = datetime(2023, 4, 24)
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
+        )
+        schemes.add(scheme)
+
+        scheme_page = SchemePage(client.post("/schemes/1", data={"csrf_token": csrf_token}, follow_redirects=True))
+
+        assert scheme_page.needs_review
 
     def test_cannot_review_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))

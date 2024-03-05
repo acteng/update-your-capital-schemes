@@ -5,6 +5,7 @@ from datetime import datetime
 
 from flask_wtf import FlaskForm
 from wtforms import BooleanField
+from wtforms.validators import InputRequired
 
 from schemes.domain.schemes import AuthorityReview, DataSource, SchemeReviews
 from schemes.views.forms import FieldsetGovCheckboxInput
@@ -12,7 +13,12 @@ from schemes.views.schemes.data_source import DataSourceRepr
 
 
 class SchemeReviewForm(FlaskForm):  # type: ignore
-    up_to_date = BooleanField(widget=FieldsetGovCheckboxInput())
+    up_to_date = BooleanField(
+        widget=FieldsetGovCheckboxInput(),
+        validators=[
+            InputRequired(message="Confirm that the details in this scheme have been reviewed and are all up-to-date")
+        ],
+    )
 
     def update_domain(self, reviews: SchemeReviews, now: datetime) -> None:
         reviews.update_authority_review(AuthorityReview(id_=None, review_date=now, source=DataSource.AUTHORITY_UPDATE))

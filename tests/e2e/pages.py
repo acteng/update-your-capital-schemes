@@ -65,6 +65,7 @@ class SchemesPage(PageObject):
         super().__init__(page)
         self.header = ServiceHeaderComponent(page.get_by_role("banner"))
         self._main = page.get_by_role("main")
+        self.success_notification = NotificationBannerComponent.for_success(page)
         self.important_notification = NotificationBannerComponent.for_important(page)
         self._authority = self._main.get_by_role("heading").locator(".govuk-caption-xl")
         self.schemes = SchemesTableComponent(self._main.get_by_role("table"))
@@ -109,6 +110,10 @@ class NotificationBannerComponent:
     @classmethod
     def for_important(cls, page: Page) -> NotificationBannerComponent:
         return NotificationBannerComponent(page.get_by_role("region", name="Important"))
+
+    @classmethod
+    def for_success(cls, page: Page) -> NotificationBannerComponent:
+        return NotificationBannerComponent(page.get_by_role("alert", name="Success"))
 
 
 class SchemesTableComponent:

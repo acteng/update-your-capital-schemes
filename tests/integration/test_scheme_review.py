@@ -7,7 +7,7 @@ from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import AuthorityReview, DataSource, Scheme, SchemeRepository
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
-from tests.integration.pages import SchemePage
+from tests.integration.pages import SchemePage, SchemesPage
 
 
 class TestSchemeReview:
@@ -50,9 +50,16 @@ class TestSchemeReview:
     def test_review_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 
-        response = client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+        schemes_page = SchemesPage(
+            client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}, follow_redirects=True)
+        )
 
-        assert response.status_code == 302 and response.location == "/schemes"
+        assert schemes_page.is_visible
+        assert (
+            schemes_page.success_notification
+            and schemes_page.success_notification.heading == "Wirral Package has been reviewed"
+        )
+        assert not schemes_page.important_notification
 
     def test_cannot_review_when_error(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)

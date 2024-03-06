@@ -10,6 +10,7 @@ from flask import (
     Blueprint,
     Response,
     abort,
+    flash,
     make_response,
     redirect,
     render_template,
@@ -346,6 +347,7 @@ def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, schem
     form.update_domain(scheme.reviews, clock.now)
     schemes.update(scheme)
 
+    flash(f"{scheme.name} has been reviewed")
     return redirect(url_for("schemes.index"))
 
 

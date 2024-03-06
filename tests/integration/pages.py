@@ -44,8 +44,11 @@ class SchemesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
         self.header = ServiceHeaderComponent(one(self._soup.select("header")))
+        self.success_notification = NotificationBannerComponent.for_success(self._soup)
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
         self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
+        heading = self._soup.select_one("main h1 span:nth-child(2)")
+        self.is_visible = heading.string == "Your schemes" if heading else False
         table = self._soup.select_one("main table")
         self.schemes = SchemesTableComponent(table) if table else None
         paragraph = self._soup.select_one("main h1 ~ p")
@@ -303,6 +306,11 @@ class NotificationBannerComponent:
     @classmethod
     def for_important(cls, soup: BeautifulSoup) -> NotificationBannerComponent | None:
         tag = soup.select_one(".govuk-notification-banner:not(.govuk-notification-banner--success)")
+        return NotificationBannerComponent(tag) if tag else None
+
+    @classmethod
+    def for_success(cls, soup: BeautifulSoup) -> NotificationBannerComponent | None:
+        tag = soup.select_one(".govuk-notification-banner.govuk-notification-banner--success")
         return NotificationBannerComponent(tag) if tag else None
 
 

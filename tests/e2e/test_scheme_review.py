@@ -30,6 +30,7 @@ def test_scheme_review(app_client: AppClient, oidc_client: OidcClient, page: Pag
 
     schemes_page = SchemePage.open(page, id_=1).review.check_up_to_date().confirm()
 
+    assert schemes_page.success_notification.heading == "Wirral Package has been reviewed"
     assert schemes_page.schemes["ATE00001"].last_reviewed == "24 Apr 2023"
     assert app_client.get_scheme(id_=1).authority_reviews == [
         AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 Bid"),

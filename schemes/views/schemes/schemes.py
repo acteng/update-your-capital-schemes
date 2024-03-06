@@ -303,8 +303,8 @@ def milestones_form(scheme_id: int, users: UserRepository, schemes: SchemeReposi
 
 @bp.post("<int:scheme_id>/milestones")
 @bearer_auth
-@inject.autoparams("users", "clock", "schemes")
-def milestones(users: UserRepository, clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+@inject.autoparams("clock", "users", "schemes")
+def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
     user_info = session["user"]
     user = users.get_by_email(user_info["email"])
     assert user

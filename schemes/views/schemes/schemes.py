@@ -327,10 +327,16 @@ def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, s
 
 @bp.post("<int:scheme_id>")
 @bearer_auth
-@inject.autoparams("clock", "schemes")
-def review(clock: Clock, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+@inject.autoparams("clock", "users", "schemes")
+def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
+    user_info = session["user"]
+    user = users.get_by_email(user_info["email"])
+    assert user
     scheme = schemes.get(scheme_id)
     assert scheme
+
+    if user.authority_id != scheme.authority_id:
+        abort(403)
 
     form = SchemeReviewForm()
 

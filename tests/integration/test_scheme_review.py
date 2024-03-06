@@ -104,3 +104,13 @@ class TestSchemeReview:
             scheme_page.notification_banner
             and scheme_page.notification_banner.heading == "The form you were submitting has expired. Please try again."
         )
+
+    def test_cannot_review_when_different_authority(
+        self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
+        schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+
+        response = client.post("/schemes/2", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+
+        assert response.status_code == 403

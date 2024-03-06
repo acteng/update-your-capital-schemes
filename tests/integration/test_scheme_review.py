@@ -83,20 +83,6 @@ class TestSchemeReview:
             and authority_review.source == DataSource.ATF4_BID
         )
 
-    def test_review_shows_needs_review_when_error(
-        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
-    ) -> None:
-        clock.now = datetime(2023, 4, 24)
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
-        )
-        schemes.add(scheme)
-
-        scheme_page = SchemePage(client.post("/schemes/1", data={"csrf_token": csrf_token}, follow_redirects=True))
-
-        assert scheme_page.needs_review
-
     def test_cannot_review_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
 

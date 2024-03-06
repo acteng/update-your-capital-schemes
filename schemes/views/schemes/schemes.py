@@ -265,7 +265,6 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
         abort(403)
 
     context = ChangeSpendToDateContext.from_domain(scheme)
-    context.form.process(formdata=request.form)
 
     if not context.form.validate():
         return Response(render_template("scheme/spend_to_date.html", **as_shallow_dict(context)))
@@ -307,7 +306,6 @@ def milestones(users: UserRepository, clock: Clock, schemes: SchemeRepository, s
         abort(403)
 
     context = ChangeMilestoneDatesContext.from_domain(scheme)
-    context.form.process(formdata=request.form)
 
     if not context.form.validate():
         return Response(render_template("scheme/milestones.html", **as_shallow_dict(context)))
@@ -337,7 +335,6 @@ def review(
 
     # TODO: use user's authority
     context = SchemeContext.from_domain(reporting_window, authority, scheme)
-    context.review.form.process(formdata=request.form)
 
     if not context.review.form.validate():
         return Response(render_template("scheme/index.html", **as_shallow_dict(context)))

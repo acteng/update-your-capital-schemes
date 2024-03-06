@@ -5,9 +5,18 @@ from typing import Iterator
 from playwright.sync_api import Locator, Page
 
 
-class StartPage:
+class PageObject:
     def __init__(self, page: Page):
         self._page = page
+
+    @property
+    def title(self) -> str:
+        return self._page.title()
+
+
+class StartPage(PageObject):
+    def __init__(self, page: Page):
+        super().__init__(page)
         self._start = page.get_by_role("button")
 
     @classmethod
@@ -33,27 +42,27 @@ class StartPage:
         return LoginPage(self._page)
 
 
-class LoginPage:
+class LoginPage(PageObject):
     def __init__(self, page: Page):
-        self._page = page
+        super().__init__(page)
 
     @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Login").is_visible()
 
 
-class ForbiddenPage:
+class ForbiddenPage(PageObject):
     def __init__(self, page: Page):
-        self._page = page
+        super().__init__(page)
 
     @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Forbidden").is_visible()
 
 
-class SchemesPage:
+class SchemesPage(PageObject):
     def __init__(self, page: Page):
-        self._page = page
+        super().__init__(page)
         self.header = ServiceHeaderComponent(page.get_by_role("banner"))
         self._main = page.get_by_role("main")
         self.notification_banner = NotificationBannerComponent(self._main.get_by_role("region", name="Important"))
@@ -165,9 +174,9 @@ class TagComponent:
         return texts[0].strip() if texts else ""
 
 
-class SchemePage:
+class SchemePage(PageObject):
     def __init__(self, page: Page):
-        self._page = page
+        super().__init__(page)
         self._main = page.get_by_role("main")
         self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
         heading = self._main.get_by_role("heading").first
@@ -186,10 +195,6 @@ class SchemePage:
         page.goto("/schemes")
         page.goto(f"/schemes/{id_}")
         return cls(page)
-
-    @property
-    def title(self) -> str:
-        return self._page.title()
 
     @property
     def authority(self) -> str | None:
@@ -386,15 +391,11 @@ class SchemeReviewFormComponent:
         return SchemePage(self._form.page)
 
 
-class ChangeSpendToDatePage:
+class ChangeSpendToDatePage(PageObject):
     def __init__(self, page: Page):
-        self._page = page
+        super().__init__(page)
         self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
         self.form = ChangeSpendToDateFormComponent(page.get_by_role("form"))
-
-    @property
-    def title(self) -> str:
-        return self._page.title()
 
 
 class ChangeSpendToDateFormComponent:
@@ -416,8 +417,9 @@ class ChangeSpendToDateFormComponent:
         return ChangeSpendToDatePage(self._form.page)
 
 
-class ChangeMilestoneDatesPage:
+class ChangeMilestoneDatesPage(PageObject):
     def __init__(self, page: Page):
+        super().__init__(page)
         self.form = ChangeMilestoneDatesFormComponent(page.get_by_role("form"))
 
 

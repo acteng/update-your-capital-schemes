@@ -44,10 +44,7 @@ class SchemesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
         self.header = ServiceHeaderComponent(one(self._soup.select("header")))
-        notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
-        self.notification_banner = (
-            NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
-        )
+        self.notification_banner = NotificationBannerComponent.create(self._soup)
         self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
         table = self._soup.select_one("main table")
         self.schemes = SchemesTableComponent(table) if table else None
@@ -117,10 +114,7 @@ class SchemePage(PageObject):
         self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
-        notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
-        self.notification_banner = (
-            NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
-        )
+        self.notification_banner = NotificationBannerComponent.create(self._soup)
         self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
         self.name = one(self._soup.select("main h1 span:nth-child(2)")).string
         tag = self._soup.select_one("main h1 .govuk-tag")
@@ -257,10 +251,7 @@ class ChangeSpendToDatePage(PageObject):
         self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
-        notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
-        self.notification_banner = (
-            NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
-        )
+        self.notification_banner = NotificationBannerComponent.create(self._soup)
         self.funding_summary = (one(self._soup.select("main h1 ~ p")).string or "").strip()
         self.form = ChangeSpendToDateFormComponent(one(self._soup.select("form")))
 
@@ -283,10 +274,7 @@ class ChangeMilestoneDatesPage(PageObject):
         self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
-        notification_banner_tag = self._soup.select_one(".govuk-notification-banner")
-        self.notification_banner = (
-            NotificationBannerComponent(notification_banner_tag) if notification_banner_tag else None
-        )
+        self.notification_banner = NotificationBannerComponent.create(self._soup)
         self.form = ChangeMilestoneDatesFormComponent(one(self._soup.select("form")))
 
     @classmethod
@@ -311,6 +299,11 @@ class ErrorSummaryComponent:
 class NotificationBannerComponent:
     def __init__(self, banner: Tag):
         self.heading = one(banner.select("p")).string
+
+    @classmethod
+    def create(cls, soup: BeautifulSoup) -> NotificationBannerComponent | None:
+        tag = soup.select_one(".govuk-notification-banner")
+        return NotificationBannerComponent(tag) if tag else None
 
 
 class ChangeSpendToDateFormComponent:

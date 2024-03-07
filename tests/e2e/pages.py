@@ -65,7 +65,7 @@ class SchemesPage(PageObject):
         super().__init__(page)
         self.header = ServiceHeaderComponent(page.get_by_role("banner"))
         self._main = page.get_by_role("main")
-        self.notification_banner = NotificationBannerComponent(self._main.get_by_role("region", name="Important"))
+        self.notification_banner = NotificationBannerComponent.create(page)
         self._authority = self._main.get_by_role("heading").locator(".govuk-caption-xl")
         self.schemes = SchemesTableComponent(self._main.get_by_role("table"))
 
@@ -105,6 +105,10 @@ class NotificationBannerComponent:
     @property
     def heading(self) -> str | None:
         return self._heading.text_content()
+
+    @classmethod
+    def create(cls, page: Page) -> NotificationBannerComponent:
+        return NotificationBannerComponent(page.get_by_role("region", name="Important"))
 
 
 class SchemesTableComponent:

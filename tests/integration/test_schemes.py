@@ -58,8 +58,8 @@ class TestSchemes:
         schemes_page = SchemesPage.open(client)
 
         assert (
-            schemes_page.notification_banner
-            and schemes_page.notification_banner.heading == expected_notification_banner
+            schemes_page.important_notification
+            and schemes_page.important_notification.heading == expected_notification_banner
         )
 
     def test_schemes_does_not_show_notification_outside_reporting_window(
@@ -68,7 +68,7 @@ class TestSchemes:
         clock.now = datetime(2020, 3, 1)
         schemes_page = SchemesPage.open(client)
 
-        assert not schemes_page.notification_banner
+        assert not schemes_page.important_notification
 
     def test_schemes_shows_authority(self, client: FlaskClient) -> None:
         schemes_page = SchemesPage.open(client)

@@ -331,8 +331,8 @@ class TestSchemeFunding:
 
         assert change_spend_to_date_page.is_visible
         assert (
-            change_spend_to_date_page.notification_banner
-            and change_spend_to_date_page.notification_banner.heading
+            change_spend_to_date_page.important_notification
+            and change_spend_to_date_page.important_notification.heading
             == "The form you were submitting has expired. Please try again."
         )
 
@@ -347,8 +347,8 @@ class TestSchemeFunding:
 
         assert change_spend_to_date_page.is_visible
         assert (
-            change_spend_to_date_page.notification_banner
-            and change_spend_to_date_page.notification_banner.heading
+            change_spend_to_date_page.important_notification
+            and change_spend_to_date_page.important_notification.heading
             == "The form you were submitting has expired. Please try again."
         )
 

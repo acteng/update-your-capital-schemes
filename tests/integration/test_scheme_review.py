@@ -90,8 +90,9 @@ class TestSchemeReview:
 
         assert scheme_page.name == "Wirral Package"
         assert (
-            scheme_page.notification_banner
-            and scheme_page.notification_banner.heading == "The form you were submitting has expired. Please try again."
+            scheme_page.important_notification
+            and scheme_page.important_notification.heading
+            == "The form you were submitting has expired. Please try again."
         )
 
     def test_cannot_review_when_incorrect_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -101,8 +102,9 @@ class TestSchemeReview:
 
         assert scheme_page.name == "Wirral Package"
         assert (
-            scheme_page.notification_banner
-            and scheme_page.notification_banner.heading == "The form you were submitting has expired. Please try again."
+            scheme_page.important_notification
+            and scheme_page.important_notification.heading
+            == "The form you were submitting has expired. Please try again."
         )
 
     def test_cannot_review_when_different_authority(

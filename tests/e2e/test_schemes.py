@@ -88,7 +88,7 @@ class TestAuthenticated:
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
         schemes_page = SchemesPage.open(page)
 
-        assert schemes_page.notification_banner.heading == "You have 7 days left to update your schemes"
+        assert schemes_page.important_notification.heading == "You have 7 days left to update your schemes"
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")

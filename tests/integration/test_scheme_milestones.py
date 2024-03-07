@@ -317,8 +317,8 @@ class TestSchemeMilestones:
 
         assert change_milestone_dates_page.is_visible
         assert (
-            change_milestone_dates_page.notification_banner
-            and change_milestone_dates_page.notification_banner.heading
+            change_milestone_dates_page.important_notification
+            and change_milestone_dates_page.important_notification.heading
             == "The form you were submitting has expired. Please try again."
         )
 
@@ -333,8 +333,8 @@ class TestSchemeMilestones:
 
         assert change_milestone_dates_page.is_visible
         assert (
-            change_milestone_dates_page.notification_banner
-            and change_milestone_dates_page.notification_banner.heading
+            change_milestone_dates_page.important_notification
+            and change_milestone_dates_page.important_notification.heading
             == "The form you were submitting has expired. Please try again."
         )
 

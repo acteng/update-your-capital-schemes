@@ -272,18 +272,6 @@ class TestFinancialRevisionRepr:
             source=DataSourceRepr.ATF4_BID,
         )
 
-    def test_cannot_from_domain_when_transient(self) -> None:
-        financial_revision = FinancialRevision(
-            id_=None,
-            effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 1, 31, 13)),
-            type_=FinancialType.FUNDING_ALLOCATION,
-            amount=100_000,
-            source=DataSource.ATF4_BID,
-        )
-
-        with pytest.raises(ValueError, match="Financial revision must be persistent"):
-            FinancialRevisionRepr.from_domain(financial_revision)
-
     def test_from_domain_when_no_effective_date_to(self) -> None:
         financial_revision = FinancialRevision(
             id_=1,

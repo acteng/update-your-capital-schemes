@@ -83,38 +83,38 @@ class SchemeRepr:
 
 @dataclass(frozen=True)
 class FinancialRevisionRepr:
-    id: int
     effective_date_from: str
     effective_date_to: str | None
     type: str
     amount: int
     source: str
+    id: int | None = None
 
 
 @dataclass(frozen=True)
 class MilestoneRevisionRepr:
-    id: int
     effective_date_from: str
     effective_date_to: str | None
     milestone: str
     observation_type: str
     status_date: str
     source: str
+    id: int | None = None
 
 
 @dataclass(frozen=True)
 class OutputRevisionRepr:
-    id: int
     effective_date_from: str
     effective_date_to: str | None
     type: str
     measure: str
     value: str
     observation_type: str
+    id: int | None = None
 
 
 @dataclass(frozen=True)
 class AuthorityReviewRepr:
-    id: int
     review_date: str
     source: str
+    id: int | None = None

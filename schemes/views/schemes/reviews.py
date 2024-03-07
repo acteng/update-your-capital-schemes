@@ -31,15 +31,12 @@ class SchemeReviewContext:
 
 @dataclass(frozen=True)
 class AuthorityReviewRepr:
-    id: int
     review_date: str
     source: DataSourceRepr
+    id: int | None = None
 
     @classmethod
     def from_domain(cls, authority_review: AuthorityReview) -> AuthorityReviewRepr:
-        if not authority_review.id:
-            raise ValueError("Authority review must be persistent")
-
         return AuthorityReviewRepr(
             id=authority_review.id,
             review_date=authority_review.review_date.isoformat(),

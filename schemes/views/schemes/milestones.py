@@ -222,19 +222,16 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
 
 @dataclass(frozen=True)
 class MilestoneRevisionRepr:
-    id: int
     effective_date_from: str
     effective_date_to: str | None
     milestone: MilestoneRepr
     observation_type: ObservationTypeRepr
     status_date: str
     source: DataSourceRepr
+    id: int | None = None
 
     @classmethod
     def from_domain(cls, milestone_revision: MilestoneRevision) -> MilestoneRevisionRepr:
-        if not milestone_revision.id:
-            raise ValueError("Milestone revision must be persistent")
-
         return cls(
             id=milestone_revision.id,
             effective_date_from=milestone_revision.effective.date_from.isoformat(),

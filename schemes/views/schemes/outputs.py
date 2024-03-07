@@ -111,13 +111,13 @@ class OutputMeasureContext:
 
 @dataclass(frozen=True)
 class OutputRevisionRepr:
-    id: int
     effective_date_from: str
     effective_date_to: str | None
     type: OutputTypeRepr
     measure: OutputMeasureRepr
     value: str
     observation_type: ObservationTypeRepr
+    id: int | None = None
 
     @classmethod
     def from_domain(cls, output_revision: OutputRevision) -> OutputRevisionRepr:

@@ -28,9 +28,10 @@ class SchemeOutputs:
 
 
 class OutputRevision:
+    # TODO: domain identifier should be mandatory for transient instances
     def __init__(
         self,
-        id_: int,
+        id_: int | None,
         effective: DateRange,
         type_measure: OutputTypeMeasure,
         value: Decimal,

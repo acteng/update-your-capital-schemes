@@ -84,18 +84,15 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
 
 @dataclass(frozen=True)
 class FinancialRevisionRepr:
-    id: int
     effective_date_from: str
     effective_date_to: str | None
     type: FinancialTypeRepr
     amount: int
     source: DataSourceRepr
+    id: int | None = None
 
     @classmethod
     def from_domain(cls, financial_revision: FinancialRevision) -> FinancialRevisionRepr:
-        if not financial_revision.id:
-            raise ValueError("Financial revision must be persistent")
-
         return FinancialRevisionRepr(
             id=financial_revision.id,
             effective_date_from=financial_revision.effective.date_from.isoformat(),

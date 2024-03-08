@@ -15,9 +15,7 @@ from schemes.views.schemes.data_source import DataSourceRepr
 class SchemeReviewForm(FlaskForm):  # type: ignore
     up_to_date = BooleanField(
         widget=FieldsetGovCheckboxInput(),
-        validators=[
-            InputRequired(message="Confirm that the details in this scheme have been reviewed and are all up-to-date")
-        ],
+        validators=[InputRequired(message="Confirm this scheme is up-to-date")],
     )
 
     def update_domain(self, reviews: SchemeReviews, now: datetime) -> None:

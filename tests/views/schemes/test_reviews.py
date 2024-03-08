@@ -46,10 +46,7 @@ class TestSchemeReviewForm:
 
         form.validate()
 
-        assert (
-            "Confirm that the details in this scheme have been reviewed and are all up-to-date"
-            in form.errors["up_to_date"]
-        )
+        assert "Confirm this scheme is up-to-date" in form.errors["up_to_date"]
 
 
 @pytest.mark.usefixtures("app")

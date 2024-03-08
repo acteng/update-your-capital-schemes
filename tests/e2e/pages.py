@@ -198,7 +198,7 @@ class SchemePage(PageObject):
         self.funding = SchemeFundingComponent(self._main.get_by_role("heading", name="Funding"))
         self.milestones = SchemeMilestonesComponent(self._main.get_by_role("heading", name="Milestones"))
         self.outputs = SchemeOutputsComponent(self._main.get_by_role("heading", name="Outputs"))
-        self.review = SchemeReviewFormComponent(self._main.get_by_role("form"))
+        self.review = SchemeReviewComponent(self._main.get_by_role("heading", name="Is this scheme up-to-date?"))
 
     @classmethod
     def open(cls, page: Page, id_: int) -> SchemePage:
@@ -252,7 +252,6 @@ class SchemeOverviewComponent(SummaryCardComponent):
         self._scheme_type = self._get_definition("Scheme type")
         self._funding_programme = self._get_definition("Funding programme")
         self._current_milestone = self._get_definition("Current milestone")
-        self._last_reviewed = self._get_definition("Last reviewed")
 
     @property
     def reference(self) -> str:
@@ -269,10 +268,6 @@ class SchemeOverviewComponent(SummaryCardComponent):
     @property
     def current_milestone(self) -> str:
         return (self._current_milestone.text_content() or "").strip()
-
-    @property
-    def last_reviewed(self) -> str:
-        return (self._last_reviewed.text_content() or "").strip()
 
 
 class SchemeFundingComponent(SummaryCardComponent):
@@ -393,6 +388,12 @@ class SchemeOutputRowComponent:
             "measurement": self.measurement,
             "planned": self.planned,
         }
+
+
+class SchemeReviewComponent:
+    def __init__(self, heading: Locator):
+        section = heading.locator("xpath=..")
+        self.form = SchemeReviewFormComponent(section.get_by_role("form"))
 
 
 class SchemeReviewFormComponent:
@@ -532,7 +533,7 @@ class TextComponent:
 class CheckboxComponent:
     def __init__(self, input_: Locator):
         self._input = input_
-        self._form_group = input_.locator("xpath=../../../..")
+        self._form_group = input_.locator("xpath=../../..")
         self._error = self._form_group.locator(".govuk-error-message")
 
     @property

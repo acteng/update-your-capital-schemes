@@ -134,7 +134,9 @@ class SchemePage(PageObject):
         self.funding = SchemeFundingComponent(one(self._soup.select("main h2:-soup-contains('Funding')")))
         self.milestones = SchemeMilestonesComponent(one(self._soup.select("main h2:-soup-contains('Milestones')")))
         self.outputs = SchemeOutputsComponent(one(self._soup.select("main h2:-soup-contains('Outputs')")))
-        self.review = SchemeReviewFormComponent(one(self._soup.select("main form")))
+        self.review = SchemeReviewComponent(
+            one(self._soup.select("main h2:-soup-contains('Is this scheme up-to-date?')"))
+        )
 
     @classmethod
     def open(cls, client: FlaskClient, id_: int) -> SchemePage:
@@ -175,7 +177,6 @@ class SchemeOverviewComponent(SummaryCardComponent):
         self.scheme_type = (self._get_definition("Scheme type")[0].string or "").strip()
         self.funding_programme = (self._get_definition("Funding programme")[0].string or "").strip()
         self.current_milestone = (self._get_definition("Current milestone")[0].string or "").strip()
-        self.last_reviewed = (self._get_definition("Last reviewed")[0].string or "").strip()
 
 
 class SchemeFundingComponent(SummaryCardComponent):
@@ -256,6 +257,14 @@ class SchemeOutputRowComponent:
             "measurement": self.measurement,
             "planned": self.planned,
         }
+
+
+class SchemeReviewComponent:
+    def __init__(self, heading: Tag):
+        section = heading.find_parent("section")
+        assert section
+        self.last_reviewed = (one(section.select("section > p")).string or "").strip()
+        self.form = SchemeReviewFormComponent(one(section.select("form")))
 
 
 class SchemeReviewFormComponent:

@@ -38,7 +38,6 @@ class TestSchemeOverview:
             and scheme_page.overview.scheme_type == ""
             and scheme_page.overview.funding_programme == ""
             and scheme_page.overview.current_milestone == ""
-            and scheme_page.overview.last_reviewed == ""
         )
 
     def test_scheme_shows_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -67,5 +66,4 @@ class TestSchemeOverview:
             and scheme_page.overview.scheme_type == "Construction"
             and scheme_page.overview.funding_programme == "ATF4"
             and scheme_page.overview.current_milestone == "Detailed design completed"
-            and scheme_page.overview.last_reviewed == "2 Jan 2020"
         )

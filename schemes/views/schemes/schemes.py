@@ -187,7 +187,7 @@ class SchemeContext:
             funding=SchemeFundingContext.from_domain(scheme.funding),
             milestones=SchemeMilestonesContext.from_domain(scheme.milestones),
             outputs=SchemeOutputsContext.from_domain(scheme.outputs.current_output_revisions),
-            review=SchemeReviewContext(),
+            review=SchemeReviewContext.from_domain(scheme.reviews),
         )
 
 
@@ -197,7 +197,6 @@ class SchemeOverviewContext:
     type: SchemeTypeContext
     funding_programme: FundingProgrammeContext
     current_milestone: MilestoneContext
-    last_reviewed: datetime | None
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> SchemeOverviewContext:
@@ -206,7 +205,6 @@ class SchemeOverviewContext:
             type=SchemeTypeContext.from_domain(scheme.type),
             funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
             current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
-            last_reviewed=scheme.reviews.last_reviewed,
         )
 
 

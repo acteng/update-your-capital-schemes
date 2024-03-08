@@ -38,14 +38,6 @@
             "value": {
                 "text": overview.current_milestone.name | d("", true)
             }
-        },
-        {
-            "key": {
-                "text": "Last reviewed"
-            },
-            "value": {
-                "text": overview.last_reviewed | date if overview.last_reviewed
-            }
         }
     ]
 }) }}

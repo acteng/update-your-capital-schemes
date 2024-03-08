@@ -1,25 +1,33 @@
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
 {% from "govuk_frontend_jinja/components/checkboxes/macro.html" import govukCheckboxes %}
 
-<form method="post" action="{{ url_for('schemes.review', scheme_id=id) }}" aria-label="Review scheme">
-    {{ review.form.csrf_token }}
+<section>
+    <h2 class="govuk-heading-m">
+        Is this scheme up-to-date?
+    </h2>
 
-    {{ review.form.up_to_date(params={
-        "fieldset": {
-            "legend": {
-                "text": "Is this scheme up-to-date?",
-                "classes": "govuk-fieldset__legend--m"
-            }
-        },
-        "items": [
-            {
-                "value": "confirmed",
-                "text": "I confirm that the details in this scheme have been reviewed and are all up-to-date"
-            }
-        ]
-    }) }}
+    <p class="govuk-body">
+        {% if review.last_reviewed %}
+            This scheme was last reviewed on {{ review.last_reviewed | date }}.
+        {% else %}
+            This scheme has not been reviewed.
+        {% endif %}
+    </p>
 
-    {{ govukButton({
-        "text": "Confirm"
-    }) }}
-</form>
+    <form method="post" action="{{ url_for('schemes.review', scheme_id=id) }}" aria-label="Review scheme">
+        {{ review.form.csrf_token }}
+
+        {{ review.form.up_to_date(params={
+            "items": [
+                {
+                    "value": "confirmed",
+                    "text": "I confirm that the details in this scheme have been reviewed and are all up-to-date"
+                }
+            ]
+        }) }}
+
+        {{ govukButton({
+            "text": "Confirm"
+        }) }}
+    </form>
+</section>

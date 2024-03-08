@@ -34,7 +34,7 @@ from schemes.views.schemes.outputs import (
     OutputRevisionRepr,
     OutputTypeRepr,
 )
-from schemes.views.schemes.reviews import AuthorityReviewRepr, SchemeReviewForm
+from schemes.views.schemes.reviews import AuthorityReviewRepr
 from schemes.views.schemes.schemes import (
     FundingProgrammeContext,
     FundingProgrammeRepr,
@@ -144,7 +144,7 @@ class TestSchemeContext:
             and context.name == "Wirral Package"
             and not context.needs_review
             and context.overview.reference == "ATE00001"
-            and isinstance(context.review.form, SchemeReviewForm)
+            and not context.review.last_reviewed
         )
 
     @pytest.mark.parametrize(
@@ -240,6 +240,17 @@ class TestSchemeContext:
 
         assert context.outputs.outputs[0].planned == Decimal(20)
 
+    def test_from_domain_sets_review(self) -> None:
+        authority = Authority(id_=2, name="")
+        scheme = Scheme(id_=1, name="", authority_id=2)
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
+        )
+
+        context = SchemeContext.from_domain(None, authority, scheme)
+
+        assert context.review.last_reviewed == datetime(2020, 1, 1)
+
 
 class TestSchemeOverviewContext:
     def test_from_domain_sets_reference(self) -> None:
@@ -296,24 +307,6 @@ class TestSchemeOverviewContext:
         context = SchemeOverviewContext.from_domain(scheme)
 
         assert context.current_milestone == MilestoneContext(name=None)
-
-    def test_from_domain_sets_last_reviewed(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.reviews.update_authority_reviews(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID),
-        )
-
-        context = SchemeOverviewContext.from_domain(scheme)
-
-        assert context.last_reviewed == datetime(2020, 1, 2)
-
-    def test_from_domain_sets_last_reviewed_when_no_authority_reviews(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
-
-        context = SchemeOverviewContext.from_domain(scheme)
-
-        assert context.last_reviewed is None
 
 
 class TestSchemeTypeContext:

@@ -54,10 +54,23 @@ class TestSchemeReviewForm:
 
 @pytest.mark.usefixtures("app")
 class TestSchemeReviewContext:
-    def test_create(self) -> None:
-        context = SchemeReviewContext()
+    def test_from_domain(self) -> None:
+        reviews = SchemeReviews()
 
-        assert not context.form.up_to_date.data
+        context = SchemeReviewContext.from_domain(reviews)
+
+        assert context.last_reviewed is None and not context.form.up_to_date.data
+
+    def test_from_domain_sets_last_reviewed(self) -> None:
+        reviews = SchemeReviews()
+        reviews.update_authority_reviews(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID),
+        )
+
+        context = SchemeReviewContext.from_domain(reviews)
+
+        assert context.last_reviewed == datetime(2020, 1, 2)
 
 
 class TestAuthorityReviewRepr:

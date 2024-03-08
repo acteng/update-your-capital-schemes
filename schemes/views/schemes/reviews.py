@@ -26,7 +26,12 @@ class SchemeReviewForm(FlaskForm):  # type: ignore
 
 @dataclass(frozen=True)
 class SchemeReviewContext:
+    last_reviewed: datetime | None
     form: SchemeReviewForm = field(default_factory=SchemeReviewForm)
+
+    @classmethod
+    def from_domain(cls, reviews: SchemeReviews) -> SchemeReviewContext:
+        return SchemeReviewContext(last_reviewed=reviews.last_reviewed, form=SchemeReviewForm())
 
 
 @dataclass(frozen=True)

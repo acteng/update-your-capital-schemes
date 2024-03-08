@@ -23,7 +23,27 @@ class TestSchemeReview:
 
         scheme_page = SchemePage.open(client, id_=1)
 
-        assert scheme_page.review.confirm_url == "/schemes/1"
+        assert scheme_page.review.form.confirm_url == "/schemes/1"
+
+    def test_scheme_shows_last_reviewed(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
+        )
+        schemes.add(scheme)
+
+        scheme_page = SchemePage.open(client, id_=1)
+
+        assert scheme_page.review.last_reviewed == "This scheme was last reviewed on 2 Jan 2020."
+
+    def test_scheme_shows_last_reviewed_when_no_authority_reviews(
+        self, schemes: SchemeRepository, client: FlaskClient
+    ) -> None:
+        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        scheme_page = SchemePage.open(client, id_=1)
+
+        assert scheme_page.review.last_reviewed == "This scheme has not been reviewed."
 
     def test_review_updates_last_reviewed(
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
@@ -75,10 +95,10 @@ class TestSchemeReview:
             "Confirm that the details in this scheme have been reviewed and are all up-to-date"
         ]
         assert (
-            scheme_page.review.up_to_date.is_errored
-            and scheme_page.review.up_to_date.error
+            scheme_page.review.form.up_to_date.is_errored
+            and scheme_page.review.form.up_to_date.error
             == "Error: Confirm that the details in this scheme have been reviewed and are all up-to-date"
-            and not scheme_page.review.up_to_date.value
+            and not scheme_page.review.form.up_to_date.value
         )
         actual_scheme = schemes.get(1)
         assert actual_scheme

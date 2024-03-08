@@ -8,9 +8,9 @@
 
     <p class="govuk-body">
         {% if review.last_reviewed %}
-            This scheme was last reviewed on {{ review.last_reviewed | date }}.
+            It was last reviewed on {{ review.last_reviewed | date }}.
         {% else %}
-            This scheme has not been reviewed.
+            It has not been reviewed.
         {% endif %}
     </p>
 

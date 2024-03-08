@@ -34,7 +34,7 @@ class TestSchemeReview:
 
         scheme_page = SchemePage.open(client, id_=1)
 
-        assert scheme_page.review.last_reviewed == "This scheme was last reviewed on 2 Jan 2020."
+        assert scheme_page.review.last_reviewed == "It was last reviewed on 2 Jan 2020."
 
     def test_scheme_shows_last_reviewed_when_no_authority_reviews(
         self, schemes: SchemeRepository, client: FlaskClient
@@ -43,7 +43,7 @@ class TestSchemeReview:
 
         scheme_page = SchemePage.open(client, id_=1)
 
-        assert scheme_page.review.last_reviewed == "This scheme has not been reviewed."
+        assert scheme_page.review.last_reviewed == "It has not been reviewed."
 
     def test_review_updates_last_reviewed(
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str

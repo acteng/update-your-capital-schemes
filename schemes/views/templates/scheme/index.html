@@ -3,6 +3,7 @@
 {% from "govuk_frontend_jinja/components/error-summary/macro.html" import govukErrorSummary %}
 {% from "govuk_frontend_jinja/components/notification-banner/macro.html" import govukNotificationBanner %}
 {% from "govuk_frontend_jinja/components/tag/macro.html" import govukTag %}
+{% from "govuk_frontend_jinja/components/inset-text/macro.html" import govukInsetText %}
 
 {% block pageTitle %}{% if review.form.errors %}Error: {% endif %}{{ super() }}{% endblock %}
 
@@ -29,13 +30,25 @@
     <h1 class="govuk-heading-xl">
         <span class="govuk-caption-xl">{{ authority_name }}</span>
         <span>{{ name }}</span>
-        {% if needs_review %}
-            {{ govukTag({
-                "classes": "govuk-tag--red app-vertical-align-middle",
-                "text": "Needs review"
-            }) }}
-        {% endif %}
     </h1>
+
+    {% if needs_review %}
+        {% set html %}
+            <p>
+                {{ govukTag({
+                    "classes": "govuk-tag--red",
+                    "text": "Needs review"
+                }) }}
+            </p>
+            <p>
+                Check the details before confirming that this scheme is up-to-date.
+            </p>
+        {% endset %}
+
+        {{ govukInsetText({
+            "html": html
+        }) }}
+    {% endif %}
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">

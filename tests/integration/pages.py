@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+from re import Pattern
 from typing import Iterator
 
 from bs4 import BeautifulSoup, ResultSet, Tag
@@ -120,8 +122,14 @@ class SchemePage(PageObject):
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
         self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
         self.name = one(self._soup.select("main h1 span:nth-child(2)")).string
-        tag = self._soup.select_one("main h1 .govuk-tag")
-        self.needs_review = TagComponent(tag).text == "Needs review" if tag else False
+        inset_text = self._soup.select_one("main .govuk-inset-text")
+        self.needs_review = (
+            InsetTextComponent(inset_text).has_text(
+                re.compile(r"Needs review\s+Check the details before confirming that this scheme is up-to-date.")
+            )
+            if inset_text
+            else False
+        )
         self.overview = SchemeOverviewComponent(one(self._soup.select("main h2:-soup-contains('Overview')")))
         self.funding = SchemeFundingComponent(one(self._soup.select("main h2:-soup-contains('Funding')")))
         self.milestones = SchemeMilestonesComponent(one(self._soup.select("main h2:-soup-contains('Milestones')")))
@@ -137,6 +145,17 @@ class SchemePage(PageObject):
     def open_when_unauthorized(cls, client: FlaskClient, id_: int) -> ForbiddenPage:
         response = client.get(f"/schemes/{id_}")
         return ForbiddenPage(response)
+
+
+class InsetTextComponent:
+    def __init__(self, inset_text: Tag):
+        self.inset_text = inset_text
+
+    def text(self) -> str:
+        return self.inset_text.text.strip()
+
+    def has_text(self, pattern: Pattern[str]) -> bool:
+        return pattern.match(self.text()) is not None
 
 
 class SummaryCardComponent:

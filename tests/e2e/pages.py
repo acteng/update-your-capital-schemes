@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+from re import Pattern
 from typing import Iterator
 
 from playwright.sync_api import Locator, Page
@@ -191,7 +193,7 @@ class SchemePage(PageObject):
         heading = self._main.get_by_role("heading").first
         self._authority = heading.locator(".govuk-caption-xl")
         self._name = heading.locator("span").nth(1)
-        self._tags = heading.locator(".govuk-tag")
+        self._inset_text = InsetTextComponent(self._main.locator(".govuk-inset-text"))
         self.overview = SchemeOverviewComponent(self._main.get_by_role("heading", name="Overview"))
         self.funding = SchemeFundingComponent(self._main.get_by_role("heading", name="Funding"))
         self.milestones = SchemeMilestonesComponent(self._main.get_by_role("heading", name="Milestones"))
@@ -215,7 +217,21 @@ class SchemePage(PageObject):
 
     @property
     def needs_review(self) -> bool:
-        return "Needs review" in (text_content.strip() for text_content in self._tags.all_text_contents())
+        return self._inset_text.has_text(
+            re.compile(r"Needs review\s+Check the details before confirming that this scheme is up-to-date.")
+        )
+
+
+class InsetTextComponent:
+    def __init__(self, inset_text: Locator):
+        self._inset_text = inset_text
+
+    @property
+    def text(self) -> str:
+        return (self._inset_text.text_content() or "").strip()
+
+    def has_text(self, pattern: Pattern[str]) -> bool:
+        return pattern.match(self.text) is not None
 
 
 class SummaryCardComponent:

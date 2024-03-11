@@ -25,6 +25,7 @@ class DataSourceRepr(Enum):
     INITIAL_SCHEME_LIST = "Initial Scheme List"
     AUTHORITY_UPDATE = "Authority Update"
     PULSE_2023_24_Q2_DATA_CLEANSE = "Pulse 2023/24 Q2 Data Cleanse"
+    PULSE_2023_24_Q3_DATA_CLEANSE = "Pulse 2023/24 Q3 Data Cleanse"
 
     @classmethod
     def from_domain(cls, data_source: DataSource) -> DataSourceRepr:
@@ -53,4 +54,5 @@ class DataSourceRepr(Enum):
             DataSource.INITIAL_SCHEME_LIST: DataSourceRepr.INITIAL_SCHEME_LIST,
             DataSource.AUTHORITY_UPDATE: DataSourceRepr.AUTHORITY_UPDATE,
             DataSource.PULSE_2023_24_Q2_DATA_CLEANSE: DataSourceRepr.PULSE_2023_24_Q2_DATA_CLEANSE,
+            DataSource.PULSE_2023_24_Q3_DATA_CLEANSE: DataSourceRepr.PULSE_2023_24_Q3_DATA_CLEANSE,
         }

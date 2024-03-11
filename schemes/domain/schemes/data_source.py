@@ -20,3 +20,4 @@ class DataSource(Enum):
     INITIAL_SCHEME_LIST = auto()
     AUTHORITY_UPDATE = auto()
     PULSE_2023_24_Q2_DATA_CLEANSE = auto()
+    PULSE_2023_24_Q3_DATA_CLEANSE = auto()

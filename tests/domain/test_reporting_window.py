@@ -31,13 +31,13 @@ class TestDefaultReportingWindowService:
     @pytest.mark.parametrize(
         "date, expected_window_start, expected_window_end",
         [
-            (datetime(2020, 1, 1), datetime(2020, 1, 1), datetime(2020, 2, 1)),
-            (datetime(2020, 1, 24), datetime(2020, 1, 1), datetime(2020, 2, 1)),
-            (datetime(2020, 1, 31), datetime(2020, 1, 1), datetime(2020, 2, 1)),
-            (datetime(2020, 4, 24), datetime(2020, 4, 1), datetime(2020, 5, 1)),
-            (datetime(2020, 7, 24), datetime(2020, 7, 1), datetime(2020, 8, 1)),
-            (datetime(2020, 10, 24), datetime(2020, 10, 1), datetime(2020, 11, 1)),
-            (datetime(2021, 1, 24), datetime(2021, 1, 1), datetime(2021, 2, 1)),
+            pytest.param(datetime(2020, 1, 1), datetime(2020, 1, 1), datetime(2020, 2, 1), id="start of Q3"),
+            pytest.param(datetime(2020, 1, 24), datetime(2020, 1, 1), datetime(2020, 2, 1), id="middle of Q3"),
+            pytest.param(datetime(2020, 1, 31), datetime(2020, 1, 1), datetime(2020, 2, 1), id="end of Q3"),
+            pytest.param(datetime(2020, 4, 24), datetime(2020, 4, 1), datetime(2020, 5, 1), id="middle of Q4"),
+            pytest.param(datetime(2020, 7, 24), datetime(2020, 7, 1), datetime(2020, 8, 1), id="middle of Q1"),
+            pytest.param(datetime(2020, 10, 24), datetime(2020, 10, 1), datetime(2020, 11, 1), id="middle of Q2"),
+            pytest.param(datetime(2021, 1, 24), datetime(2021, 1, 1), datetime(2021, 2, 1), id="different year"),
         ],
     )
     def test_get_by_date(

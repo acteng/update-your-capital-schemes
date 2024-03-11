@@ -58,10 +58,10 @@ class TestSchemeReviews:
     @pytest.mark.parametrize(
         "review_date, expected_needs_review",
         [
-            (datetime(2023, 3, 31), True),
-            (datetime(2023, 4, 1), False),
-            (datetime(2023, 4, 30), False),
-            (datetime(2023, 5, 1), False),
+            pytest.param(datetime(2023, 3, 31), True, id="review before reporting window"),
+            pytest.param(datetime(2023, 4, 1), False, id="review at start of reporting window"),
+            pytest.param(datetime(2023, 4, 30), False, id="review at end of reporting window"),
+            pytest.param(datetime(2023, 5, 1), False, id="review after reporting window"),
         ],
     )
     def test_needs_review(self, review_date: datetime, expected_needs_review: bool) -> None:

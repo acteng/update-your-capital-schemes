@@ -67,7 +67,11 @@ class TestScheme:
         assert scheme_page.name == "Wirral Package"
 
     @pytest.mark.parametrize(
-        "review_date, expected_needs_review", [(datetime(2023, 1, 2), True), (datetime(2023, 4, 1), False)]
+        "review_date, expected_needs_review",
+        [
+            pytest.param(datetime(2023, 1, 2), True, id="review before reporting window"),
+            pytest.param(datetime(2023, 4, 1), False, id="review during reporting window"),
+        ],
     )
     def test_scheme_shows_needs_review(
         self,

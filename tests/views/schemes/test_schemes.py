@@ -66,10 +66,34 @@ class TestSchemesContext:
 
     def test_from_domain_sets_reporting_window_days_left(self) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
+        authority = Authority(id_=1, name="")
+        scheme = Scheme(id_=1, name="", authority_id=1)
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+        )
+
+        context = SchemesContext.from_domain(datetime(2020, 4, 24, 12), reporting_window, authority, [scheme])
+
+        assert context.reporting_window_days_left == 7
+
+    def test_from_domain_does_not_set_reporting_window_days_left_when_up_to_date(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
+        authority = Authority(id_=1, name="")
+        scheme = Scheme(id_=1, name="", authority_id=1)
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 4, 1), source=DataSource.ATF4_BID)
+        )
+
+        context = SchemesContext.from_domain(datetime(2020, 4, 24, 12), reporting_window, authority, [scheme])
+
+        assert context.reporting_window_days_left is None
+
+    def test_from_domain_does_not_set_reporting_window_days_left_when_no_schemes(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
 
         context = SchemesContext.from_domain(datetime(2020, 4, 24, 12), reporting_window, Authority(id_=0, name=""), [])
 
-        assert context.reporting_window_days_left == 7
+        assert context.reporting_window_days_left is None
 
     def test_from_domain_sets_scheme_needs_review(self) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))

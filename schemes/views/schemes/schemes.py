@@ -89,8 +89,13 @@ class SchemesContext:
     def from_domain(
         cls, now: datetime, reporting_window: ReportingWindow | None, authority: Authority, schemes: list[Scheme]
     ) -> SchemesContext:
+        reporting_window_days_left = (
+            reporting_window.days_left(now)
+            if reporting_window and any(scheme.reviews.needs_review(reporting_window) for scheme in schemes)
+            else None
+        )
         return cls(
-            reporting_window_days_left=reporting_window.days_left(now) if reporting_window else None,
+            reporting_window_days_left=reporting_window_days_left,
             authority_name=authority.name,
             schemes=[SchemeRowContext.from_domain(reporting_window, scheme) for scheme in schemes],
         )

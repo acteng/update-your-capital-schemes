@@ -86,6 +86,15 @@ class TestAuthenticated:
         app_client.set_clock("2023-04-24T12:00:00")
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
+        app_client.add_schemes(
+            1,
+            SchemeRepr(
+                id=1,
+                name="Wirral Package",
+                authority_reviews=[AuthorityReviewRepr(id=1, review_date="2023-01-02", source="ATF4 Bid")],
+            ),
+        )
+
         schemes_page = SchemesPage.open(page)
 
         assert schemes_page.important_notification.heading == "You have 7 days left to update your schemes"

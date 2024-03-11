@@ -52,9 +52,20 @@ class TestSchemes:
         ],
     )
     def test_schemes_shows_update_schemes_notification(
-        self, client: FlaskClient, clock: Clock, now: datetime, expected_notification_banner: str
+        self,
+        client: FlaskClient,
+        clock: Clock,
+        now: datetime,
+        schemes: SchemeRepository,
+        expected_notification_banner: str,
     ) -> None:
         clock.now = now
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
+        )
+        schemes.add(scheme)
+
         schemes_page = SchemesPage.open(client)
 
         assert (
@@ -62,10 +73,16 @@ class TestSchemes:
             and schemes_page.important_notification.heading == expected_notification_banner
         )
 
-    def test_schemes_does_not_show_notification_outside_reporting_window(
-        self, client: FlaskClient, clock: Clock
+    def test_schemes_does_not_show_notification_when_outside_reporting_window(
+        self, client: FlaskClient, clock: Clock, schemes: SchemeRepository
     ) -> None:
         clock.now = datetime(2020, 3, 1)
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.reviews.update_authority_review(
+            AuthorityReview(id_=1, review_date=datetime(2019, 12, 31), source=DataSource.ATF3_BID)
+        )
+        schemes.add(scheme)
+
         schemes_page = SchemesPage.open(client)
 
         assert not schemes_page.important_notification

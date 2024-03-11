@@ -23,7 +23,7 @@
 
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
-                    {{ govukNotificationBanner(params={
+                    {{ govukNotificationBanner({
                         "text": messages | first
                     }) }}
                 {% endif %}

@@ -17,10 +17,17 @@ class TestReportingWindow:
         with pytest.raises(ValueError, match=re.escape(f"Reporting window cannot be open-ended: {window}")):
             ReportingWindow(window)
 
-    def test_days_left(self) -> None:
+    @pytest.mark.parametrize(
+        "now, expected_days_left",
+        [
+            pytest.param(datetime(2020, 4, 24, 12), 7, id="days left"),
+            pytest.param(datetime(2020, 5, 8, 12), 0, id="overdue"),
+        ],
+    )
+    def test_days_left(self, now: datetime, expected_days_left: int) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
 
-        assert reporting_window.days_left(datetime(2020, 4, 24, 12)) == 7
+        assert reporting_window.days_left(now) == expected_days_left
 
 
 class TestDefaultReportingWindowService:
@@ -38,6 +45,7 @@ class TestDefaultReportingWindowService:
             pytest.param(datetime(2020, 7, 24), datetime(2020, 7, 1), datetime(2020, 8, 1), id="middle of Q1"),
             pytest.param(datetime(2020, 10, 24), datetime(2020, 10, 1), datetime(2020, 11, 1), id="middle of Q2"),
             pytest.param(datetime(2021, 1, 24), datetime(2021, 1, 1), datetime(2021, 2, 1), id="different year"),
+            pytest.param(datetime(2020, 5, 24), datetime(2020, 4, 1), datetime(2020, 5, 1), id="last reporting window"),
         ],
     )
     def test_get_by_date(
@@ -50,9 +58,3 @@ class TestDefaultReportingWindowService:
         reporting_window = reporting_window_service.get_by_date(date)
 
         assert reporting_window == ReportingWindow(DateRange(expected_window_start, expected_window_end))
-
-    @pytest.mark.parametrize("date", [datetime(2020, 2, 1), datetime(2020, 2, 24), datetime(2020, 3, 31)])
-    def test_get_by_date_outside_reporting_window(
-        self, reporting_window_service: DefaultReportingWindowService, date: datetime
-    ) -> None:
-        assert reporting_window_service.get_by_date(date) is None

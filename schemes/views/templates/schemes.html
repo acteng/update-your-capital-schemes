@@ -11,9 +11,18 @@
                 "text": messages | first,
                 "type": "success"
             }) }}
-        {% elif reporting_window_days_left %}
+        {% elif reporting_window_days_left is not none() %}
+            {% set text -%}
+                {%- if reporting_window_days_left > 1 -%}
+                    You have {{ reporting_window_days_left }} days left to update your schemes
+                {%- elif reporting_window_days_left == 1 -%}
+                    You have 1 day left to update your schemes
+                {%- elif reporting_window_days_left == 0 -%}
+                    Your scheme updates are overdue
+                {%- endif -%}
+            {%- endset %}
             {{ govukNotificationBanner({
-                "text": "You have " ~ reporting_window_days_left ~ " day" ~ ('s' if reporting_window_days_left > 1) ~ " left to update your schemes"
+                "text": text
             }) }}
         {% endif %}
     {% endwith %}

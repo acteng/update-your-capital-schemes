@@ -49,17 +49,17 @@ from schemes.views.schemes.schemes import (
 
 class TestSchemesContext:
     def test_from_domain(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime.min, datetime.min))
         authority = Authority(id_=1, name="Liverpool City Region Combined Authority")
         schemes = [
             Scheme(id_=1, name="Wirral Package", authority_id=1),
             Scheme(id_=2, name="School Streets", authority_id=1),
         ]
 
-        context = SchemesContext.from_domain(datetime.min, None, authority, schemes)
+        context = SchemesContext.from_domain(datetime.min, reporting_window, authority, schemes)
 
         assert (
-            context.reporting_window_days_left is None
-            and context.authority_name == "Liverpool City Region Combined Authority"
+            context.authority_name == "Liverpool City Region Combined Authority"
             and context.schemes[0].reference == "ATE00001"
             and context.schemes[1].reference == "ATE00002"
         )
@@ -110,17 +110,18 @@ class TestSchemesContext:
 
 class TestSchemeRowContext:
     def test_from_domain(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime.min, datetime.min))
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding_programme = FundingProgramme.ATF4
 
-        context = SchemeRowContext.from_domain(None, scheme)
+        context = SchemeRowContext.from_domain(reporting_window, scheme)
 
         assert context == SchemeRowContext(
             id=1,
             reference="ATE00001",
             funding_programme=FundingProgrammeContext(name="ATF4"),
             name="Wirral Package",
-            needs_review=False,
+            needs_review=True,
             last_reviewed=None,
         )
 
@@ -143,13 +144,14 @@ class TestSchemeRowContext:
         assert context.needs_review == expected_needs_review
 
     def test_from_domain_sets_last_reviewed(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime.min, datetime.min))
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID),
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.ATF4_BID),
         )
 
-        context = SchemeRowContext.from_domain(None, scheme)
+        context = SchemeRowContext.from_domain(reporting_window, scheme)
 
         assert context.last_reviewed == datetime(2020, 1, 3, 12)
 
@@ -157,16 +159,17 @@ class TestSchemeRowContext:
 @pytest.mark.usefixtures("app")
 class TestSchemeContext:
     def test_from_domain(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime.min, datetime.min))
         authority = Authority(id_=2, name="Liverpool City Region Combined Authority")
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
 
-        context = SchemeContext.from_domain(None, authority, scheme)
+        context = SchemeContext.from_domain(reporting_window, authority, scheme)
 
         assert (
             context.id == 1
             and context.authority_name == "Liverpool City Region Combined Authority"
             and context.name == "Wirral Package"
-            and not context.needs_review
+            and context.needs_review
             and context.overview.reference == "ATE00001"
             and not context.review.last_reviewed
         )
@@ -190,26 +193,8 @@ class TestSchemeContext:
 
         assert context.needs_review == expected_needs_review
 
-    def test_from_domain_sets_needs_review_when_outside_reporting_window(self) -> None:
-        authority = Authority(id_=2, name="")
-        scheme = Scheme(id_=1, name="", authority_id=2)
-        scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2023, 4, 1), source=DataSource.ATF4_BID)
-        )
-
-        context = SchemeContext.from_domain(None, authority, scheme)
-
-        assert not context.needs_review
-
-    def test_from_domain_sets_needs_review_when_outside_reporting_window_and_no_authority_reviews(self) -> None:
-        authority = Authority(id_=2, name="")
-        scheme = Scheme(id_=1, name="", authority_id=2)
-
-        context = SchemeContext.from_domain(None, authority, scheme)
-
-        assert not context.needs_review
-
     def test_from_domain_sets_funding(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime.min, datetime.min))
         authority = Authority(id_=2, name="")
         scheme = Scheme(id_=1, name="", authority_id=2)
         scheme.funding.update_financial(
@@ -222,11 +207,12 @@ class TestSchemeContext:
             )
         )
 
-        context = SchemeContext.from_domain(None, authority, scheme)
+        context = SchemeContext.from_domain(reporting_window, authority, scheme)
 
         assert context.funding.funding_allocation == 100_000
 
     def test_from_domain_sets_milestones(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime.min, datetime.min))
         authority = Authority(id_=2, name="")
         scheme = Scheme(id_=1, name="", authority_id=2)
         scheme.milestones.update_milestones(
@@ -240,11 +226,12 @@ class TestSchemeContext:
             ),
         )
 
-        context = SchemeContext.from_domain(None, authority, scheme)
+        context = SchemeContext.from_domain(reporting_window, authority, scheme)
 
         assert context.milestones.milestones[0].planned == date(2020, 2, 1)
 
     def test_from_domain_sets_outputs(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime.min, datetime.min))
         authority = Authority(id_=2, name="")
         scheme = Scheme(id_=1, name="", authority_id=2)
         scheme.outputs.update_outputs(
@@ -264,18 +251,19 @@ class TestSchemeContext:
             ),
         )
 
-        context = SchemeContext.from_domain(None, authority, scheme)
+        context = SchemeContext.from_domain(reporting_window, authority, scheme)
 
         assert context.outputs.outputs[0].planned == Decimal(20)
 
     def test_from_domain_sets_review(self) -> None:
+        reporting_window = ReportingWindow(DateRange(datetime.min, datetime.min))
         authority = Authority(id_=2, name="")
         scheme = Scheme(id_=1, name="", authority_id=2)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
         )
 
-        context = SchemeContext.from_domain(None, authority, scheme)
+        context = SchemeContext.from_domain(reporting_window, authority, scheme)
 
         assert context.review.last_reviewed == datetime(2020, 1, 1)
 

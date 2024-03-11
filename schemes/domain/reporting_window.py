@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Generator
 
 from schemes.domain.dates import DateRange
 
@@ -15,23 +14,18 @@ class ReportingWindow:
 
     def days_left(self, now: datetime) -> int:
         assert self.window.date_to
-        return (self.window.date_to - now).days + 1
+        time_left = self.window.date_to - now
+        return max(time_left.days + 1, 0)
 
 
 class ReportingWindowService:
-    def get_by_date(self, date: datetime) -> ReportingWindow | None:
+    def get_by_date(self, date: datetime) -> ReportingWindow:
         raise NotImplementedError()
 
 
 class DefaultReportingWindowService(ReportingWindowService):
-    def get_by_date(self, date: datetime) -> ReportingWindow | None:
-        for reporting_window in self._reporting_windows(date.year):
-            assert reporting_window.window.date_to
-            if reporting_window.window.date_from <= date < reporting_window.window.date_to:
-                return reporting_window
-        return None
-
-    @staticmethod
-    def _reporting_windows(year: int) -> Generator[ReportingWindow, None, None]:
-        for month in range(1, 12, 3):
-            yield ReportingWindow(DateRange(datetime(year, month, 1), datetime(year, month + 1, 1)))
+    def get_by_date(self, date: datetime) -> ReportingWindow:
+        reporting_month = date.month - (date.month - 1) % 3
+        start_date = datetime(date.year, reporting_month, 1)
+        end_date = datetime(date.year, reporting_month + 1, 1)
+        return ReportingWindow(DateRange(start_date, end_date))

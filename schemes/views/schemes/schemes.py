@@ -87,15 +87,11 @@ class SchemesContext:
 
     @classmethod
     def from_domain(
-        cls, now: datetime, reporting_window: ReportingWindow | None, authority: Authority, schemes: list[Scheme]
+        cls, now: datetime, reporting_window: ReportingWindow, authority: Authority, schemes: list[Scheme]
     ) -> SchemesContext:
-        reporting_window_days_left = (
-            reporting_window.days_left(now)
-            if reporting_window and any(scheme.reviews.needs_review(reporting_window) for scheme in schemes)
-            else None
-        )
+        needs_review = any(scheme.reviews.needs_review(reporting_window) for scheme in schemes)
         return cls(
-            reporting_window_days_left=reporting_window_days_left,
+            reporting_window_days_left=reporting_window.days_left(now) if needs_review else None,
             authority_name=authority.name,
             schemes=[SchemeRowContext.from_domain(reporting_window, scheme) for scheme in schemes],
         )
@@ -111,13 +107,13 @@ class SchemeRowContext:
     last_reviewed: datetime | None
 
     @classmethod
-    def from_domain(cls, reporting_window: ReportingWindow | None, scheme: Scheme) -> SchemeRowContext:
+    def from_domain(cls, reporting_window: ReportingWindow, scheme: Scheme) -> SchemeRowContext:
         return cls(
             id=scheme.id,
             reference=scheme.reference,
             funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
             name=scheme.name,
-            needs_review=scheme.reviews.needs_review(reporting_window) if reporting_window else False,
+            needs_review=scheme.reviews.needs_review(reporting_window),
             last_reviewed=scheme.reviews.last_reviewed,
         )
 
@@ -180,14 +176,12 @@ class SchemeContext:
     review: SchemeReviewContext
 
     @classmethod
-    def from_domain(
-        cls, reporting_window: ReportingWindow | None, authority: Authority, scheme: Scheme
-    ) -> SchemeContext:
+    def from_domain(cls, reporting_window: ReportingWindow, authority: Authority, scheme: Scheme) -> SchemeContext:
         return cls(
             id=scheme.id,
             authority_name=authority.name,
             name=scheme.name,
-            needs_review=scheme.reviews.needs_review(reporting_window) if reporting_window else False,
+            needs_review=scheme.reviews.needs_review(reporting_window),
             overview=SchemeOverviewContext.from_domain(scheme),
             funding=SchemeFundingContext.from_domain(scheme.funding),
             milestones=SchemeMilestonesContext.from_domain(scheme.milestones),

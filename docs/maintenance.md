@@ -26,6 +26,14 @@ To upgrade packages to their latest minor or major version:
    pip install -e .[dev]
    ```
 
+### Upgrading Playwright package
+
+After upgrading Playwright to a new minor version, reinstall the browsers and their dependencies:
+
+```bash
+playwright install --with-deps chromium
+```
+
 ## Upgrading Node packages
 
 To list Node packages that need upgrading:

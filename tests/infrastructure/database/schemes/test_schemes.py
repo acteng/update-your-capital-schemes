@@ -767,7 +767,7 @@ class TestDatabaseSchemeRepository:
                     ),
                     CapitalSchemeFinancialEntity(
                         capital_scheme_id=1,
-                        effective_date_from=date(2020, 1, 1),
+                        effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
                         financial_type_id=3,
                         amount=100_000,
@@ -775,7 +775,7 @@ class TestDatabaseSchemeRepository:
                     ),
                     SchemeMilestoneEntity(
                         capital_scheme_id=1,
-                        effective_date_from=date(2020, 1, 1),
+                        effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
                         milestone_id=5,
                         observation_type_id=1,
@@ -784,7 +784,7 @@ class TestDatabaseSchemeRepository:
                     ),
                     SchemeInterventionEntity(
                         capital_scheme_id=1,
-                        effective_date_from=date(2020, 1, 1),
+                        effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
                         intervention_type_measure_id=4,
                         intervention_value=Decimal(10),

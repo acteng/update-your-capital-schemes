@@ -29,7 +29,7 @@ The application can also be configured with the following environment variables:
 | FLASK_ENV                        | Application environment name (`dev` / `test`)                                               |
 | FLASK_SQLALCHEMY_DATABASE_URI    | SQLAlchemy database URI                                                                     |
 | FLASK_SECRET_KEY                 | Flask session [secret key](https://flask.palletsprojects.com/en/3.0.x/quickstart/#sessions) |
-| FLASK_BASIC_AUTH_USERNAME        | HTTP Basic Auth username                                                                    |
+| FLASK_BASIC_AUTH_USERNAME        | HTTP Basic Auth username (unset to disable)                                                 |
 | FLASK_BASIC_AUTH_PASSWORD        | HTTP Basic Auth password                                                                    |
 | FLASK_API_KEY                    | API key (unset to disable)                                                                  |
 | FLASK_GOVUK_CLIENT_ID            | OIDC client id                                                                              |

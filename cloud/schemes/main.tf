@@ -25,8 +25,9 @@ module "vpc" {
 }
 
 module "cloud_sql" {
-  source = "./cloud-sql"
-  region = local.location
+  source  = "./cloud-sql"
+  project = local.project
+  region  = local.location
 
   depends_on = [
     module.secret_manager

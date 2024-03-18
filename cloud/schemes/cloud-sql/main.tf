@@ -1,3 +1,7 @@
+resource "google_project_service" "sql_admin" {
+  service = "sqladmin.googleapis.com"
+}
+
 resource "google_sql_database_instance" "main" {
   name   = "schemes"
   region = var.region
@@ -53,4 +57,33 @@ resource "google_secret_manager_secret_version" "database_uri" {
     "/",
     google_sql_database.schemes.name
   ])
+}
+
+resource "google_service_account" "cloud_sql_schemes" {
+  account_id = "cloud-sql-schemes"
+}
+
+resource "google_project_iam_member" "cloud_sql_schemes_cloud_sql_client" {
+  member  = "serviceAccount:${google_service_account.cloud_sql_schemes.email}"
+  role    = "roles/cloudsql.client"
+  project = var.project
+}
+
+resource "google_service_account_key" "cloud_sql_schemes" {
+  service_account_id = google_service_account.cloud_sql_schemes.name
+  public_key_type    = "TYPE_X509_PEM_FILE"
+}
+
+resource "google_secret_manager_secret" "database_private_key" {
+  secret_id = "database-private-key"
+
+  replication {
+    auto {
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "database_private_key" {
+  secret      = google_secret_manager_secret.database_private_key.id
+  secret_data = google_service_account_key.cloud_sql_schemes.private_key
 }

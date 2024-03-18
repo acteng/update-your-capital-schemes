@@ -74,6 +74,16 @@ resource "google_cloud_run_v2_service" "schemes" {
           }
         }
       }
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
+      }
+    }
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [var.database_connection_name]
+      }
     }
     vpc_access {
       network_interfaces {
@@ -125,6 +135,12 @@ resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
   member  = "serviceAccount:service-${data.google_project.main.number}@serverless-robot-prod.iam.gserviceaccount.com"
 
   depends_on = [google_project_service.run]
+}
+
+resource "google_project_iam_member" "cloud_run_schemes_cloud_sql_client" {
+  project = var.project
+  role    = "roles/cloudsql.client"
+  member  = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
 }
 
 resource "google_compute_subnetwork" "cloud_run" {

@@ -39,6 +39,7 @@ module "cloud_run" {
   project                        = local.project
   region                         = local.location
   env                            = local.env
+  database_connection_name       = module.cloud_sql.connection_name
   database_uri_secret_id         = module.cloud_sql.database_uri_secret_id
   database_uri_secret_version_id = module.cloud_sql.database_uri_secret_version_id
   vpc_id                         = module.vpc.id

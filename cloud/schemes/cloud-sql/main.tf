@@ -52,10 +52,11 @@ resource "google_secret_manager_secret_version" "database_uri" {
     google_sql_user.schemes.name,
     ":",
     random_password.schemes.result,
-    "@",
-    google_sql_database_instance.main.private_ip_address,
-    "/",
-    google_sql_database.schemes.name
+    "@/",
+    google_sql_database.schemes.name,
+    "?unix_sock=/cloudsql/",
+    google_sql_database_instance.main.connection_name,
+    "/.s.PGSQL.5432"
   ])
 }
 

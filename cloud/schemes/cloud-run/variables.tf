@@ -13,6 +13,11 @@ variable "env" {
   type        = string
 }
 
+variable "database_connection_name" {
+  description = "Database connection name"
+  type        = string
+}
+
 variable "database_uri_secret_id" {
   description = "Database URI secret ID"
   type        = string

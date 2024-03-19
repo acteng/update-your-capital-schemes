@@ -27,8 +27,3 @@ variable "database_uri_secret_version_id" {
   description = "Database URI secret version ID"
   type        = string
 }
-
-variable "vpc_id" {
-  description = "VPC ID"
-  type        = string
-}

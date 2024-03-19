@@ -20,10 +20,6 @@ module "secret_manager" {
   project = local.project
 }
 
-module "vpc" {
-  source = "./vpc"
-}
-
 module "cloud_sql" {
   source  = "./cloud-sql"
   project = local.project
@@ -42,11 +38,9 @@ module "cloud_run" {
   database_connection_name       = module.cloud_sql.connection_name
   database_uri_secret_id         = module.cloud_sql.database_uri_secret_id
   database_uri_secret_version_id = module.cloud_sql.database_uri_secret_version_id
-  vpc_id                         = module.vpc.id
 
   depends_on = [
-    module.secret_manager,
-    module.vpc
+    module.secret_manager
   ]
 }
 

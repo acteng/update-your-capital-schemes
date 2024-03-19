@@ -2,8 +2,8 @@ from datetime import date, datetime
 from decimal import Decimal
 
 import pytest
-from sqlalchemy import Engine, func, select
-from sqlalchemy.orm import Session
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session, sessionmaker
 
 from schemes.domain.authorities import Authority
 from schemes.domain.dates import DateRange
@@ -43,13 +43,13 @@ from tests.builders import build_scheme
 
 class TestDatabaseSchemeRepository:
     @pytest.fixture(name="authorities")
-    def authorities_fixture(self, engine: Engine) -> DatabaseAuthorityRepository:
-        repository: DatabaseAuthorityRepository = DatabaseAuthorityRepository(engine)
+    def authorities_fixture(self, session_maker: sessionmaker[Session]) -> DatabaseAuthorityRepository:
+        repository: DatabaseAuthorityRepository = DatabaseAuthorityRepository(session_maker)
         return repository
 
     @pytest.fixture(name="schemes")
-    def schemes_fixture(self, engine: Engine) -> DatabaseSchemeRepository:
-        repository: DatabaseSchemeRepository = DatabaseSchemeRepository(engine)
+    def schemes_fixture(self, session_maker: sessionmaker[Session]) -> DatabaseSchemeRepository:
+        repository: DatabaseSchemeRepository = DatabaseSchemeRepository(session_maker)
         return repository
 
     @pytest.fixture(name="authority", autouse=True)
@@ -59,7 +59,7 @@ class TestDatabaseSchemeRepository:
             Authority(id_=2, name="West Yorkshire Combined Authority"),
         )
 
-    def test_add_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+    def test_add_schemes(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
         scheme1 = Scheme(
             id_=1,
             name="Wirral Package",
@@ -72,7 +72,7 @@ class TestDatabaseSchemeRepository:
 
         row1: CapitalSchemeEntity
         row2: CapitalSchemeEntity
-        with Session(engine) as session:
+        with session_maker() as session:
             row1, row2 = session.scalars(select(CapitalSchemeEntity).order_by(CapitalSchemeEntity.capital_scheme_id))
         assert (
             row1.capital_scheme_id == 1
@@ -87,7 +87,9 @@ class TestDatabaseSchemeRepository:
             and row2.bid_submitting_authority_id == 1
         )
 
-    def test_add_schemes_bid_status_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+    def test_add_schemes_bid_status_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
         scheme1 = build_scheme(
             id_=1,
             name="Wirral Package",
@@ -104,7 +106,7 @@ class TestDatabaseSchemeRepository:
 
         row1: CapitalSchemeBidStatusEntity
         row2: CapitalSchemeBidStatusEntity
-        with Session(engine) as session:
+        with session_maker() as session:
             row1, row2 = session.scalars(
                 select(CapitalSchemeBidStatusEntity).order_by(CapitalSchemeBidStatusEntity.capital_scheme_bid_status_id)
             )
@@ -123,7 +125,9 @@ class TestDatabaseSchemeRepository:
             and row2.bid_status_id == 2
         )
 
-    def test_add_schemes_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+    def test_add_schemes_financial_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
         scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.funding.update_financials(
             FinancialRevision(
@@ -146,7 +150,7 @@ class TestDatabaseSchemeRepository:
 
         row1: CapitalSchemeFinancialEntity
         row2: CapitalSchemeFinancialEntity
-        with Session(engine) as session:
+        with session_maker() as session:
             row1, row2 = session.scalars(
                 select(CapitalSchemeFinancialEntity).order_by(CapitalSchemeFinancialEntity.capital_scheme_financial_id)
             )
@@ -169,7 +173,9 @@ class TestDatabaseSchemeRepository:
             and row2.data_source_id == 3
         )
 
-    def test_add_schemes_milestone_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+    def test_add_schemes_milestone_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
         scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.milestones.update_milestones(
             MilestoneRevision(
@@ -194,7 +200,7 @@ class TestDatabaseSchemeRepository:
 
         row1: CapitalSchemeMilestoneEntity
         row2: CapitalSchemeMilestoneEntity
-        with Session(engine) as session:
+        with session_maker() as session:
             row1, row2 = session.scalars(
                 select(CapitalSchemeMilestoneEntity).order_by(CapitalSchemeMilestoneEntity.capital_scheme_milestone_id)
             )
@@ -219,7 +225,9 @@ class TestDatabaseSchemeRepository:
             and row2.data_source_id == 3
         )
 
-    def test_add_schemes_output_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+    def test_add_schemes_output_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
         scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.outputs.update_outputs(
             OutputRevision(
@@ -242,7 +250,7 @@ class TestDatabaseSchemeRepository:
 
         row1: CapitalSchemeInterventionEntity
         row2: CapitalSchemeInterventionEntity
-        with Session(engine) as session:
+        with session_maker() as session:
             row1, row2 = session.scalars(
                 select(CapitalSchemeInterventionEntity).order_by(
                     CapitalSchemeInterventionEntity.capital_scheme_intervention_id
@@ -267,7 +275,9 @@ class TestDatabaseSchemeRepository:
             and row2.observation_type_id == 1
         )
 
-    def test_add_schemes_authority_reviews(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+    def test_add_schemes_authority_reviews(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
         scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.reviews.update_authority_reviews(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
@@ -278,7 +288,7 @@ class TestDatabaseSchemeRepository:
 
         row1: CapitalSchemeAuthorityReviewEntity
         row2: CapitalSchemeAuthorityReviewEntity
-        with Session(engine) as session:
+        with session_maker() as session:
             row1, row2 = session.scalars(
                 select(CapitalSchemeAuthorityReviewEntity).order_by(
                     CapitalSchemeAuthorityReviewEntity.capital_scheme_authority_review_id
@@ -297,8 +307,8 @@ class TestDatabaseSchemeRepository:
             and row2.data_source_id == 2
         )
 
-    def test_get_scheme(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_get_scheme(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
+        with session_maker() as session:
             session.add(
                 CapitalSchemeEntity(
                     capital_scheme_id=1,
@@ -321,8 +331,10 @@ class TestDatabaseSchemeRepository:
             and scheme.funding_programme == FundingProgrammes.ATF3
         )
 
-    def test_get_scheme_bid_status_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_get_scheme_bid_status_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -367,8 +379,10 @@ class TestDatabaseSchemeRepository:
             and bid_status_revision2.status == BidStatus.FUNDED
         )
 
-    def test_get_scheme_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_get_scheme_financial_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -421,8 +435,10 @@ class TestDatabaseSchemeRepository:
             and financial_revision2.source == DataSource.ATF4_BID
         )
 
-    def test_get_scheme_milestone_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_get_scheme_milestone_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -479,8 +495,10 @@ class TestDatabaseSchemeRepository:
             and milestone_revision2.source == DataSource.ATF4_BID
         )
 
-    def test_get_scheme_output_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_get_scheme_output_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -533,8 +551,10 @@ class TestDatabaseSchemeRepository:
             and output_revision2.observation_type == ObservationType.PLANNED
         )
 
-    def test_get_scheme_authority_reviews(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_get_scheme_authority_reviews(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -577,8 +597,10 @@ class TestDatabaseSchemeRepository:
             and authority_review2.source == DataSource.PULSE_6
         )
 
-    def test_get_scheme_that_does_not_exist(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_get_scheme_that_does_not_exist(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add(
                 CapitalSchemeEntity(
                     capital_scheme_id=1,
@@ -592,8 +614,10 @@ class TestDatabaseSchemeRepository:
 
         assert schemes.get(2) is None
 
-    def test_get_all_schemes_by_authority(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_get_all_schemes_by_authority(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -635,9 +659,9 @@ class TestDatabaseSchemeRepository:
         assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme1.authority_id == 1
 
     def test_get_all_schemes_bid_status_revisions_by_authority(
-        self, schemes: DatabaseSchemeRepository, engine: Engine
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        with Session(engine) as session:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -685,9 +709,9 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_get_all_schemes_financial_revisions_by_authority(
-        self, schemes: DatabaseSchemeRepository, engine: Engine
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        with Session(engine) as session:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -741,9 +765,9 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_get_all_schemes_milestone_revisions_by_authority(
-        self, schemes: DatabaseSchemeRepository, engine: Engine
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        with Session(engine) as session:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -829,9 +853,9 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_get_all_schemes_output_revisions_by_authority(
-        self, schemes: DatabaseSchemeRepository, engine: Engine
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        with Session(engine) as session:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -912,9 +936,9 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_get_all_schemes_authority_reviews_by_authority(
-        self, schemes: DatabaseSchemeRepository, engine: Engine
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        with Session(engine) as session:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -959,8 +983,8 @@ class TestDatabaseSchemeRepository:
             and authority_review1.source == DataSource.ATF4_BID
         )
 
-    def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -1017,11 +1041,13 @@ class TestDatabaseSchemeRepository:
 
         schemes.clear()
 
-        with Session(engine) as session:
+        with session_maker() as session:
             assert session.execute(select(func.count()).select_from(CapitalSchemeEntity)).scalar_one() == 0
 
-    def test_update_scheme_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_update_scheme_financial_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -1058,7 +1084,7 @@ class TestDatabaseSchemeRepository:
 
         schemes.update(scheme)
 
-        with Session(engine) as session:
+        with session_maker() as session:
             row = session.get_one(CapitalSchemeEntity, 1)
             capital_scheme_financial1: CapitalSchemeFinancialEntity
             capital_scheme_financial2: CapitalSchemeFinancialEntity
@@ -1077,8 +1103,10 @@ class TestDatabaseSchemeRepository:
             and capital_scheme_financial2.data_source_id == 16
         )
 
-    def test_update_scheme_milestone_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_update_scheme_milestone_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -1117,7 +1145,7 @@ class TestDatabaseSchemeRepository:
 
         schemes.update(scheme)
 
-        with Session(engine) as session:
+        with session_maker() as session:
             row = session.get_one(CapitalSchemeEntity, 1)
             capital_scheme_milestone1: CapitalSchemeMilestoneEntity
             capital_scheme_milestone2: CapitalSchemeMilestoneEntity
@@ -1137,8 +1165,10 @@ class TestDatabaseSchemeRepository:
             and capital_scheme_milestone2.data_source_id == 16
         )
 
-    def test_update_scheme_authority_reviews(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_update_scheme_authority_reviews(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add_all(
                 [
                     CapitalSchemeEntity(
@@ -1165,7 +1195,7 @@ class TestDatabaseSchemeRepository:
 
         schemes.update(scheme)
 
-        with Session(engine) as session:
+        with session_maker() as session:
             row = session.get_one(CapitalSchemeEntity, 1)
             capital_scheme_authority_review1: CapitalSchemeAuthorityReviewEntity
             capital_scheme_authority_review2: CapitalSchemeAuthorityReviewEntity

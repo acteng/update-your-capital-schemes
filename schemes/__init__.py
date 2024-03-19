@@ -26,6 +26,7 @@ from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
 from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.dialects.sqlite.base import SQLiteDialect
 from sqlalchemy.engine.interfaces import DBAPIConnection
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import ConnectionPoolEntry
 from werkzeug import Response as BaseResponse
 
@@ -97,6 +98,7 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
         binder.bind(Clock, FakeClock() if app.testing else SystemClock())
         binder.bind_to_constructor(ReportingWindowService, DefaultReportingWindowService)
         binder.bind_to_constructor(Engine, _create_engine)
+        binder.bind_to_constructor(sessionmaker[Session], _create_session_maker)
         binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
         binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
         binder.bind_to_constructor(SchemeRepository, DatabaseSchemeRepository)
@@ -112,6 +114,11 @@ def _create_engine(config: Config) -> Engine:
         event.listen(Engine, "connect", _enforce_sqlite_foreign_keys)
 
     return engine
+
+
+@inject.autoparams()
+def _create_session_maker(engine: Engine) -> sessionmaker[Session]:
+    return sessionmaker(engine)
 
 
 def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_record: ConnectionPoolEntry) -> None:

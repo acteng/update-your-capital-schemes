@@ -1,6 +1,6 @@
 import inject
-from sqlalchemy import Engine, delete, select
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy import delete, select
+from sqlalchemy.orm import Session, selectinload, sessionmaker
 
 from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
@@ -36,8 +36,8 @@ from schemes.infrastructure.database.schemes.outputs import OutputTypeMeasureMap
 
 class DatabaseSchemeRepository(SchemeRepository):
     @inject.autoparams()
-    def __init__(self, engine: Engine):
-        self._engine = engine
+    def __init__(self, session_maker: sessionmaker[Session]):
+        self._session_maker = session_maker
         self._scheme_type_mapper = SchemeTypeMapper()
         self._funding_programme_mapper = FundingProgrammeMapper()
         self._bid_status_mapper = BidStatusMapper()
@@ -48,12 +48,12 @@ class DatabaseSchemeRepository(SchemeRepository):
         self._output_type_measure_mapper = OutputTypeMeasureMapper()
 
     def add(self, *schemes: Scheme) -> None:
-        with Session(self._engine) as session:
+        with self._session_maker() as session:
             session.add_all(self._capital_scheme_from_domain(scheme) for scheme in schemes)
             session.commit()
 
     def clear(self) -> None:
-        with Session(self._engine) as session:
+        with self._session_maker() as session:
             session.execute(delete(CapitalSchemeAuthorityReviewEntity))
             session.execute(delete(CapitalSchemeInterventionEntity))
             session.execute(delete(CapitalSchemeMilestoneEntity))
@@ -63,7 +63,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             session.commit()
 
     def get(self, id_: int) -> Scheme | None:
-        with Session(self._engine) as session:
+        with self._session_maker() as session:
             result = session.scalars(
                 select(CapitalSchemeEntity)
                 .options(selectinload("*"))
@@ -73,7 +73,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             return self._capital_scheme_to_domain(row) if row else None
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
-        with Session(self._engine) as session:
+        with self._session_maker() as session:
             result = session.scalars(
                 select(CapitalSchemeEntity)
                 .options(selectinload("*"))
@@ -83,7 +83,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             return [self._capital_scheme_to_domain(row) for row in result]
 
     def update(self, scheme: Scheme) -> None:
-        with Session(self._engine) as session:
+        with self._session_maker() as session:
             session.merge(self._capital_scheme_from_domain(scheme))
             session.commit()
 

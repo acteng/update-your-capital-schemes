@@ -1,6 +1,6 @@
 import pytest
-from sqlalchemy import Engine, func, select
-from sqlalchemy.orm import Session
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session, sessionmaker
 
 from schemes.domain.authorities import Authority
 from schemes.infrastructure.database import AuthorityEntity
@@ -9,11 +9,13 @@ from schemes.infrastructure.database.authorities import DatabaseAuthorityReposit
 
 class TestDatabaseAuthorityRepository:
     @pytest.fixture(name="authorities")
-    def authorities_fixture(self, engine: Engine) -> DatabaseAuthorityRepository:
-        repository: DatabaseAuthorityRepository = DatabaseAuthorityRepository(engine)
+    def authorities_fixture(self, session_maker: sessionmaker[Session]) -> DatabaseAuthorityRepository:
+        repository: DatabaseAuthorityRepository = DatabaseAuthorityRepository(session_maker)
         return repository
 
-    def test_add_authorities(self, authorities: DatabaseAuthorityRepository, engine: Engine) -> None:
+    def test_add_authorities(
+        self, authorities: DatabaseAuthorityRepository, session_maker: sessionmaker[Session]
+    ) -> None:
         authorities.add(
             Authority(id_=1, name="Liverpool City Region Combined Authority"),
             Authority(id_=2, name="West Yorkshire Combined Authority"),
@@ -21,13 +23,15 @@ class TestDatabaseAuthorityRepository:
 
         row1: AuthorityEntity
         row2: AuthorityEntity
-        with Session(engine) as session:
+        with session_maker() as session:
             row1, row2 = session.scalars(select(AuthorityEntity).order_by(AuthorityEntity.authority_id))
         assert row1.authority_id == 1 and row1.authority_full_name == "Liverpool City Region Combined Authority"
         assert row2.authority_id == 2 and row2.authority_full_name == "West Yorkshire Combined Authority"
 
-    def test_get_authority(self, authorities: DatabaseAuthorityRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_get_authority(
+        self, authorities: DatabaseAuthorityRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add(AuthorityEntity(authority_id=1, authority_full_name="Liverpool City Region Combined Authority"))
             session.commit()
 
@@ -35,15 +39,19 @@ class TestDatabaseAuthorityRepository:
 
         assert authority and authority.id == 1 and authority.name == "Liverpool City Region Combined Authority"
 
-    def test_get_authority_that_does_not_exist(self, authorities: DatabaseAuthorityRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_get_authority_that_does_not_exist(
+        self, authorities: DatabaseAuthorityRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add(AuthorityEntity(authority_id=1, authority_full_name="Liverpool City Region Combined Authority"))
             session.commit()
 
         assert authorities.get(2) is None
 
-    def test_clear_all_authorities(self, authorities: DatabaseAuthorityRepository, engine: Engine) -> None:
-        with Session(engine) as session:
+    def test_clear_all_authorities(
+        self, authorities: DatabaseAuthorityRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
             session.add_all(
                 [
                     AuthorityEntity(authority_id=1, authority_full_name="Liverpool City Region Combined Authority"),
@@ -54,5 +62,5 @@ class TestDatabaseAuthorityRepository:
 
         authorities.clear()
 
-        with Session(engine) as session:
+        with session_maker() as session:
             assert session.execute(select(func.count()).select_from(AuthorityEntity)).scalar_one() == 0

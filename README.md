@@ -1,5 +1,7 @@
 # Update your capital schemes
 
+Digital service for local authorities to provide updates about capital schemes to Active Travel England.
+
 [![CI](https://github.com/acteng/schemes/actions/workflows/ci.yml/badge.svg)](https://github.com/acteng/schemes/actions/workflows/ci.yml)
 
 ## Prerequisites

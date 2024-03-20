@@ -8,10 +8,9 @@ resource "google_service_account" "cloud_run_schemes" {
 }
 
 resource "google_cloud_run_v2_service" "schemes" {
-  name         = "schemes"
-  project      = var.project
-  location     = var.region
-  launch_stage = "BETA"
+  name     = "schemes"
+  project  = var.project
+  location = var.region
 
   template {
     containers {
@@ -74,12 +73,16 @@ resource "google_cloud_run_v2_service" "schemes" {
           }
         }
       }
-    }
-    vpc_access {
-      network_interfaces {
-        subnetwork = google_compute_subnetwork.cloud_run.name
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
       }
-      egress = "PRIVATE_RANGES_ONLY"
+    }
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [var.database_connection_name]
+      }
     }
     service_account = google_service_account.cloud_run_schemes.email
   }
@@ -127,11 +130,10 @@ resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
   depends_on = [google_project_service.run]
 }
 
-resource "google_compute_subnetwork" "cloud_run" {
-  name          = "cloud-run"
-  ip_cidr_range = "10.1.0.0/24"
-  region        = var.region
-  network       = var.vpc_id
+resource "google_project_iam_member" "cloud_run_schemes_cloud_sql_client" {
+  project = var.project
+  role    = "roles/cloudsql.client"
+  member  = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
 }
 
 # secret key

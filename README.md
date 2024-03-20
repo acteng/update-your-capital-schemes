@@ -163,6 +163,26 @@ To run the server as a container using a PostgreSQL database:
    make test
    ```
 
+## Connecting to the database
+
+1. Run the [Cloud SQL Auth Proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy) script:
+
+   ```bash
+   ./proxy.sh $ENVIRONMENT
+   ```
+
+1. Obtain the database password for the environment from the database URI:
+
+   ```bash
+   gcloud secrets versions access latest --project dft-schemes-$ENVIRONMENT --secret database-uri
+   ```
+
+1. Connect using PSQL and enter the password when prompted:
+
+   ```bash
+   psql -h localhost -U schemes schemes
+   ```
+
 ## Provisioning infrastructure
 
 ### Provision the Terraform backend

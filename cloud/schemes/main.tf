@@ -20,19 +20,13 @@ module "secret_manager" {
   project = local.project
 }
 
-module "vpc" {
-  source = "./vpc"
-}
-
 module "cloud_sql" {
-  source                      = "./cloud-sql"
-  region                      = local.location
-  vpc_id                      = module.vpc.id
-  vpc_private_ip_address_name = module.vpc.private_ip_address_name
+  source  = "./cloud-sql"
+  project = local.project
+  region  = local.location
 
   depends_on = [
-    module.secret_manager,
-    module.vpc
+    module.secret_manager
   ]
 }
 
@@ -41,13 +35,12 @@ module "cloud_run" {
   project                        = local.project
   region                         = local.location
   env                            = local.env
+  database_connection_name       = module.cloud_sql.connection_name
   database_uri_secret_id         = module.cloud_sql.database_uri_secret_id
   database_uri_secret_version_id = module.cloud_sql.database_uri_secret_version_id
-  vpc_id                         = module.vpc.id
 
   depends_on = [
-    module.secret_manager,
-    module.vpc
+    module.secret_manager
   ]
 }
 

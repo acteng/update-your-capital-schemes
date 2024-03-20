@@ -1,14 +1,14 @@
-# Schemes App Infrastructure
+# Schemes application infrastructure
 
-This document outlines the Google Cloud Infrastructure configuration for the Schemes app.
+This root module contains the Terraform configuration for the Schemes application.
 
 ## High level services
 
-- Cloud Run Service
-- Cloud SQL Instance
-- Secret Manager
-- Virtual Private Cloud (VPC)
-- GitHub Action Service Account
+* Cloud Run Service
+* Cloud SQL Instance
+* Secret Manager
+* Virtual Private Cloud (VPC)
+* GitHub Action Service Account
 
 ## Application
 
@@ -37,9 +37,9 @@ by the Cloud Run service to configure [Direct VPC egress](https://cloud.google.c
 To enable the project to use GitHub Actions for CI a Google service account is created with specific permissions to
 allow GitHub actions to authenticate with Google Cloud Services. The service account requires the following permissions:
 
-- roles/iam.serviceAccountTokenCreator, to allow the Google Auth GitHub action to authenticate as the service account
-- roles/run.admin, to allow the service account to update the Cloud Run service configuration when deploying
-- roles/iam.serviceAccountUser, to act as the Cloud Run service account when deploying a revision of the Cloud Run 
+* roles/iam.serviceAccountTokenCreator, to allow the Google Auth GitHub action to authenticate as the service account
+* roles/run.admin, to allow the service account to update the Cloud Run service configuration when deploying
+* roles/iam.serviceAccountUser, to act as the Cloud Run service account when deploying a revision of the Cloud Run 
 service
 
 The method for authenticating the GitHub Action with the service account is by providing the service account JSON key 

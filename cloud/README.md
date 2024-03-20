@@ -1,9 +1,9 @@
-# Schemes Project Infrastructure
+# Cloud infrastructure
 
-All Terraform configuration relating to the Schemes App Project is contained within this directory.
+This directory contains the Terraform configuration for the service.
 
-## Overview
+## Root modules
 
-- [Schemes App](./schemes/README.md)
-- [Terraform backend](./tf-backend)
-- [Docker Repository](./docker-repository)
+* [Terraform backend](./tf-backend)
+* [Docker repository](./docker-repository)
+* [Schemes application](./schemes/README.md)

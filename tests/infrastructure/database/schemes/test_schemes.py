@@ -25,8 +25,8 @@ from schemes.infrastructure.database import (
     CapitalSchemeAuthorityReviewEntity,
     CapitalSchemeEntity,
     CapitalSchemeFinancialEntity,
-    SchemeInterventionEntity,
-    SchemeMilestoneEntity,
+    CapitalSchemeInterventionEntity,
+    CapitalSchemeMilestoneEntity,
 )
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
 from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
@@ -147,14 +147,14 @@ class TestDatabaseSchemeRepository:
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
-        row1: SchemeMilestoneEntity
-        row2: SchemeMilestoneEntity
+        row1: CapitalSchemeMilestoneEntity
+        row2: CapitalSchemeMilestoneEntity
         with Session(engine) as session:
             row1, row2 = session.scalars(
-                select(SchemeMilestoneEntity).order_by(SchemeMilestoneEntity.scheme_milestone_id)
+                select(CapitalSchemeMilestoneEntity).order_by(CapitalSchemeMilestoneEntity.capital_scheme_milestone_id)
             )
         assert (
-            row1.scheme_milestone_id == 2
+            row1.capital_scheme_milestone_id == 2
             and row1.capital_scheme_id == 1
             and row1.effective_date_from == datetime(2020, 1, 1)
             and row1.effective_date_to == datetime(2020, 1, 31)
@@ -164,7 +164,7 @@ class TestDatabaseSchemeRepository:
             and row1.data_source_id == 3
         )
         assert (
-            row2.scheme_milestone_id == 3
+            row2.capital_scheme_milestone_id == 3
             and row2.capital_scheme_id == 1
             and row2.effective_date_from == datetime(2020, 2, 1)
             and row2.effective_date_to is None
@@ -195,14 +195,16 @@ class TestDatabaseSchemeRepository:
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
-        row1: SchemeInterventionEntity
-        row2: SchemeInterventionEntity
+        row1: CapitalSchemeInterventionEntity
+        row2: CapitalSchemeInterventionEntity
         with Session(engine) as session:
             row1, row2 = session.scalars(
-                select(SchemeInterventionEntity).order_by(SchemeInterventionEntity.scheme_intervention_id)
+                select(CapitalSchemeInterventionEntity).order_by(
+                    CapitalSchemeInterventionEntity.capital_scheme_intervention_id
+                )
             )
         assert (
-            row1.scheme_intervention_id == 3
+            row1.capital_scheme_intervention_id == 3
             and row1.capital_scheme_id == 1
             and row1.effective_date_from == datetime(2020, 1, 1)
             and row1.effective_date_to == datetime(2020, 1, 31)
@@ -211,7 +213,7 @@ class TestDatabaseSchemeRepository:
             and row1.observation_type_id == 1
         )
         assert (
-            row2.scheme_intervention_id == 4
+            row2.capital_scheme_intervention_id == 4
             and row2.capital_scheme_id == 1
             and row2.effective_date_from == datetime(2020, 2, 1)
             and row2.effective_date_to is None
@@ -335,8 +337,8 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                     ),
-                    SchemeMilestoneEntity(
-                        scheme_milestone_id=2,
+                    CapitalSchemeMilestoneEntity(
+                        capital_scheme_milestone_id=2,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=datetime(2020, 1, 31),
@@ -345,8 +347,8 @@ class TestDatabaseSchemeRepository:
                         status_date=date(2020, 2, 1),
                         data_source_id=3,
                     ),
-                    SchemeMilestoneEntity(
-                        scheme_milestone_id=3,
+                    CapitalSchemeMilestoneEntity(
+                        capital_scheme_milestone_id=3,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 2, 1),
                         effective_date_to=None,
@@ -391,8 +393,8 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                     ),
-                    SchemeInterventionEntity(
-                        scheme_intervention_id=2,
+                    CapitalSchemeInterventionEntity(
+                        capital_scheme_intervention_id=2,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=datetime(2020, 1, 31),
@@ -400,8 +402,8 @@ class TestDatabaseSchemeRepository:
                         intervention_value=Decimal(10),
                         observation_type_id=1,
                     ),
-                    SchemeInterventionEntity(
-                        scheme_intervention_id=3,
+                    CapitalSchemeInterventionEntity(
+                        capital_scheme_intervention_id=3,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 2, 1),
                         effective_date_to=None,
@@ -580,8 +582,8 @@ class TestDatabaseSchemeRepository:
                     CapitalSchemeEntity(
                         capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
                     ),
-                    SchemeMilestoneEntity(
-                        scheme_milestone_id=4,
+                    CapitalSchemeMilestoneEntity(
+                        capital_scheme_milestone_id=4,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
@@ -593,8 +595,8 @@ class TestDatabaseSchemeRepository:
                     CapitalSchemeEntity(
                         capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=1
                     ),
-                    SchemeMilestoneEntity(
-                        scheme_milestone_id=5,
+                    CapitalSchemeMilestoneEntity(
+                        capital_scheme_milestone_id=5,
                         capital_scheme_id=2,
                         effective_date_from=datetime(2020, 2, 1),
                         effective_date_to=None,
@@ -606,8 +608,8 @@ class TestDatabaseSchemeRepository:
                     CapitalSchemeEntity(
                         capital_scheme_id=3, scheme_name="Hospital Fields Road", bid_submitting_authority_id=2
                     ),
-                    SchemeMilestoneEntity(
-                        scheme_milestone_id=6,
+                    CapitalSchemeMilestoneEntity(
+                        capital_scheme_milestone_id=6,
                         capital_scheme_id=3,
                         effective_date_from=datetime(2020, 3, 1),
                         effective_date_to=None,
@@ -656,8 +658,8 @@ class TestDatabaseSchemeRepository:
                     CapitalSchemeEntity(
                         capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
                     ),
-                    SchemeInterventionEntity(
-                        scheme_intervention_id=4,
+                    CapitalSchemeInterventionEntity(
+                        capital_scheme_intervention_id=4,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
@@ -668,8 +670,8 @@ class TestDatabaseSchemeRepository:
                     CapitalSchemeEntity(
                         capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=1
                     ),
-                    SchemeInterventionEntity(
-                        scheme_intervention_id=5,
+                    CapitalSchemeInterventionEntity(
+                        capital_scheme_intervention_id=5,
                         capital_scheme_id=2,
                         effective_date_from=datetime(2020, 2, 1),
                         effective_date_to=None,
@@ -680,8 +682,8 @@ class TestDatabaseSchemeRepository:
                     CapitalSchemeEntity(
                         capital_scheme_id=3, scheme_name="Hospital Fields Road", bid_submitting_authority_id=2
                     ),
-                    SchemeInterventionEntity(
-                        scheme_intervention_id=6,
+                    CapitalSchemeInterventionEntity(
+                        capital_scheme_intervention_id=6,
                         capital_scheme_id=3,
                         effective_date_from=datetime(2020, 3, 1),
                         effective_date_to=None,
@@ -773,7 +775,7 @@ class TestDatabaseSchemeRepository:
                         amount=100_000,
                         data_source_id=3,
                     ),
-                    SchemeMilestoneEntity(
+                    CapitalSchemeMilestoneEntity(
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
@@ -782,7 +784,7 @@ class TestDatabaseSchemeRepository:
                         status_date=date(2020, 2, 1),
                         data_source_id=3,
                     ),
-                    SchemeInterventionEntity(
+                    CapitalSchemeInterventionEntity(
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
@@ -869,8 +871,8 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                     ),
-                    SchemeMilestoneEntity(
-                        scheme_milestone_id=2,
+                    CapitalSchemeMilestoneEntity(
+                        capital_scheme_milestone_id=2,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
@@ -900,21 +902,22 @@ class TestDatabaseSchemeRepository:
 
         with Session(engine) as session:
             row = session.get_one(CapitalSchemeEntity, 1)
-            scheme_milestone1: SchemeMilestoneEntity
-            scheme_milestone2: SchemeMilestoneEntity
-            scheme_milestone1, scheme_milestone2 = row.scheme_milestones
-        assert scheme_milestone1.scheme_milestone_id == 2 and scheme_milestone1.effective_date_to == datetime(
-            2020, 1, 31
+            capital_scheme_milestone1: CapitalSchemeMilestoneEntity
+            capital_scheme_milestone2: CapitalSchemeMilestoneEntity
+            capital_scheme_milestone1, capital_scheme_milestone2 = row.capital_scheme_milestones
+        assert (
+            capital_scheme_milestone1.capital_scheme_milestone_id == 2
+            and capital_scheme_milestone1.effective_date_to == datetime(2020, 1, 31)
         )
         assert (
-            scheme_milestone2.scheme_milestone_id == 3
-            and scheme_milestone2.capital_scheme_id == 1
-            and scheme_milestone2.effective_date_from == datetime(2020, 1, 31)
-            and scheme_milestone2.effective_date_to is None
-            and scheme_milestone2.milestone_id == 6
-            and scheme_milestone2.observation_type_id == 1
-            and scheme_milestone2.status_date == date(2020, 3, 1)
-            and scheme_milestone2.data_source_id == 16
+            capital_scheme_milestone2.capital_scheme_milestone_id == 3
+            and capital_scheme_milestone2.capital_scheme_id == 1
+            and capital_scheme_milestone2.effective_date_from == datetime(2020, 1, 31)
+            and capital_scheme_milestone2.effective_date_to is None
+            and capital_scheme_milestone2.milestone_id == 6
+            and capital_scheme_milestone2.observation_type_id == 1
+            and capital_scheme_milestone2.status_date == date(2020, 3, 1)
+            and capital_scheme_milestone2.data_source_id == 16
         )
 
     def test_update_scheme_authority_reviews(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:

@@ -23,12 +23,12 @@ class TestDatabaseAuthorityRepository:
         row2: AuthorityEntity
         with Session(engine) as session:
             row1, row2 = session.scalars(select(AuthorityEntity).order_by(AuthorityEntity.authority_id))
-        assert row1.authority_id == 1 and row1.authority_name == "Liverpool City Region Combined Authority"
-        assert row2.authority_id == 2 and row2.authority_name == "West Yorkshire Combined Authority"
+        assert row1.authority_id == 1 and row1.authority_full_name == "Liverpool City Region Combined Authority"
+        assert row2.authority_id == 2 and row2.authority_full_name == "West Yorkshire Combined Authority"
 
     def test_get_authority(self, authorities: DatabaseAuthorityRepository, engine: Engine) -> None:
         with Session(engine) as session:
-            session.add(AuthorityEntity(authority_id=1, authority_name="Liverpool City Region Combined Authority"))
+            session.add(AuthorityEntity(authority_id=1, authority_full_name="Liverpool City Region Combined Authority"))
             session.commit()
 
         authority = authorities.get(1)
@@ -37,7 +37,7 @@ class TestDatabaseAuthorityRepository:
 
     def test_get_authority_that_does_not_exist(self, authorities: DatabaseAuthorityRepository, engine: Engine) -> None:
         with Session(engine) as session:
-            session.add(AuthorityEntity(authority_id=1, authority_name="Liverpool City Region Combined Authority"))
+            session.add(AuthorityEntity(authority_id=1, authority_full_name="Liverpool City Region Combined Authority"))
             session.commit()
 
         assert authorities.get(2) is None
@@ -46,8 +46,8 @@ class TestDatabaseAuthorityRepository:
         with Session(engine) as session:
             session.add_all(
                 [
-                    AuthorityEntity(authority_id=1, authority_name="Liverpool City Region Combined Authority"),
-                    AuthorityEntity(authority_id=2, authority_name="West Yorkshire Combined Authority"),
+                    AuthorityEntity(authority_id=1, authority_full_name="Liverpool City Region Combined Authority"),
+                    AuthorityEntity(authority_id=2, authority_full_name="West Yorkshire Combined Authority"),
                 ]
             )
             session.commit()

@@ -15,7 +15,7 @@ class AuthorityEntity(Base):
     __tablename__ = "authority"
 
     authority_id: Mapped[int] = mapped_column(primary_key=True)
-    authority_name: Mapped[str] = mapped_column(Text, unique=True)
+    authority_full_name: Mapped[str] = mapped_column(Text)
 
 
 class UserEntity(Base):
@@ -37,8 +37,8 @@ class CapitalSchemeEntity(Base):
     scheme_type_id: Mapped[int | None]
     funding_programme_id: Mapped[int | None]
     capital_scheme_financials: Mapped[list[CapitalSchemeFinancialEntity]] = relationship()
-    scheme_milestones: Mapped[list[SchemeMilestoneEntity]] = relationship()
-    scheme_interventions: Mapped[list[SchemeInterventionEntity]] = relationship()
+    capital_scheme_milestones: Mapped[list[CapitalSchemeMilestoneEntity]] = relationship()
+    capital_scheme_interventions: Mapped[list[CapitalSchemeInterventionEntity]] = relationship()
     capital_scheme_authority_reviews: Mapped[list[CapitalSchemeAuthorityReviewEntity]] = relationship()
 
 
@@ -57,12 +57,13 @@ class CapitalSchemeFinancialEntity(Base):
     data_source_id: Mapped[int]
 
 
-class SchemeMilestoneEntity(Base):
-    __tablename__ = "scheme_milestone"
+class CapitalSchemeMilestoneEntity(Base):
+    __tablename__ = "capital_scheme_milestone"
 
-    scheme_milestone_id: Mapped[int] = mapped_column(primary_key=True)
+    capital_scheme_milestone_id: Mapped[int] = mapped_column(primary_key=True)
     capital_scheme_id = mapped_column(
-        ForeignKey("capital_scheme.capital_scheme_id", name="scheme_milestone_capital_scheme_id_fkey"), nullable=False
+        ForeignKey("capital_scheme.capital_scheme_id", name="capital_scheme_milestone_capital_scheme_id_fkey"),
+        nullable=False,
     )
     milestone_id: Mapped[int]
     status_date: Mapped[date]
@@ -72,13 +73,13 @@ class SchemeMilestoneEntity(Base):
     data_source_id: Mapped[int]
 
 
-class SchemeInterventionEntity(Base):
-    __tablename__ = "scheme_intervention"
+class CapitalSchemeInterventionEntity(Base):
+    __tablename__ = "capital_scheme_intervention"
 
-    scheme_intervention_id: Mapped[int] = mapped_column(primary_key=True)
+    capital_scheme_intervention_id: Mapped[int] = mapped_column(primary_key=True)
     intervention_type_measure_id: Mapped[int]
     capital_scheme_id = mapped_column(
-        ForeignKey("capital_scheme.capital_scheme_id", name="scheme_intervention_capital_scheme_id_fkey"),
+        ForeignKey("capital_scheme.capital_scheme_id", name="capital_scheme_intervention_capital_scheme_id_fkey"),
         nullable=False,
     )
     intervention_value: Mapped[Decimal] = mapped_column(Numeric(precision=15, scale=6))

@@ -18,8 +18,8 @@ from schemes.infrastructure.database import (
     CapitalSchemeAuthorityReviewEntity,
     CapitalSchemeEntity,
     CapitalSchemeFinancialEntity,
-    SchemeInterventionEntity,
-    SchemeMilestoneEntity,
+    CapitalSchemeInterventionEntity,
+    CapitalSchemeMilestoneEntity,
 )
 from schemes.infrastructure.database.schemes.data_source import DataSourceMapper
 from schemes.infrastructure.database.schemes.funding import FinancialTypeMapper
@@ -48,8 +48,8 @@ class DatabaseSchemeRepository(SchemeRepository):
     def clear(self) -> None:
         with Session(self._engine) as session:
             session.execute(delete(CapitalSchemeAuthorityReviewEntity))
-            session.execute(delete(SchemeInterventionEntity))
-            session.execute(delete(SchemeMilestoneEntity))
+            session.execute(delete(CapitalSchemeInterventionEntity))
+            session.execute(delete(CapitalSchemeMilestoneEntity))
             session.execute(delete(CapitalSchemeFinancialEntity))
             session.execute(delete(CapitalSchemeEntity))
             session.commit()
@@ -90,12 +90,12 @@ class DatabaseSchemeRepository(SchemeRepository):
                 self._capital_scheme_financial_from_domain(financial_revision)
                 for financial_revision in scheme.funding.financial_revisions
             ],
-            scheme_milestones=[
-                self._scheme_milestone_from_domain(milestone_revision)
+            capital_scheme_milestones=[
+                self._capital_scheme_milestone_from_domain(milestone_revision)
                 for milestone_revision in scheme.milestones.milestone_revisions
             ],
-            scheme_interventions=[
-                self._scheme_intervention_from_domain(output_revision)
+            capital_scheme_interventions=[
+                self._capital_scheme_intervention_from_domain(output_revision)
                 for output_revision in scheme.outputs.output_revisions
             ],
             capital_scheme_authority_reviews=[
@@ -116,11 +116,11 @@ class DatabaseSchemeRepository(SchemeRepository):
         for capital_scheme_financial in capital_scheme.capital_scheme_financials:
             scheme.funding.update_financial(self._capital_scheme_financial_to_domain(capital_scheme_financial))
 
-        for scheme_milestone in capital_scheme.scheme_milestones:
-            scheme.milestones.update_milestone(self._scheme_milestone_to_domain(scheme_milestone))
+        for capital_scheme_milestone in capital_scheme.capital_scheme_milestones:
+            scheme.milestones.update_milestone(self._capital_scheme_milestone_to_domain(capital_scheme_milestone))
 
-        for scheme_intervention in capital_scheme.scheme_interventions:
-            scheme.outputs.update_output(self._scheme_intervention_to_domain(scheme_intervention))
+        for capital_scheme_intervention in capital_scheme.capital_scheme_interventions:
+            scheme.outputs.update_output(self._capital_scheme_intervention_to_domain(capital_scheme_intervention))
 
         for capital_scheme_authority_review in capital_scheme.capital_scheme_authority_reviews:
             scheme.reviews.update_authority_review(
@@ -154,9 +154,11 @@ class DatabaseSchemeRepository(SchemeRepository):
             source=self._data_source_mapper.to_domain(capital_scheme_financial.data_source_id),
         )
 
-    def _scheme_milestone_from_domain(self, milestone_revision: MilestoneRevision) -> SchemeMilestoneEntity:
-        return SchemeMilestoneEntity(
-            scheme_milestone_id=milestone_revision.id,
+    def _capital_scheme_milestone_from_domain(
+        self, milestone_revision: MilestoneRevision
+    ) -> CapitalSchemeMilestoneEntity:
+        return CapitalSchemeMilestoneEntity(
+            capital_scheme_milestone_id=milestone_revision.id,
             effective_date_from=milestone_revision.effective.date_from,
             effective_date_to=milestone_revision.effective.date_to,
             milestone_id=self._milestone_mapper.to_id(milestone_revision.milestone),
@@ -165,19 +167,25 @@ class DatabaseSchemeRepository(SchemeRepository):
             data_source_id=self._data_source_mapper.to_id(milestone_revision.source),
         )
 
-    def _scheme_milestone_to_domain(self, scheme_milestone: SchemeMilestoneEntity) -> MilestoneRevision:
+    def _capital_scheme_milestone_to_domain(
+        self, capital_scheme_milestone: CapitalSchemeMilestoneEntity
+    ) -> MilestoneRevision:
         return MilestoneRevision(
-            id_=scheme_milestone.scheme_milestone_id,
-            effective=DateRange(scheme_milestone.effective_date_from, scheme_milestone.effective_date_to),
-            milestone=self._milestone_mapper.to_domain(scheme_milestone.milestone_id),
-            observation_type=self._observation_type_mapper.to_domain(scheme_milestone.observation_type_id),
-            status_date=scheme_milestone.status_date,
-            source=self._data_source_mapper.to_domain(scheme_milestone.data_source_id),
+            id_=capital_scheme_milestone.capital_scheme_milestone_id,
+            effective=DateRange(
+                capital_scheme_milestone.effective_date_from, capital_scheme_milestone.effective_date_to
+            ),
+            milestone=self._milestone_mapper.to_domain(capital_scheme_milestone.milestone_id),
+            observation_type=self._observation_type_mapper.to_domain(capital_scheme_milestone.observation_type_id),
+            status_date=capital_scheme_milestone.status_date,
+            source=self._data_source_mapper.to_domain(capital_scheme_milestone.data_source_id),
         )
 
-    def _scheme_intervention_from_domain(self, output_revision: OutputRevision) -> SchemeInterventionEntity:
-        return SchemeInterventionEntity(
-            scheme_intervention_id=output_revision.id,
+    def _capital_scheme_intervention_from_domain(
+        self, output_revision: OutputRevision
+    ) -> CapitalSchemeInterventionEntity:
+        return CapitalSchemeInterventionEntity(
+            capital_scheme_intervention_id=output_revision.id,
             effective_date_from=output_revision.effective.date_from,
             effective_date_to=output_revision.effective.date_to,
             intervention_type_measure_id=self._output_type_measure_mapper.to_id(output_revision.type_measure),
@@ -185,13 +193,19 @@ class DatabaseSchemeRepository(SchemeRepository):
             observation_type_id=self._observation_type_mapper.to_id(output_revision.observation_type),
         )
 
-    def _scheme_intervention_to_domain(self, scheme_intervention: SchemeInterventionEntity) -> OutputRevision:
+    def _capital_scheme_intervention_to_domain(
+        self, capital_scheme_intervention: CapitalSchemeInterventionEntity
+    ) -> OutputRevision:
         return OutputRevision(
-            id_=scheme_intervention.scheme_intervention_id,
-            effective=DateRange(scheme_intervention.effective_date_from, scheme_intervention.effective_date_to),
-            type_measure=self._output_type_measure_mapper.to_domain(scheme_intervention.intervention_type_measure_id),
-            value=scheme_intervention.intervention_value,
-            observation_type=self._observation_type_mapper.to_domain(scheme_intervention.observation_type_id),
+            id_=capital_scheme_intervention.capital_scheme_intervention_id,
+            effective=DateRange(
+                capital_scheme_intervention.effective_date_from, capital_scheme_intervention.effective_date_to
+            ),
+            type_measure=self._output_type_measure_mapper.to_domain(
+                capital_scheme_intervention.intervention_type_measure_id
+            ),
+            value=capital_scheme_intervention.intervention_value,
+            observation_type=self._observation_type_mapper.to_domain(capital_scheme_intervention.observation_type_id),
         )
 
     def _capital_scheme_authority_review_from_domain(

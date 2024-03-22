@@ -16,6 +16,8 @@ services:
     environment:
       POSTGRES_USER: schemes
       POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
     healthcheck:
       test: pg_isready -U $$POSTGRES_USER
       interval: 5s

@@ -48,6 +48,7 @@ class CapitalSchemeEntity(Base):
 
 class CapitalSchemeFinancialEntity(Base):
     __tablename__ = "capital_scheme_financial"
+    __table_args__ = {"schema": "capital_scheme"}
 
     capital_scheme_financial_id: Mapped[int] = mapped_column(primary_key=True)
     capital_scheme_id = mapped_column(

@@ -27,4 +27,5 @@ def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_
 def _create_schemas(engine: Engine) -> None:
     with engine.connect() as connection:
         connection.execute(text("ATTACH DATABASE ':memory:' AS authority"))
+        connection.execute(text("ATTACH DATABASE ':memory:' AS capital_scheme"))
         connection.commit()

@@ -100,6 +100,7 @@ class CapitalSchemeInterventionEntity(Base):
 
 class CapitalSchemeAuthorityReviewEntity(Base):
     __tablename__ = "capital_scheme_authority_review"
+    __table_args__ = {"schema": "capital_scheme"}
 
     capital_scheme_authority_review_id: Mapped[int] = mapped_column(primary_key=True)
     capital_scheme_id = mapped_column(

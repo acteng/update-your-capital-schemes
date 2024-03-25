@@ -84,6 +84,7 @@ class CapitalSchemeMilestoneEntity(Base):
 
 class CapitalSchemeInterventionEntity(Base):
     __tablename__ = "capital_scheme_intervention"
+    __table_args__ = {"schema": "capital_scheme"}
 
     capital_scheme_intervention_id: Mapped[int] = mapped_column(primary_key=True)
     intervention_type_measure_id: Mapped[int]

@@ -13,6 +13,7 @@ class Base(DeclarativeBase):
 
 class AuthorityEntity(Base):
     __tablename__ = "authority"
+    __table_args__ = {"schema": "authority"}
 
     authority_id: Mapped[int] = mapped_column(primary_key=True)
     authority_full_name: Mapped[str] = mapped_column(Text)
@@ -23,7 +24,9 @@ class UserEntity(Base):
 
     user_id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(length=256), unique=True)
-    authority_id = mapped_column(ForeignKey("authority.authority_id", name="user_authority_id_fkey"), nullable=False)
+    authority_id = mapped_column(
+        ForeignKey("authority.authority.authority_id", name="user_authority_id_fkey"), nullable=False
+    )
 
 
 class CapitalSchemeEntity(Base):
@@ -32,7 +35,7 @@ class CapitalSchemeEntity(Base):
     capital_scheme_id: Mapped[int] = mapped_column(primary_key=True)
     scheme_name: Mapped[str] = mapped_column(Text)
     bid_submitting_authority_id = mapped_column(
-        ForeignKey("authority.authority_id", name="capital_scheme_bid_submitting_authority_id_fkey")
+        ForeignKey("authority.authority.authority_id", name="capital_scheme_bid_submitting_authority_id_fkey")
     )
     scheme_type_id: Mapped[int | None]
     funding_programme_id: Mapped[int | None]

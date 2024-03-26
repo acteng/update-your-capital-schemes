@@ -17,6 +17,7 @@ from flask import Flask
 from playwright.sync_api import BrowserContext
 from pytest import FixtureRequest
 from pytest_flask.live_server import LiveServer
+from testcontainers.postgres import PostgresContainer
 
 from schemes import create_app, destroy_app
 from tests.e2e.app_client import AppClient
@@ -32,13 +33,19 @@ def configure_live_server_fixture() -> None:
         multiprocessing.set_start_method("fork")
 
 
+@pytest.fixture(name="database_uri", scope="package")
+def database_uri_fixture() -> Generator[str, None, None]:
+    with PostgresContainer("postgres:15") as postgres:
+        yield postgres.get_connection_url(driver="pg8000")
+
+
 @pytest.fixture(name="api_key", scope="package")
 def api_key_fixture() -> str:
     return "api-key"
 
 
 @pytest.fixture(name="app", scope="package")
-def app_fixture(api_key: str, oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
+def app_fixture(database_uri: str, api_key: str, oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
     port = _get_random_port()
     client_id = "app"
     private_key, public_key = _generate_key_pair()
@@ -49,6 +56,7 @@ def app_fixture(api_key: str, oidc_server: LiveServer) -> Generator[Flask, Any, 
             "SECRET_KEY": b"secret_key",
             "SERVER_NAME": f"localhost:{port}",
             "LIVESERVER_PORT": port,
+            "SQLALCHEMY_DATABASE_URI": database_uri,
             "API_KEY": api_key,
             "GOVUK_CLIENT_ID": client_id,
             "GOVUK_CLIENT_SECRET": private_key.decode(),

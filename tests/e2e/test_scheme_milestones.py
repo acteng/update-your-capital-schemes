@@ -96,7 +96,6 @@ def test_scheme_change_milestones(app_client: AppClient, oidc_client: OidcClient
             name="Wirral Package",
             milestone_revisions=[
                 MilestoneRevisionRepr(
-                    id=1,
                     effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     milestone="feasibility design completed",
@@ -105,7 +104,6 @@ def test_scheme_change_milestones(app_client: AppClient, oidc_client: OidcClient
                     source="ATF4 Bid",
                 ),
                 MilestoneRevisionRepr(
-                    id=2,
                     effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     milestone="preliminary design completed",
@@ -114,7 +112,6 @@ def test_scheme_change_milestones(app_client: AppClient, oidc_client: OidcClient
                     source="ATF4 Bid",
                 ),
                 MilestoneRevisionRepr(
-                    id=3,
                     effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     milestone="detailed design completed",
@@ -123,7 +120,6 @@ def test_scheme_change_milestones(app_client: AppClient, oidc_client: OidcClient
                     source="ATF4 Bid",
                 ),
                 MilestoneRevisionRepr(
-                    id=4,
                     effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     milestone="construction started",
@@ -132,7 +128,6 @@ def test_scheme_change_milestones(app_client: AppClient, oidc_client: OidcClient
                     source="ATF4 Bid",
                 ),
                 MilestoneRevisionRepr(
-                    id=5,
                     effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     milestone="construction completed",

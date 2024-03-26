@@ -23,7 +23,7 @@ def test_scheme_review(app_client: AppClient, oidc_client: OidcClient, page: Pag
         SchemeRepr(
             id=1,
             name="Wirral Package",
-            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 Bid")],
+            authority_reviews=[AuthorityReviewRepr(review_date="2020-01-02T12:00:00", source="ATF4 Bid")],
         ),
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

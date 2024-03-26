@@ -74,7 +74,6 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
             name="Wirral Package",
             financial_revisions=[
                 FinancialRevisionRepr(
-                    id=1,
                     effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     type="funding allocation",
@@ -82,7 +81,6 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
                     source="ATF4 Bid",
                 ),
                 FinancialRevisionRepr(
-                    id=2,
                     effective_date_from="2020-01-01T12:00:00",
                     effective_date_to=None,
                     type="spent to date",

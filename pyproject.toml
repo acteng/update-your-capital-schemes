@@ -29,6 +29,7 @@ dev = [
     "pytest-playwright~=0.4.0",
     "pytest~=8.1.0",
     "ruff~=0.3.0",
+    "testcontainers~=4.2.0",
     "types-beautifulsoup4~=4.12.0",
     "types-requests~=2.31.0.0",
     "types-wtforms~=3.1.0.20240205"
@@ -60,6 +61,7 @@ module = [
     "flask_wtf.*",
     "govuk_frontend_wtf.*",
     "pytest_flask.*",
+    "testcontainers.postgres.*",
     "wtforms.*"
 ]
 ignore_missing_imports = true

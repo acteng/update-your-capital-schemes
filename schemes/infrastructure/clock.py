@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 class Clock:
@@ -14,9 +14,7 @@ class Clock:
 class SystemClock(Clock):
     @property
     def now(self) -> datetime:
-        # TODO: remove once showcased
-        # return datetime.now()
-        return datetime.now() + timedelta(weeks=4)
+        return datetime.now()
 
     @now.setter
     def now(self, now: datetime) -> None:

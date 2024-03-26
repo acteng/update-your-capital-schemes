@@ -11,8 +11,6 @@ class TestSystemClock:
     def clock_fixture(self) -> SystemClock:
         return SystemClock()
 
-    # TODO: remove once showcased
-    @pytest.mark.skip
     def test_get_now(self, clock: SystemClock) -> None:
         with patch("schemes.infrastructure.clock.datetime") as mock_datetime:
             mock_datetime.now.return_value = datetime(2020, 1, 2, 12)

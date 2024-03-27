@@ -82,8 +82,12 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     return app
 
 
-def destroy_app(_app: Flask) -> None:
-    event.remove(Engine, "connect", _enforce_sqlite_foreign_keys)
+def destroy_app(app: Flask) -> None:
+    engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
+
+    if engine.dialect.name == SQLiteDialect.name:
+        event.remove(Engine, "connect", _enforce_sqlite_foreign_keys)
+
     inject.clear()
 
 

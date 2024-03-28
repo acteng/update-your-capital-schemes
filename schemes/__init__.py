@@ -23,10 +23,7 @@ from flask_wtf.csrf import CSRFError
 from govuk_frontend_wtf.main import WTFormsHelpers
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
-from sqlalchemy import Engine, create_engine, event
-from sqlalchemy.dialects.sqlite.base import SQLiteDialect
-from sqlalchemy.engine.interfaces import DBAPIConnection
-from sqlalchemy.pool import ConnectionPoolEntry
+from sqlalchemy import Engine, create_engine
 from werkzeug import Response as BaseResponse
 
 from schemes.config import DevConfig
@@ -77,17 +74,14 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.register_blueprint(users.bp, url_prefix="/users")
     csrf.exempt(users.clear)
 
-    _migrate_database()
+    engine: Engine = inject.instance(Engine)
+    if engine:
+        _migrate_database(engine)
 
     return app
 
 
-def destroy_app(app: Flask) -> None:
-    engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
-
-    if engine.dialect.name == SQLiteDialect.name:
-        event.remove(Engine, "connect", _enforce_sqlite_foreign_keys)
-
+def destroy_app(_app: Flask) -> None:
     inject.clear()
 
 
@@ -96,7 +90,7 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
         binder.bind(Config, app.config)
         binder.bind(Clock, FakeClock() if app.testing else SystemClock())
         binder.bind_to_constructor(ReportingWindowService, DefaultReportingWindowService)
-        binder.bind_to_constructor(Engine, _create_engine)
+        # binder.bind_to_constructor(Engine, _create_engine)
         binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
         binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
         binder.bind_to_constructor(SchemeRepository, DatabaseSchemeRepository)
@@ -106,18 +100,7 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
 
 @inject.autoparams()
 def _create_engine(config: Config) -> Engine:
-    engine = create_engine(config["SQLALCHEMY_DATABASE_URI"])
-
-    if engine.dialect.name == SQLiteDialect.name:
-        event.listen(Engine, "connect", _enforce_sqlite_foreign_keys)
-
-    return engine
-
-
-def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_record: ConnectionPoolEntry) -> None:
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
+    return create_engine(config["SQLALCHEMY_DATABASE_URI"])
 
 
 def _configure_dataclass_wizard() -> None:
@@ -185,9 +168,7 @@ def _configure_oidc(app: Flask) -> None:
     )
 
 
-def _migrate_database() -> None:
-    engine: Engine = inject.instance(Engine)
-
+def _migrate_database(engine: Engine) -> None:
     alembic_config = alembic.config.Config()
     alembic_config.set_main_option("script_location", "schemes:infrastructure/database/migrations")
 

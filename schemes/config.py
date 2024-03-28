@@ -1,7 +1,4 @@
 class Config:
-    # SQLAlchemy
-    SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///file::memory:?uri=true"
-
     # GOV.UK One Login
     GOVUK_SERVER_METADATA_URL = "https://oidc.integration.account.gov.uk/.well-known/openid-configuration"
     GOVUK_TOKEN_ENDPOINT = "https://oidc.integration.account.gov.uk/token"

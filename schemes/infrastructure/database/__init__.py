@@ -41,6 +41,8 @@ class CapitalSchemeEntity(Base):
         ForeignKey("authority.authority.authority_id", name="capital_scheme_bid_submitting_authority_id_fkey"),
         nullable=False,
     )
+    # TODO: not convinced this is right
+    bid_submitting_authority: Mapped[AuthorityEntity] = relationship()
     scheme_type_id: Mapped[int]
     funding_programme_id: Mapped[int]
     capital_scheme_bid_statuses: Mapped[list[CapitalSchemeBidStatusEntity]] = relationship()

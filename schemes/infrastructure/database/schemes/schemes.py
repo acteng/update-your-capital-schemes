@@ -77,7 +77,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             result = session.scalars(
                 select(CapitalSchemeEntity)
                 .options(selectinload("*"))
-                .where(CapitalSchemeEntity.bid_submitting_authority_id == authority_id)
+                .where(CapitalSchemeEntity.bid_submitting_authority.authority_abbreviation == authority_id)
                 .order_by(CapitalSchemeEntity.capital_scheme_id)
             )
             return [self._capital_scheme_to_domain(row) for row in result]
@@ -120,7 +120,7 @@ class DatabaseSchemeRepository(SchemeRepository):
         scheme = Scheme(
             id_=capital_scheme.capital_scheme_id,
             name=capital_scheme.scheme_name,
-            authority_id=capital_scheme.bid_submitting_authority_id,
+            authority_id=capital_scheme.bid_submitting_authority.authority_abbreviation,
             type_=self._scheme_type_mapper.to_domain(capital_scheme.scheme_type_id),
             funding_programme=self._funding_programme_mapper.to_domain(capital_scheme.funding_programme_id),
         )

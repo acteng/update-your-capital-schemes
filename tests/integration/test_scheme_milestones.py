@@ -220,7 +220,7 @@ class TestSchemeMilestones:
     def test_milestones_updates_milestones(
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        clock.now = datetime(2020, 1, 31, 13)
+        clock.now = datetime(2020, 2, 1, 13)
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.milestones.update_milestones(
             MilestoneRevision(
@@ -243,9 +243,9 @@ class TestSchemeMilestones:
         milestone_revision1: MilestoneRevision
         milestone_revision2: MilestoneRevision
         milestone_revision1, milestone_revision2 = actual_scheme.milestones.milestone_revisions
-        assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 1, 31, 13)
+        assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 2, 1, 13)
         assert (
-            milestone_revision2.effective == DateRange(datetime(2020, 1, 31, 13), None)
+            milestone_revision2.effective == DateRange(datetime(2020, 2, 1, 13), None)
             and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone_revision2.observation_type == ObservationType.ACTUAL
             and milestone_revision2.status_date == date(2020, 1, 3)

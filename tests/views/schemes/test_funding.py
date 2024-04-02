@@ -178,14 +178,14 @@ class TestChangeSpendToDateForm:
             )
         )
 
-        form.update_domain(funding, now=datetime(2020, 1, 31))
+        form.update_domain(funding, now=datetime(2020, 2, 1))
 
         financial_revision1: FinancialRevision
         financial_revision2: FinancialRevision
         financial_revision1, financial_revision2 = funding.financial_revisions
-        assert financial_revision1.id == 1 and financial_revision1.effective.date_to == datetime(2020, 1, 31)
+        assert financial_revision1.id == 1 and financial_revision1.effective.date_to == datetime(2020, 2, 1)
         assert (
-            financial_revision2.effective == DateRange(datetime(2020, 1, 31), None)
+            financial_revision2.effective == DateRange(datetime(2020, 2, 1), None)
             and financial_revision2.type == FinancialType.SPENT_TO_DATE
             and financial_revision2.amount == 60_000
             and financial_revision2.source == DataSource.AUTHORITY_UPDATE
@@ -195,7 +195,7 @@ class TestChangeSpendToDateForm:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "0")]))
         funding = SchemeFunding()
 
-        form.update_domain(funding, now=datetime(2020, 1, 31))
+        form.update_domain(funding, now=datetime(2020, 2, 1))
 
         assert funding.financial_revisions[0].amount == 0
 
@@ -255,7 +255,7 @@ class TestFinancialRevisionRepr:
     def test_from_domain(self) -> None:
         financial_revision = FinancialRevision(
             id_=2,
-            effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 1, 31, 13)),
+            effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13)),
             type_=FinancialType.FUNDING_ALLOCATION,
             amount=100_000,
             source=DataSource.ATF4_BID,
@@ -266,7 +266,7 @@ class TestFinancialRevisionRepr:
         assert financial_revision_repr == FinancialRevisionRepr(
             id=2,
             effective_date_from="2020-01-01T12:00:00",
-            effective_date_to="2020-01-31T13:00:00",
+            effective_date_to="2020-02-01T13:00:00",
             type=FinancialTypeRepr.FUNDING_ALLOCATION,
             amount=100_000,
             source=DataSourceRepr.ATF4_BID,
@@ -289,7 +289,7 @@ class TestFinancialRevisionRepr:
         financial_revision_repr = FinancialRevisionRepr(
             id=1,
             effective_date_from="2020-01-01T12:00:00",
-            effective_date_to="2020-01-31T13:00:00",
+            effective_date_to="2020-02-01T13:00:00",
             type=FinancialTypeRepr.FUNDING_ALLOCATION,
             amount=100_000,
             source=DataSourceRepr.ATF4_BID,
@@ -299,7 +299,7 @@ class TestFinancialRevisionRepr:
 
         assert (
             financial_revision.id == 1
-            and financial_revision.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 1, 31, 13))
+            and financial_revision.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13))
             and financial_revision.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision.amount == 100_000
             and financial_revision.source == DataSource.ATF4_BID

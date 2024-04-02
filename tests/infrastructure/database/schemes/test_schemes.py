@@ -83,7 +83,7 @@ class TestDatabaseSchemeRepository:
         scheme1.funding.update_financials(
             FinancialRevision(
                 id_=2,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
@@ -109,7 +109,7 @@ class TestDatabaseSchemeRepository:
             row1.capital_scheme_financial_id == 2
             and row1.capital_scheme_id == 1
             and row1.effective_date_from == datetime(2020, 1, 1)
-            and row1.effective_date_to == datetime(2020, 1, 31)
+            and row1.effective_date_to == datetime(2020, 2, 1)
             and row1.financial_type_id == 3
             and row1.amount == 100_000
             and row1.data_source_id == 3
@@ -129,7 +129,7 @@ class TestDatabaseSchemeRepository:
         scheme1.milestones.update_milestones(
             MilestoneRevision(
                 id_=2,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
@@ -157,7 +157,7 @@ class TestDatabaseSchemeRepository:
             row1.capital_scheme_milestone_id == 2
             and row1.capital_scheme_id == 1
             and row1.effective_date_from == datetime(2020, 1, 1)
-            and row1.effective_date_to == datetime(2020, 1, 31)
+            and row1.effective_date_to == datetime(2020, 2, 1)
             and row1.milestone_id == 6
             and row1.observation_type_id == 1
             and row1.status_date == date(2020, 2, 1)
@@ -179,7 +179,7 @@ class TestDatabaseSchemeRepository:
         scheme1.outputs.update_outputs(
             OutputRevision(
                 id_=3,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.PLANNED,
@@ -207,7 +207,7 @@ class TestDatabaseSchemeRepository:
             row1.capital_scheme_intervention_id == 3
             and row1.capital_scheme_id == 1
             and row1.effective_date_from == datetime(2020, 1, 1)
-            and row1.effective_date_to == datetime(2020, 1, 31)
+            and row1.effective_date_to == datetime(2020, 2, 1)
             and row1.intervention_type_measure_id == 4
             and row1.intervention_value == Decimal(10)
             and row1.observation_type_id == 1
@@ -289,7 +289,7 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_financial_id=2,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
-                        effective_date_to=datetime(2020, 1, 31),
+                        effective_date_to=datetime(2020, 2, 1),
                         financial_type_id=3,
                         amount=100_000,
                         data_source_id=3,
@@ -315,7 +315,7 @@ class TestDatabaseSchemeRepository:
         financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
             financial_revision1.id == 2
-            and financial_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31))
+            and financial_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
             and financial_revision1.source == DataSource.ATF4_BID
@@ -341,7 +341,7 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_milestone_id=2,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
-                        effective_date_to=datetime(2020, 1, 31),
+                        effective_date_to=datetime(2020, 2, 1),
                         milestone_id=6,
                         observation_type_id=1,
                         status_date=date(2020, 2, 1),
@@ -369,7 +369,7 @@ class TestDatabaseSchemeRepository:
         milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 2
-            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31))
+            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
@@ -397,7 +397,7 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_intervention_id=2,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
-                        effective_date_to=datetime(2020, 1, 31),
+                        effective_date_to=datetime(2020, 2, 1),
                         intervention_type_measure_id=4,
                         intervention_value=Decimal(10),
                         observation_type_id=1,
@@ -423,7 +423,7 @@ class TestDatabaseSchemeRepository:
         output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
             output_revision1.id == 2
-            and output_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31))
+            and output_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
             and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision1.value == Decimal(10)
             and output_revision1.observation_type == ObservationType.PLANNED
@@ -830,11 +830,11 @@ class TestDatabaseSchemeRepository:
             session.commit()
         scheme = schemes.get(1)
         assert scheme
-        scheme.funding.financial_revisions[0].effective = DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31))
+        scheme.funding.financial_revisions[0].effective = DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=3,
-                effective=DateRange(datetime(2020, 1, 31), None),
+                effective=DateRange(datetime(2020, 2, 1), None),
                 type_=FinancialType.SPENT_TO_DATE,
                 amount=60_000,
                 source=DataSource.AUTHORITY_UPDATE,
@@ -850,12 +850,12 @@ class TestDatabaseSchemeRepository:
             capital_scheme_financial1, capital_scheme_financial2 = row.capital_scheme_financials
         assert (
             capital_scheme_financial1.capital_scheme_financial_id == 2
-            and capital_scheme_financial1.effective_date_to == datetime(2020, 1, 31)
+            and capital_scheme_financial1.effective_date_to == datetime(2020, 2, 1)
         )
         assert (
             capital_scheme_financial2.capital_scheme_financial_id == 3
             and capital_scheme_financial2.capital_scheme_id == 1
-            and capital_scheme_financial2.effective_date_from == datetime(2020, 1, 31)
+            and capital_scheme_financial2.effective_date_from == datetime(2020, 2, 1)
             and capital_scheme_financial2.effective_date_to is None
             and capital_scheme_financial2.financial_type_id == 4
             and capital_scheme_financial2.amount == 60_000
@@ -886,11 +886,11 @@ class TestDatabaseSchemeRepository:
             session.commit()
         scheme = schemes.get(1)
         assert scheme
-        scheme.milestones.milestone_revisions[0].effective = DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31))
+        scheme.milestones.milestone_revisions[0].effective = DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=3,
-                effective=DateRange(datetime(2020, 1, 31), None),
+                effective=DateRange(datetime(2020, 2, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 3, 1),
@@ -907,12 +907,12 @@ class TestDatabaseSchemeRepository:
             capital_scheme_milestone1, capital_scheme_milestone2 = row.capital_scheme_milestones
         assert (
             capital_scheme_milestone1.capital_scheme_milestone_id == 2
-            and capital_scheme_milestone1.effective_date_to == datetime(2020, 1, 31)
+            and capital_scheme_milestone1.effective_date_to == datetime(2020, 2, 1)
         )
         assert (
             capital_scheme_milestone2.capital_scheme_milestone_id == 3
             and capital_scheme_milestone2.capital_scheme_id == 1
-            and capital_scheme_milestone2.effective_date_from == datetime(2020, 1, 31)
+            and capital_scheme_milestone2.effective_date_from == datetime(2020, 2, 1)
             and capital_scheme_milestone2.effective_date_to is None
             and capital_scheme_milestone2.milestone_id == 6
             and capital_scheme_milestone2.observation_type_id == 1

@@ -161,7 +161,7 @@ class TestOutputRevisionRepr:
     def test_from_domain(self) -> None:
         output_revision = OutputRevision(
             id_=1,
-            effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 1, 31, 13)),
+            effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13)),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.ACTUAL,
@@ -172,7 +172,7 @@ class TestOutputRevisionRepr:
         assert output_revision_repr == OutputRevisionRepr(
             id=1,
             effective_date_from="2020-01-01T12:00:00",
-            effective_date_to="2020-01-31T13:00:00",
+            effective_date_to="2020-02-01T13:00:00",
             type=OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE,
             measure=OutputMeasureRepr.MILES,
             value="10",
@@ -196,7 +196,7 @@ class TestOutputRevisionRepr:
         output_revision_repr = OutputRevisionRepr(
             id=1,
             effective_date_from="2020-01-01T12:00:00",
-            effective_date_to="2020-01-31T13:00:00",
+            effective_date_to="2020-02-01T13:00:00",
             type=OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE,
             measure=OutputMeasureRepr.MILES,
             value="10",
@@ -207,7 +207,7 @@ class TestOutputRevisionRepr:
 
         assert (
             output_revision.id == 1
-            and output_revision.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 1, 31, 13))
+            and output_revision.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13))
             and output_revision.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision.value == Decimal(10)
             and output_revision.observation_type == ObservationType.ACTUAL

@@ -178,7 +178,7 @@ class TestSchemeContext:
         ],
     )
     def test_from_domain_sets_needs_review(self, review_date: datetime, expected_needs_review: bool) -> None:
-        reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 4, 30)))
+        reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 5, 1)))
         authority = Authority(id_=2, name="")
         scheme = Scheme(id_=1, name="", authority_id=2)
         scheme.reviews.update_authority_review(
@@ -230,7 +230,7 @@ class TestSchemeContext:
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.PLANNED,

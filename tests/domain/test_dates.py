@@ -7,15 +7,15 @@ from schemes.domain.dates import DateRange
 
 class TestDateRange:
     def test_create(self) -> None:
-        date_range = DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31))
+        date_range = DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
 
-        assert date_range.date_from == datetime(2020, 1, 1) and date_range.date_to == datetime(2020, 1, 31)
+        assert date_range.date_from == datetime(2020, 1, 1) and date_range.date_to == datetime(2020, 2, 1)
 
     @pytest.mark.parametrize(
         "date_from, date_to",
         [
-            (datetime(2020, 1, 1), datetime(2020, 1, 31)),
-            (datetime(2020, 1, 31), datetime(2020, 1, 31)),
+            (datetime(2020, 1, 1), datetime(2020, 2, 1)),
+            (datetime(2020, 2, 1), datetime(2020, 2, 1)),
             (datetime(2020, 1, 1), None),
         ],
     )

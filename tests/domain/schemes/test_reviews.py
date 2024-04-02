@@ -65,14 +65,14 @@ class TestSchemeReviews:
         ],
     )
     def test_needs_review(self, review_date: datetime, expected_needs_review: bool) -> None:
-        reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 4, 30)))
+        reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 5, 1)))
         reviews = SchemeReviews()
         reviews.update_authority_review(AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID))
 
         assert reviews.needs_review(reporting_window) == expected_needs_review
 
     def test_needs_review_when_no_authority_reviews(self) -> None:
-        reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 4, 30)))
+        reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 5, 1)))
         reviews = SchemeReviews()
 
         assert reviews.needs_review(reporting_window)

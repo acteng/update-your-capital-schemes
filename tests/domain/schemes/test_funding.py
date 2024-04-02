@@ -129,20 +129,20 @@ class TestSchemeFunding:
             )
         )
 
-        funding.update_spend_to_date(now=datetime(2020, 1, 31, 13), amount=60_000)
+        funding.update_spend_to_date(now=datetime(2020, 2, 1, 13), amount=60_000)
 
         financial_revision = funding.financial_revisions[0]
-        assert financial_revision.id == 1 and financial_revision.effective.date_to == datetime(2020, 1, 31, 13)
+        assert financial_revision.id == 1 and financial_revision.effective.date_to == datetime(2020, 2, 1, 13)
 
     def test_update_spend_to_date_adds_new_revision(self) -> None:
         funding = SchemeFunding()
 
-        funding.update_spend_to_date(now=datetime(2020, 1, 31, 13), amount=60_000)
+        funding.update_spend_to_date(now=datetime(2020, 2, 1, 13), amount=60_000)
 
         financial_revision = funding.financial_revisions[0]
         assert (
             financial_revision.id is None
-            and financial_revision.effective == DateRange(datetime(2020, 1, 31, 13), None)
+            and financial_revision.effective == DateRange(datetime(2020, 2, 1, 13), None)
             and financial_revision.type == FinancialType.SPENT_TO_DATE
             and financial_revision.amount == 60_000
             and financial_revision.source == DataSource.AUTHORITY_UPDATE
@@ -209,7 +209,7 @@ class TestSchemeFunding:
         funding.update_financials(
             FinancialRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
@@ -312,7 +312,7 @@ class TestSchemeFunding:
         funding.update_financials(
             FinancialRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=10_000,
                 source=DataSource.CHANGE_CONTROL,
@@ -387,7 +387,7 @@ class TestSchemeFunding:
         funding.update_financials(
             FinancialRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 type_=FinancialType.SPENT_TO_DATE,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
@@ -595,7 +595,7 @@ class TestFinancialRevision:
         "effective_date_to, type_, source, expected",
         [
             (None, FinancialType.FUNDING_ALLOCATION, DataSource.ATF4_BID, True),
-            (datetime(2000, 1, 31), FinancialType.FUNDING_ALLOCATION, DataSource.ATF4_BID, False),
+            (datetime(2000, 2, 1), FinancialType.FUNDING_ALLOCATION, DataSource.ATF4_BID, False),
             (None, FinancialType.SPENT_TO_DATE, DataSource.ATF4_BID, False),
             (None, FinancialType.FUNDING_ALLOCATION, DataSource.CHANGE_CONTROL, False),
         ],
@@ -613,7 +613,7 @@ class TestFinancialRevision:
         "effective_date_to, type_, expected",
         [
             (None, FinancialType.SPENT_TO_DATE, True),
-            (datetime(2000, 1, 31), FinancialType.SPENT_TO_DATE, False),
+            (datetime(2000, 2, 1), FinancialType.SPENT_TO_DATE, False),
             (None, FinancialType.FUNDING_ALLOCATION, False),
         ],
     )

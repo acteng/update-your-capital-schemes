@@ -40,7 +40,7 @@ class TestSchemeOutputs:
         outputs = SchemeOutputs()
         output_revision1 = OutputRevision(
             id_=1,
-            effective=DateRange(datetime(2020, 1, 1), datetime(2020, 1, 31)),
+            effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.PLANNED,

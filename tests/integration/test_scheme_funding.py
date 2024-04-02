@@ -231,7 +231,7 @@ class TestSchemeFunding:
     def test_spend_to_date_updates_spend_to_date(
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        clock.now = datetime(2020, 1, 31, 13)
+        clock.now = datetime(2020, 2, 1, 13)
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding.update_financials(
             FinancialRevision(
@@ -259,9 +259,9 @@ class TestSchemeFunding:
         financial_revision2: FinancialRevision
         financial_revision3: FinancialRevision
         financial_revision1, financial_revision2, financial_revision3 = actual_scheme.funding.financial_revisions
-        assert financial_revision2.id == 2 and financial_revision2.effective.date_to == datetime(2020, 1, 31, 13)
+        assert financial_revision2.id == 2 and financial_revision2.effective.date_to == datetime(2020, 2, 1, 13)
         assert (
-            financial_revision3.effective == DateRange(datetime(2020, 1, 31, 13), None)
+            financial_revision3.effective == DateRange(datetime(2020, 2, 1, 13), None)
             and financial_revision3.type == FinancialType.SPENT_TO_DATE
             and financial_revision3.amount == 60_000
             and financial_revision3.source == DataSource.AUTHORITY_UPDATE

@@ -1,13 +1,8 @@
 import pytest
 from playwright.sync_api import Page
 
-from tests.e2e.app_client import (
-    AppClient,
-    AuthorityRepr,
-    AuthorityReviewRepr,
-    SchemeRepr,
-    UserRepr,
-)
+from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, UserRepr
+from tests.e2e.builders import build_scheme
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemesPage
@@ -25,14 +20,14 @@ class TestAuthenticated:
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
             1,
-            SchemeRepr(
-                id=1,
+            build_scheme(
+                id_=1,
                 name="Wirral Package",
                 funding_programme="ATF3",
                 authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02", source="ATF3 Bid")],
             ),
-            SchemeRepr(
-                id=2,
+            build_scheme(
+                id_=2,
                 name="School Streets",
                 funding_programme="ATF4",
                 authority_reviews=[AuthorityReviewRepr(id=2, review_date="2020-01-03", source="ATF4 Bid")],
@@ -67,7 +62,7 @@ class TestAuthenticated:
     def test_scheme_shows_scheme(self, app_client: AppClient, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
-        app_client.add_schemes(1, SchemeRepr(id=1, name="Wirral Package"))
+        app_client.add_schemes(1, build_scheme(id_=1, name="Wirral Package"))
 
         scheme_page = SchemesPage.open(page).schemes["ATE00001"].open()
 
@@ -88,8 +83,8 @@ class TestAuthenticated:
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
             1,
-            SchemeRepr(
-                id=1,
+            build_scheme(
+                id_=1,
                 name="Wirral Package",
                 authority_reviews=[AuthorityReviewRepr(id=1, review_date="2023-01-02", source="ATF4 Bid")],
             ),

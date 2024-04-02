@@ -8,6 +8,8 @@ from schemes.domain.dates import DateRange
 from schemes.domain.reporting_window import ReportingWindow
 from schemes.domain.schemes import (
     AuthorityReview,
+    BidStatus,
+    BidStatusRevision,
     DataSource,
     FinancialRevision,
     FinancialType,
@@ -22,7 +24,12 @@ from schemes.domain.schemes import (
 )
 from schemes.views.schemes import SchemeRepr
 from schemes.views.schemes.data_source import DataSourceRepr
-from schemes.views.schemes.funding import FinancialRevisionRepr, FinancialTypeRepr
+from schemes.views.schemes.funding import (
+    BidStatusRepr,
+    BidStatusRevisionRepr,
+    FinancialRevisionRepr,
+    FinancialTypeRepr,
+)
 from schemes.views.schemes.milestones import (
     MilestoneContext,
     MilestoneRepr,
@@ -368,6 +375,34 @@ class TestSchemeRepr:
 
         assert scheme_repr == SchemeRepr(id=1, name="Wirral Package", type=None, funding_programme=None)
 
+    def test_from_domain_sets_bid_status_revisions(self) -> None:
+        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme.funding.update_bid_statuses(
+            BidStatusRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 12)),
+                status=BidStatus.SUBMITTED,
+            ),
+            BidStatusRevision(id_=3, effective=DateRange(datetime(2020, 2, 1, 12), None), status=BidStatus.FUNDED),
+        )
+
+        scheme_repr = SchemeRepr.from_domain(scheme)
+
+        assert scheme_repr.bid_status_revisions == [
+            BidStatusRevisionRepr(
+                id=2,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to="2020-02-01T12:00:00",
+                status=BidStatusRepr.SUBMITTED,
+            ),
+            BidStatusRevisionRepr(
+                id=3,
+                effective_date_from="2020-02-01T12:00:00",
+                effective_date_to=None,
+                status=BidStatusRepr.FUNDED,
+            ),
+        ]
+
     def test_from_domain_sets_financial_revisions(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
         scheme.funding.update_financials(
@@ -542,6 +577,39 @@ class TestSchemeRepr:
             and scheme.authority_id == 2
             and scheme.type is None
             and scheme.funding_programme is None
+        )
+
+    def test_to_domain_sets_bid_status_revisions(self) -> None:
+        scheme_repr = SchemeRepr(
+            id=0,
+            name="",
+            bid_status_revisions=[
+                BidStatusRevisionRepr(
+                    id=2,
+                    effective_date_from="2020-01-01T12:00:00",
+                    effective_date_to="2020-02-01T13:00:00",
+                    status=BidStatusRepr.SUBMITTED,
+                ),
+                BidStatusRevisionRepr(
+                    id=3, effective_date_from="2020-02-01T12:00:00", effective_date_to=None, status=BidStatusRepr.FUNDED
+                ),
+            ],
+        )
+
+        scheme = scheme_repr.to_domain(0)
+
+        bid_status_revision1: BidStatusRevision
+        bid_status_revision2: BidStatusRevision
+        bid_status_revision1, bid_status_revision2 = scheme.funding.bid_status_revisions
+        assert (
+            bid_status_revision1.id == 2
+            and bid_status_revision1.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13))
+            and bid_status_revision1.status == BidStatus.SUBMITTED
+        )
+        assert (
+            bid_status_revision2.id == 3
+            and bid_status_revision2.effective == DateRange(datetime(2020, 2, 1, 12), None)
+            and bid_status_revision2.status == BidStatus.FUNDED
         )
 
     def test_to_domain_sets_financial_revisions(self) -> None:

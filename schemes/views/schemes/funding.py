@@ -11,6 +11,8 @@ from wtforms.validators import InputRequired, NumberRange, ValidationError
 from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
+    BidStatus,
+    BidStatusRevision,
     FinancialRevision,
     FinancialType,
     Scheme,
@@ -80,6 +82,61 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
     def validate_amount(form: ChangeSpendToDateForm, field: CustomMessageIntegerField) -> None:
         if field.data is not None and field.data > form.max_amount:
             raise ValidationError(f"Spend to date must be £{form.max_amount:,} or less")
+
+
+@dataclass(frozen=True)
+class BidStatusRevisionRepr:
+    effective_date_from: str
+    effective_date_to: str | None
+    status: BidStatusRepr
+    id: int | None = None
+
+    @classmethod
+    def from_domain(cls, bid_status_revision: BidStatusRevision) -> BidStatusRevisionRepr:
+        return BidStatusRevisionRepr(
+            id=bid_status_revision.id,
+            effective_date_from=bid_status_revision.effective.date_from.isoformat(),
+            effective_date_to=(
+                bid_status_revision.effective.date_to.isoformat() if bid_status_revision.effective.date_to else None
+            ),
+            status=BidStatusRepr.from_domain(bid_status_revision.status),
+        )
+
+    def to_domain(self) -> BidStatusRevision:
+        return BidStatusRevision(
+            id_=self.id,
+            effective=DateRange(
+                date_from=datetime.fromisoformat(self.effective_date_from),
+                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+            ),
+            status=self.status.to_domain(),
+        )
+
+
+@unique
+class BidStatusRepr(Enum):
+    SUBMITTED = "submitted"
+    FUNDED = "funded"
+    NOT_FUNDED = "not funded"
+    SPLIT = "split"
+    DELETED = "deleted"
+
+    @classmethod
+    def from_domain(cls, bid_status: BidStatus) -> BidStatusRepr:
+        return cls._members()[bid_status]
+
+    def to_domain(self) -> BidStatus:
+        return inverse_dict(self._members())[self]
+
+    @staticmethod
+    def _members() -> dict[BidStatus, BidStatusRepr]:
+        return {
+            BidStatus.SUBMITTED: BidStatusRepr.SUBMITTED,
+            BidStatus.FUNDED: BidStatusRepr.FUNDED,
+            BidStatus.NOT_FUNDED: BidStatusRepr.NOT_FUNDED,
+            BidStatus.SPLIT: BidStatusRepr.SPLIT,
+            BidStatus.DELETED: BidStatusRepr.DELETED,
+        }
 
 
 @dataclass(frozen=True)

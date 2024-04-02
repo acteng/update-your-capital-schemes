@@ -9,6 +9,8 @@ from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     AuthorityReview,
+    BidStatus,
+    BidStatusRevision,
     DataSource,
     FinancialRevision,
     FinancialType,
@@ -121,11 +123,31 @@ class TestSchemeApi:
             "name": "Wirral Package",
             "type": "construction",
             "funding_programme": "ATF4",
+            "bid_status_revisions": [],
             "financial_revisions": [],
             "milestone_revisions": [],
             "output_revisions": [],
             "authority_reviews": [],
         }
+
+    def test_get_scheme_bid_status_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding.update_bid_status(
+            BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1, 12), None), status=BidStatus.FUNDED)
+        )
+        schemes.add(scheme)
+
+        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+
+        assert response.json and response.json["id"] == 1
+        assert response.json["bid_status_revisions"] == [
+            {
+                "id": 2,
+                "effective_date_from": "2020-01-01T12:00:00",
+                "effective_date_to": None,
+                "status": "funded",
+            }
+        ]
 
     def test_get_scheme_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)

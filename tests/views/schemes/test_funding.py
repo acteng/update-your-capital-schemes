@@ -6,6 +6,8 @@ from werkzeug.datastructures import MultiDict
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
+    BidStatus,
+    BidStatusRevision,
     DataSource,
     FinancialRevision,
     FinancialType,
@@ -14,6 +16,8 @@ from schemes.domain.schemes import (
 )
 from schemes.views.schemes.data_source import DataSourceRepr
 from schemes.views.schemes.funding import (
+    BidStatusRepr,
+    BidStatusRevisionRepr,
     ChangeSpendToDateContext,
     ChangeSpendToDateForm,
     FinancialRevisionRepr,
@@ -249,6 +253,74 @@ class TestChangeSpendToDateForm:
         form.validate()
 
         assert "Spend to date must be £110,000 or less" in form.errors["amount"]
+
+
+class TestBidStatusRevisionRepr:
+    def test_from_domain(self) -> None:
+        bid_status_revision = BidStatusRevision(
+            id_=2, effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13)), status=BidStatus.FUNDED
+        )
+
+        bid_status_revision_repr = BidStatusRevisionRepr.from_domain(bid_status_revision)
+
+        assert bid_status_revision_repr == BidStatusRevisionRepr(
+            id=2,
+            effective_date_from="2020-01-01T12:00:00",
+            effective_date_to="2020-02-01T13:00:00",
+            status=BidStatusRepr.FUNDED,
+        )
+
+    def test_from_domain_when_no_effective_date_to(self) -> None:
+        bid_status_revision = BidStatusRevision(
+            id_=2, effective=DateRange(datetime(2020, 1, 1, 12), None), status=BidStatus.FUNDED
+        )
+
+        bid_status_revision_repr = BidStatusRevisionRepr.from_domain(bid_status_revision)
+
+        assert bid_status_revision_repr.effective_date_to is None
+
+    def test_to_domain(self) -> None:
+        bid_status_revision_repr = BidStatusRevisionRepr(
+            id=1,
+            effective_date_from="2020-01-01T12:00:00",
+            effective_date_to="2020-02-01T13:00:00",
+            status=BidStatusRepr.FUNDED,
+        )
+
+        bid_status_revision = bid_status_revision_repr.to_domain()
+
+        assert (
+            bid_status_revision.id == 1
+            and bid_status_revision.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13))
+            and bid_status_revision.status == BidStatus.FUNDED
+        )
+
+    def test_to_domain_when_no_effective_date_to(self) -> None:
+        bid_status_revision_repr = BidStatusRevisionRepr(
+            id=1, effective_date_from="2020-01-01T12:00:00", effective_date_to=None, status=BidStatusRepr.FUNDED
+        )
+
+        bid_status_revision = bid_status_revision_repr.to_domain()
+
+        assert bid_status_revision.effective.date_to is None
+
+
+@pytest.mark.parametrize(
+    "bid_status, bid_status_repr",
+    [
+        (BidStatus.SUBMITTED, "submitted"),
+        (BidStatus.FUNDED, "funded"),
+        (BidStatus.NOT_FUNDED, "not funded"),
+        (BidStatus.SPLIT, "split"),
+        (BidStatus.DELETED, "deleted"),
+    ],
+)
+class TestBidStatusRepr:
+    def test_from_domain(self, bid_status: BidStatus, bid_status_repr: str) -> None:
+        assert BidStatusRepr.from_domain(bid_status).value == bid_status_repr
+
+    def test_to_domain(self, bid_status: BidStatus, bid_status_repr: str) -> None:
+        assert BidStatusRepr(bid_status_repr).to_domain() == bid_status
 
 
 class TestFinancialRevisionRepr:

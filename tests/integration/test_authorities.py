@@ -9,6 +9,8 @@ from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     AuthorityReview,
+    BidStatus,
+    BidStatusRevision,
     DataSource,
     FinancialRevision,
     FinancialType,
@@ -136,6 +138,37 @@ class TestAuthoritiesApi:
             and scheme1.funding_programme == FundingProgramme.ATF4
         )
         assert scheme2 and scheme2.id == 2 and scheme2.name == "School Streets" and scheme2.authority_id == 1
+
+    def test_add_schemes_bid_status_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        response = client.post(
+            "/authorities/1/schemes",
+            headers={"Authorization": "API-Key boardman"},
+            json=[
+                {
+                    "id": 1,
+                    "name": "Wirral Package",
+                    "bid_status_revisions": [
+                        {
+                            "id": 2,
+                            "effective_date_from": "2020-01-01T12:00:00",
+                            "effective_date_to": None,
+                            "status": "funded",
+                        }
+                    ],
+                },
+            ],
+        )
+
+        assert response.status_code == 201
+        scheme1 = schemes.get(1)
+        assert scheme1 and scheme1.id == 1
+        bid_status_revision1: BidStatusRevision
+        (bid_status_revision1,) = scheme1.funding.bid_status_revisions
+        assert (
+            bid_status_revision1.id == 2
+            and bid_status_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
+            and bid_status_revision1.status == BidStatus.FUNDED
+        )
 
     def test_add_schemes_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(

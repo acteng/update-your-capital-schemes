@@ -40,10 +40,27 @@ class CapitalSchemeEntity(Base):
     )
     scheme_type_id: Mapped[int | None]
     funding_programme_id: Mapped[int | None]
+    capital_scheme_bid_statuses: Mapped[list[CapitalSchemeBidStatusEntity]] = relationship()
     capital_scheme_financials: Mapped[list[CapitalSchemeFinancialEntity]] = relationship()
     capital_scheme_milestones: Mapped[list[CapitalSchemeMilestoneEntity]] = relationship()
     capital_scheme_interventions: Mapped[list[CapitalSchemeInterventionEntity]] = relationship()
     capital_scheme_authority_reviews: Mapped[list[CapitalSchemeAuthorityReviewEntity]] = relationship()
+
+
+class CapitalSchemeBidStatusEntity(Base):
+    __tablename__ = "capital_scheme_bid_status"
+    __table_args__ = {"schema": "capital_scheme"}
+
+    capital_scheme_bid_status_id: Mapped[int] = mapped_column(primary_key=True)
+    capital_scheme_id = mapped_column(
+        ForeignKey(
+            "capital_scheme.capital_scheme.capital_scheme_id", name="capital_scheme_bid_status_capital_scheme_id_fkey"
+        ),
+        nullable=False,
+    )
+    bid_status_id: Mapped[int]
+    effective_date_from: Mapped[datetime]
+    effective_date_to: Mapped[datetime | None]
 
 
 class CapitalSchemeFinancialEntity(Base):

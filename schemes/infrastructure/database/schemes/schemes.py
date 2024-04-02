@@ -6,6 +6,7 @@ from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     AuthorityReview,
+    BidStatusRevision,
     FinancialRevision,
     FundingProgramme,
     MilestoneRevision,
@@ -16,13 +17,17 @@ from schemes.domain.schemes import (
 )
 from schemes.infrastructure.database import (
     CapitalSchemeAuthorityReviewEntity,
+    CapitalSchemeBidStatusEntity,
     CapitalSchemeEntity,
     CapitalSchemeFinancialEntity,
     CapitalSchemeInterventionEntity,
     CapitalSchemeMilestoneEntity,
 )
 from schemes.infrastructure.database.schemes.data_source import DataSourceMapper
-from schemes.infrastructure.database.schemes.funding import FinancialTypeMapper
+from schemes.infrastructure.database.schemes.funding import (
+    BidStatusMapper,
+    FinancialTypeMapper,
+)
 from schemes.infrastructure.database.schemes.milestones import MilestoneMapper
 from schemes.infrastructure.database.schemes.observations import ObservationTypeMapper
 from schemes.infrastructure.database.schemes.outputs import OutputTypeMeasureMapper
@@ -34,6 +39,7 @@ class DatabaseSchemeRepository(SchemeRepository):
         self._engine = engine
         self._scheme_type_mapper = SchemeTypeMapper()
         self._funding_programme_mapper = FundingProgrammeMapper()
+        self._bid_status_mapper = BidStatusMapper()
         self._milestone_mapper = MilestoneMapper()
         self._observation_type_mapper = ObservationTypeMapper()
         self._financial_type_mapper = FinancialTypeMapper()
@@ -51,6 +57,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             session.execute(delete(CapitalSchemeInterventionEntity))
             session.execute(delete(CapitalSchemeMilestoneEntity))
             session.execute(delete(CapitalSchemeFinancialEntity))
+            session.execute(delete(CapitalSchemeBidStatusEntity))
             session.execute(delete(CapitalSchemeEntity))
             session.commit()
 
@@ -86,6 +93,10 @@ class DatabaseSchemeRepository(SchemeRepository):
             bid_submitting_authority_id=scheme.authority_id,
             scheme_type_id=self._scheme_type_mapper.to_id(scheme.type),
             funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
+            capital_scheme_bid_statuses=[
+                self._capital_scheme_bid_status_from_domain(bid_status_revision)
+                for bid_status_revision in scheme.funding.bid_status_revisions
+            ],
             capital_scheme_financials=[
                 self._capital_scheme_financial_from_domain(financial_revision)
                 for financial_revision in scheme.funding.financial_revisions
@@ -113,6 +124,9 @@ class DatabaseSchemeRepository(SchemeRepository):
         scheme.type = self._scheme_type_mapper.to_domain(capital_scheme.scheme_type_id)
         scheme.funding_programme = self._funding_programme_mapper.to_domain(capital_scheme.funding_programme_id)
 
+        for capital_scheme_bid_status in capital_scheme.capital_scheme_bid_statuses:
+            scheme.funding.update_bid_status(self._capital_scheme_bid_status_to_domain(capital_scheme_bid_status))
+
         for capital_scheme_financial in capital_scheme.capital_scheme_financials:
             scheme.funding.update_financial(self._capital_scheme_financial_to_domain(capital_scheme_financial))
 
@@ -128,6 +142,27 @@ class DatabaseSchemeRepository(SchemeRepository):
             )
 
         return scheme
+
+    def _capital_scheme_bid_status_from_domain(
+        self, bid_status_revision: BidStatusRevision
+    ) -> CapitalSchemeBidStatusEntity:
+        return CapitalSchemeBidStatusEntity(
+            capital_scheme_bid_status_id=bid_status_revision.id,
+            effective_date_from=bid_status_revision.effective.date_from,
+            effective_date_to=bid_status_revision.effective.date_to,
+            bid_status_id=self._bid_status_mapper.to_id(bid_status_revision.status),
+        )
+
+    def _capital_scheme_bid_status_to_domain(
+        self, capital_scheme_bid_status: CapitalSchemeBidStatusEntity
+    ) -> BidStatusRevision:
+        return BidStatusRevision(
+            id_=capital_scheme_bid_status.capital_scheme_bid_status_id,
+            effective=DateRange(
+                capital_scheme_bid_status.effective_date_from, capital_scheme_bid_status.effective_date_to
+            ),
+            status=self._bid_status_mapper.to_domain(capital_scheme_bid_status.bid_status_id),
+        )
 
     def _capital_scheme_financial_from_domain(
         self, financial_revision: FinancialRevision

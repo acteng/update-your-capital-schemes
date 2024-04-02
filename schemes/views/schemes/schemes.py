@@ -34,6 +34,7 @@ from schemes.infrastructure.clock import Clock
 from schemes.views.auth.api_key import api_key_auth
 from schemes.views.auth.bearer import bearer_auth
 from schemes.views.schemes.funding import (
+    BidStatusRevisionRepr,
     ChangeSpendToDateContext,
     ChangeSpendToDateForm,
     FinancialRevisionRepr,
@@ -73,7 +74,7 @@ def index(
     reporting_window = reporting_window_service.get_by_date(now)
     authority = authorities.get(user.authority_id)
     assert authority
-    authority_schemes = schemes.get_by_authority(authority.id)
+    authority_schemes = [scheme for scheme in schemes.get_by_authority(authority.id) if scheme.is_updateable]
 
     context = SchemesContext.from_domain(now, reporting_window, authority, authority_schemes)
     return render_template("schemes.html", **as_shallow_dict(context))
@@ -362,6 +363,7 @@ class SchemeRepr:
     name: str
     type: SchemeTypeRepr | None = None
     funding_programme: FundingProgrammeRepr | None = None
+    bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
     output_revisions: list[OutputRevisionRepr] = field(default_factory=list)
@@ -376,6 +378,10 @@ class SchemeRepr:
             funding_programme=(
                 FundingProgrammeRepr.from_domain(scheme.funding_programme) if scheme.funding_programme else None
             ),
+            bid_status_revisions=[
+                BidStatusRevisionRepr.from_domain(bid_status_revision)
+                for bid_status_revision in scheme.funding.bid_status_revisions
+            ],
             financial_revisions=[
                 FinancialRevisionRepr.from_domain(financial_revision)
                 for financial_revision in scheme.funding.financial_revisions
@@ -397,6 +403,9 @@ class SchemeRepr:
         scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
         scheme.type = self.type.to_domain() if self.type else None
         scheme.funding_programme = self.funding_programme.to_domain() if self.funding_programme else None
+
+        for bid_status_revision_repr in self.bid_status_revisions:
+            scheme.funding.update_bid_status(bid_status_revision_repr.to_domain())
 
         for financial_revision_repr in self.financial_revisions:
             scheme.funding.update_financial(financial_revision_repr.to_domain())

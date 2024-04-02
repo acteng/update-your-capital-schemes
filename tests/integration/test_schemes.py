@@ -7,6 +7,7 @@ from flask.testing import FlaskClient
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import (
     AuthorityReview,
+    BidStatus,
     DataSource,
     FundingProgramme,
     Scheme,
@@ -14,6 +15,7 @@ from schemes.domain.schemes import (
 )
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
+from tests.integration.builders import build_scheme
 from tests.integration.pages import SchemesPage
 
 
@@ -61,7 +63,7 @@ class TestSchemes:
         expected_notification_banner: str,
     ) -> None:
         clock.now = now
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -95,9 +97,10 @@ class TestSchemes:
 
     def test_schemes_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(
-            Scheme(id_=1, name="Wirral Package", authority_id=1),
-            Scheme(id_=2, name="School Streets", authority_id=1),
-            Scheme(id_=3, name="Hospital Fields Road", authority_id=2),
+            build_scheme(id_=1, name="Wirral Package", authority_id=1),
+            build_scheme(id_=2, name="School Streets", authority_id=1),
+            build_scheme(id_=3, name="Runcorn Busway", authority_id=1, bid_status=BidStatus.SUBMITTED),
+            build_scheme(id_=4, name="Hospital Fields Road", authority_id=2),
         )
 
         schemes_page = SchemesPage.open(client)
@@ -107,7 +110,7 @@ class TestSchemes:
         assert not schemes_page.is_no_schemes_message_visible
 
     def test_schemes_shows_minimal_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         schemes_page = SchemesPage.open(client)
 
@@ -123,7 +126,7 @@ class TestSchemes:
         ]
 
     def test_schemes_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding_programme = FundingProgramme.ATF3
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
@@ -147,7 +150,7 @@ class TestSchemes:
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
         clock.now = datetime(2023, 4, 24)
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2023, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -159,7 +162,7 @@ class TestSchemes:
         assert [row.needs_review for row in schemes_page.schemes] == [True]
 
     def test_scheme_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         schemes_page = SchemesPage.open(client)
 

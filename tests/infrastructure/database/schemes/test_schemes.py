@@ -9,6 +9,8 @@ from schemes.domain.authorities import Authority
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     AuthorityReview,
+    BidStatus,
+    BidStatusRevision,
     DataSource,
     FinancialRevision,
     FinancialType,
@@ -23,6 +25,7 @@ from schemes.domain.schemes import (
 )
 from schemes.infrastructure.database import (
     CapitalSchemeAuthorityReviewEntity,
+    CapitalSchemeBidStatusEntity,
     CapitalSchemeEntity,
     CapitalSchemeFinancialEntity,
     CapitalSchemeInterventionEntity,
@@ -76,6 +79,38 @@ class TestDatabaseSchemeRepository:
             row2.capital_scheme_id == 2
             and row2.scheme_name == "School Streets"
             and row2.bid_submitting_authority_id == 1
+        )
+
+    def test_add_schemes_bid_status_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1.funding.update_bid_statuses(
+            BidStatusRevision(
+                id_=2, effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)), status=BidStatus.SUBMITTED
+            ),
+            BidStatusRevision(id_=3, effective=DateRange(datetime(2020, 2, 1), None), status=BidStatus.FUNDED),
+        )
+
+        schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
+
+        row1: CapitalSchemeBidStatusEntity
+        row2: CapitalSchemeBidStatusEntity
+        with Session(engine) as session:
+            row1, row2 = session.scalars(
+                select(CapitalSchemeBidStatusEntity).order_by(CapitalSchemeBidStatusEntity.capital_scheme_bid_status_id)
+            )
+        assert (
+            row1.capital_scheme_bid_status_id == 2
+            and row1.capital_scheme_id == 1
+            and row1.effective_date_from == datetime(2020, 1, 1)
+            and row1.effective_date_to == datetime(2020, 2, 1)
+            and row1.bid_status_id == 1
+        )
+        assert (
+            row2.capital_scheme_bid_status_id == 3
+            and row2.capital_scheme_id == 1
+            and row2.effective_date_from == datetime(2020, 2, 1)
+            and row2.effective_date_to is None
+            and row2.bid_status_id == 2
         )
 
     def test_add_schemes_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
@@ -274,6 +309,50 @@ class TestDatabaseSchemeRepository:
             and scheme.authority_id == 1
             and scheme.type == SchemeType.DEVELOPMENT
             and scheme.funding_programme == FundingProgramme.ATF3
+        )
+
+    def test_get_scheme_bid_status_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
+        with Session(engine) as session:
+            session.add_all(
+                [
+                    CapitalSchemeEntity(
+                        capital_scheme_id=1,
+                        scheme_name="Wirral Package",
+                        bid_submitting_authority_id=1,
+                    ),
+                    CapitalSchemeBidStatusEntity(
+                        capital_scheme_bid_status_id=2,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=datetime(2020, 2, 1),
+                        bid_status_id=1,
+                    ),
+                    CapitalSchemeBidStatusEntity(
+                        capital_scheme_bid_status_id=3,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 2, 1),
+                        effective_date_to=None,
+                        bid_status_id=2,
+                    ),
+                ]
+            )
+            session.commit()
+
+        scheme = schemes.get(1)
+
+        assert scheme
+        bid_status_revision1: BidStatusRevision
+        bid_status_revision2: BidStatusRevision
+        bid_status_revision1, bid_status_revision2 = scheme.funding.bid_status_revisions
+        assert (
+            bid_status_revision1.id == 2
+            and bid_status_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
+            and bid_status_revision1.status == BidStatus.SUBMITTED
+        )
+        assert (
+            bid_status_revision2.id == 3
+            and bid_status_revision2.effective == DateRange(datetime(2020, 2, 1), None)
+            and bid_status_revision2.status == BidStatus.FUNDED
         )
 
     def test_get_scheme_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
@@ -525,6 +604,48 @@ class TestDatabaseSchemeRepository:
         )
         assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme1.authority_id == 1
 
+    def test_get_all_schemes_bid_status_revisions_by_authority(
+        self, schemes: DatabaseSchemeRepository, engine: Engine
+    ) -> None:
+        with Session(engine) as session:
+            session.add_all(
+                [
+                    CapitalSchemeEntity(
+                        capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
+                    ),
+                    CapitalSchemeBidStatusEntity(
+                        capital_scheme_bid_status_id=3,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
+                        bid_status_id=2,
+                    ),
+                    CapitalSchemeEntity(
+                        capital_scheme_id=2, scheme_name="School Streets", bid_submitting_authority_id=2
+                    ),
+                    CapitalSchemeBidStatusEntity(
+                        capital_scheme_bid_status_id=4,
+                        capital_scheme_id=2,
+                        effective_date_from=datetime(2020, 2, 1),
+                        effective_date_to=None,
+                        bid_status_id=2,
+                    ),
+                ]
+            )
+            session.commit()
+
+        scheme1: Scheme
+        (scheme1,) = schemes.get_by_authority(1)
+
+        assert scheme1.id == 1
+        bid_status_revision1: BidStatusRevision
+        (bid_status_revision1,) = scheme1.funding.bid_status_revisions
+        assert (
+            bid_status_revision1.id == 3
+            and bid_status_revision1.effective == DateRange(datetime(2020, 1, 1), None)
+            and bid_status_revision1.status == BidStatus.FUNDED
+        )
+
     def test_get_all_schemes_financial_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, engine: Engine
     ) -> None:
@@ -766,6 +887,12 @@ class TestDatabaseSchemeRepository:
                 [
                     CapitalSchemeEntity(
                         capital_scheme_id=1, scheme_name="Wirral Package", bid_submitting_authority_id=1
+                    ),
+                    CapitalSchemeBidStatusEntity(
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
+                        bid_status_id=2,
                     ),
                     CapitalSchemeFinancialEntity(
                         capital_scheme_id=1,

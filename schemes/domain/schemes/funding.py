@@ -9,7 +9,26 @@ from schemes.domain.schemes.data_source import DataSource
 
 class SchemeFunding:
     def __init__(self) -> None:
+        self._bid_status_revisions: list[BidStatusRevision] = []
         self._financial_revisions: list[FinancialRevision] = []
+
+    @property
+    def bid_status_revisions(self) -> list[BidStatusRevision]:
+        return list(self._bid_status_revisions)
+
+    def update_bid_status(self, bid_status_revision: BidStatusRevision) -> None:
+        self._bid_status_revisions.append(bid_status_revision)
+
+    def update_bid_statuses(self, *bid_status_revisions: BidStatusRevision) -> None:
+        for bid_status_revision in bid_status_revisions:
+            self.update_bid_status(bid_status_revision)
+
+    @property
+    def bid_status(self) -> BidStatus | None:
+        current_bid_status = next(
+            (revision for revision in self.bid_status_revisions if revision.effective.date_to is None), None
+        )
+        return current_bid_status.status if current_bid_status else None
 
     @property
     def financial_revisions(self) -> list[FinancialRevision]:
@@ -90,6 +109,23 @@ class SchemeFunding:
     def allocation_still_to_spend(self) -> int:
         spend_to_date = self.spend_to_date or 0
         return self.adjusted_funding_allocation - spend_to_date
+
+
+class BidStatusRevision:
+    # TODO: domain identifier should be mandatory for transient instances
+    def __init__(self, id_: int | None, effective: DateRange, status: BidStatus):
+        self.id = id_
+        self.effective = effective
+        self.status = status
+
+
+@unique
+class BidStatus(Enum):
+    SUBMITTED = auto()
+    FUNDED = auto()
+    NOT_FUNDED = auto()
+    SPLIT = auto()
+    DELETED = auto()
 
 
 class FinancialRevision:

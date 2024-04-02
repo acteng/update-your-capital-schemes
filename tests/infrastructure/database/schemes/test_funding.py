@@ -1,7 +1,28 @@
 import pytest
 
-from schemes.domain.schemes import FinancialType
-from schemes.infrastructure.database.schemes.funding import FinancialTypeMapper
+from schemes.domain.schemes import BidStatus, FinancialType
+from schemes.infrastructure.database.schemes.funding import (
+    BidStatusMapper,
+    FinancialTypeMapper,
+)
+
+
+@pytest.mark.parametrize(
+    "bid_status, id_",
+    [
+        (BidStatus.SUBMITTED, 1),
+        (BidStatus.FUNDED, 2),
+        (BidStatus.NOT_FUNDED, 3),
+        (BidStatus.SPLIT, 4),
+        (BidStatus.DELETED, 5),
+    ],
+)
+class TestBidStatusMapper:
+    def test_to_id(self, bid_status: BidStatus, id_: int) -> None:
+        assert BidStatusMapper().to_id(bid_status) == id_
+
+    def test_to_domain(self, bid_status: BidStatus, id_: int) -> None:
+        assert BidStatusMapper().to_domain(id_) == bid_status
 
 
 @pytest.mark.parametrize(

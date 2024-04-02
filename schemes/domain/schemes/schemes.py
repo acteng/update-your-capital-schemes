@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum, auto, unique
 
-from schemes.domain.schemes.funding import SchemeFunding
+from schemes.domain.schemes.funding import BidStatus, SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
 from schemes.domain.schemes.reviews import SchemeReviews
@@ -39,6 +39,10 @@ class Scheme:
     @property
     def reviews(self) -> SchemeReviews:
         return self._reviews
+
+    @property
+    def is_updateable(self) -> bool:
+        return self.funding.bid_status == BidStatus.FUNDED
 
 
 @unique

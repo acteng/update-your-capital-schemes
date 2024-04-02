@@ -33,13 +33,13 @@ from tests.integration.pages import SchemePage
 class TestScheme:
     @pytest.fixture(name="auth", autouse=True)
     def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
-        users.add(User(email="boardman@example.com", authority_id=1))
+        authorities.add(Authority(id_="LIV", name="Liverpool City Region Combined Authority"))
+        users.add(User(email="boardman@example.com", authority_id="LIV"))
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
     def test_scheme_shows_html(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
         chromium_default_accept = (
             "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
         )
@@ -49,21 +49,21 @@ class TestScheme:
         assert response.status_code == 200 and response.content_type == "text/html; charset=utf-8"
 
     def test_scheme_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
 
         scheme_page = SchemePage.open(client, id_=1)
 
         assert scheme_page.back_url == "/schemes"
 
     def test_scheme_shows_authority(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
 
         scheme_page = SchemePage.open(client, id_=1)
 
         assert scheme_page.authority == "Liverpool City Region Combined Authority"
 
     def test_scheme_shows_name(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
 
         scheme_page = SchemePage.open(client, id_=1)
 
@@ -85,7 +85,7 @@ class TestScheme:
         expected_needs_review: bool,
     ) -> None:
         clock.now = datetime(2023, 4, 24)
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
         )
@@ -98,8 +98,8 @@ class TestScheme:
     def test_cannot_scheme_when_different_authority(
         self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+        authorities.add(Authority(id_="WYO", name="West Yorkshire Combined Authority"))
+        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", authority_id="WYO"))
 
         forbidden_page = SchemePage.open_when_unauthorized(client, id_=2)
 
@@ -111,7 +111,7 @@ class TestScheme:
         assert not_found_page.is_visible and not_found_page.is_not_found
 
     def test_cannot_scheme_when_not_updateable_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1, bid_status=BidStatus.SUBMITTED))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV", bid_status=BidStatus.SUBMITTED))
 
         not_found_page = SchemePage.open_when_not_found(client, id_=1)
 
@@ -128,7 +128,7 @@ class TestSchemeApi:
             Scheme(
                 id_=1,
                 name="Wirral Package",
-                authority_id=1,
+                authority_id="LIV",
                 type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             )
@@ -152,7 +152,7 @@ class TestSchemeApi:
         scheme = build_scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=1,
+            authority_id="LIV",
             bid_status_revisions=[
                 BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1, 12), None), status=BidStatus.FUNDED)
             ],
@@ -172,7 +172,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=2,
@@ -199,7 +199,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_milestone_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=2,
@@ -228,7 +228,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_output_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme.outputs.update_output(
             OutputRevision(
                 id_=2,
@@ -256,7 +256,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_authority_reviews(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1, 12), source=DataSource.ATF4_BID)
         )
@@ -274,14 +274,14 @@ class TestSchemeApi:
         ]
 
     def test_cannot_get_scheme_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json"})
 
         assert response.status_code == 401
 
     def test_cannot_get_scheme_when_incorrect_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key obree"})
 
@@ -290,7 +290,7 @@ class TestSchemeApi:
 
 class TestSchemeApiWhenDisabled:
     def test_cannot_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
 

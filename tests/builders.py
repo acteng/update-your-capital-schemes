@@ -14,7 +14,7 @@ from schemes.domain.schemes import (
 def build_scheme(
     id_: int,
     name: str,
-    authority_id: int,
+    authority_id: str,
     type_: SchemeType = SchemeType.CONSTRUCTION,
     funding_programme: FundingProgramme = FundingProgrammes.ATF2,
     bid_status: BidStatus = BidStatus.FUNDED,

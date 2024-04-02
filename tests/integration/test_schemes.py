@@ -25,8 +25,8 @@ class TestSchemes:
 
     @pytest.fixture(name="auth", autouse=True)
     def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
-        users.add(User(email="boardman@example.com", authority_id=1))
+        authorities.add(Authority(id_="LIV", name="Liverpool City Region Combined Authority"))
+        users.add(User(email="boardman@example.com", authority_id="LIV"))
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
@@ -62,7 +62,7 @@ class TestSchemes:
         expected_notification_banner: str,
     ) -> None:
         clock.now = now
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -79,7 +79,7 @@ class TestSchemes:
         self, client: FlaskClient, clock: Clock, schemes: SchemeRepository
     ) -> None:
         clock.now = datetime(2020, 3, 1)
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -96,10 +96,10 @@ class TestSchemes:
 
     def test_schemes_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(
-            build_scheme(id_=1, name="Wirral Package", authority_id=1),
-            build_scheme(id_=2, name="School Streets", authority_id=1),
-            build_scheme(id_=3, name="Runcorn Busway", authority_id=1, bid_status=BidStatus.SUBMITTED),
-            build_scheme(id_=4, name="Hospital Fields Road", authority_id=2),
+            build_scheme(id_=1, name="Wirral Package", authority_id="LIV"),
+            build_scheme(id_=2, name="School Streets", authority_id="LIV"),
+            build_scheme(id_=3, name="Runcorn Busway", authority_id="LIV", bid_status=BidStatus.SUBMITTED),
+            build_scheme(id_=4, name="Hospital Fields Road", authority_id="WYO"),
         )
 
         schemes_page = SchemesPage.open(client)
@@ -110,7 +110,7 @@ class TestSchemes:
 
     def test_schemes_shows_minimal_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(
-            build_scheme(id_=1, name="Wirral Package", authority_id=1, funding_programme=FundingProgrammes.ATF3)
+            build_scheme(id_=1, name="Wirral Package", authority_id="LIV", funding_programme=FundingProgrammes.ATF3)
         )
 
         schemes_page = SchemesPage.open(client)
@@ -127,7 +127,9 @@ class TestSchemes:
         ]
 
     def test_schemes_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1, funding_programme=FundingProgrammes.ATF3)
+        scheme = build_scheme(
+            id_=1, name="Wirral Package", authority_id="LIV", funding_programme=FundingProgrammes.ATF3
+        )
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
         )
@@ -150,7 +152,7 @@ class TestSchemes:
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
         clock.now = datetime(2023, 4, 24)
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2023, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -162,7 +164,7 @@ class TestSchemes:
         assert [row.needs_review for row in schemes_page.schemes] == [True]
 
     def test_scheme_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
 
         schemes_page = SchemesPage.open(client)
 
@@ -182,7 +184,7 @@ class TestSchemesApi:
         return dict(config) | {"API_KEY": "boardman"}
 
     def test_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 
@@ -190,7 +192,7 @@ class TestSchemesApi:
         assert not schemes.get(1)
 
     def test_cannot_clear_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
 
         response = client.delete("/schemes")
 
@@ -200,7 +202,7 @@ class TestSchemesApi:
     def test_cannot_clear_schemes_when_incorrect_credentials(
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key obree"})
 
@@ -210,7 +212,7 @@ class TestSchemesApi:
 
 class TestSchemesApiWhenDisabled:
     def test_cannot_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id="LIV"))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 

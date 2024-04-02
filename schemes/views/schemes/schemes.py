@@ -410,7 +410,7 @@ class SchemeRepr:
             ],
         )
 
-    def to_domain(self, authority_id: int) -> Scheme:
+    def to_domain(self, authority_id: str) -> Scheme:
         scheme = Scheme(
             id_=self.id,
             name=self.name,

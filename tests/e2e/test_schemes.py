@@ -16,10 +16,10 @@ class TestAuthenticated:
 
     def test_schemes(self, app_client: AppClient, page: Page) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
-        app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
-        app_client.add_users(1, UserRepr(email="boardman@example.com"))
+        app_client.add_authorities(AuthorityRepr(id="LIV", name="Liverpool City Region Combined Authority"))
+        app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
-            1,
+            "LIV",
             build_scheme(
                 id_=1,
                 name="Wirral Package",
@@ -60,17 +60,17 @@ class TestAuthenticated:
         assert forbidden_page.is_visible
 
     def test_scheme_shows_scheme(self, app_client: AppClient, page: Page) -> None:
-        app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
-        app_client.add_users(1, UserRepr(email="boardman@example.com"))
-        app_client.add_schemes(1, build_scheme(id_=1, name="Wirral Package"))
+        app_client.add_authorities(AuthorityRepr(id="LIV", name="Liverpool City Region Combined Authority"))
+        app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
+        app_client.add_schemes("LIV", build_scheme(id_=1, name="Wirral Package"))
 
         scheme_page = SchemesPage.open(page).schemes["ATE00001"].open()
 
         assert scheme_page.name == "Wirral Package"
 
     def test_header_sign_out(self, app_client: AppClient, page: Page) -> None:
-        app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
-        app_client.add_users(1, UserRepr(email="boardman@example.com"))
+        app_client.add_authorities(AuthorityRepr(id="LIV", name="Liverpool City Region Combined Authority"))
+        app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         schemes_page = SchemesPage.open(page)
 
         start_page = schemes_page.header.sign_out()
@@ -79,10 +79,10 @@ class TestAuthenticated:
 
     def test_schemes_shows_update_schemes_notification(self, app_client: AppClient, page: Page) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
-        app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
-        app_client.add_users(1, UserRepr(email="boardman@example.com"))
+        app_client.add_authorities(AuthorityRepr(id="LIV", name="Liverpool City Region Combined Authority"))
+        app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
-            1,
+            "LIV",
             build_scheme(
                 id_=1,
                 name="Wirral Package",

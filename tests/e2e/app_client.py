@@ -23,14 +23,14 @@ class AppClient:
         response = self._session.post(f"{self._url}/authorities", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
-    def add_users(self, authority_id: int, *users: UserRepr) -> None:
+    def add_users(self, authority_id: str, *users: UserRepr) -> None:
         json = [asdict(user) for user in users]
         response = self._session.post(
             f"{self._url}/authorities/{authority_id}/users", json=json, timeout=self.DEFAULT_TIMEOUT
         )
         response.raise_for_status()
 
-    def add_schemes(self, authority_id: int, *schemes: SchemeRepr) -> None:
+    def add_schemes(self, authority_id: str, *schemes: SchemeRepr) -> None:
         json = [asdict(scheme) for scheme in schemes]
         response = self._session.post(
             f"{self._url}/authorities/{authority_id}/schemes", json=json, timeout=self.DEFAULT_TIMEOUT
@@ -60,7 +60,7 @@ class AppClient:
 
 @dataclass(frozen=True)
 class AuthorityRepr:
-    id: int
+    id: str
     name: str
 
 

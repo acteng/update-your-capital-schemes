@@ -10,7 +10,7 @@ from schemes.domain.schemes.reviews import SchemeReviews
 
 
 class Scheme:
-    def __init__(self, id_: int, name: str, authority_id: int, type_: SchemeType, funding_programme: FundingProgramme):
+    def __init__(self, id_: int, name: str, authority_id: str, type_: SchemeType, funding_programme: FundingProgramme):
         self.id = id_
         self.name = name
         self.authority_id = authority_id
@@ -86,7 +86,7 @@ class SchemeRepository:
     def get(self, id_: int) -> Scheme | None:
         raise NotImplementedError()
 
-    def get_by_authority(self, authority_id: int) -> list[Scheme]:
+    def get_by_authority(self, authority_id: str) -> list[Scheme]:
         raise NotImplementedError()
 
     def update(self, scheme: Scheme) -> None:

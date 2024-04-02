@@ -1,5 +1,5 @@
 class Authority:
-    def __init__(self, id_: int, name: str):
+    def __init__(self, id_: str, name: str):
         self.id = id_
         self.name = name
 
@@ -11,5 +11,5 @@ class AuthorityRepository:
     def clear(self) -> None:
         raise NotImplementedError()
 
-    def get(self, id_: int) -> Authority | None:
+    def get(self, id_: str) -> Authority | None:
         raise NotImplementedError()

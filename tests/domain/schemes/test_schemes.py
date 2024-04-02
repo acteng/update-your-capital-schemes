@@ -26,7 +26,7 @@ class TestScheme:
         scheme = Scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=2,
+            authority_id="LIV",
             type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
@@ -34,33 +34,33 @@ class TestScheme:
         assert (
             scheme.id == 1
             and scheme.name == "Wirral Package"
-            and scheme.authority_id == 2
+            and scheme.authority_id == "LIV"
             and scheme.type == SchemeType.CONSTRUCTION
             and scheme.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_get_reference(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
 
         assert scheme.reference == "ATE00001"
 
     def test_get_funding(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
 
         assert isinstance(scheme.funding, SchemeFunding)
 
     def test_get_milestones(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
 
         assert isinstance(scheme.milestones, SchemeMilestones)
 
     def test_get_outputs(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
 
         assert isinstance(scheme.outputs, SchemeOutputs)
 
     def test_get_reviews(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
 
         assert isinstance(scheme.reviews, SchemeReviews)
 
@@ -78,7 +78,7 @@ class TestScheme:
         scheme = build_scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=2,
+            authority_id="LIV",
             funding_programme=FundingProgrammes.ATF4,
             bid_status=bid_status,
         )
@@ -107,7 +107,7 @@ class TestScheme:
         scheme = build_scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=2,
+            authority_id="LIV",
             funding_programme=FundingProgrammes.ATF4,
             bid_status=BidStatus.FUNDED,
         )
@@ -137,7 +137,7 @@ class TestScheme:
         scheme = build_scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=2,
+            authority_id="LIV",
             funding_programme=funding_programme,
             bid_status=BidStatus.FUNDED,
         )
@@ -158,7 +158,7 @@ class TestScheme:
         scheme = build_scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=2,
+            authority_id="LIV",
             funding_programme=FundingProgrammes.ATF4,
             bid_status_revisions=[],
         )
@@ -179,7 +179,7 @@ class TestScheme:
         scheme = build_scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=2,
+            authority_id="LIV",
             funding_programme=FundingProgrammes.ATF4,
             bid_status=BidStatus.FUNDED,
         )
@@ -190,7 +190,7 @@ class TestScheme:
         scheme = build_scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=2,
+            authority_id="LIV",
             funding_programme=FundingProgrammes.ATF4,
             bid_status=BidStatus.FUNDED,
         )

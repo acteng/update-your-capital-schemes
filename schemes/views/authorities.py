@@ -29,10 +29,10 @@ def add(authorities: AuthorityRepository) -> Response:
     return Response(status=201)
 
 
-@bp.post("<int:authority_id>/users")
+@bp.post("<authority_id>/users")
 @api_key_auth
 @inject.autoparams("users")
-def add_users(users: UserRepository, authority_id: int) -> Response:
+def add_users(users: UserRepository, authority_id: str) -> Response:
     try:
         users_repr = fromlist(UserRepr, request.get_json())
     except UnknownJSONKey as error:
@@ -43,10 +43,10 @@ def add_users(users: UserRepository, authority_id: int) -> Response:
     return Response(status=201)
 
 
-@bp.post("<int:authority_id>/schemes")
+@bp.post("<authority_id>/schemes")
 @api_key_auth
 @inject.autoparams("schemes")
-def add_schemes(schemes: SchemeRepository, authority_id: int) -> Response:
+def add_schemes(schemes: SchemeRepository, authority_id: str) -> Response:
     try:
         schemes_repr = fromlist(SchemeRepr, request.get_json())
     except UnknownJSONKey as error:
@@ -67,7 +67,7 @@ def clear(authorities: AuthorityRepository) -> Response:
 
 @dataclass(frozen=True)
 class AuthorityRepr:
-    id: int
+    id: str
     name: str
 
     def to_domain(self) -> Authority:

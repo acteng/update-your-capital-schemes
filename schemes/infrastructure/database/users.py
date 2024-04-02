@@ -13,7 +13,7 @@ class DatabaseUserRepository(UserRepository):
 
     def add(self, *users: User) -> None:
         with Session(self._engine) as session:
-            session.add_all(UserEntity(email=user.email, authority_id=user.authority_id) for user in users)
+            session.add_all(UserEntity(email=user.email, authority_abbreviation=user.authority_id) for user in users)
             session.commit()
 
     def clear(self) -> None:
@@ -25,4 +25,4 @@ class DatabaseUserRepository(UserRepository):
         with Session(self._engine) as session:
             result = session.scalars(select(UserEntity).where(UserEntity.email == email))
             row = result.one_or_none()
-            return User(email=row.email, authority_id=row.authority_id) if row else None
+            return User(email=row.email, authority_id=row.authority_abbreviation) if row else None

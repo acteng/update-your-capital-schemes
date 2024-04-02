@@ -55,20 +55,20 @@ class TestDatabaseSchemeRepository:
     @pytest.fixture(name="authority", autouse=True)
     def authority_fixture(self, authorities: DatabaseAuthorityRepository) -> None:
         authorities.add(
-            Authority(id_=1, name="Liverpool City Region Combined Authority"),
-            Authority(id_=2, name="West Yorkshire Combined Authority"),
+            Authority(id_="LIV", name="Liverpool City Region Combined Authority"),
+            Authority(id_="WYO", name="West Yorkshire Combined Authority"),
         )
 
     def test_add_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         scheme1 = Scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=1,
+            authority_id="LIV",
             type_=SchemeType.DEVELOPMENT,
             funding_programme=FundingProgrammes.ATF3,
         )
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
+        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id="LIV"))
 
         row1: CapitalSchemeEntity
         row2: CapitalSchemeEntity
@@ -91,7 +91,7 @@ class TestDatabaseSchemeRepository:
         scheme1 = build_scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=1,
+            authority_id="LIV",
             bid_status_revisions=[
                 BidStatusRevision(
                     id_=2, effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)), status=BidStatus.SUBMITTED
@@ -100,7 +100,7 @@ class TestDatabaseSchemeRepository:
             ],
         )
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1, bid_status_revisions=[]))
+        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id="LIV", bid_status_revisions=[]))
 
         row1: CapitalSchemeBidStatusEntity
         row2: CapitalSchemeBidStatusEntity
@@ -124,7 +124,7 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_add_schemes_financial_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme1.funding.update_financials(
             FinancialRevision(
                 id_=2,
@@ -142,7 +142,7 @@ class TestDatabaseSchemeRepository:
             ),
         )
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
+        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id="LIV"))
 
         row1: CapitalSchemeFinancialEntity
         row2: CapitalSchemeFinancialEntity
@@ -170,7 +170,7 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_add_schemes_milestone_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme1.milestones.update_milestones(
             MilestoneRevision(
                 id_=2,
@@ -190,7 +190,7 @@ class TestDatabaseSchemeRepository:
             ),
         )
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
+        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id="LIV"))
 
         row1: CapitalSchemeMilestoneEntity
         row2: CapitalSchemeMilestoneEntity
@@ -220,7 +220,7 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_add_schemes_output_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme1.outputs.update_outputs(
             OutputRevision(
                 id_=3,
@@ -238,7 +238,7 @@ class TestDatabaseSchemeRepository:
             ),
         )
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
+        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id="LIV"))
 
         row1: CapitalSchemeInterventionEntity
         row2: CapitalSchemeInterventionEntity
@@ -268,13 +268,13 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_add_schemes_authority_reviews(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id="LIV")
         scheme1.reviews.update_authority_reviews(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
             AuthorityReview(id_=3, review_date=datetime(2020, 2, 1), source=DataSource.PULSE_6),
         )
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
+        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id="LIV"))
 
         row1: CapitalSchemeAuthorityReviewEntity
         row2: CapitalSchemeAuthorityReviewEntity
@@ -316,7 +316,7 @@ class TestDatabaseSchemeRepository:
             scheme
             and scheme.id == 1
             and scheme.name == "Wirral Package"
-            and scheme.authority_id == 1
+            and scheme.authority_id == "LIV"
             and scheme.type == SchemeType.DEVELOPMENT
             and scheme.funding_programme == FundingProgrammes.ATF3
         )
@@ -623,16 +623,16 @@ class TestDatabaseSchemeRepository:
 
         scheme1: Scheme
         scheme2: Scheme
-        scheme1, scheme2 = schemes.get_by_authority(1)
+        scheme1, scheme2 = schemes.get_by_authority("LIV")
 
         assert (
             scheme1.id == 1
             and scheme1.name == "Wirral Package"
-            and scheme1.authority_id == 1
+            and scheme1.authority_id == "LIV"
             and scheme1.type == SchemeType.DEVELOPMENT
             and scheme1.funding_programme == FundingProgrammes.ATF3
         )
-        assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme1.authority_id == 1
+        assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme1.authority_id == "LIV"
 
     def test_get_all_schemes_bid_status_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, engine: Engine
@@ -673,7 +673,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
 
         scheme1: Scheme
-        (scheme1,) = schemes.get_by_authority(1)
+        (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         bid_status_revision1: BidStatusRevision
@@ -727,7 +727,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
 
         scheme1: Scheme
-        (scheme1,) = schemes.get_by_authority(1)
+        (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         financial_revision1: FinancialRevision
@@ -803,7 +803,7 @@ class TestDatabaseSchemeRepository:
 
         scheme1: Scheme
         scheme2: Scheme
-        scheme1, scheme2 = schemes.get_by_authority(1)
+        scheme1, scheme2 = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         milestone_revision1: MilestoneRevision
@@ -888,7 +888,7 @@ class TestDatabaseSchemeRepository:
 
         scheme1: Scheme
         scheme2: Scheme
-        scheme1, scheme2 = schemes.get_by_authority(1)
+        scheme1, scheme2 = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         output_revision1: OutputRevision
@@ -948,7 +948,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
 
         scheme1: Scheme
-        (scheme1,) = schemes.get_by_authority(1)
+        (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         authority_review1: AuthorityReview

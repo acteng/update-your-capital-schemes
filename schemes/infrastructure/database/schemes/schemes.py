@@ -72,7 +72,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             row = result.one_or_none()
             return self._capital_scheme_to_domain(row) if row else None
 
-    def get_by_authority(self, authority_id: int) -> list[Scheme]:
+    def get_by_authority(self, authority_id: str) -> list[Scheme]:
         with Session(self._engine) as session:
             result = session.scalars(
                 select(CapitalSchemeEntity)

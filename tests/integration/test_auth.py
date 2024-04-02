@@ -16,7 +16,7 @@ class TestAuth:
         return dict(config) | {"GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
 
     def test_callback_logs_in(self, users: UserRepository, client: FlaskClient) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_id="LIV"))
         self._given_oidc_returns_token_response({"id_token": "jwt"})
         self._given_oidc_returns_user_info(UserInfo({"email": "boardman@example.com"}))
 
@@ -26,7 +26,7 @@ class TestAuth:
             assert session["user"] == UserInfo({"email": "boardman@example.com"}) and session["id_token"] == "jwt"
 
     def test_callback_redirects_to_schemes(self, users: UserRepository, client: FlaskClient) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_id="LIV"))
         self._given_oidc_returns_token_response({"id_token": "jwt"})
         self._given_oidc_returns_user_info(UserInfo({"email": "boardman@example.com"}))
 
@@ -35,7 +35,7 @@ class TestAuth:
         assert response.status_code == 302 and response.location == "/schemes"
 
     def test_callback_when_unauthorized_returns_forbidden(self, users: UserRepository, client: FlaskClient) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_id="LIV"))
         self._given_oidc_returns_token_response({"id_token": "jwt"})
         self._given_oidc_returns_user_info(UserInfo({"email": "obree@example.com"}))
 

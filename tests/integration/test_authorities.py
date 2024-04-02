@@ -36,24 +36,24 @@ class TestAuthoritiesApi:
             "/authorities",
             headers={"Authorization": "API-Key boardman"},
             json=[
-                {"id": 1, "name": "Liverpool City Region Combined Authority"},
-                {"id": 2, "name": "West Yorkshire Combined Authority"},
+                {"id": "LIV", "name": "Liverpool City Region Combined Authority"},
+                {"id": "WYO", "name": "West Yorkshire Combined Authority"},
             ],
         )
 
         assert response.status_code == 201
-        authority1 = authorities.get(1)
-        authority2 = authorities.get(2)
-        assert authority1 and authority1.id == 1 and authority1.name == "Liverpool City Region Combined Authority"
-        assert authority2 and authority2.id == 2 and authority2.name == "West Yorkshire Combined Authority"
+        authority1 = authorities.get("LIV")
+        authority2 = authorities.get("WYO")
+        assert authority1 and authority1.id == "LIV" and authority1.name == "Liverpool City Region Combined Authority"
+        assert authority2 and authority2.id == "WYO" and authority2.name == "West Yorkshire Combined Authority"
 
     def test_cannot_add_authorities_when_no_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
     ) -> None:
-        response = client.post("/authorities", json=[{"id": 1, "name": "Liverpool City Region Combined Authority"}])
+        response = client.post("/authorities", json=[{"id": "LIV", "name": "Liverpool City Region Combined Authority"}])
 
         assert response.status_code == 401
-        assert not authorities.get(1)
+        assert not authorities.get("LIV")
 
     def test_cannot_add_authorities_when_incorrect_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
@@ -61,11 +61,11 @@ class TestAuthoritiesApi:
         response = client.post(
             "/authorities",
             headers={"Authorization": "API-Key obree"},
-            json=[{"id": 1, "name": "Liverpool City Region Combined Authority"}],
+            json=[{"id": "LIV", "name": "Liverpool City Region Combined Authority"}],
         )
 
         assert response.status_code == 401
-        assert not authorities.get(1)
+        assert not authorities.get("LIV")
 
     def test_cannot_add_authorities_with_invalid_repr(
         self, authorities: AuthorityRepository, client: FlaskClient
@@ -73,15 +73,15 @@ class TestAuthoritiesApi:
         response = client.post(
             "/authorities",
             headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "name": "Liverpool City Region Combined Authority", "foo": "bar"}],
+            json=[{"id": "LIV", "name": "Liverpool City Region Combined Authority", "foo": "bar"}],
         )
 
         assert response.status_code == 400
-        assert not authorities.get(1)
+        assert not authorities.get("LIV")
 
     def test_add_users(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/users",
+            "/authorities/LIV/users",
             headers={"Authorization": "API-Key boardman"},
             json=[{"email": "boardman@example.com"}, {"email": "obree@example.com"}],
         )
@@ -89,18 +89,20 @@ class TestAuthoritiesApi:
         assert response.status_code == 201
         user1 = users.get_by_email("boardman@example.com")
         user2 = users.get_by_email("obree@example.com")
-        assert user1 and user1.email == "boardman@example.com" and user1.authority_id == 1
-        assert user2 and user2.email == "obree@example.com" and user2.authority_id == 1
+        assert user1 and user1.email == "boardman@example.com" and user1.authority_id == "LIV"
+        assert user2 and user2.email == "obree@example.com" and user2.authority_id == "LIV"
 
     def test_cannot_add_users_when_no_credentials(self, users: UserRepository, client: FlaskClient) -> None:
-        response = client.post("/authorities/1/users", json=[{"email": "boardman@example.com"}])
+        response = client.post("/authorities/LIV/users", json=[{"email": "boardman@example.com"}])
 
         assert response.status_code == 401
         assert not users.get_by_email("boardman@example.com")
 
     def test_cannot_add_users_when_incorrect_credentials(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/users", headers={"Authorization": "API-Key obree"}, json=[{"email": "boardman@example.com"}]
+            "/authorities/LIV/users",
+            headers={"Authorization": "API-Key obree"},
+            json=[{"email": "boardman@example.com"}],
         )
 
         assert response.status_code == 401
@@ -108,7 +110,7 @@ class TestAuthoritiesApi:
 
     def test_cannot_add_users_with_invalid_repr(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/users",
+            "/authorities/LIV/users",
             headers={"Authorization": "API-Key boardman"},
             json=[{"email": "boardman@example.com", "foo": "bar"}],
         )
@@ -118,7 +120,7 @@ class TestAuthoritiesApi:
 
     def test_add_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/schemes",
+            "/authorities/LIV/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
                 {"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"},
@@ -133,7 +135,7 @@ class TestAuthoritiesApi:
             scheme1
             and scheme1.id == 1
             and scheme1.name == "Wirral Package"
-            and scheme1.authority_id == 1
+            and scheme1.authority_id == "LIV"
             and scheme1.type == SchemeType.CONSTRUCTION
             and scheme1.funding_programme == FundingProgrammes.ATF4
         )
@@ -141,7 +143,7 @@ class TestAuthoritiesApi:
             scheme2
             and scheme2.id == 2
             and scheme2.name == "School Streets"
-            and scheme2.authority_id == 1
+            and scheme2.authority_id == "LIV"
             and scheme2.type == SchemeType.CONSTRUCTION
             and scheme2.funding_programme == FundingProgrammes.ATF4
         )
@@ -181,7 +183,7 @@ class TestAuthoritiesApi:
 
     def test_add_schemes_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/schemes",
+            "/authorities/LIV/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
                 {
@@ -218,7 +220,7 @@ class TestAuthoritiesApi:
 
     def test_add_schemes_milestone_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/schemes",
+            "/authorities/LIV/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
                 {
@@ -257,7 +259,7 @@ class TestAuthoritiesApi:
 
     def test_add_schemes_output_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/schemes",
+            "/authorities/LIV/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
                 {
@@ -295,7 +297,7 @@ class TestAuthoritiesApi:
 
     def test_add_schemes_authority_reviews(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/schemes",
+            "/authorities/LIV/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
                 {
@@ -327,7 +329,7 @@ class TestAuthoritiesApi:
 
     def test_cannot_add_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/schemes",
+            "/authorities/LIV/schemes",
             json=[{"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"}],
         )
 
@@ -338,7 +340,7 @@ class TestAuthoritiesApi:
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
         response = client.post(
-            "/authorities/1/schemes",
+            "/authorities/LIV/schemes",
             headers={"Authorization": "API-Key obree"},
             json=[{"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"}],
         )
@@ -348,7 +350,7 @@ class TestAuthoritiesApi:
 
     def test_cannot_add_schemes_with_invalid_repr(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/schemes",
+            "/authorities/LIV/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
                 {"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4", "foo": "bar"}
@@ -359,32 +361,32 @@ class TestAuthoritiesApi:
         assert not schemes.get(1)
 
     def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
+        authorities.add(Authority(id_="LIV", name="Liverpool City Region Combined Authority"))
 
         response = client.delete("/authorities", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 204
-        assert not authorities.get(1)
+        assert not authorities.get("LIV")
 
     def test_cannot_clear_authorities_when_no_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
     ) -> None:
-        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
+        authorities.add(Authority(id_="LIV", name="Liverpool City Region Combined Authority"))
 
         response = client.delete("/authorities")
 
         assert response.status_code == 401
-        assert authorities.get(1)
+        assert authorities.get("LIV")
 
     def test_cannot_clear_authorities_when_incorrect_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
     ) -> None:
-        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
+        authorities.add(Authority(id_="LIV", name="Liverpool City Region Combined Authority"))
 
         response = client.delete("/authorities", headers={"Authorization": "API-Key obree"})
 
         assert response.status_code == 401
-        assert authorities.get(1)
+        assert authorities.get("LIV")
 
 
 class TestAuthoritiesApiWhenDisabled:
@@ -392,15 +394,15 @@ class TestAuthoritiesApiWhenDisabled:
         response = client.post(
             "/authorities",
             headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "name": "Liverpool City Region Combined Authority"}],
+            json=[{"id": "LIV", "name": "Liverpool City Region Combined Authority"}],
         )
 
         assert response.status_code == 401
-        assert not authorities.get(1)
+        assert not authorities.get("LIV")
 
     def test_cannot_add_users(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/users",
+            "/authorities/LIV/users",
             headers={"Authorization": "API-Key boardman"},
             json=[{"email": "boardman@example.com"}],
         )
@@ -410,7 +412,7 @@ class TestAuthoritiesApiWhenDisabled:
 
     def test_cannot_add_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/schemes",
+            "/authorities/LIV/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[{"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"}],
         )
@@ -419,9 +421,9 @@ class TestAuthoritiesApiWhenDisabled:
         assert not schemes.get(1)
 
     def test_cannot_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
+        authorities.add(Authority(id_="LIV", name="Liverpool City Region Combined Authority"))
 
         response = client.delete("/authorities", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 401
-        assert authorities.get(1)
+        assert authorities.get("LIV")

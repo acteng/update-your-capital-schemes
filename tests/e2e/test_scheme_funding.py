@@ -15,10 +15,10 @@ from tests.e2e.pages import SchemePage
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
-    app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
-    app_client.add_users(1, UserRepr(email="boardman@example.com"))
+    app_client.add_authorities(AuthorityRepr(id="LIV", name="Liverpool City Region Combined Authority"))
+    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
-        1,
+        "LIV",
         build_scheme(
             id_=1,
             name="Wirral Package",
@@ -65,10 +65,10 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Pa
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
     app_client.set_clock("2020-01-31T13:00:00")
-    app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
-    app_client.add_users(1, UserRepr(email="boardman@example.com"))
+    app_client.add_authorities(AuthorityRepr(id="LIV", name="Liverpool City Region Combined Authority"))
+    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
-        1,
+        "LIV",
         build_scheme(
             id_=1,
             name="Wirral Package",
@@ -127,10 +127,10 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_cannot_change_spend_to_date_when_error(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
-    app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
-    app_client.add_users(1, UserRepr(email="boardman@example.com"))
+    app_client.add_authorities(AuthorityRepr(id="LIV", name="Liverpool City Region Combined Authority"))
+    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
-        1,
+        "LIV",
         build_scheme(
             id_=1,
             name="Wirral Package",

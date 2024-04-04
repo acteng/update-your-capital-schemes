@@ -343,7 +343,7 @@ def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, schem
     assert user
     scheme = schemes.get(scheme_id)
 
-    if not scheme:
+    if not (scheme and scheme.is_updateable):
         abort(404)
 
     if user.authority_id != scheme.authority_id:

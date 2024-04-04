@@ -4,7 +4,12 @@ import pytest
 from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
-from schemes.domain.schemes import AuthorityReview, DataSource, Scheme, SchemeRepository
+from schemes.domain.schemes import (
+    AuthorityReview,
+    BidStatus,
+    DataSource,
+    SchemeRepository,
+)
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.builders import build_scheme
@@ -50,7 +55,7 @@ class TestSchemeReview:
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
         clock.now = datetime(2023, 4, 24, 12)
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
@@ -69,7 +74,7 @@ class TestSchemeReview:
         )
 
     def test_review_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         schemes_page = SchemesPage(
             client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}, follow_redirects=True)
@@ -136,13 +141,22 @@ class TestSchemeReview:
         self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
         authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-        schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", authority_id=2))
 
         response = client.post("/schemes/2", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
         assert response.status_code == 403
 
     def test_cannot_review_when_unknown_scheme(self, client: FlaskClient, csrf_token: str) -> None:
+        response = client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+
+        assert response.status_code == 404
+
+    def test_cannot_review_when_not_updateable_scheme(
+        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1, bid_status=BidStatus.SUBMITTED))
+
         response = client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
         assert response.status_code == 404

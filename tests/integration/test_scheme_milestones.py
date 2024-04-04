@@ -6,11 +6,11 @@ from flask.testing import FlaskClient
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
+    BidStatus,
     DataSource,
     Milestone,
     MilestoneRevision,
     ObservationType,
-    Scheme,
     SchemeRepository,
 )
 from schemes.domain.users import User, UserRepository
@@ -145,14 +145,14 @@ class TestSchemeMilestones:
         ]
 
     def test_milestones_form_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
         assert change_milestone_dates_page.back_url == "/schemes/1"
 
     def test_milestones_form_shows_fields(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
@@ -176,7 +176,7 @@ class TestSchemeMilestones:
         )
 
     def test_milestones_form_shows_date(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
@@ -195,14 +195,14 @@ class TestSchemeMilestones:
         assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
 
     def test_milestones_form_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
         assert change_milestone_dates_page.form.confirm_url == "/schemes/1/milestones"
 
     def test_milestones_form_shows_cancel(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
@@ -212,7 +212,7 @@ class TestSchemeMilestones:
         self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
         authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-        schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", authority_id=2))
 
         forbidden_page = ChangeMilestoneDatesPage.open_when_unauthorized(client, id_=2)
 
@@ -223,11 +223,20 @@ class TestSchemeMilestones:
 
         assert not_found_page.is_visible and not_found_page.is_not_found
 
+    def test_cannot_milestones_form_when_not_updateable_scheme(
+        self, schemes: SchemeRepository, client: FlaskClient
+    ) -> None:
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1, bid_status=BidStatus.SUBMITTED))
+
+        not_found_page = ChangeMilestoneDatesPage.open_when_not_found(client, id_=1)
+
+        assert not_found_page.is_visible and not_found_page.is_not_found
+
     def test_milestones_updates_milestones(
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
         clock.now = datetime(2020, 2, 1, 13)
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
@@ -259,7 +268,7 @@ class TestSchemeMilestones:
         )
 
     def test_milestones_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token})
 
@@ -268,7 +277,7 @@ class TestSchemeMilestones:
     def test_cannot_milestones_when_error(
         self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
@@ -315,7 +324,7 @@ class TestSchemeMilestones:
         )
 
     def test_cannot_milestones_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         change_milestone_dates_page = ChangeMilestoneDatesPage(
             client.post("/schemes/1/milestones", follow_redirects=True)
@@ -331,7 +340,7 @@ class TestSchemeMilestones:
     def test_cannot_milestones_when_incorrect_csrf_token(
         self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         change_milestone_dates_page = ChangeMilestoneDatesPage(
             client.post("/schemes/1/milestones", data={"csrf_token": "x"}, follow_redirects=True)
@@ -348,13 +357,22 @@ class TestSchemeMilestones:
         self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
         authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-        schemes.add(Scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", authority_id=2))
 
         response = client.post("/schemes/2/milestones", data={"csrf_token": csrf_token})
 
         assert response.status_code == 403
 
     def test_cannot_milestones_when_unknown_scheme(self, client: FlaskClient, csrf_token: str) -> None:
+        response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token})
+
+        assert response.status_code == 404
+
+    def test_cannot_milestones_when_not_updateable_scheme(
+        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1, bid_status=BidStatus.SUBMITTED))
+
         response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token})
 
         assert response.status_code == 404

@@ -297,7 +297,7 @@ def milestones_form(scheme_id: int, users: UserRepository, schemes: SchemeReposi
     assert user
     scheme = schemes.get(scheme_id)
 
-    if not scheme:
+    if not (scheme and scheme.is_updateable):
         abort(404)
 
     if user.authority_id != scheme.authority_id:
@@ -317,7 +317,7 @@ def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, s
     assert user
     scheme = schemes.get(scheme_id)
 
-    if not scheme:
+    if not (scheme and scheme.is_updateable):
         abort(404)
 
     if user.authority_id != scheme.authority_id:

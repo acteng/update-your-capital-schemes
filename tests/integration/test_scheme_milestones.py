@@ -123,14 +123,6 @@ class TestSchemeMilestones:
                 date(2020, 6, 1),
                 DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
-                10,
-                current,
-                Milestone.CONSTRUCTION_COMPLETED,
-                ObservationType.ACTUAL,
-                date(2020, 6, 2),
-                DataSource.ATF4_BID,
-            ),
         )
         schemes.add(scheme)
 
@@ -141,7 +133,7 @@ class TestSchemeMilestones:
             {"milestone": "Preliminary design completed", "planned": "1 Mar 2020", "actual": "2 Mar 2020"},
             {"milestone": "Detailed design completed", "planned": "1 Apr 2020", "actual": "2 Apr 2020"},
             {"milestone": "Construction started", "planned": "1 May 2020", "actual": "2 May 2020"},
-            {"milestone": "Construction completed", "planned": "1 Jun 2020", "actual": "2 Jun 2020"},
+            {"milestone": "Construction completed", "planned": "1 Jun 2020", "actual": ""},
         ]
 
     def test_milestones_form_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:

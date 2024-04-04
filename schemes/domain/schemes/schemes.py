@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum, auto, unique
 
 from schemes.domain.schemes.funding import BidStatus, SchemeFunding
-from schemes.domain.schemes.milestones import SchemeMilestones
+from schemes.domain.schemes.milestones import Milestone, SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
 from schemes.domain.schemes.reviews import SchemeReviews
 
@@ -42,7 +42,13 @@ class Scheme:
 
     @property
     def is_updateable(self) -> bool:
-        return self.funding.bid_status == BidStatus.FUNDED
+        is_funded = self.funding.bid_status == BidStatus.FUNDED
+        is_active_and_incomplete = self._is_active_and_incomplete(self.milestones.current_milestone)
+        return is_funded and is_active_and_incomplete
+
+    @staticmethod
+    def _is_active_and_incomplete(milestone: Milestone | None) -> bool:
+        return not milestone or (milestone.is_active and not milestone.is_complete)
 
 
 @unique

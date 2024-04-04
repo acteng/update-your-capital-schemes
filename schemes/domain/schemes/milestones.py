@@ -101,15 +101,25 @@ class MilestoneRevision:
 
 
 class Milestone(IntEnum):
-    PUBLIC_CONSULTATION_COMPLETED = auto()
-    FEASIBILITY_DESIGN_STARTED = auto()
-    FEASIBILITY_DESIGN_COMPLETED = auto()
-    PRELIMINARY_DESIGN_COMPLETED = auto()
-    OUTLINE_DESIGN_COMPLETED = auto()
-    DETAILED_DESIGN_COMPLETED = auto()
-    CONSTRUCTION_STARTED = auto()
-    CONSTRUCTION_COMPLETED = auto()
-    INSPECTION = auto()
-    NOT_PROGRESSED = auto()
-    SUPERSEDED = auto()
-    REMOVED = auto()
+    PUBLIC_CONSULTATION_COMPLETED = (auto(), True, False)
+    FEASIBILITY_DESIGN_STARTED = (auto(), True, False)
+    FEASIBILITY_DESIGN_COMPLETED = (auto(), True, False)
+    PRELIMINARY_DESIGN_COMPLETED = (auto(), True, False)
+    OUTLINE_DESIGN_COMPLETED = (auto(), True, False)
+    DETAILED_DESIGN_COMPLETED = (auto(), True, False)
+    CONSTRUCTION_STARTED = (auto(), True, False)
+    CONSTRUCTION_COMPLETED = (auto(), True, True)
+    INSPECTION = (auto(), True, True)
+    NOT_PROGRESSED = (auto(), False, False)
+    SUPERSEDED = (auto(), False, False)
+    REMOVED = (auto(), False, False)
+
+    is_active: bool
+    is_complete: bool
+
+    def __new__(cls, value: int, is_active: bool, is_complete: bool) -> Milestone:
+        obj = int.__new__(cls, value)
+        obj._value_ = value
+        obj.is_active = is_active
+        obj.is_complete = is_complete
+        return obj

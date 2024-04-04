@@ -45,7 +45,8 @@ class Scheme:
     def is_updateable(self) -> bool:
         is_funded = self.funding.bid_status == BidStatus.FUNDED
         is_active_and_incomplete = self._is_active_and_incomplete(self.milestones.current_milestone)
-        return is_funded and is_active_and_incomplete
+        is_under_embargo = self.funding_programme and self.funding_programme.is_under_embargo
+        return is_funded and is_active_and_incomplete and not is_under_embargo
 
     @staticmethod
     def _is_active_and_incomplete(milestone: Milestone | None) -> bool:
@@ -61,17 +62,18 @@ class SchemeType(Enum):
 @dataclass(frozen=True)
 class FundingProgramme:
     code: str
+    is_under_embargo: bool
 
 
 class FundingProgrammes:
-    ATF2 = FundingProgramme("ATF2")
-    ATF3 = FundingProgramme("ATF3")
-    ATF4 = FundingProgramme("ATF4")
-    ATF4E = FundingProgramme("ATF4e")
-    ATF5 = FundingProgramme("ATF5")
-    MRN = FundingProgramme("MRN")
-    LUF = FundingProgramme("LUF")
-    CRSTS = FundingProgramme("CRSTS")
+    ATF2 = FundingProgramme("ATF2", False)
+    ATF3 = FundingProgramme("ATF3", False)
+    ATF4 = FundingProgramme("ATF4", False)
+    ATF4E = FundingProgramme("ATF4e", False)
+    ATF5 = FundingProgramme("ATF5", False)
+    MRN = FundingProgramme("MRN", False)
+    LUF = FundingProgramme("LUF", False)
+    CRSTS = FundingProgramme("CRSTS", False)
 
 
 class SchemeRepository:

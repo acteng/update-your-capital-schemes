@@ -7,6 +7,7 @@ from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes import AuthorityReview, DataSource, Scheme, SchemeRepository
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
+from tests.integration.builders import build_scheme
 from tests.integration.pages import SchemePage, SchemesPage
 
 
@@ -19,14 +20,14 @@ class TestSchemeReview:
             session["user"] = {"email": "boardman@example.com"}
 
     def test_scheme_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 
         assert scheme_page.review.form.confirm_url == "/schemes/1"
 
     def test_scheme_shows_last_reviewed(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
         )
@@ -39,7 +40,7 @@ class TestSchemeReview:
     def test_scheme_shows_last_reviewed_when_no_authority_reviews(
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 
@@ -82,7 +83,7 @@ class TestSchemeReview:
         assert not schemes_page.important_notification
 
     def test_cannot_review_when_error(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
         )
@@ -108,7 +109,7 @@ class TestSchemeReview:
         )
 
     def test_cannot_review_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage(client.post("/schemes/1", data={}, follow_redirects=True))
 
@@ -120,7 +121,7 @@ class TestSchemeReview:
         )
 
     def test_cannot_review_when_incorrect_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage(client.post("/schemes/1", data={"csrf_token": "x"}, follow_redirects=True))
 

@@ -12,11 +12,11 @@ from schemes.domain.schemes import (
     Milestone,
     MilestoneRevision,
     ObservationType,
-    Scheme,
     SchemeRepository,
     SchemeType,
 )
 from schemes.domain.users import User, UserRepository
+from tests.integration.builders import build_scheme
 from tests.integration.pages import SchemePage
 
 
@@ -29,7 +29,7 @@ class TestSchemeOverview:
             session["user"] = {"email": "boardman@example.com"}
 
     def test_scheme_shows_minimal_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 
@@ -41,7 +41,7 @@ class TestSchemeOverview:
         )
 
     def test_scheme_shows_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.type = SchemeType.CONSTRUCTION
         scheme.funding_programme = FundingProgramme.ATF4
         scheme.milestones.update_milestone(

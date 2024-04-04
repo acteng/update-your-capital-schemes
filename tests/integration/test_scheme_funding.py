@@ -14,6 +14,7 @@ from schemes.domain.schemes import (
 )
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
+from tests.integration.builders import build_scheme
 from tests.integration.pages import ChangeSpendToDatePage, SchemePage
 
 
@@ -26,7 +27,7 @@ class TestSchemeFunding:
             session["user"] = {"email": "boardman@example.com"}
 
     def test_scheme_shows_minimal_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 
@@ -38,7 +39,7 @@ class TestSchemeFunding:
         )
 
     def test_scheme_shows_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=1,
@@ -74,7 +75,7 @@ class TestSchemeFunding:
         )
 
     def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=1,
@@ -110,7 +111,7 @@ class TestSchemeFunding:
         )
 
     def test_scheme_shows_change_spend_to_date(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 

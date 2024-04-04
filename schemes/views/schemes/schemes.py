@@ -144,7 +144,7 @@ def get_html(
     assert authority
     scheme = schemes.get(scheme_id)
 
-    if not scheme:
+    if not (scheme and scheme.is_updateable):
         abort(404)
 
     if user.authority_id != scheme.authority_id:

@@ -5,9 +5,9 @@ from tests.e2e.app_client import (
     AppClient,
     AuthorityRepr,
     MilestoneRevisionRepr,
-    SchemeRepr,
     UserRepr,
 )
+from tests.e2e.builders import build_scheme
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
@@ -19,8 +19,8 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
     app_client.add_users(1, UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         1,
-        SchemeRepr(
-            id=1,
+        build_scheme(
+            id_=1,
             name="Wirral Package",
             milestone_revisions=[
                 MilestoneRevisionRepr(
@@ -91,8 +91,8 @@ def test_scheme_change_milestones(app_client: AppClient, oidc_client: OidcClient
     app_client.add_users(1, UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         1,
-        SchemeRepr(
-            id=1,
+        build_scheme(
+            id_=1,
             name="Wirral Package",
             milestone_revisions=[
                 MilestoneRevisionRepr(

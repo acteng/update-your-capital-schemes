@@ -1,13 +1,8 @@
 import pytest
 from playwright.sync_api import Page
 
-from tests.e2e.app_client import (
-    AppClient,
-    AuthorityRepr,
-    OutputRevisionRepr,
-    SchemeRepr,
-    UserRepr,
-)
+from tests.e2e.app_client import AppClient, AuthorityRepr, OutputRevisionRepr, UserRepr
+from tests.e2e.builders import build_scheme
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
@@ -19,8 +14,8 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
     app_client.add_users(1, UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         1,
-        SchemeRepr(
-            id=1,
+        build_scheme(
+            id_=1,
             name="Wirral Package",
             output_revisions=[
                 OutputRevisionRepr(

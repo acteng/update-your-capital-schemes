@@ -10,10 +10,10 @@ from schemes.domain.schemes import (
     ObservationType,
     OutputRevision,
     OutputTypeMeasure,
-    Scheme,
     SchemeRepository,
 )
 from schemes.domain.users import User, UserRepository
+from tests.integration.builders import build_scheme
 from tests.integration.pages import SchemePage
 
 
@@ -26,7 +26,7 @@ class TestSchemeOutputs:
             session["user"] = {"email": "boardman@example.com"}
 
     def test_scheme_shows_minimal_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -45,7 +45,7 @@ class TestSchemeOutputs:
         assert outputs[0].planned == ""
 
     def test_scheme_shows_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -81,7 +81,7 @@ class TestSchemeOutputs:
         ]
 
     def test_scheme_shows_zero_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -100,7 +100,7 @@ class TestSchemeOutputs:
         assert outputs[0].planned == "0"
 
     def test_scheme_shows_message_when_no_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 

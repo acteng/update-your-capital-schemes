@@ -40,6 +40,20 @@ class TestSchemeFunding:
 
         assert funding.bid_status_revisions == [bid_status_revision]
 
+    def test_cannot_update_bid_status_with_another_current_bid_status(self) -> None:
+        funding = SchemeFunding()
+        bid_status_revision = BidStatusRevision(
+            id_=1, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED
+        )
+        funding.update_bid_status(bid_status_revision)
+
+        with pytest.raises(
+            ValueError, match=re.escape(f"Current bid status already exists: {repr(bid_status_revision)}")
+        ):
+            funding.update_bid_status(
+                BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.FUNDED)
+            )
+
     def test_update_bid_statuses(self) -> None:
         funding = SchemeFunding()
         bid_status_revision1 = BidStatusRevision(

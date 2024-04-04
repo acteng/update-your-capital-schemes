@@ -251,7 +251,7 @@ def spend_to_date_form(scheme_id: int, users: UserRepository, schemes: SchemeRep
     assert user
     scheme = schemes.get(scheme_id)
 
-    if not scheme:
+    if not (scheme and scheme.is_updateable):
         abort(404)
 
     if user.authority_id != scheme.authority_id:
@@ -271,7 +271,7 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
     assert user
     scheme = schemes.get(scheme_id)
 
-    if not scheme:
+    if not (scheme and scheme.is_updateable):
         abort(404)
 
     if user.authority_id != scheme.authority_id:

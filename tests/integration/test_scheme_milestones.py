@@ -217,6 +217,11 @@ class TestSchemeMilestones:
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
+    def test_cannot_milestones_form_when_unknown_scheme(self, client: FlaskClient) -> None:
+        not_found_page = ChangeMilestoneDatesPage.open_when_not_found(client, id_=1)
+
+        assert not_found_page.is_visible and not_found_page.is_not_found
+
     def test_milestones_updates_milestones(
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
@@ -347,6 +352,11 @@ class TestSchemeMilestones:
         response = client.post("/schemes/2/milestones", data={"csrf_token": csrf_token})
 
         assert response.status_code == 403
+
+    def test_cannot_milestones_when_unknown_scheme(self, client: FlaskClient, csrf_token: str) -> None:
+        response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token})
+
+        assert response.status_code == 404
 
     def empty_change_milestone_dates_form(self) -> dict[str, list[str]]:
         empty_date = ["", "", ""]

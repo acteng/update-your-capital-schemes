@@ -228,6 +228,11 @@ class TestSchemeFunding:
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
+    def test_cannot_spend_to_date_form_when_unknown_scheme(self, client: FlaskClient) -> None:
+        not_found_page = ChangeSpendToDatePage.open_when_not_found(client, id_=1)
+
+        assert not_found_page.is_visible and not_found_page.is_not_found
+
     def test_spend_to_date_updates_spend_to_date(
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
@@ -361,3 +366,8 @@ class TestSchemeFunding:
         response = client.post("/schemes/2/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
 
         assert response.status_code == 403
+
+    def test_cannot_spend_to_date_when_unknown_scheme(self, client: FlaskClient, csrf_token: str) -> None:
+        response = client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+
+        assert response.status_code == 404

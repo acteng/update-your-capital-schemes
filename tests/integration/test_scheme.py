@@ -104,6 +104,11 @@ class TestScheme:
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
+    def test_cannot_scheme_when_unknown_scheme(self, client: FlaskClient) -> None:
+        not_found_page = SchemePage.open_when_not_found(client, id_=1)
+
+        assert not_found_page.is_visible and not_found_page.is_not_found
+
 
 class TestSchemeApi:
     @pytest.fixture(name="config", scope="class")

@@ -42,6 +42,14 @@ class ForbiddenPage(PageObject):
         self.is_forbidden = response.status_code == 403
 
 
+class NotFoundPage(PageObject):
+    def __init__(self, response: TestResponse):
+        super().__init__(response)
+        heading = self._soup.select_one("main h1")
+        self.is_visible = heading.string == "Page not found" if heading else False
+        self.is_not_found = response.status_code == 404
+
+
 class SchemesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
@@ -147,6 +155,11 @@ class SchemePage(PageObject):
     def open_when_unauthorized(cls, client: FlaskClient, id_: int) -> ForbiddenPage:
         response = client.get(f"/schemes/{id_}")
         return ForbiddenPage(response)
+
+    @classmethod
+    def open_when_not_found(cls, client: FlaskClient, id_: int) -> NotFoundPage:
+        response = client.get(f"/schemes/{id_}")
+        return NotFoundPage(response)
 
 
 class InsetTextComponent:
@@ -296,6 +309,11 @@ class ChangeSpendToDatePage(PageObject):
         response = client.get(f"/schemes/{id_}/spend-to-date")
         return ForbiddenPage(response)
 
+    @classmethod
+    def open_when_not_found(cls, client: FlaskClient, id_: int) -> NotFoundPage:
+        response = client.get(f"/schemes/{id_}/spend-to-date")
+        return NotFoundPage(response)
+
 
 class ChangeMilestoneDatesPage(PageObject):
     def __init__(self, response: TestResponse):
@@ -317,6 +335,11 @@ class ChangeMilestoneDatesPage(PageObject):
     def open_when_unauthorized(cls, client: FlaskClient, id_: int) -> ForbiddenPage:
         response = client.get(f"/schemes/{id_}/milestones")
         return ForbiddenPage(response)
+
+    @classmethod
+    def open_when_not_found(cls, client: FlaskClient, id_: int) -> NotFoundPage:
+        response = client.get(f"/schemes/{id_}/milestones")
+        return NotFoundPage(response)
 
 
 class ErrorSummaryComponent:

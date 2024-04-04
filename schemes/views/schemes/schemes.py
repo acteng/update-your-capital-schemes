@@ -143,7 +143,9 @@ def get_html(
     authority = authorities.get(user.authority_id)
     assert authority
     scheme = schemes.get(scheme_id)
-    assert scheme
+
+    if not scheme:
+        abort(404)
 
     if user.authority_id != scheme.authority_id:
         abort(403)
@@ -248,7 +250,9 @@ def spend_to_date_form(scheme_id: int, users: UserRepository, schemes: SchemeRep
     user = users.get_by_email(user_info["email"])
     assert user
     scheme = schemes.get(scheme_id)
-    assert scheme
+
+    if not scheme:
+        abort(404)
 
     if user.authority_id != scheme.authority_id:
         abort(403)
@@ -266,7 +270,9 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
     user = users.get_by_email(user_info["email"])
     assert user
     scheme = schemes.get(scheme_id)
-    assert scheme
+
+    if not scheme:
+        abort(404)
 
     if user.authority_id != scheme.authority_id:
         abort(403)
@@ -290,7 +296,9 @@ def milestones_form(scheme_id: int, users: UserRepository, schemes: SchemeReposi
     user = users.get_by_email(user_info["email"])
     assert user
     scheme = schemes.get(scheme_id)
-    assert scheme
+
+    if not scheme:
+        abort(404)
 
     if user.authority_id != scheme.authority_id:
         abort(403)
@@ -308,7 +316,9 @@ def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, s
     user = users.get_by_email(user_info["email"])
     assert user
     scheme = schemes.get(scheme_id)
-    assert scheme
+
+    if not scheme:
+        abort(404)
 
     if user.authority_id != scheme.authority_id:
         abort(403)
@@ -332,7 +342,9 @@ def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, schem
     user = users.get_by_email(user_info["email"])
     assert user
     scheme = schemes.get(scheme_id)
-    assert scheme
+
+    if not scheme:
+        abort(404)
 
     if user.authority_id != scheme.authority_id:
         abort(403)

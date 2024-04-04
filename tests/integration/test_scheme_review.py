@@ -140,3 +140,8 @@ class TestSchemeReview:
         response = client.post("/schemes/2", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
         assert response.status_code == 403
+
+    def test_cannot_review_when_unknown_scheme(self, client: FlaskClient, csrf_token: str) -> None:
+        response = client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+
+        assert response.status_code == 404

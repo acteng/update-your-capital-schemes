@@ -94,6 +94,21 @@ class TestScheme:
 
         assert scheme.is_updateable == expected_updateable
 
+    def test_is_updateable_when_no_bid_status_revision(self) -> None:
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme.milestones.update_milestone(
+            MilestoneRevision(
+                id_=2,
+                effective=DateRange(datetime(2000, 1, 2), None),
+                milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2000, 1, 2),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.is_updateable is False
+
     def test_is_updateable_when_no_milestone_revision(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.funding.update_bid_status(

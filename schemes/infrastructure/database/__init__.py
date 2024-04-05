@@ -36,7 +36,8 @@ class CapitalSchemeEntity(Base):
     capital_scheme_id: Mapped[int] = mapped_column(primary_key=True)
     scheme_name: Mapped[str] = mapped_column(Text)
     bid_submitting_authority_id = mapped_column(
-        ForeignKey("authority.authority.authority_id", name="capital_scheme_bid_submitting_authority_id_fkey")
+        ForeignKey("authority.authority.authority_id", name="capital_scheme_bid_submitting_authority_id_fkey"),
+        nullable=False,
     )
     scheme_type_id: Mapped[int | None]
     funding_programme_id: Mapped[int | None]

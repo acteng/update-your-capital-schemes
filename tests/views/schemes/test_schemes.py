@@ -14,6 +14,7 @@ from schemes.domain.schemes import (
     FinancialRevision,
     FinancialType,
     FundingProgramme,
+    FundingProgrammes,
     Milestone,
     MilestoneRevision,
     ObservationType,
@@ -117,7 +118,7 @@ class TestSchemesContext:
 class TestSchemeRowContext:
     def test_from_domain(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.funding_programme = FundingProgramme.ATF4
+        scheme.funding_programme = FundingProgrammes.ATF4
 
         context = SchemeRowContext.from_domain(dummy_reporting_window(), scheme)
 
@@ -285,7 +286,7 @@ class TestSchemeOverviewContext:
 
     def test_from_domain_sets_funding_programme(self) -> None:
         scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.funding_programme = FundingProgramme.ATF4
+        scheme.funding_programme = FundingProgrammes.ATF4
 
         context = SchemeOverviewContext.from_domain(scheme)
 
@@ -339,14 +340,14 @@ class TestFundingProgrammeContext:
     @pytest.mark.parametrize(
         "funding_programme, expected_name",
         [
-            (FundingProgramme.ATF2, "ATF2"),
-            (FundingProgramme.ATF3, "ATF3"),
-            (FundingProgramme.ATF4, "ATF4"),
-            (FundingProgramme.ATF4E, "ATF4e"),
-            (FundingProgramme.ATF5, "ATF5"),
-            (FundingProgramme.MRN, "MRN"),
-            (FundingProgramme.LUF, "LUF"),
-            (FundingProgramme.CRSTS, "CRSTS"),
+            (FundingProgrammes.ATF2, "ATF2"),
+            (FundingProgrammes.ATF3, "ATF3"),
+            (FundingProgrammes.ATF4, "ATF4"),
+            (FundingProgrammes.ATF4E, "ATF4e"),
+            (FundingProgrammes.ATF5, "ATF5"),
+            (FundingProgrammes.MRN, "MRN"),
+            (FundingProgrammes.LUF, "LUF"),
+            (FundingProgrammes.CRSTS, "CRSTS"),
             (None, None),
         ],
     )
@@ -360,7 +361,7 @@ class TestSchemeRepr:
     def test_from_domain(self) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.type = SchemeType.CONSTRUCTION
-        scheme.funding_programme = FundingProgramme.ATF4
+        scheme.funding_programme = FundingProgrammes.ATF4
 
         scheme_repr = SchemeRepr.from_domain(scheme)
 
@@ -563,7 +564,7 @@ class TestSchemeRepr:
             and scheme.name == "Wirral Package"
             and scheme.authority_id == 2
             and scheme.type == SchemeType.CONSTRUCTION
-            and scheme.funding_programme == FundingProgramme.ATF4
+            and scheme.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_to_domain_when_minimal(self) -> None:
@@ -800,14 +801,14 @@ class TestSchemeTypeRepr:
 @pytest.mark.parametrize(
     "funding_programme, funding_programme_repr",
     [
-        (FundingProgramme.ATF2, "ATF2"),
-        (FundingProgramme.ATF3, "ATF3"),
-        (FundingProgramme.ATF4, "ATF4"),
-        (FundingProgramme.ATF4E, "ATF4e"),
-        (FundingProgramme.ATF5, "ATF5"),
-        (FundingProgramme.MRN, "MRN"),
-        (FundingProgramme.LUF, "LUF"),
-        (FundingProgramme.CRSTS, "CRSTS"),
+        (FundingProgrammes.ATF2, "ATF2"),
+        (FundingProgrammes.ATF3, "ATF3"),
+        (FundingProgrammes.ATF4, "ATF4"),
+        (FundingProgrammes.ATF4E, "ATF4e"),
+        (FundingProgrammes.ATF5, "ATF5"),
+        (FundingProgrammes.MRN, "MRN"),
+        (FundingProgrammes.LUF, "LUF"),
+        (FundingProgrammes.CRSTS, "CRSTS"),
     ],
 )
 class TestFundingProgrammeRepr:

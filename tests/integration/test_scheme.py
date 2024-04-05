@@ -14,7 +14,7 @@ from schemes.domain.schemes import (
     DataSource,
     FinancialRevision,
     FinancialType,
-    FundingProgramme,
+    FundingProgrammes,
     Milestone,
     MilestoneRevision,
     ObservationType,
@@ -126,7 +126,7 @@ class TestSchemeApi:
     def test_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.type = SchemeType.CONSTRUCTION
-        scheme.funding_programme = FundingProgramme.ATF4
+        scheme.funding_programme = FundingProgrammes.ATF4
         schemes.add(scheme)
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})

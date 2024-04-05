@@ -7,6 +7,8 @@ from schemes.domain.schemes import (
     BidStatus,
     BidStatusRevision,
     DataSource,
+    FundingProgramme,
+    FundingProgrammes,
     Milestone,
     MilestoneRevision,
     ObservationType,
@@ -157,3 +159,21 @@ class TestScheme:
         )
 
         assert scheme.is_updateable is False
+
+
+class TestFundingProgrammes:
+    @pytest.mark.parametrize(
+        "funding_programme, expected_code",
+        [
+            (FundingProgrammes.ATF2, "ATF2"),
+            (FundingProgrammes.ATF3, "ATF3"),
+            (FundingProgrammes.ATF4, "ATF4"),
+            (FundingProgrammes.ATF4E, "ATF4e"),
+            (FundingProgrammes.ATF5, "ATF5"),
+            (FundingProgrammes.MRN, "MRN"),
+            (FundingProgrammes.LUF, "LUF"),
+            (FundingProgrammes.CRSTS, "CRSTS"),
+        ],
+    )
+    def test_code(self, funding_programme: FundingProgramme, expected_code: str) -> None:
+        assert funding_programme.code == expected_code

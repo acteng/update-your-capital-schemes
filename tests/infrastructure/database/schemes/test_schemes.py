@@ -15,6 +15,7 @@ from schemes.domain.schemes import (
     FinancialRevision,
     FinancialType,
     FundingProgramme,
+    FundingProgrammes,
     Milestone,
     MilestoneRevision,
     ObservationType,
@@ -60,7 +61,7 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
         scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme1.type = SchemeType.DEVELOPMENT
-        scheme1.funding_programme = FundingProgramme.ATF3
+        scheme1.funding_programme = FundingProgrammes.ATF3
 
         schemes.add(scheme1, Scheme(id_=2, name="School Streets", authority_id=1))
 
@@ -308,7 +309,7 @@ class TestDatabaseSchemeRepository:
             and scheme.name == "Wirral Package"
             and scheme.authority_id == 1
             and scheme.type == SchemeType.DEVELOPMENT
-            and scheme.funding_programme == FundingProgramme.ATF3
+            and scheme.funding_programme == FundingProgrammes.ATF3
         )
 
     def test_get_scheme_bid_status_revisions(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
@@ -600,7 +601,7 @@ class TestDatabaseSchemeRepository:
             and scheme1.name == "Wirral Package"
             and scheme1.authority_id == 1
             and scheme1.type == SchemeType.DEVELOPMENT
-            and scheme1.funding_programme == FundingProgramme.ATF3
+            and scheme1.funding_programme == FundingProgrammes.ATF3
         )
         assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme1.authority_id == 1
 
@@ -1098,14 +1099,14 @@ class TestSchemeTypeMapper:
 @pytest.mark.parametrize(
     "funding_programme, id_",
     [
-        (FundingProgramme.ATF2, 1),
-        (FundingProgramme.ATF3, 2),
-        (FundingProgramme.ATF4, 3),
-        (FundingProgramme.ATF4E, 4),
-        (FundingProgramme.ATF5, 5),
-        (FundingProgramme.MRN, 6),
-        (FundingProgramme.LUF, 7),
-        (FundingProgramme.CRSTS, 8),
+        (FundingProgrammes.ATF2, 1),
+        (FundingProgrammes.ATF3, 2),
+        (FundingProgrammes.ATF4, 3),
+        (FundingProgrammes.ATF4E, 4),
+        (FundingProgrammes.ATF5, 5),
+        (FundingProgrammes.MRN, 6),
+        (FundingProgrammes.LUF, 7),
+        (FundingProgrammes.CRSTS, 8),
         (None, None),
     ],
 )

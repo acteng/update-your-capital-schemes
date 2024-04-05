@@ -9,7 +9,7 @@ from schemes.domain.schemes import (
     AuthorityReview,
     BidStatus,
     DataSource,
-    FundingProgramme,
+    FundingProgrammes,
     Scheme,
     SchemeRepository,
 )
@@ -127,7 +127,7 @@ class TestSchemes:
 
     def test_schemes_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.funding_programme = FundingProgramme.ATF3
+        scheme.funding_programme = FundingProgrammes.ATF3
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
         )

@@ -14,7 +14,7 @@ from schemes.domain.schemes import (
     DataSource,
     FinancialRevision,
     FinancialType,
-    FundingProgramme,
+    FundingProgrammes,
     Milestone,
     MilestoneRevision,
     ObservationType,
@@ -135,7 +135,7 @@ class TestAuthoritiesApi:
             and scheme1.name == "Wirral Package"
             and scheme1.authority_id == 1
             and scheme1.type == SchemeType.CONSTRUCTION
-            and scheme1.funding_programme == FundingProgramme.ATF4
+            and scheme1.funding_programme == FundingProgrammes.ATF4
         )
         assert scheme2 and scheme2.id == 2 and scheme2.name == "School Streets" and scheme2.authority_id == 1
 

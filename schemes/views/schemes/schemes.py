@@ -25,6 +25,7 @@ from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
 from schemes.domain.schemes import (
     FundingProgramme,
+    FundingProgrammes,
     Scheme,
     SchemeRepository,
     SchemeType,
@@ -227,14 +228,14 @@ class SchemeTypeContext:
 class FundingProgrammeContext:
     name: str | None
     _NAMES = {
-        FundingProgramme.ATF2: "ATF2",
-        FundingProgramme.ATF3: "ATF3",
-        FundingProgramme.ATF4: "ATF4",
-        FundingProgramme.ATF4E: "ATF4e",
-        FundingProgramme.ATF5: "ATF5",
-        FundingProgramme.MRN: "MRN",
-        FundingProgramme.LUF: "LUF",
-        FundingProgramme.CRSTS: "CRSTS",
+        FundingProgrammes.ATF2: "ATF2",
+        FundingProgrammes.ATF3: "ATF3",
+        FundingProgrammes.ATF4: "ATF4",
+        FundingProgrammes.ATF4E: "ATF4e",
+        FundingProgrammes.ATF5: "ATF5",
+        FundingProgrammes.MRN: "MRN",
+        FundingProgrammes.LUF: "LUF",
+        FundingProgrammes.CRSTS: "CRSTS",
     }
 
     @classmethod
@@ -475,12 +476,12 @@ class FundingProgrammeRepr(Enum):
     @staticmethod
     def _members() -> dict[FundingProgramme, FundingProgrammeRepr]:
         return {
-            FundingProgramme.ATF2: FundingProgrammeRepr.ATF2,
-            FundingProgramme.ATF3: FundingProgrammeRepr.ATF3,
-            FundingProgramme.ATF4: FundingProgrammeRepr.ATF4,
-            FundingProgramme.ATF4E: FundingProgrammeRepr.ATF4E,
-            FundingProgramme.ATF5: FundingProgrammeRepr.ATF5,
-            FundingProgramme.MRN: FundingProgrammeRepr.MRN,
-            FundingProgramme.LUF: FundingProgrammeRepr.LUF,
-            FundingProgramme.CRSTS: FundingProgrammeRepr.CRSTS,
+            FundingProgrammes.ATF2: FundingProgrammeRepr.ATF2,
+            FundingProgrammes.ATF3: FundingProgrammeRepr.ATF3,
+            FundingProgrammes.ATF4: FundingProgrammeRepr.ATF4,
+            FundingProgrammes.ATF4E: FundingProgrammeRepr.ATF4E,
+            FundingProgrammes.ATF5: FundingProgrammeRepr.ATF5,
+            FundingProgrammes.MRN: FundingProgrammeRepr.MRN,
+            FundingProgrammes.LUF: FundingProgrammeRepr.LUF,
+            FundingProgrammes.CRSTS: FundingProgrammeRepr.CRSTS,
         }

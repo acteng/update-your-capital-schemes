@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from enum import Enum, auto, unique
 
 from schemes.domain.schemes.funding import BidStatus, SchemeFunding
@@ -57,16 +58,20 @@ class SchemeType(Enum):
     CONSTRUCTION = auto()
 
 
-@unique
-class FundingProgramme(Enum):
-    ATF2 = auto()
-    ATF3 = auto()
-    ATF4 = auto()
-    ATF4E = auto()
-    ATF5 = auto()
-    MRN = auto()
-    LUF = auto()
-    CRSTS = auto()
+@dataclass(frozen=True)
+class FundingProgramme:
+    code: str
+
+
+class FundingProgrammes:
+    ATF2 = FundingProgramme("ATF2")
+    ATF3 = FundingProgramme("ATF3")
+    ATF4 = FundingProgramme("ATF4")
+    ATF4E = FundingProgramme("ATF4e")
+    ATF5 = FundingProgramme("ATF5")
+    MRN = FundingProgramme("MRN")
+    LUF = FundingProgramme("LUF")
+    CRSTS = FundingProgramme("CRSTS")
 
 
 class SchemeRepository:

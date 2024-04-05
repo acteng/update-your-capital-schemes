@@ -9,6 +9,7 @@ from schemes.domain.schemes import (
     BidStatusRevision,
     FinancialRevision,
     FundingProgramme,
+    FundingProgrammes,
     MilestoneRevision,
     OutputRevision,
     Scheme,
@@ -277,14 +278,14 @@ class SchemeTypeMapper:
 
 class FundingProgrammeMapper:
     _IDS = {
-        FundingProgramme.ATF2: 1,
-        FundingProgramme.ATF3: 2,
-        FundingProgramme.ATF4: 3,
-        FundingProgramme.ATF4E: 4,
-        FundingProgramme.ATF5: 5,
-        FundingProgramme.MRN: 6,
-        FundingProgramme.LUF: 7,
-        FundingProgramme.CRSTS: 8,
+        FundingProgrammes.ATF2: 1,
+        FundingProgrammes.ATF3: 2,
+        FundingProgrammes.ATF4: 3,
+        FundingProgrammes.ATF4E: 4,
+        FundingProgrammes.ATF5: 5,
+        FundingProgrammes.MRN: 6,
+        FundingProgrammes.LUF: 7,
+        FundingProgrammes.CRSTS: 8,
     }
 
     def to_id(self, funding_programme: FundingProgramme | None) -> int | None:

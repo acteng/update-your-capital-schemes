@@ -16,6 +16,7 @@ from schemes.domain.schemes.outputs import SchemeOutputs as SchemeOutputs
 from schemes.domain.schemes.reviews import AuthorityReview as AuthorityReview
 from schemes.domain.schemes.reviews import SchemeReviews as SchemeReviews
 from schemes.domain.schemes.schemes import FundingProgramme as FundingProgramme
+from schemes.domain.schemes.schemes import FundingProgrammes as FundingProgrammes
 from schemes.domain.schemes.schemes import Scheme as Scheme
 from schemes.domain.schemes.schemes import SchemeRepository as SchemeRepository
 from schemes.domain.schemes.schemes import SchemeType as SchemeType

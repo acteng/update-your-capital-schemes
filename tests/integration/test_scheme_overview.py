@@ -8,7 +8,7 @@ from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     AuthorityReview,
     DataSource,
-    FundingProgramme,
+    FundingProgrammes,
     Milestone,
     MilestoneRevision,
     ObservationType,
@@ -43,7 +43,7 @@ class TestSchemeOverview:
     def test_scheme_shows_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.type = SchemeType.CONSTRUCTION
-        scheme.funding_programme = FundingProgramme.ATF4
+        scheme.funding_programme = FundingProgrammes.ATF4
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=1,

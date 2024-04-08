@@ -320,7 +320,9 @@ class TestAuthoritiesApi:
         )
 
     def test_cannot_add_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post("/authorities/1/schemes", json=[{"id": 1, "name": "Wirral Package"}])
+        response = client.post(
+            "/authorities/1/schemes", json=[{"id": 1, "name": "Wirral Package", "type": "construction"}]
+        )
 
         assert response.status_code == 401
         assert not schemes.get(1)
@@ -331,7 +333,7 @@ class TestAuthoritiesApi:
         response = client.post(
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key obree"},
-            json=[{"id": 1, "name": "Wirral Package"}],
+            json=[{"id": 1, "name": "Wirral Package", "type": "construction"}],
         )
 
         assert response.status_code == 401
@@ -341,7 +343,7 @@ class TestAuthoritiesApi:
         response = client.post(
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "name": "Wirral Package", "foo": "bar"}],
+            json=[{"id": 1, "name": "Wirral Package", "type": "construction", "foo": "bar"}],
         )
 
         assert response.status_code == 400
@@ -401,7 +403,7 @@ class TestAuthoritiesApiWhenDisabled:
         response = client.post(
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "name": "Wirral Package"}],
+            json=[{"id": 1, "name": "Wirral Package", "type": "construction"}],
         )
 
         assert response.status_code == 401

@@ -213,15 +213,15 @@ class SchemeOverviewContext:
 
 @dataclass(frozen=True)
 class SchemeTypeContext:
-    name: str | None
+    name: str
     _NAMES = {
         SchemeType.DEVELOPMENT: "Development",
         SchemeType.CONSTRUCTION: "Construction",
     }
 
     @classmethod
-    def from_domain(cls, type_: SchemeType | None) -> SchemeTypeContext:
-        return cls(name=cls._NAMES[type_] if type_ else None)
+    def from_domain(cls, type_: SchemeType) -> SchemeTypeContext:
+        return cls(name=cls._NAMES[type_])
 
 
 @dataclass(frozen=True)

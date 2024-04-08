@@ -328,9 +328,9 @@ class TestSchemeOverviewContext:
 class TestSchemeTypeContext:
     @pytest.mark.parametrize(
         "type_, expected_name",
-        [(SchemeType.DEVELOPMENT, "Development"), (SchemeType.CONSTRUCTION, "Construction"), (None, None)],
+        [(SchemeType.DEVELOPMENT, "Development"), (SchemeType.CONSTRUCTION, "Construction")],
     )
-    def test_from_domain(self, type_: SchemeType | None, expected_name: str | None) -> None:
+    def test_from_domain(self, type_: SchemeType, expected_name: str) -> None:
         context = SchemeTypeContext.from_domain(type_)
 
         assert context == SchemeTypeContext(name=expected_name)

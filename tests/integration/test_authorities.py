@@ -122,7 +122,7 @@ class TestAuthoritiesApi:
             headers={"Authorization": "API-Key boardman"},
             json=[
                 {"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"},
-                {"id": 2, "name": "School Streets", "type": "construction"},
+                {"id": 2, "name": "School Streets", "type": "construction", "funding_programme": "ATF4"},
             ],
         )
 
@@ -143,6 +143,7 @@ class TestAuthoritiesApi:
             and scheme2.name == "School Streets"
             and scheme2.authority_id == 1
             and scheme2.type == SchemeType.CONSTRUCTION
+            and scheme2.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_add_schemes_bid_status_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -154,6 +155,7 @@ class TestAuthoritiesApi:
                     "id": 1,
                     "name": "Wirral Package",
                     "type": "construction",
+                    "funding_programme": "ATF4",
                     "bid_status_revisions": [
                         {
                             "id": 2,
@@ -186,6 +188,7 @@ class TestAuthoritiesApi:
                     "id": 1,
                     "name": "Wirral Package",
                     "type": "construction",
+                    "funding_programme": "ATF4",
                     "financial_revisions": [
                         {
                             "id": 2,
@@ -222,6 +225,7 @@ class TestAuthoritiesApi:
                     "id": 1,
                     "name": "Wirral Package",
                     "type": "construction",
+                    "funding_programme": "ATF4",
                     "milestone_revisions": [
                         {
                             "id": 2,
@@ -260,6 +264,7 @@ class TestAuthoritiesApi:
                     "id": 1,
                     "name": "Wirral Package",
                     "type": "construction",
+                    "funding_programme": "ATF4",
                     "output_revisions": [
                         {
                             "id": 2,
@@ -297,6 +302,7 @@ class TestAuthoritiesApi:
                     "id": 1,
                     "name": "Wirral Package",
                     "type": "construction",
+                    "funding_programme": "ATF4",
                     "authority_reviews": [
                         {
                             "id": 2,
@@ -321,7 +327,8 @@ class TestAuthoritiesApi:
 
     def test_cannot_add_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/schemes", json=[{"id": 1, "name": "Wirral Package", "type": "construction"}]
+            "/authorities/1/schemes",
+            json=[{"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"}],
         )
 
         assert response.status_code == 401
@@ -333,7 +340,7 @@ class TestAuthoritiesApi:
         response = client.post(
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key obree"},
-            json=[{"id": 1, "name": "Wirral Package", "type": "construction"}],
+            json=[{"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"}],
         )
 
         assert response.status_code == 401
@@ -343,7 +350,9 @@ class TestAuthoritiesApi:
         response = client.post(
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "name": "Wirral Package", "type": "construction", "foo": "bar"}],
+            json=[
+                {"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4", "foo": "bar"}
+            ],
         )
 
         assert response.status_code == 400
@@ -403,7 +412,7 @@ class TestAuthoritiesApiWhenDisabled:
         response = client.post(
             "/authorities/1/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "name": "Wirral Package", "type": "construction"}],
+            json=[{"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"}],
         )
 
         assert response.status_code == 401

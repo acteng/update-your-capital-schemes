@@ -226,7 +226,7 @@ class SchemeTypeContext:
 
 @dataclass(frozen=True)
 class FundingProgrammeContext:
-    name: str | None
+    name: str
     _NAMES = {
         FundingProgrammes.ATF2: "ATF2",
         FundingProgrammes.ATF3: "ATF3",
@@ -239,8 +239,8 @@ class FundingProgrammeContext:
     }
 
     @classmethod
-    def from_domain(cls, funding_programme: FundingProgramme | None) -> FundingProgrammeContext:
-        return cls(name=cls._NAMES[funding_programme] if funding_programme else None)
+    def from_domain(cls, funding_programme: FundingProgramme) -> FundingProgrammeContext:
+        return cls(name=cls._NAMES[funding_programme])
 
 
 @bp.get("<int:scheme_id>/spend-to-date")
@@ -375,7 +375,7 @@ class SchemeRepr:
     id: int
     name: str
     type: SchemeTypeRepr
-    funding_programme: FundingProgrammeRepr | None = None
+    funding_programme: FundingProgrammeRepr
     bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
@@ -388,9 +388,7 @@ class SchemeRepr:
             id=scheme.id,
             name=scheme.name,
             type=SchemeTypeRepr.from_domain(scheme.type),
-            funding_programme=(
-                FundingProgrammeRepr.from_domain(scheme.funding_programme) if scheme.funding_programme else None
-            ),
+            funding_programme=FundingProgrammeRepr.from_domain(scheme.funding_programme),
             bid_status_revisions=[
                 BidStatusRevisionRepr.from_domain(bid_status_revision)
                 for bid_status_revision in scheme.funding.bid_status_revisions
@@ -413,8 +411,13 @@ class SchemeRepr:
         )
 
     def to_domain(self, authority_id: int) -> Scheme:
-        scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id, type_=self.type.to_domain())
-        scheme.funding_programme = self.funding_programme.to_domain() if self.funding_programme else None
+        scheme = Scheme(
+            id_=self.id,
+            name=self.name,
+            authority_id=authority_id,
+            type_=self.type.to_domain(),
+            funding_programme=self.funding_programme.to_domain(),
+        )
 
         for bid_status_revision_repr in self.bid_status_revisions:
             scheme.funding.update_bid_status(bid_status_revision_repr.to_domain())

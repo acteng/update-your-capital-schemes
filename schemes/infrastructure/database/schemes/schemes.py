@@ -122,8 +122,8 @@ class DatabaseSchemeRepository(SchemeRepository):
             name=capital_scheme.scheme_name,
             authority_id=capital_scheme.bid_submitting_authority_id,
             type_=self._scheme_type_mapper.to_domain(capital_scheme.scheme_type_id),
+            funding_programme=self._funding_programme_mapper.to_domain(capital_scheme.funding_programme_id),
         )
-        scheme.funding_programme = self._funding_programme_mapper.to_domain(capital_scheme.funding_programme_id)
 
         for capital_scheme_bid_status in capital_scheme.capital_scheme_bid_statuses:
             scheme.funding.update_bid_status(self._capital_scheme_bid_status_to_domain(capital_scheme_bid_status))
@@ -288,8 +288,8 @@ class FundingProgrammeMapper:
         FundingProgrammes.CRSTS: 8,
     }
 
-    def to_id(self, funding_programme: FundingProgramme | None) -> int | None:
-        return self._IDS[funding_programme] if funding_programme else None
+    def to_id(self, funding_programme: FundingProgramme) -> int:
+        return self._IDS[funding_programme]
 
-    def to_domain(self, id_: int | None) -> FundingProgramme | None:
-        return inverse_dict(self._IDS)[id_] if id_ else None
+    def to_domain(self, id_: int) -> FundingProgramme:
+        return inverse_dict(self._IDS)[id_]

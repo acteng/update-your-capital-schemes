@@ -40,7 +40,7 @@ class CapitalSchemeEntity(Base):
         nullable=False,
     )
     scheme_type_id: Mapped[int]
-    funding_programme_id: Mapped[int | None]
+    funding_programme_id: Mapped[int]
     capital_scheme_bid_statuses: Mapped[list[CapitalSchemeBidStatusEntity]] = relationship()
     capital_scheme_financials: Mapped[list[CapitalSchemeFinancialEntity]] = relationship()
     capital_scheme_milestones: Mapped[list[CapitalSchemeMilestoneEntity]] = relationship()

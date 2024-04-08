@@ -109,7 +109,9 @@ class TestSchemes:
         assert not schemes_page.is_no_schemes_message_visible
 
     def test_schemes_shows_minimal_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(
+            build_scheme(id_=1, name="Wirral Package", authority_id=1, funding_programme=FundingProgrammes.ATF3)
+        )
 
         schemes_page = SchemesPage.open(client)
 
@@ -117,7 +119,7 @@ class TestSchemes:
         assert schemes_page.schemes.to_dicts() == [
             {
                 "reference": "ATE00001",
-                "funding_programme": "",
+                "funding_programme": "ATF3",
                 "name": "Wirral Package",
                 "needs_review": True,
                 "last_reviewed": "",
@@ -125,8 +127,7 @@ class TestSchemes:
         ]
 
     def test_schemes_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.funding_programme = FundingProgrammes.ATF3
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1, funding_programme=FundingProgrammes.ATF3)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
         )

@@ -12,7 +12,7 @@ def build_scheme(
     id_: int,
     name: str,
     type_: str = "construction",
-    funding_programme: str | None = None,
+    funding_programme: str = "ATF2",
     bid_status: str = "funded",
     financial_revisions: list[FinancialRevisionRepr] | None = None,
     milestone_revisions: list[MilestoneRevisionRepr] | None = None,

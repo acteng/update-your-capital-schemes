@@ -118,8 +118,7 @@ class TestSchemesContext:
 
 class TestSchemeRowContext:
     def test_from_domain(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.funding_programme = FundingProgrammes.ATF4
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1, funding_programme=FundingProgrammes.ATF4)
 
         context = SchemeRowContext.from_domain(dummy_reporting_window(), scheme)
 
@@ -285,8 +284,7 @@ class TestSchemeOverviewContext:
         assert context.type == SchemeTypeContext(name="Construction")
 
     def test_from_domain_sets_funding_programme(self) -> None:
-        scheme = build_scheme(id_=0, name="", authority_id=0)
-        scheme.funding_programme = FundingProgrammes.ATF4
+        scheme = build_scheme(id_=0, name="", authority_id=0, funding_programme=FundingProgrammes.ATF4)
 
         context = SchemeOverviewContext.from_domain(scheme)
 
@@ -348,10 +346,9 @@ class TestFundingProgrammeContext:
             (FundingProgrammes.MRN, "MRN"),
             (FundingProgrammes.LUF, "LUF"),
             (FundingProgrammes.CRSTS, "CRSTS"),
-            (None, None),
         ],
     )
-    def test_from_domain(self, funding_programme: FundingProgramme | None, expected_name: str | None) -> None:
+    def test_from_domain(self, funding_programme: FundingProgramme, expected_name: str) -> None:
         context = FundingProgrammeContext.from_domain(funding_programme)
 
         assert context == FundingProgrammeContext(name=expected_name)
@@ -359,22 +356,18 @@ class TestFundingProgrammeContext:
 
 class TestSchemeRepr:
     def test_from_domain(self) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2, type_=SchemeType.CONSTRUCTION)
-        scheme.funding_programme = FundingProgrammes.ATF4
+        scheme = Scheme(
+            id_=1,
+            name="Wirral Package",
+            authority_id=2,
+            type_=SchemeType.CONSTRUCTION,
+            funding_programme=FundingProgrammes.ATF4,
+        )
 
         scheme_repr = SchemeRepr.from_domain(scheme)
 
         assert scheme_repr == SchemeRepr(
             id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION, funding_programme=FundingProgrammeRepr.ATF4
-        )
-
-    def test_from_domain_when_minimal(self) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2, type_=SchemeType.CONSTRUCTION)
-
-        scheme_repr = SchemeRepr.from_domain(scheme)
-
-        assert scheme_repr == SchemeRepr(
-            id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION, funding_programme=None
         )
 
     def test_from_domain_sets_bid_status_revisions(self) -> None:
@@ -572,24 +565,12 @@ class TestSchemeRepr:
             and scheme.funding_programme == FundingProgrammes.ATF4
         )
 
-    def test_to_domain_when_minimal(self) -> None:
-        scheme_repr = SchemeRepr(id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION)
-
-        scheme = scheme_repr.to_domain(2)
-
-        assert (
-            scheme.id == 1
-            and scheme.name == "Wirral Package"
-            and scheme.authority_id == 2
-            and scheme.type == SchemeType.CONSTRUCTION
-            and scheme.funding_programme is None
-        )
-
     def test_to_domain_sets_bid_status_revisions(self) -> None:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
             type=SchemeTypeRepr.CONSTRUCTION,
+            funding_programme=FundingProgrammeRepr.ATF4,
             bid_status_revisions=[
                 BidStatusRevisionRepr(
                     id=2,
@@ -624,6 +605,7 @@ class TestSchemeRepr:
             id=0,
             name="",
             type=SchemeTypeRepr.CONSTRUCTION,
+            funding_programme=FundingProgrammeRepr.ATF4,
             financial_revisions=[
                 FinancialRevisionRepr(
                     id=2,
@@ -669,6 +651,7 @@ class TestSchemeRepr:
             id=0,
             name="",
             type=SchemeTypeRepr.CONSTRUCTION,
+            funding_programme=FundingProgrammeRepr.ATF4,
             milestone_revisions=[
                 MilestoneRevisionRepr(
                     id=1,
@@ -718,6 +701,7 @@ class TestSchemeRepr:
             id=0,
             name="",
             type=SchemeTypeRepr.CONSTRUCTION,
+            funding_programme=FundingProgrammeRepr.ATF4,
             output_revisions=[
                 OutputRevisionRepr(
                     id=1,
@@ -765,6 +749,7 @@ class TestSchemeRepr:
             id=0,
             name="",
             type=SchemeTypeRepr.CONSTRUCTION,
+            funding_programme=FundingProgrammeRepr.ATF4,
             authority_reviews=[
                 AuthorityReviewRepr(
                     id=2,

@@ -60,8 +60,13 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_add_schemes(self, schemes: DatabaseSchemeRepository, engine: Engine) -> None:
-        scheme1 = Scheme(id_=1, name="Wirral Package", authority_id=1, type_=SchemeType.DEVELOPMENT)
-        scheme1.funding_programme = FundingProgrammes.ATF3
+        scheme1 = Scheme(
+            id_=1,
+            name="Wirral Package",
+            authority_id=1,
+            type_=SchemeType.DEVELOPMENT,
+            funding_programme=FundingProgrammes.ATF3,
+        )
 
         schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
 
@@ -325,6 +330,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeBidStatusEntity(
                         capital_scheme_bid_status_id=2,
@@ -370,6 +376,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeFinancialEntity(
                         capital_scheme_financial_id=2,
@@ -423,6 +430,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeMilestoneEntity(
                         capital_scheme_milestone_id=2,
@@ -480,6 +488,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeInterventionEntity(
                         capital_scheme_intervention_id=2,
@@ -533,6 +542,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeAuthorityReviewEntity(
                         capital_scheme_authority_review_id=2,
@@ -575,6 +585,7 @@ class TestDatabaseSchemeRepository:
                     scheme_name="Wirral Package",
                     bid_submitting_authority_id=1,
                     scheme_type_id=2,
+                    funding_programme_id=3,
                 )
             )
             session.commit()
@@ -597,12 +608,14 @@ class TestDatabaseSchemeRepository:
                         scheme_name="School Streets",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeEntity(
                         capital_scheme_id=3,
                         scheme_name="Hospital Fields Road",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                 ]
             )
@@ -632,6 +645,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeBidStatusEntity(
                         capital_scheme_bid_status_id=3,
@@ -645,6 +659,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="School Streets",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeBidStatusEntity(
                         capital_scheme_bid_status_id=4,
@@ -680,6 +695,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeFinancialEntity(
                         capital_scheme_financial_id=3,
@@ -695,6 +711,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="School Streets",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeFinancialEntity(
                         capital_scheme_financial_id=4,
@@ -734,6 +751,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeMilestoneEntity(
                         capital_scheme_milestone_id=4,
@@ -750,6 +768,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="School Streets",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeMilestoneEntity(
                         capital_scheme_milestone_id=5,
@@ -766,6 +785,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Hospital Fields Road",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeMilestoneEntity(
                         capital_scheme_milestone_id=6,
@@ -819,6 +839,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeInterventionEntity(
                         capital_scheme_intervention_id=4,
@@ -834,6 +855,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="School Streets",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeInterventionEntity(
                         capital_scheme_intervention_id=5,
@@ -849,6 +871,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Hospital Fields Road",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeInterventionEntity(
                         capital_scheme_intervention_id=6,
@@ -899,6 +922,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeAuthorityReviewEntity(
                         capital_scheme_authority_review_id=2,
@@ -911,6 +935,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="School Streets",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeAuthorityReviewEntity(
                         capital_scheme_authority_review_id=3,
@@ -943,6 +968,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeBidStatusEntity(
                         capital_scheme_id=1,
@@ -983,6 +1009,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="School Streets",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                 ]
             )
@@ -1002,6 +1029,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeFinancialEntity(
                         capital_scheme_financial_id=2,
@@ -1058,6 +1086,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeMilestoneEntity(
                         capital_scheme_milestone_id=2,
@@ -1117,6 +1146,7 @@ class TestDatabaseSchemeRepository:
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
+                        funding_programme_id=3,
                     ),
                     CapitalSchemeAuthorityReviewEntity(
                         capital_scheme_authority_review_id=2,
@@ -1168,12 +1198,11 @@ class TestSchemeTypeMapper:
         (FundingProgrammes.MRN, 6),
         (FundingProgrammes.LUF, 7),
         (FundingProgrammes.CRSTS, 8),
-        (None, None),
     ],
 )
 class TestFundingProgrammeMapper:
-    def test_to_id(self, funding_programme: FundingProgramme | None, id_: int | None) -> None:
+    def test_to_id(self, funding_programme: FundingProgramme, id_: int) -> None:
         assert FundingProgrammeMapper().to_id(funding_programme) == id_
 
-    def test_to_domain(self, funding_programme: FundingProgramme | None, id_: int | None) -> None:
+    def test_to_domain(self, funding_programme: FundingProgramme, id_: int) -> None:
         assert FundingProgrammeMapper().to_domain(id_) == funding_programme

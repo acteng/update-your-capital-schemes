@@ -10,12 +10,12 @@ from schemes.domain.schemes.reviews import SchemeReviews
 
 
 class Scheme:
-    def __init__(self, id_: int, name: str, authority_id: int, type_: SchemeType):
+    def __init__(self, id_: int, name: str, authority_id: int, type_: SchemeType, funding_programme: FundingProgramme):
         self.id = id_
         self.name = name
         self.authority_id = authority_id
         self.type = type_
-        self.funding_programme: FundingProgramme | None = None
+        self.funding_programme = funding_programme
         self._funding = SchemeFunding()
         self._milestones = SchemeMilestones()
         self._outputs = SchemeOutputs()

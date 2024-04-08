@@ -29,20 +29,33 @@ class TestSchemeOverview:
             session["user"] = {"email": "boardman@example.com"}
 
     def test_scheme_shows_minimal_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1, type_=SchemeType.CONSTRUCTION))
+        schemes.add(
+            build_scheme(
+                id_=1,
+                name="Wirral Package",
+                authority_id=1,
+                type_=SchemeType.CONSTRUCTION,
+                funding_programme=FundingProgrammes.ATF4,
+            )
+        )
 
         scheme_page = SchemePage.open(client, id_=1)
 
         assert (
             scheme_page.overview.reference == "ATE00001"
             and scheme_page.overview.scheme_type == "Construction"
-            and scheme_page.overview.funding_programme == ""
+            and scheme_page.overview.funding_programme == "ATF4"
             and scheme_page.overview.current_milestone == ""
         )
 
     def test_scheme_shows_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1, type_=SchemeType.CONSTRUCTION)
-        scheme.funding_programme = FundingProgrammes.ATF4
+        scheme = build_scheme(
+            id_=1,
+            name="Wirral Package",
+            authority_id=1,
+            type_=SchemeType.CONSTRUCTION,
+            funding_programme=FundingProgrammes.ATF4,
+        )
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=1,

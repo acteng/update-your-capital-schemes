@@ -23,14 +23,20 @@ from tests.builders import build_scheme
 
 class TestScheme:
     def test_create(self) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2, type_=SchemeType.CONSTRUCTION)
+        scheme = Scheme(
+            id_=1,
+            name="Wirral Package",
+            authority_id=2,
+            type_=SchemeType.CONSTRUCTION,
+            funding_programme=FundingProgrammes.ATF4,
+        )
 
         assert (
             scheme.id == 1
             and scheme.name == "Wirral Package"
             and scheme.authority_id == 2
             and scheme.type == SchemeType.CONSTRUCTION
-            and scheme.funding_programme is None
+            and scheme.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_get_reference(self) -> None:
@@ -69,8 +75,13 @@ class TestScheme:
         ],
     )
     def test_is_updateable_when_funded(self, bid_status: BidStatus, expected_updateable: bool) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2, bid_status=bid_status)
-        scheme.funding_programme = FundingProgrammes.ATF4
+        scheme = build_scheme(
+            id_=1,
+            name="Wirral Package",
+            authority_id=2,
+            funding_programme=FundingProgrammes.ATF4,
+            bid_status=bid_status,
+        )
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=3,
@@ -93,8 +104,13 @@ class TestScheme:
         ],
     )
     def test_is_updateable_when_active_and_incomplete(self, milestone: Milestone, expected_updateable: bool) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2, bid_status=BidStatus.FUNDED)
-        scheme.funding_programme = FundingProgrammes.ATF4
+        scheme = build_scheme(
+            id_=1,
+            name="Wirral Package",
+            authority_id=2,
+            funding_programme=FundingProgrammes.ATF4,
+            bid_status=BidStatus.FUNDED,
+        )
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=3,
@@ -111,16 +127,20 @@ class TestScheme:
     @pytest.mark.parametrize(
         "funding_programme, expected_updateable",
         [
-            (None, True),
             (FundingProgrammes.ATF4, True),
             (FundingProgramme("ATF100", True), False),
         ],
     )
     def test_is_updateable_when_not_under_embargo(
-        self, funding_programme: FundingProgramme | None, expected_updateable: bool
+        self, funding_programme: FundingProgramme, expected_updateable: bool
     ) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2, bid_status=BidStatus.FUNDED)
-        scheme.funding_programme = funding_programme
+        scheme = build_scheme(
+            id_=1,
+            name="Wirral Package",
+            authority_id=2,
+            funding_programme=funding_programme,
+            bid_status=BidStatus.FUNDED,
+        )
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=3,
@@ -135,8 +155,13 @@ class TestScheme:
         assert scheme.is_updateable == expected_updateable
 
     def test_is_updateable_when_no_bid_status_revision(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2, bid_status_revisions=[])
-        scheme.funding_programme = FundingProgrammes.ATF4
+        scheme = build_scheme(
+            id_=1,
+            name="Wirral Package",
+            authority_id=2,
+            funding_programme=FundingProgrammes.ATF4,
+            bid_status_revisions=[],
+        )
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=3,
@@ -151,14 +176,24 @@ class TestScheme:
         assert scheme.is_updateable is False
 
     def test_is_updateable_when_no_milestone_revision(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2, bid_status=BidStatus.FUNDED)
-        scheme.funding_programme = FundingProgrammes.ATF4
+        scheme = build_scheme(
+            id_=1,
+            name="Wirral Package",
+            authority_id=2,
+            funding_programme=FundingProgrammes.ATF4,
+            bid_status=BidStatus.FUNDED,
+        )
 
         assert scheme.is_updateable is True
 
     def test_is_updateable_uses_latest_milestone_revision(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2, bid_status=BidStatus.FUNDED)
-        scheme.funding_programme = FundingProgrammes.ATF4
+        scheme = build_scheme(
+            id_=1,
+            name="Wirral Package",
+            authority_id=2,
+            funding_programme=FundingProgrammes.ATF4,
+            bid_status=BidStatus.FUNDED,
+        )
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=3,

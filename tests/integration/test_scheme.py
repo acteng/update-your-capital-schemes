@@ -124,9 +124,15 @@ class TestSchemeApi:
         return dict(config) | {"API_KEY": "boardman"}
 
     def test_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1, type_=SchemeType.CONSTRUCTION)
-        scheme.funding_programme = FundingProgrammes.ATF4
-        schemes.add(scheme)
+        schemes.add(
+            Scheme(
+                id_=1,
+                name="Wirral Package",
+                authority_id=1,
+                type_=SchemeType.CONSTRUCTION,
+                funding_programme=FundingProgrammes.ATF4,
+            )
+        )
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
 

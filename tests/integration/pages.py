@@ -399,7 +399,8 @@ class ChangeMilestoneDatesFormRowComponent:
         grid_row = heading.find_next_sibling("div", class_="govuk-grid-row")
         assert isinstance(grid_row, Tag)
         self.planned = DateComponent(one(grid_row.select("fieldset:has(legend:-soup-contains('Planned date'))")))
-        self.actual = DateComponent(one(grid_row.select("fieldset:has(legend:-soup-contains('Actual date'))")))
+        actual_tag = grid_row.select_one("fieldset:has(legend:-soup-contains('Actual date'))")
+        self.actual = DateComponent(actual_tag) if actual_tag else None
 
 
 class DateComponent:

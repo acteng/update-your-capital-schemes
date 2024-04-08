@@ -177,7 +177,6 @@ class TestChangeMilestoneDatesForm:
         "construction_started_planned",
         "construction_started_actual",
         "construction_completed_planned",
-        "construction_completed_actual",
     ]
     field_names_milestones_observation_types = [
         ("feasibility_design_completed_planned", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED),
@@ -189,7 +188,6 @@ class TestChangeMilestoneDatesForm:
         ("construction_started_planned", Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
         ("construction_started_actual", Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
         ("construction_completed_planned", Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
-        ("construction_completed_actual", Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL),
     ]
 
     @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
@@ -233,7 +231,6 @@ class TestChangeMilestoneDatesForm:
             and form.construction_started_planned.data is None
             and form.construction_started_actual.data is None
             and form.construction_completed_planned.data is None
-            and form.construction_completed_actual.data is None
         )
 
     @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
@@ -329,6 +326,22 @@ class TestChangeMilestoneDatesForm:
             and milestone_revision1.source == DataSource.ATF4_BID
         )
 
+    def test_update_domain_ignores_construction_completed_actual_date(self) -> None:
+        form = ChangeMilestoneDatesForm(
+            formdata=MultiDict(
+                [
+                    ("construction_completed_actual", "2"),
+                    ("construction_completed_actual", "1"),
+                    ("construction_completed_actual", "2020"),
+                ]
+            )
+        )
+        milestones = SchemeMilestones()
+
+        form.update_domain(milestones, now=datetime(2020, 2, 1, 13))
+
+        assert not milestones.milestone_revisions
+
     @pytest.mark.parametrize("field_name", field_names)
     def test_no_errors_when_valid(self, field_name: str) -> None:
         form = ChangeMilestoneDatesForm(
@@ -361,7 +374,6 @@ class TestChangeMilestoneDatesForm:
             ("construction_started_planned", "Enter a construction started planned date"),
             ("construction_started_actual", "Enter a construction started actual date"),
             ("construction_completed_planned", "Enter a construction completed planned date"),
-            ("construction_completed_actual", "Enter a construction completed actual date"),
         ],
     )
     @pytest.mark.parametrize(
@@ -398,7 +410,6 @@ class TestChangeMilestoneDatesForm:
             ("construction_started_planned", "Construction started planned date must be a real date"),
             ("construction_started_actual", "Construction started actual date must be a real date"),
             ("construction_completed_planned", "Construction completed planned date must be a real date"),
-            ("construction_completed_actual", "Construction completed actual date must be a real date"),
         ],
     )
     @pytest.mark.parametrize(

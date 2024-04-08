@@ -122,7 +122,7 @@ class TestAuthoritiesApi:
             headers={"Authorization": "API-Key boardman"},
             json=[
                 {"id": 1, "name": "Wirral Package", "type": "construction", "funding_programme": "ATF4"},
-                {"id": 2, "name": "School Streets"},
+                {"id": 2, "name": "School Streets", "type": "construction"},
             ],
         )
 
@@ -137,7 +137,13 @@ class TestAuthoritiesApi:
             and scheme1.type == SchemeType.CONSTRUCTION
             and scheme1.funding_programme == FundingProgrammes.ATF4
         )
-        assert scheme2 and scheme2.id == 2 and scheme2.name == "School Streets" and scheme2.authority_id == 1
+        assert (
+            scheme2
+            and scheme2.id == 2
+            and scheme2.name == "School Streets"
+            and scheme2.authority_id == 1
+            and scheme2.type == SchemeType.CONSTRUCTION
+        )
 
     def test_add_schemes_bid_status_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -147,6 +153,7 @@ class TestAuthoritiesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
+                    "type": "construction",
                     "bid_status_revisions": [
                         {
                             "id": 2,
@@ -178,6 +185,7 @@ class TestAuthoritiesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
+                    "type": "construction",
                     "financial_revisions": [
                         {
                             "id": 2,
@@ -213,6 +221,7 @@ class TestAuthoritiesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
+                    "type": "construction",
                     "milestone_revisions": [
                         {
                             "id": 2,
@@ -250,6 +259,7 @@ class TestAuthoritiesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
+                    "type": "construction",
                     "output_revisions": [
                         {
                             "id": 2,
@@ -286,6 +296,7 @@ class TestAuthoritiesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
+                    "type": "construction",
                     "authority_reviews": [
                         {
                             "id": 2,

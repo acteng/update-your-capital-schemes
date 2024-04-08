@@ -14,7 +14,7 @@ from schemes.domain.schemes import (
 )
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
-from tests.integration.builders import build_scheme
+from tests.builders import build_scheme
 from tests.integration.pages import ChangeSpendToDatePage, SchemePage
 
 

@@ -13,7 +13,7 @@ from schemes.domain.schemes import (
     SchemeRepository,
 )
 from schemes.domain.users import User, UserRepository
-from tests.integration.builders import build_scheme
+from tests.builders import build_scheme
 from tests.integration.pages import SchemePage
 
 

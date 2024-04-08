@@ -10,12 +10,11 @@ from schemes.domain.schemes import (
     BidStatus,
     DataSource,
     FundingProgrammes,
-    Scheme,
     SchemeRepository,
 )
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
-from tests.integration.builders import build_scheme
+from tests.builders import build_scheme
 from tests.integration.pages import SchemesPage
 
 
@@ -80,7 +79,7 @@ class TestSchemes:
         self, client: FlaskClient, clock: Clock, schemes: SchemeRepository
     ) -> None:
         clock.now = datetime(2020, 3, 1)
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -182,7 +181,7 @@ class TestSchemesApi:
         return dict(config) | {"API_KEY": "boardman"}
 
     def test_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 
@@ -190,7 +189,7 @@ class TestSchemesApi:
         assert not schemes.get(1)
 
     def test_cannot_clear_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes")
 
@@ -200,7 +199,7 @@ class TestSchemesApi:
     def test_cannot_clear_schemes_when_incorrect_credentials(
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key obree"})
 
@@ -210,7 +209,7 @@ class TestSchemesApi:
 
 class TestSchemesApiWhenDisabled:
     def test_cannot_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 

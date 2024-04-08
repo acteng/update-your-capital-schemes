@@ -39,7 +39,7 @@ class CapitalSchemeEntity(Base):
         ForeignKey("authority.authority.authority_id", name="capital_scheme_bid_submitting_authority_id_fkey"),
         nullable=False,
     )
-    scheme_type_id: Mapped[int | None]
+    scheme_type_id: Mapped[int]
     funding_programme_id: Mapped[int | None]
     capital_scheme_bid_statuses: Mapped[list[CapitalSchemeBidStatusEntity]] = relationship()
     capital_scheme_financials: Mapped[list[CapitalSchemeFinancialEntity]] = relationship()

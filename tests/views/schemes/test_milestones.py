@@ -10,7 +10,6 @@ from schemes.domain.schemes import (
     Milestone,
     MilestoneRevision,
     ObservationType,
-    Scheme,
     SchemeMilestones,
 )
 from schemes.views.schemes.data_source import DataSourceRepr
@@ -24,6 +23,7 @@ from schemes.views.schemes.milestones import (
     SchemeMilestonesContext,
 )
 from schemes.views.schemes.observations import ObservationTypeRepr
+from tests.builders import build_scheme
 
 
 class TestSchemeMilestonesContext:
@@ -148,7 +148,7 @@ class TestMilestoneContext:
 @pytest.mark.usefixtures("app")
 class TestChangeMilestoneDatesContext:
     def test_from_domain(self) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=1,

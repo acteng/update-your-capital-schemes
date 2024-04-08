@@ -26,7 +26,7 @@ from schemes.domain.schemes import (
 )
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
-from tests.integration.builders import build_scheme
+from tests.builders import build_scheme
 from tests.integration.pages import SchemePage
 
 
@@ -124,8 +124,7 @@ class TestSchemeApi:
         return dict(config) | {"API_KEY": "boardman"}
 
     def test_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.type = SchemeType.CONSTRUCTION
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1, type_=SchemeType.CONSTRUCTION)
         scheme.funding_programme = FundingProgrammes.ATF4
         schemes.add(scheme)
 
@@ -144,9 +143,13 @@ class TestSchemeApi:
         }
 
     def test_get_scheme_bid_status_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme.funding.update_bid_status(
-            BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1, 12), None), status=BidStatus.FUNDED)
+        scheme = build_scheme(
+            id_=1,
+            name="Wirral Package",
+            authority_id=1,
+            bid_status_revisions=[
+                BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1, 12), None), status=BidStatus.FUNDED)
+            ],
         )
         schemes.add(scheme)
 
@@ -163,7 +166,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=2,
@@ -190,7 +193,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_milestone_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=2,
@@ -219,7 +222,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_output_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.outputs.update_output(
             OutputRevision(
                 id_=2,
@@ -247,7 +250,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_authority_reviews(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1, 12), source=DataSource.ATF4_BID)
         )
@@ -265,14 +268,14 @@ class TestSchemeApi:
         ]
 
     def test_cannot_get_scheme_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json"})
 
         assert response.status_code == 401
 
     def test_cannot_get_scheme_when_incorrect_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key obree"})
 
@@ -281,7 +284,7 @@ class TestSchemeApi:
 
 class TestSchemeApiWhenDisabled:
     def test_cannot_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
 

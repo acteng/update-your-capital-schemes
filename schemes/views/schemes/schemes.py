@@ -374,7 +374,7 @@ def clear(schemes: SchemeRepository) -> Response:
 class SchemeRepr:
     id: int
     name: str
-    type: SchemeTypeRepr | None = None
+    type: SchemeTypeRepr
     funding_programme: FundingProgrammeRepr | None = None
     bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
@@ -387,7 +387,7 @@ class SchemeRepr:
         return cls(
             id=scheme.id,
             name=scheme.name,
-            type=SchemeTypeRepr.from_domain(scheme.type) if scheme.type else None,
+            type=SchemeTypeRepr.from_domain(scheme.type),
             funding_programme=(
                 FundingProgrammeRepr.from_domain(scheme.funding_programme) if scheme.funding_programme else None
             ),
@@ -413,8 +413,7 @@ class SchemeRepr:
         )
 
     def to_domain(self, authority_id: int) -> Scheme:
-        scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id)
-        scheme.type = self.type.to_domain() if self.type else None
+        scheme = Scheme(id_=self.id, name=self.name, authority_id=authority_id, type_=self.type.to_domain())
         scheme.funding_programme = self.funding_programme.to_domain() if self.funding_programme else None
 
         for bid_status_revision_repr in self.bid_status_revisions:

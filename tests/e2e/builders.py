@@ -11,7 +11,7 @@ from tests.e2e.app_client import (
 def build_scheme(
     id_: int,
     name: str,
-    type_: str | None = None,
+    type_: str = "construction",
     funding_programme: str | None = None,
     bid_status: str = "funded",
     financial_revisions: list[FinancialRevisionRepr] | None = None,

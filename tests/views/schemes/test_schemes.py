@@ -53,14 +53,15 @@ from schemes.views.schemes.schemes import (
     SchemeTypeContext,
     SchemeTypeRepr,
 )
+from tests.builders import build_scheme
 
 
 class TestSchemesContext:
     def test_from_domain(self) -> None:
         authority = Authority(id_=1, name="Liverpool City Region Combined Authority")
         schemes = [
-            Scheme(id_=1, name="Wirral Package", authority_id=1),
-            Scheme(id_=2, name="School Streets", authority_id=1),
+            build_scheme(id_=1, name="Wirral Package", authority_id=1),
+            build_scheme(id_=2, name="School Streets", authority_id=1),
         ]
 
         context = SchemesContext.from_domain(datetime.min, dummy_reporting_window(), authority, schemes)
@@ -74,7 +75,7 @@ class TestSchemesContext:
     def test_from_domain_sets_reporting_window_days_left(self) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
         authority = Authority(id_=1, name="")
-        scheme = Scheme(id_=1, name="", authority_id=1)
+        scheme = build_scheme(id_=1, name="", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
@@ -86,7 +87,7 @@ class TestSchemesContext:
     def test_from_domain_does_not_set_reporting_window_days_left_when_up_to_date(self) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
         authority = Authority(id_=1, name="")
-        scheme = Scheme(id_=1, name="", authority_id=1)
+        scheme = build_scheme(id_=1, name="", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 4, 1), source=DataSource.ATF4_BID)
         )
@@ -105,7 +106,7 @@ class TestSchemesContext:
     def test_from_domain_sets_scheme_needs_review(self) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
         authority = Authority(id_=1, name="")
-        scheme = Scheme(id_=1, name="", authority_id=1)
+        scheme = build_scheme(id_=1, name="", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
@@ -117,7 +118,7 @@ class TestSchemesContext:
 
 class TestSchemeRowContext:
     def test_from_domain(self) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.funding_programme = FundingProgrammes.ATF4
 
         context = SchemeRowContext.from_domain(dummy_reporting_window(), scheme)
@@ -140,7 +141,7 @@ class TestSchemeRowContext:
     )
     def test_from_domain_sets_needs_review(self, review_date: datetime, expected_needs_review: bool) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
         )
@@ -150,7 +151,7 @@ class TestSchemeRowContext:
         assert context.needs_review == expected_needs_review
 
     def test_from_domain_sets_last_reviewed(self) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID),
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.ATF4_BID),
@@ -165,7 +166,7 @@ class TestSchemeRowContext:
 class TestSchemeContext:
     def test_from_domain(self) -> None:
         authority = Authority(id_=2, name="Liverpool City Region Combined Authority")
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
 
         context = SchemeContext.from_domain(dummy_reporting_window(), authority, scheme)
 
@@ -188,7 +189,7 @@ class TestSchemeContext:
     def test_from_domain_sets_needs_review(self, review_date: datetime, expected_needs_review: bool) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 5, 1)))
         authority = Authority(id_=2, name="")
-        scheme = Scheme(id_=1, name="", authority_id=2)
+        scheme = build_scheme(id_=1, name="", authority_id=2)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
         )
@@ -199,7 +200,7 @@ class TestSchemeContext:
 
     def test_from_domain_sets_funding(self) -> None:
         authority = Authority(id_=2, name="")
-        scheme = Scheme(id_=1, name="", authority_id=2)
+        scheme = build_scheme(id_=1, name="", authority_id=2)
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=1,
@@ -216,7 +217,7 @@ class TestSchemeContext:
 
     def test_from_domain_sets_milestones(self) -> None:
         authority = Authority(id_=2, name="")
-        scheme = Scheme(id_=1, name="", authority_id=2)
+        scheme = build_scheme(id_=1, name="", authority_id=2)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
@@ -234,7 +235,7 @@ class TestSchemeContext:
 
     def test_from_domain_sets_outputs(self) -> None:
         authority = Authority(id_=2, name="")
-        scheme = Scheme(id_=1, name="", authority_id=2)
+        scheme = build_scheme(id_=1, name="", authority_id=2)
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -258,7 +259,7 @@ class TestSchemeContext:
 
     def test_from_domain_sets_review(self) -> None:
         authority = Authority(id_=2, name="")
-        scheme = Scheme(id_=1, name="", authority_id=2)
+        scheme = build_scheme(id_=1, name="", authority_id=2)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
         )
@@ -270,22 +271,21 @@ class TestSchemeContext:
 
 class TestSchemeOverviewContext:
     def test_from_domain_sets_reference(self) -> None:
-        scheme = Scheme(id_=1, name="", authority_id=0)
+        scheme = build_scheme(id_=1, name="", authority_id=0)
 
         context = SchemeOverviewContext.from_domain(scheme)
 
         assert context.reference == "ATE00001"
 
     def test_from_domain_sets_type(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.type = SchemeType.CONSTRUCTION
+        scheme = build_scheme(id_=0, name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
 
         context = SchemeOverviewContext.from_domain(scheme)
 
         assert context.type == SchemeTypeContext(name="Construction")
 
     def test_from_domain_sets_funding_programme(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme = build_scheme(id_=0, name="", authority_id=0)
         scheme.funding_programme = FundingProgrammes.ATF4
 
         context = SchemeOverviewContext.from_domain(scheme)
@@ -293,7 +293,7 @@ class TestSchemeOverviewContext:
         assert context.funding_programme == FundingProgrammeContext(name="ATF4")
 
     def test_from_domain_sets_current_milestone(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme = build_scheme(id_=0, name="", authority_id=0)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
@@ -318,7 +318,7 @@ class TestSchemeOverviewContext:
         assert context.current_milestone == MilestoneContext(name="Construction started")
 
     def test_from_domain_sets_current_milestone_when_no_revisions(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme = build_scheme(id_=0, name="", authority_id=0)
 
         context = SchemeOverviewContext.from_domain(scheme)
 
@@ -359,8 +359,7 @@ class TestFundingProgrammeContext:
 
 class TestSchemeRepr:
     def test_from_domain(self) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
-        scheme.type = SchemeType.CONSTRUCTION
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2, type_=SchemeType.CONSTRUCTION)
         scheme.funding_programme = FundingProgrammes.ATF4
 
         scheme_repr = SchemeRepr.from_domain(scheme)
@@ -370,21 +369,27 @@ class TestSchemeRepr:
         )
 
     def test_from_domain_when_minimal(self) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2, type_=SchemeType.CONSTRUCTION)
 
         scheme_repr = SchemeRepr.from_domain(scheme)
 
-        assert scheme_repr == SchemeRepr(id=1, name="Wirral Package", type=None, funding_programme=None)
+        assert scheme_repr == SchemeRepr(
+            id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION, funding_programme=None
+        )
 
     def test_from_domain_sets_bid_status_revisions(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
-        scheme.funding.update_bid_statuses(
-            BidStatusRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 12)),
-                status=BidStatus.SUBMITTED,
-            ),
-            BidStatusRevision(id_=3, effective=DateRange(datetime(2020, 2, 1, 12), None), status=BidStatus.FUNDED),
+        scheme = build_scheme(
+            id_=0,
+            name="",
+            authority_id=0,
+            bid_status_revisions=[
+                BidStatusRevision(
+                    id_=2,
+                    effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 12)),
+                    status=BidStatus.SUBMITTED,
+                ),
+                BidStatusRevision(id_=3, effective=DateRange(datetime(2020, 2, 1, 12), None), status=BidStatus.FUNDED),
+            ],
         )
 
         scheme_repr = SchemeRepr.from_domain(scheme)
@@ -405,7 +410,7 @@ class TestSchemeRepr:
         ]
 
     def test_from_domain_sets_financial_revisions(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme = build_scheme(id_=0, name="", authority_id=0)
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=2,
@@ -445,7 +450,7 @@ class TestSchemeRepr:
         ]
 
     def test_from_domain_sets_milestone_revisions(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme = build_scheme(id_=0, name="", authority_id=0)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
@@ -489,7 +494,7 @@ class TestSchemeRepr:
         ]
 
     def test_from_domain_sets_output_revisions(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme = build_scheme(id_=0, name="", authority_id=0)
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -531,7 +536,7 @@ class TestSchemeRepr:
         ]
 
     def test_from_domain_sets_authority_reviews(self) -> None:
-        scheme = Scheme(id_=0, name="", authority_id=0)
+        scheme = build_scheme(id_=0, name="", authority_id=0)
         scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID),
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.PULSE_6),
@@ -568,7 +573,7 @@ class TestSchemeRepr:
         )
 
     def test_to_domain_when_minimal(self) -> None:
-        scheme_repr = SchemeRepr(id=1, name="Wirral Package")
+        scheme_repr = SchemeRepr(id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION)
 
         scheme = scheme_repr.to_domain(2)
 
@@ -576,7 +581,7 @@ class TestSchemeRepr:
             scheme.id == 1
             and scheme.name == "Wirral Package"
             and scheme.authority_id == 2
-            and scheme.type is None
+            and scheme.type == SchemeType.CONSTRUCTION
             and scheme.funding_programme is None
         )
 
@@ -584,6 +589,7 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
+            type=SchemeTypeRepr.CONSTRUCTION,
             bid_status_revisions=[
                 BidStatusRevisionRepr(
                     id=2,
@@ -617,6 +623,7 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
+            type=SchemeTypeRepr.CONSTRUCTION,
             financial_revisions=[
                 FinancialRevisionRepr(
                     id=2,
@@ -661,6 +668,7 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
+            type=SchemeTypeRepr.CONSTRUCTION,
             milestone_revisions=[
                 MilestoneRevisionRepr(
                     id=1,
@@ -709,6 +717,7 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
+            type=SchemeTypeRepr.CONSTRUCTION,
             output_revisions=[
                 OutputRevisionRepr(
                     id=1,
@@ -755,6 +764,7 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
+            type=SchemeTypeRepr.CONSTRUCTION,
             authority_reviews=[
                 AuthorityReviewRepr(
                     id=2,

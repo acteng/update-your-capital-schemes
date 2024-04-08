@@ -11,7 +11,6 @@ from schemes.domain.schemes import (
     DataSource,
     FinancialRevision,
     FinancialType,
-    Scheme,
     SchemeFunding,
 )
 from schemes.views.schemes.data_source import DataSourceRepr
@@ -24,6 +23,7 @@ from schemes.views.schemes.funding import (
     FinancialTypeRepr,
     SchemeFundingContext,
 )
+from tests.builders import build_scheme
 
 
 class TestSchemeFundingContext:
@@ -102,7 +102,7 @@ class TestSchemeFundingContext:
 @pytest.mark.usefixtures("app")
 class TestChangeSpendToDateContext:
     def test_from_domain(self) -> None:
-        scheme = Scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=1,

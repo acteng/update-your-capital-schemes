@@ -45,7 +45,7 @@ class Scheme:
     def is_updateable(self) -> bool:
         is_funded = self.funding.bid_status == BidStatus.FUNDED
         is_active_and_incomplete = self._is_active_and_incomplete(self.milestones.current_milestone)
-        is_under_embargo = self.funding_programme and self.funding_programme.is_under_embargo
+        is_under_embargo = self.funding_programme.is_under_embargo
         return is_funded and is_active_and_incomplete and not is_under_embargo
 
     @staticmethod

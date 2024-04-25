@@ -51,7 +51,7 @@ resource "google_secret_manager_secret_version" "database_uri" {
     "postgresql+pg8000://",
     google_sql_user.schemes.name,
     ":",
-    random_password.schemes.result,
+    google_sql_user.schemes.password,
     "@/",
     google_sql_database.schemes.name,
     "?unix_sock=/cloudsql/",

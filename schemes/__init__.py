@@ -39,6 +39,16 @@ from schemes.domain.reporting_window import (
 from schemes.domain.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock, FakeClock, SystemClock
+from schemes.infrastructure.database import (
+    AuthorityEntity,
+    CapitalSchemeAuthorityReviewEntity,
+    CapitalSchemeBidStatusEntity,
+    CapitalSchemeEntity,
+    CapitalSchemeFinancialEntity,
+    CapitalSchemeInterventionEntity,
+    CapitalSchemeMilestoneEntity,
+    UserEntity,
+)
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
 from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.database.users import DatabaseUserRepository
@@ -93,6 +103,7 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
         binder.bind(Clock, FakeClock() if app.testing else SystemClock())
         binder.bind_to_constructor(ReportingWindowService, DefaultReportingWindowService)
         binder.bind_to_constructor(Engine, _create_engine)
+        binder.bind_to_constructor((Engine, CapitalSchemeEntity), _create_capital_schemes_engine)
         binder.bind_to_constructor(sessionmaker[Session], _create_session_maker)
         binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
         binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
@@ -112,8 +123,25 @@ def _create_engine(config: Config) -> Engine:
 
 
 @inject.autoparams()
-def _create_session_maker(engine: Engine) -> sessionmaker[Session]:
-    return sessionmaker(engine)
+def _create_capital_schemes_engine(config: Config, engine: Engine) -> Engine:
+    database_uri = config.get("CAPITAL_SCHEMES_DATABASE_URI")
+    return create_engine(database_uri) if database_uri else engine
+
+
+@inject.params(engine=Engine, capital_schemes_engine=(Engine, CapitalSchemeEntity))
+def _create_session_maker(engine: Engine, capital_schemes_engine: Engine) -> sessionmaker[Session]:
+    return sessionmaker(
+        binds={
+            AuthorityEntity: capital_schemes_engine,
+            CapitalSchemeAuthorityReviewEntity: capital_schemes_engine,
+            CapitalSchemeBidStatusEntity: capital_schemes_engine,
+            CapitalSchemeEntity: capital_schemes_engine,
+            CapitalSchemeFinancialEntity: capital_schemes_engine,
+            CapitalSchemeInterventionEntity: capital_schemes_engine,
+            CapitalSchemeMilestoneEntity: capital_schemes_engine,
+            UserEntity: engine,
+        }
+    )
 
 
 def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_record: ConnectionPoolEntry) -> None:

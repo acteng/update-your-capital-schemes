@@ -26,20 +26,21 @@ bw get notes "Schemes Secrets (Localhost)" > .env
 
 The application can also be configured with the following environment variables:
 
-| Name                             | Value                                                                                       |
-|----------------------------------|---------------------------------------------------------------------------------------------|
-| FLASK_ENV                        | Application environment name (`dev` / `test`)                                               |
-| FLASK_SQLALCHEMY_DATABASE_URI    | SQLAlchemy database URI                                                                     |
-| FLASK_SECRET_KEY                 | Flask session [secret key](https://flask.palletsprojects.com/en/3.0.x/quickstart/#sessions) |
-| FLASK_BASIC_AUTH_USERNAME        | HTTP Basic Auth username (unset to disable)                                                 |
-| FLASK_BASIC_AUTH_PASSWORD        | HTTP Basic Auth password                                                                    |
-| FLASK_API_KEY                    | API key (unset to disable)                                                                  |
-| FLASK_GOVUK_CLIENT_ID            | OIDC client id                                                                              |
-| FLASK_GOVUK_CLIENT_SECRET        | OIDC client secret                                                                          |
-| FLASK_GOVUK_SERVER_METADATA_URL  | OIDC discovery endpoint                                                                     |
-| FLASK_GOVUK_TOKEN_ENDPOINT       | OIDC token endpoint                                                                         |
-| FLASK_GOVUK_PROFILE_URL          | OIDC profile URL                                                                            |
-| FLASK_GOVUK_END_SESSION_ENDPOINT | OIDC end session endpoint                                                                   |
+| Name                               | Value                                                                                       |
+|------------------------------------|---------------------------------------------------------------------------------------------|
+| FLASK_ENV                          | Application environment name (`dev` / `test`)                                               |
+| FLASK_SQLALCHEMY_DATABASE_URI      | SQLAlchemy database URI                                                                     |
+| FLASK_CAPITAL_SCHEMES_DATABASE_URI | SQLAlchemy database URI for capital schemes (unset to use primary database URI)             |
+| FLASK_SECRET_KEY                   | Flask session [secret key](https://flask.palletsprojects.com/en/3.0.x/quickstart/#sessions) |
+| FLASK_BASIC_AUTH_USERNAME          | HTTP Basic Auth username (unset to disable)                                                 |
+| FLASK_BASIC_AUTH_PASSWORD          | HTTP Basic Auth password                                                                    |
+| FLASK_API_KEY                      | API key (unset to disable)                                                                  |
+| FLASK_GOVUK_CLIENT_ID              | OIDC client id                                                                              |
+| FLASK_GOVUK_CLIENT_SECRET          | OIDC client secret                                                                          |
+| FLASK_GOVUK_SERVER_METADATA_URL    | OIDC discovery endpoint                                                                     |
+| FLASK_GOVUK_TOKEN_ENDPOINT         | OIDC token endpoint                                                                         |
+| FLASK_GOVUK_PROFILE_URL            | OIDC profile URL                                                                            |
+| FLASK_GOVUK_END_SESSION_ENDPOINT   | OIDC end session endpoint                                                                   |
 
 ## Running locally
 

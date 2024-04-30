@@ -130,12 +130,6 @@ resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
   depends_on = [google_project_service.run]
 }
 
-resource "google_project_iam_member" "cloud_run_schemes_cloud_sql_client" {
-  project = var.project
-  role    = "roles/cloudsql.client"
-  member  = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
-}
-
 # secret key
 
 resource "random_password" "secret_key" {
@@ -163,7 +157,13 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_secret_key
   secret_id = google_secret_manager_secret.secret_key.id
 }
 
-# database URI
+# database
+
+resource "google_project_iam_member" "cloud_run_schemes_cloud_sql_client" {
+  project = var.project
+  role    = "roles/cloudsql.client"
+  member  = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
+}
 
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_database_uri" {
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"

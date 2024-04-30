@@ -65,15 +65,6 @@ resource "google_cloud_run_v2_service" "schemes" {
         }
       }
       env {
-        name = "FLASK_API_KEY"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.api_key.secret_id
-            version = "latest"
-          }
-        }
-      }
-      env {
         name = "FLASK_GOVUK_CLIENT_SECRET"
         value_source {
           secret_key_ref {
@@ -114,9 +105,6 @@ resource "google_cloud_run_v2_service" "schemes" {
     google_secret_manager_secret_iam_member.cloud_run_schemes_basic_auth_username,
     # basic auth password
     google_secret_manager_secret_iam_member.cloud_run_schemes_basic_auth_password,
-    # api key
-    google_secret_manager_secret_version.api_key,
-    google_secret_manager_secret_iam_member.cloud_run_schemes_api_key,
     # govuk client secret
     google_secret_manager_secret_iam_member.cloud_run_schemes_govuk_client_secret
   ]
@@ -270,33 +258,6 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_basic_auth
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
   role      = "roles/secretmanager.secretAccessor"
   secret_id = data.google_secret_manager_secret.basic_auth_password.id
-}
-
-# api key
-
-resource "random_password" "api_key" {
-  length  = 32
-  special = false
-}
-
-resource "google_secret_manager_secret" "api_key" {
-  secret_id = "api-key"
-
-  replication {
-    auto {
-    }
-  }
-}
-
-resource "google_secret_manager_secret_version" "api_key" {
-  secret      = google_secret_manager_secret.api_key.id
-  secret_data = random_password.api_key.result
-}
-
-resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_api_key" {
-  member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
-  role      = "roles/secretmanager.secretAccessor"
-  secret_id = google_secret_manager_secret.api_key.id
 }
 
 # govuk client secret

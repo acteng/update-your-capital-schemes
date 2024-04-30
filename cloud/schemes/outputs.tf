@@ -8,9 +8,3 @@ output "github_action_private_key" {
   value       = module.github_action.private_key
   sensitive   = true
 }
-
-output "api_key" {
-  description = "Schemes API key"
-  value       = module.cloud_run.api_key
-  sensitive   = true
-}

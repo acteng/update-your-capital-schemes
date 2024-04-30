@@ -38,6 +38,15 @@ resource "google_cloud_run_v2_service" "schemes" {
         }
       }
       env {
+        name = "FLASK_CAPITAL_SCHEMES_DATABASE_URI"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.capital_schemes_database_uri.id
+            version = "latest"
+          }
+        }
+      }
+      env {
         name = "FLASK_BASIC_AUTH_USERNAME"
         value_source {
           secret_key_ref {
@@ -81,7 +90,10 @@ resource "google_cloud_run_v2_service" "schemes" {
     volumes {
       name = "cloudsql"
       cloud_sql_instance {
-        instances = [var.database_connection_name]
+        instances = [
+          var.database_connection_name,
+          var.capital_schemes_database_connection_name,
+        ]
       }
     }
     service_account = google_service_account.cloud_run_schemes.email
@@ -95,6 +107,9 @@ resource "google_cloud_run_v2_service" "schemes" {
     # database URI
     google_secret_manager_secret_version.database_uri,
     google_secret_manager_secret_iam_member.cloud_run_schemes_database_uri,
+    # capital schemes database URI,
+    google_secret_manager_secret_version.capital_schemes_database_uri,
+    google_secret_manager_secret_iam_member.cloud_run_schemes_capital_schemes_database_uri,
     # basic auth username
     google_secret_manager_secret_iam_member.cloud_run_schemes_basic_auth_username,
     # basic auth password
@@ -193,6 +208,44 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_database_u
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
   role      = "roles/secretmanager.secretAccessor"
   secret_id = google_secret_manager_secret.database_uri.id
+}
+
+# capital schemes database
+
+resource "google_project_iam_member" "cloud_run_schemes_schemes_database_cloud_sql_client" {
+  project = var.capital_schemes_database_project
+  role    = "roles/cloudsql.client"
+  member  = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
+}
+
+resource "google_secret_manager_secret" "capital_schemes_database_uri" {
+  secret_id = "capital-schemes-database-uri"
+
+  replication {
+    auto {
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "capital_schemes_database_uri" {
+  secret = google_secret_manager_secret.capital_schemes_database_uri.id
+  secret_data = join("", [
+    "postgresql+pg8000://",
+    var.capital_schemes_database_username,
+    ":",
+    var.capital_schemes_database_password,
+    "@/",
+    var.capital_schemes_database_name,
+    "?unix_sock=/cloudsql/",
+    var.capital_schemes_database_connection_name,
+    "/.s.PGSQL.5432"
+  ])
+}
+
+resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_capital_schemes_database_uri" {
+  member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
+  role      = "roles/secretmanager.secretAccessor"
+  secret_id = google_secret_manager_secret.capital_schemes_database_uri.id
 }
 
 # basic auth username

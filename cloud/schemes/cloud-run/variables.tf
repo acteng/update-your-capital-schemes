@@ -32,3 +32,28 @@ variable "database_password" {
   description = "Database password"
   type        = string
 }
+
+variable "capital_schemes_database_project" {
+  description = "Capital schemes database GCP project"
+  type        = string
+}
+
+variable "capital_schemes_database_connection_name" {
+  description = "Capital schemes database connection name"
+  type        = string
+}
+
+variable "capital_schemes_database_name" {
+  description = "Capital schemes database name"
+  type        = string
+}
+
+variable "capital_schemes_database_username" {
+  description = "Capital schemes database username"
+  type        = string
+}
+
+variable "capital_schemes_database_password" {
+  description = "Capital schemes database password"
+  type        = string
+}

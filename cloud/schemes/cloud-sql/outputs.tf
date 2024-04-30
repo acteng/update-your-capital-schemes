@@ -3,12 +3,17 @@ output "connection_name" {
   value       = google_sql_database_instance.main.connection_name
 }
 
-output "database_uri_secret_id" {
-  description = "Database URI secret ID"
-  value       = google_secret_manager_secret.database_uri.id
+output "name" {
+  description = "Database name"
+  value       = google_sql_database.schemes.name
 }
 
-output "database_uri_secret_version_id" {
-  description = "Database URI secret version ID"
-  value       = google_secret_manager_secret_version.database_uri.id
+output "username" {
+  description = "Database username"
+  value       = google_sql_user.schemes.name
+}
+
+output "password" {
+  description = "Database password"
+  value       = google_sql_user.schemes.password
 }

@@ -18,12 +18,17 @@ variable "database_connection_name" {
   type        = string
 }
 
-variable "database_uri_secret_id" {
-  description = "Database URI secret ID"
+variable "database_name" {
+  description = "Database name"
   type        = string
 }
 
-variable "database_uri_secret_version_id" {
-  description = "Database URI secret version ID"
+variable "database_username" {
+  description = "Database username"
+  type        = string
+}
+
+variable "database_password" {
+  description = "Database password"
   type        = string
 }

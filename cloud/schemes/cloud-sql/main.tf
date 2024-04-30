@@ -25,15 +25,6 @@ resource "google_sql_database" "schemes" {
   instance = google_sql_database_instance.main.name
 }
 
-resource "google_secret_manager_secret" "database_uri" {
-  secret_id = "database-uri"
-
-  replication {
-    auto {
-    }
-  }
-}
-
 resource "random_password" "schemes" {
   length  = 32
   special = false
@@ -44,21 +35,6 @@ resource "google_sql_user" "schemes" {
   instance = google_sql_database_instance.main.name
 
   password = random_password.schemes.result
-}
-
-resource "google_secret_manager_secret_version" "database_uri" {
-  secret = google_secret_manager_secret.database_uri.id
-  secret_data = join("", [
-    "postgresql+pg8000://",
-    google_sql_user.schemes.name,
-    ":",
-    google_sql_user.schemes.password,
-    "@/",
-    google_sql_database.schemes.name,
-    "?unix_sock=/cloudsql/",
-    google_sql_database_instance.main.connection_name,
-    "/.s.PGSQL.5432"
-  ])
 }
 
 resource "google_service_account" "cloud_sql_schemes" {

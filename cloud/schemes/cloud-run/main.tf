@@ -32,7 +32,7 @@ resource "google_cloud_run_v2_service" "schemes" {
         name = "FLASK_SQLALCHEMY_DATABASE_URI"
         value_source {
           secret_key_ref {
-            secret  = var.database_uri_secret_id
+            secret  = google_secret_manager_secret.database_uri.id
             version = "latest"
           }
         }
@@ -93,7 +93,7 @@ resource "google_cloud_run_v2_service" "schemes" {
     google_secret_manager_secret_version.secret_key,
     google_secret_manager_secret_iam_member.cloud_run_schemes_secret_key,
     # database URI
-    var.database_uri_secret_version_id,
+    google_secret_manager_secret_version.database_uri,
     google_secret_manager_secret_iam_member.cloud_run_schemes_database_uri,
     # basic auth username
     google_secret_manager_secret_iam_member.cloud_run_schemes_basic_auth_username,
@@ -165,10 +165,34 @@ resource "google_project_iam_member" "cloud_run_schemes_cloud_sql_client" {
   member  = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
 }
 
+resource "google_secret_manager_secret" "database_uri" {
+  secret_id = "database-uri"
+
+  replication {
+    auto {
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "database_uri" {
+  secret = google_secret_manager_secret.database_uri.id
+  secret_data = join("", [
+    "postgresql+pg8000://",
+    var.database_username,
+    ":",
+    var.database_password,
+    "@/",
+    var.database_name,
+    "?unix_sock=/cloudsql/",
+    var.database_connection_name,
+    "/.s.PGSQL.5432"
+  ])
+}
+
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_database_uri" {
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
   role      = "roles/secretmanager.secretAccessor"
-  secret_id = var.database_uri_secret_id
+  secret_id = google_secret_manager_secret.database_uri.id
 }
 
 # basic auth username

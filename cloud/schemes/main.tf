@@ -31,13 +31,14 @@ module "cloud_sql" {
 }
 
 module "cloud_run" {
-  source                         = "./cloud-run"
-  project                        = local.project
-  region                         = local.location
-  env                            = local.env
-  database_connection_name       = module.cloud_sql.connection_name
-  database_uri_secret_id         = module.cloud_sql.database_uri_secret_id
-  database_uri_secret_version_id = module.cloud_sql.database_uri_secret_version_id
+  source                   = "./cloud-run"
+  project                  = local.project
+  region                   = local.location
+  env                      = local.env
+  database_connection_name = module.cloud_sql.connection_name
+  database_name            = module.cloud_sql.name
+  database_username        = module.cloud_sql.username
+  database_password        = module.cloud_sql.password
 
   depends_on = [
     module.secret_manager

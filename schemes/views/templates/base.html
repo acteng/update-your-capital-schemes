@@ -1,5 +1,6 @@
 {% extends "govuk_frontend_jinja/template.html" %}
 {% from "govuk_frontend_jinja/components/phase-banner/macro.html" import govukPhaseBanner -%}
+{% from "ate_header/macro.html" import ateHeader -%}
 
 {% block pageTitle %}Update your capital schemes - Active Travel England - GOV.UK{% endblock %}
 
@@ -9,9 +10,8 @@
 {% endblock %}
 
 {% block header %}
-    {{ govukHeader({
-        "homepageUrl": url_for("start.index"),
-        "useTudorCrown": true
+    {{ ateHeader({
+        "homepageUrl": url_for("start.index")
     }) }}
 {% endblock %}
 

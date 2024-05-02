@@ -115,30 +115,6 @@ class TestSchemeFunding:
 
         assert funding.financial_revisions == [financial_revision]
 
-    def test_cannot_update_financial_with_another_current_funding_allocation(self) -> None:
-        funding = SchemeFunding()
-        financial_revision = FinancialRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_=FinancialType.FUNDING_ALLOCATION,
-            amount=100_000,
-            source=DataSource.ATF4_BID,
-        )
-        funding.update_financial(financial_revision)
-
-        with pytest.raises(
-            ValueError, match=re.escape(f"Current funding allocation already exists: {repr(financial_revision)}")
-        ):
-            funding.update_financial(
-                FinancialRevision(
-                    id_=2,
-                    effective=DateRange(datetime(2020, 1, 1), None),
-                    type_=FinancialType.FUNDING_ALLOCATION,
-                    amount=200_000,
-                    source=DataSource.ATF4_BID,
-                )
-            )
-
     def test_cannot_update_financial_with_another_current_spent_to_date(self) -> None:
         funding = SchemeFunding()
         financial_revision = FinancialRevision(
@@ -215,19 +191,26 @@ class TestSchemeFunding:
             and financial_revision.source == DataSource.AUTHORITY_UPDATE
         )
 
-    def test_get_funding_allocation(self) -> None:
+    def test_get_funding_allocation_sums_amounts(self) -> None:
         funding = SchemeFunding()
-        funding.update_financial(
+        funding.update_financials(
             FinancialRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
-            )
+            ),
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 2, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=20_000,
+                source=DataSource.CHANGE_CONTROL,
+            ),
         )
 
-        assert funding.funding_allocation == 100_000
+        assert funding.funding_allocation == 120_000
 
     def test_get_funding_allocation_selects_financial_type(self) -> None:
         funding = SchemeFunding()
@@ -245,27 +228,6 @@ class TestSchemeFunding:
                 type_=FinancialType.EXPECTED_COST,
                 amount=200_000,
                 source=DataSource.ATF4_BID,
-            ),
-        )
-
-        assert funding.funding_allocation == 100_000
-
-    def test_get_funding_allocation_selects_source(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=200_000,
-                source=DataSource.CHANGE_CONTROL,
             ),
         )
 
@@ -310,109 +272,6 @@ class TestSchemeFunding:
         funding = SchemeFunding()
 
         assert funding.funding_allocation is None
-
-    def test_get_change_control_adjustment_sums_amounts(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 2, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=20_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-        )
-
-        assert funding.change_control_adjustment == 30_000
-
-    def test_get_change_control_adjustment_selects_financial_type(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.EXPECTED_COST,
-                amount=20_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-        )
-
-        assert funding.change_control_adjustment == 10_000
-
-    def test_get_change_control_adjustment_selects_source(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=20_000,
-                source=DataSource.ATF4_BID,
-            ),
-        )
-
-        assert funding.change_control_adjustment == 10_000
-
-    def test_get_change_control_adjustment_selects_latest_revision(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 2, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=20_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-        )
-
-        assert funding.change_control_adjustment == 20_000
-
-    def test_get_change_control_adjustment_when_no_matching_revisions(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financial(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.ATF4_BID,
-            )
-        )
-
-        assert funding.change_control_adjustment is None
-
-    def test_get_change_control_adjustment_when_no_revisions(self) -> None:
-        funding = SchemeFunding()
-
-        assert funding.change_control_adjustment is None
 
     def test_get_spend_to_date(self) -> None:
         funding = SchemeFunding()
@@ -489,131 +348,7 @@ class TestSchemeFunding:
 
         assert funding.spend_to_date is None
 
-    def test_get_adjusted_funding_allocation(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-        )
-
-        assert funding.adjusted_funding_allocation == 110_000
-
-    def test_get_adjusted_funding_allocation_when_no_funding_allocation(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-        )
-
-        assert funding.adjusted_funding_allocation == 10_000
-
-    def test_get_adjusted_funding_allocation_when_no_change_control_adjustment(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
-            )
-        )
-
-        assert funding.adjusted_funding_allocation == 100_000
-
-    def test_get_adjusted_funding_allocation_when_no_revisions(self) -> None:
-        funding = SchemeFunding()
-
-        assert funding.adjusted_funding_allocation == 0
-
     def test_get_allocation_still_to_spend(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
-                amount=50_000,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                id_=3,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-        )
-
-        assert funding.allocation_still_to_spend == 60_000
-
-    def test_get_allocation_still_to_spend_when_no_funding_allocation(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
-                amount=50_000,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-        )
-
-        assert funding.allocation_still_to_spend == -40_000
-
-    def test_get_allocation_still_to_spend_when_no_spend_to_date(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-        )
-
-        assert funding.allocation_still_to_spend == 110_000
-
-    def test_get_allocation_still_to_spend_when_no_change_control_adjustment(self) -> None:
         funding = SchemeFunding()
         funding.update_financials(
             FinancialRevision(
@@ -633,6 +368,20 @@ class TestSchemeFunding:
         )
 
         assert funding.allocation_still_to_spend == 50_000
+
+    def test_get_allocation_still_to_spend_when_no_spend_to_date(self) -> None:
+        funding = SchemeFunding()
+        funding.update_financials(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.FUNDING_ALLOCATION,
+                amount=100_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert funding.allocation_still_to_spend == 100_000
 
     def test_get_allocation_still_to_spend_when_no_revisions(self) -> None:
         funding = SchemeFunding()
@@ -679,7 +428,6 @@ class TestFinancialRevision:
             (None, FinancialType.FUNDING_ALLOCATION, DataSource.ATF4_BID, True),
             (datetime(2000, 2, 1), FinancialType.FUNDING_ALLOCATION, DataSource.ATF4_BID, False),
             (None, FinancialType.SPENT_TO_DATE, DataSource.ATF4_BID, False),
-            (None, FinancialType.FUNDING_ALLOCATION, DataSource.CHANGE_CONTROL, False),
         ],
     )
     def test_is_current_funding_allocation(

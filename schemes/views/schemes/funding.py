@@ -25,7 +25,6 @@ from schemes.views.schemes.data_source import DataSourceRepr
 @dataclass(frozen=True)
 class SchemeFundingContext:
     funding_allocation: int | None
-    change_control_adjustment: int | None
     spend_to_date: int | None
     allocation_still_to_spend: int
 
@@ -33,7 +32,6 @@ class SchemeFundingContext:
     def from_domain(cls, funding: SchemeFunding) -> SchemeFundingContext:
         return cls(
             funding_allocation=funding.funding_allocation,
-            change_control_adjustment=funding.change_control_adjustment,
             spend_to_date=funding.spend_to_date,
             allocation_still_to_spend=funding.allocation_still_to_spend,
         )
@@ -43,7 +41,6 @@ class SchemeFundingContext:
 class ChangeSpendToDateContext:
     id: int
     funding_allocation: int | None
-    change_control_adjustment: int | None
     form: ChangeSpendToDateForm
 
     @classmethod
@@ -51,7 +48,6 @@ class ChangeSpendToDateContext:
         return cls(
             id=scheme.id,
             funding_allocation=scheme.funding.funding_allocation,
-            change_control_adjustment=scheme.funding.change_control_adjustment,
             form=ChangeSpendToDateForm.from_domain(scheme.funding),
         )
 
@@ -72,7 +68,8 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
 
     @classmethod
     def from_domain(cls, funding: SchemeFunding) -> ChangeSpendToDateForm:
-        return cls(max_amount=funding.adjusted_funding_allocation, data={"amount": funding.spend_to_date})
+        max_amount = funding.funding_allocation or 0
+        return cls(max_amount=max_amount, data={"amount": funding.spend_to_date})
 
     def update_domain(self, funding: SchemeFunding, now: datetime) -> None:
         assert self.amount.data is not None

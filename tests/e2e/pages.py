@@ -275,7 +275,6 @@ class SchemeFundingComponent(SummaryCardComponent):
         super().__init__(title)
         self._title = title
         self._funding_allocation = self._get_definition("Funding allocation")
-        self._change_control_adjustment = self._get_definition("Change control adjustment")
         self._spend_to_date = self._get_definition("Spend to date").first
         self._change_spend_to_date = self._get_definition("Spend to date").nth(1)
         self._allocation_still_to_spend = self._get_definition("Allocation still to spend")
@@ -283,10 +282,6 @@ class SchemeFundingComponent(SummaryCardComponent):
     @property
     def funding_allocation(self) -> str:
         return (self._funding_allocation.text_content() or "").strip()
-
-    @property
-    def change_control_adjustment(self) -> str:
-        return (self._change_control_adjustment.text_content() or "").strip()
 
     @property
     def spend_to_date(self) -> str:

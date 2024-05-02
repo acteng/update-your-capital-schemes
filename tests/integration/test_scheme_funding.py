@@ -33,7 +33,6 @@ class TestSchemeFunding:
 
         assert (
             scheme_page.funding.funding_allocation == ""
-            and scheme_page.funding.change_control_adjustment == ""
             and scheme_page.funding.spend_to_date == ""
             and scheme_page.funding.allocation_still_to_spend == "£0"
         )
@@ -51,13 +50,6 @@ class TestSchemeFunding:
             FinancialRevision(
                 id_=2,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-            FinancialRevision(
-                id_=3,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.SPENT_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
@@ -69,9 +61,8 @@ class TestSchemeFunding:
 
         assert (
             scheme_page.funding.funding_allocation == "£100,000"
-            and scheme_page.funding.change_control_adjustment == "£10,000"
             and scheme_page.funding.spend_to_date == "£50,000"
-            and scheme_page.funding.allocation_still_to_spend == "£60,000"
+            and scheme_page.funding.allocation_still_to_spend == "£50,000"
         )
 
     def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -91,13 +82,6 @@ class TestSchemeFunding:
                 amount=0,
                 source=DataSource.ATF4_BID,
             ),
-            FinancialRevision(
-                id_=3,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=0,
-                source=DataSource.CHANGE_CONTROL,
-            ),
         )
         schemes.add(scheme)
 
@@ -105,7 +89,6 @@ class TestSchemeFunding:
 
         assert (
             scheme_page.funding.funding_allocation == "£0"
-            and scheme_page.funding.change_control_adjustment == "£0"
             and scheme_page.funding.spend_to_date == "£0"
             and scheme_page.funding.allocation_still_to_spend == "£0"
         )
@@ -133,23 +116,13 @@ class TestSchemeFunding:
                 type_=FinancialType.FUNDING_ALLOCATION,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
+            )
         )
         schemes.add(scheme)
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-        assert (
-            change_spend_to_date_page.funding_summary
-            == "This scheme has £100,000 of funding allocation and £10,000 of change control adjustment."
-        )
+        assert change_spend_to_date_page.funding_summary == "This scheme has £100,000 of funding allocation."
 
     def test_spend_to_date_form_shows_minimal_funding_summary(
         self, schemes: SchemeRepository, client: FlaskClient
@@ -158,10 +131,7 @@ class TestSchemeFunding:
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-        assert (
-            change_spend_to_date_page.funding_summary
-            == "This scheme has no funding allocation and no change control adjustment."
-        )
+        assert change_spend_to_date_page.funding_summary == "This scheme has no funding allocation."
 
     def test_spend_to_date_form_shows_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)

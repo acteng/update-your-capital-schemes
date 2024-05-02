@@ -196,7 +196,6 @@ class SchemeFundingComponent(SummaryCardComponent):
     def __init__(self, title: Tag):
         super().__init__(title)
         self.funding_allocation = (self._get_definition("Funding allocation")[0].string or "").strip()
-        self.change_control_adjustment = (self._get_definition("Change control adjustment")[0].string or "").strip()
         self.spend_to_date = (self._get_definition("Spend to date")[0].string or "").strip()
         self.change_spend_to_date_url = one(self._get_definition("Spend to date")[1].select("a")).get("href")
         self.allocation_still_to_spend = (self._get_definition("Allocation still to spend")[0].string or "").strip()

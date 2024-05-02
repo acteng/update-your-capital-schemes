@@ -43,22 +43,6 @@ class TestSchemeFundingContext:
 
         assert context.funding_allocation == 100_000
 
-    def test_from_domain_sets_change_control_adjustment(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financial(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            )
-        )
-
-        context = SchemeFundingContext.from_domain(funding)
-
-        assert context.change_control_adjustment == 10_000
-
     def test_from_domain_sets_spend_to_date(self) -> None:
         funding = SchemeFunding()
         funding.update_financial(
@@ -114,13 +98,6 @@ class TestChangeSpendToDateContext:
             FinancialRevision(
                 id_=2,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-            FinancialRevision(
-                id_=3,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.SPENT_TO_DATE,
                 amount=40_000,
                 source=DataSource.ATF4_BID,
@@ -129,12 +106,7 @@ class TestChangeSpendToDateContext:
 
         context = ChangeSpendToDateContext.from_domain(scheme)
 
-        assert (
-            context.id == 1
-            and context.funding_allocation == 100_000
-            and context.change_control_adjustment == 10_000
-            and context.form.amount.data == 40_000
-        )
+        assert context.id == 1 and context.funding_allocation == 100_000 and context.form.amount.data == 40_000
 
 
 @pytest.mark.usefixtures("app")
@@ -152,13 +124,6 @@ class TestChangeSpendToDateForm:
             FinancialRevision(
                 id_=2,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=10_000,
-                source=DataSource.CHANGE_CONTROL,
-            ),
-            FinancialRevision(
-                id_=3,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.SPENT_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
@@ -167,7 +132,14 @@ class TestChangeSpendToDateForm:
 
         form = ChangeSpendToDateForm.from_domain(funding)
 
-        assert form.amount.data == 50_000 and form.max_amount == 110_000
+        assert form.amount.data == 50_000 and form.max_amount == 100_000
+
+    def test_from_domain_when_minimal(self) -> None:
+        funding = SchemeFunding()
+
+        form = ChangeSpendToDateForm.from_domain(funding)
+
+        assert form.amount.data is None and form.max_amount == 0
 
     def test_update_domain(self) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "60000")]))

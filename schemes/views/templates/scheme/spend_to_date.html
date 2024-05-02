@@ -36,11 +36,7 @@
                     {{ funding_allocation | pounds }} of
                 {%- else -%}
                     no
-                {%- endif %} funding allocation and {% if change_control_adjustment -%}
-                    {{ change_control_adjustment | pounds }} of
-                {%- else -%}
-                    no
-                {%- endif %} change control adjustment.
+                {%- endif %} funding allocation.
             </p>
 
             <form method="post" action="{{ url_for('schemes.spend_to_date', scheme_id=id) }}" novalidate aria-label="Change spend to date">

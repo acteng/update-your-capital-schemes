@@ -68,3 +68,8 @@ module "github_action" {
   project                      = local.project
   cloud_run_service_account_id = module.cloud_run.service_account_id
 }
+
+module "github_action_users" {
+  source  = "./github-action-users"
+  project = local.project
+}

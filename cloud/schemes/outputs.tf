@@ -8,3 +8,9 @@ output "github_action_private_key" {
   value       = module.github_action.private_key
   sensitive   = true
 }
+
+output "github_action_users_private_key" {
+  description = "Service account key for update users github action service account"
+  value       = module.github_action_users.private_key
+  sensitive   = true
+}

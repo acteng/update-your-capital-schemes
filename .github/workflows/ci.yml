@@ -56,7 +56,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           token_format: access_token
-          credentials_json: '${{ secrets.GCP_CREDENTIALS_CI }}'
+          credentials_json: '${{ secrets.GCP_CREDENTIALS_PUSH }}'
 
       - name: Login to Docker repository
         uses: docker/login-action@v3

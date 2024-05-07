@@ -1,5 +1,5 @@
-output "github_action_push_private_key" {
+output "private_key" {
   description = "Service account key for push GitHub Action service account"
-  value       = module.github_action_push.private_key
+  value       = google_service_account_key.main.private_key
   sensitive   = true
 }

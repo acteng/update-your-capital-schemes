@@ -369,6 +369,20 @@ class TestSchemeFunding:
 
         assert funding.allocation_still_to_spend == 50_000
 
+    def test_get_allocation_still_to_spend_when_no_funding_allocation(self) -> None:
+        funding = SchemeFunding()
+        funding.update_financials(
+            FinancialRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.SPENT_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert funding.allocation_still_to_spend == -50_000
+
     def test_get_allocation_still_to_spend_when_no_spend_to_date(self) -> None:
         funding = SchemeFunding()
         funding.update_financials(

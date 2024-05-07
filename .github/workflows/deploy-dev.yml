@@ -2,11 +2,24 @@ name: 'Deploy Dev'
 
 on:
   workflow_call:
+    inputs:
+      tag:
+        description: 'Docker image tag'
+        type: string
+        required: true
+        default: 'latest'
+
     secrets:
       GCP_CREDENTIALS_DEPLOY_DEV:
         required: true
 
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Docker image tag'
+        type: string
+        required: true
+        default: 'latest'
 
 jobs:
 
@@ -22,5 +35,5 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: schemes
-          image: europe-west1-docker.pkg.dev/dft-schemes-common/docker/schemes
+          image: europe-west1-docker.pkg.dev/dft-schemes-common/docker/schemes:${{ inputs.tag }}
           region: europe-west1

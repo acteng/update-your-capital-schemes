@@ -73,8 +73,3 @@ module "github_action_database" {
   source  = "./github-action-database"
   project = local.project
 }
-
-moved {
-  from = module.github_action
-  to   = module.github_action_deploy
-}

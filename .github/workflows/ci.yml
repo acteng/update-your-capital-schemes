@@ -84,7 +84,7 @@ jobs:
 
   deploy:
     needs: build
-    uses: ./.github/workflows/deploy-dev.yml
+    uses: ./.github/workflows/deploy.yml
     with:
       environment: 'Dev'
       tag: 'latest'

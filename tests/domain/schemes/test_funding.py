@@ -437,18 +437,22 @@ class TestFinancialRevision:
         )
 
     @pytest.mark.parametrize(
-        "effective_date_to, type_, source, expected",
+        "effective_date_to, type_, expected",
         [
-            (None, FinancialType.FUNDING_ALLOCATION, DataSource.ATF4_BID, True),
-            (datetime(2000, 2, 1), FinancialType.FUNDING_ALLOCATION, DataSource.ATF4_BID, False),
-            (None, FinancialType.SPENT_TO_DATE, DataSource.ATF4_BID, False),
+            (None, FinancialType.FUNDING_ALLOCATION, True),
+            (datetime(2000, 2, 1), FinancialType.FUNDING_ALLOCATION, False),
+            (None, FinancialType.SPENT_TO_DATE, False),
         ],
     )
     def test_is_current_funding_allocation(
-        self, effective_date_to: datetime, type_: FinancialType, source: DataSource, expected: bool
+        self, effective_date_to: datetime, type_: FinancialType, expected: bool
     ) -> None:
         financial_revision = FinancialRevision(
-            id_=1, effective=DateRange(datetime(2000, 1, 1), effective_date_to), type_=type_, amount=0, source=source
+            id_=1,
+            effective=DateRange(datetime(2000, 1, 1), effective_date_to),
+            type_=type_,
+            amount=0,
+            source=DataSource.ATF4_BID,
         )
 
         assert financial_revision.is_current_funding_allocation == expected

@@ -68,8 +68,8 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
 
     @classmethod
     def from_domain(cls, funding: SchemeFunding) -> ChangeSpendToDateForm:
-        max_amount = funding.funding_allocation or 0
-        return cls(max_amount=max_amount, data={"amount": funding.spend_to_date})
+        funding_allocation = funding.funding_allocation or 0
+        return cls(max_amount=funding_allocation, data={"amount": funding.spend_to_date})
 
     def update_domain(self, funding: SchemeFunding, now: datetime) -> None:
         assert self.amount.data is not None

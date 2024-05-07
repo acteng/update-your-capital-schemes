@@ -2,6 +2,9 @@ name: 'Deploy Dev'
 
 on:
   workflow_call:
+    secrets:
+      GCP_CREDENTIALS_DEPLOY_DEV:
+        required: true
 
 jobs:
 

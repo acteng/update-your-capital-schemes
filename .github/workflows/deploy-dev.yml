@@ -6,6 +6,8 @@ on:
       GCP_CREDENTIALS_DEPLOY_DEV:
         required: true
 
+  workflow_dispatch:
+
 jobs:
 
   deploy:

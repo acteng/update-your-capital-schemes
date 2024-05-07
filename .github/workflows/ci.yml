@@ -85,5 +85,7 @@ jobs:
   deploy:
     needs: build
     uses: ./.github/workflows/deploy-dev.yml
+    with:
+      tag: 'latest'
     secrets:
       GCP_CREDENTIALS_DEPLOY_DEV: ${{ secrets.GCP_CREDENTIALS_DEPLOY_DEV }}

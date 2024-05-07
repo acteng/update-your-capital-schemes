@@ -7,7 +7,6 @@ on:
         description: 'Docker image tag'
         type: string
         required: true
-        default: 'latest'
 
     secrets:
       GCP_CREDENTIALS_DEPLOY_DEV:

@@ -17,7 +17,8 @@
 
 {% block beforeContent %}
     {% set html -%}
-        This is a new service – your <a class="govuk-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfq6W-tnvz1gt_TWg2ojhxcu1RmpnWCPtVN3IDDLonTsmcRLA/viewform">feedback</a>
+        This is a new service – your
+        <a class="govuk-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfq6W-tnvz1gt_TWg2ojhxcu1RmpnWCPtVN3IDDLonTsmcRLA/viewform" rel="noreferrer noopener" target="_blank">feedback<span class="govuk-visually-hidden"> (opens in new tab)</span></a>
         will help us to improve it.
     {%- endset %}
     {{ govukPhaseBanner({

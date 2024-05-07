@@ -1,16 +1,9 @@
 name: 'Deploy Dev'
 
-on:
-  workflow_run:
-    workflows: [ 'CI' ]
-    types:
-      - completed
-
 jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1

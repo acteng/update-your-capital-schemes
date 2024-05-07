@@ -81,3 +81,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+
+  deploy:
+    needs: build
+    uses: ./.github/workflows/deploy-dev.yml
+    secrets:
+      GCP_CREDENTIALS_DEPLOY_DEV: ${{ secrets.GCP_CREDENTIALS_DEPLOY_DEV }}

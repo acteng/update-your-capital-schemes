@@ -271,7 +271,7 @@ For each environment required (dev, test, prod):
 1. Obtain the Cloud Run service account private key:
 
    ```bash
-   terraform output -raw github_action_private_key
+   terraform output -raw github_action_deploy_private_key
    ```
    
 1. [Set the GitHub Actions repository secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) `GCP_CREDENTIALS_DEPLOY_$ENVIRONMENT` to the private key

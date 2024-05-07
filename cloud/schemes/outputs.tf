@@ -3,9 +3,9 @@ output "url" {
   value       = module.cloud_run.url
 }
 
-output "github_action_private_key" {
-  description = "Service account key for github action service account"
-  value       = module.github_action.private_key
+output "github_action_deploy_private_key" {
+  description = "Service account key for deploy GitHub Action service account"
+  value       = module.github_action_deploy.private_key
   sensitive   = true
 }
 

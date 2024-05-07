@@ -3,17 +3,27 @@ name: 'Deploy Dev'
 on:
   workflow_call:
     inputs:
+      environment:
+        description: 'Environment'
+        type: string
+        required: true
+
       tag:
         description: 'Docker image tag'
         type: string
         required: true
 
     secrets:
-      GCP_CREDENTIALS_DEPLOY_DEV:
+      GCP_CREDENTIALS_DEPLOY:
         required: true
 
   workflow_dispatch:
     inputs:
+      environment:
+        description: 'Environment'
+        type: environment
+        required: true
+
       tag:
         description: 'Docker image tag'
         type: string
@@ -24,11 +34,12 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS_DEPLOY_DEV }}'
+          credentials_json: '${{ secrets.GCP_CREDENTIALS_DEPLOY }}'
 
       - name: Deploy image
         uses: google-github-actions/deploy-cloudrun@v1

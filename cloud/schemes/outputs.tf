@@ -14,3 +14,9 @@ output "github_action_database_private_key" {
   value       = module.github_action_database.private_key
   sensitive   = true
 }
+
+output "database_password" {
+  description = "Cloud SQL database password"
+  value       = module.cloud_sql.password
+  sensitive   = true
+}

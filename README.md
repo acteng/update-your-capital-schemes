@@ -274,7 +274,7 @@ For each environment required (dev, test, prod):
    terraform output -raw github_action_deploy_private_key
    ```
    
-1. [Set the GitHub Actions repository secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) `GCP_CREDENTIALS_DEPLOY_$ENVIRONMENT` to the private key
+1. [Set the GitHub Actions environment secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-an-environment) `GCP_CREDENTIALS_DEPLOY` to the private key
 
 1. Open the output `url`
 

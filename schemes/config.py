@@ -22,4 +22,6 @@ class TestConfig(Config):
 
 
 class ProdConfig(Config):
-    pass
+    # GOV.UK One Login
+    # TODO: GH-95: Set client id when provided by GOV.UK One Login
+    GOVUK_CLIENT_ID = "XXX"

@@ -19,3 +19,7 @@ class DevConfig(Config):
 class TestConfig(Config):
     # GOV.UK One Login
     GOVUK_CLIENT_ID = "0OJC1ThcrcGoFtEmxxiFXedQsqn"
+
+
+class ProdConfig(Config):
+    pass

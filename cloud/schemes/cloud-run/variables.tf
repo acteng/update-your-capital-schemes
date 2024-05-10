@@ -57,3 +57,8 @@ variable "capital_schemes_database_password" {
   description = "Capital schemes database password"
   type        = string
 }
+
+variable "basic_auth" {
+  description = "Whether to enable basic auth"
+  type        = bool
+}

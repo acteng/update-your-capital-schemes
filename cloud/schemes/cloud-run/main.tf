@@ -46,21 +46,27 @@ resource "google_cloud_run_v2_service" "schemes" {
           }
         }
       }
-      env {
-        name = "FLASK_BASIC_AUTH_USERNAME"
-        value_source {
-          secret_key_ref {
-            secret  = data.google_secret_manager_secret.basic_auth_username.secret_id
-            version = "latest"
+      dynamic "env" {
+        for_each = var.basic_auth ? [1] : []
+        content {
+          name = "FLASK_BASIC_AUTH_USERNAME"
+          value_source {
+            secret_key_ref {
+              secret  = data.google_secret_manager_secret.basic_auth_username[0].secret_id
+              version = "latest"
+            }
           }
         }
       }
-      env {
-        name = "FLASK_BASIC_AUTH_PASSWORD"
-        value_source {
-          secret_key_ref {
-            secret  = data.google_secret_manager_secret.basic_auth_password.secret_id
-            version = "latest"
+      dynamic "env" {
+        for_each = var.basic_auth ? [1] : []
+        content {
+          name = "FLASK_BASIC_AUTH_PASSWORD"
+          value_source {
+            secret_key_ref {
+              secret  = data.google_secret_manager_secret.basic_auth_password[0].secret_id
+              version = "latest"
+            }
           }
         }
       }
@@ -239,25 +245,33 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_capital_sc
 # basic auth username
 
 data "google_secret_manager_secret" "basic_auth_username" {
+  count = var.basic_auth ? 1 : 0
+
   secret_id = "basic-auth-username"
 }
 
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_basic_auth_username" {
+  count = var.basic_auth ? 1 : 0
+
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
   role      = "roles/secretmanager.secretAccessor"
-  secret_id = data.google_secret_manager_secret.basic_auth_username.id
+  secret_id = data.google_secret_manager_secret.basic_auth_username[0].id
 }
 
 # basic auth password
 
 data "google_secret_manager_secret" "basic_auth_password" {
+  count = var.basic_auth ? 1 : 0
+
   secret_id = "basic-auth-password"
 }
 
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_basic_auth_password" {
+  count = var.basic_auth ? 1 : 0
+
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
   role      = "roles/secretmanager.secretAccessor"
-  secret_id = data.google_secret_manager_secret.basic_auth_password.id
+  secret_id = data.google_secret_manager_secret.basic_auth_password[0].id
 }
 
 # govuk client secret

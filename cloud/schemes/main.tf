@@ -21,6 +21,12 @@ locals {
       prod = "prod"
     }
   }
+
+  basic_auth = {
+    dev = true
+    test = true
+    prod = false
+  }
 }
 
 data "terraform_remote_state" "schemes_database" {
@@ -61,6 +67,7 @@ module "cloud_run" {
   capital_schemes_database_name            = data.terraform_remote_state.schemes_database.outputs.name
   capital_schemes_database_username        = data.terraform_remote_state.schemes_database.outputs.username
   capital_schemes_database_password        = data.terraform_remote_state.schemes_database.outputs.password
+  basic_auth                               = local.basic_auth[local.env]
 
   depends_on = [
     module.secret_manager

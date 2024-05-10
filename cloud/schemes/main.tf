@@ -23,7 +23,7 @@ locals {
   }
 
   basic_auth = {
-    dev = true
+    dev  = true
     test = true
     prod = false
   }

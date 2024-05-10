@@ -44,7 +44,7 @@
                 {{ milestone("Preliminary design completed", form.preliminary_design_completed_planned, form.preliminary_design_completed_actual) }}
                 {{ milestone("Detailed design completed", form.detailed_design_completed_planned, form.detailed_design_completed_actual) }}
                 {{ milestone("Construction started", form.construction_started_planned, form.construction_started_actual) }}
-                {{ milestone("Construction completed", form.construction_completed_planned, None) }}
+                {{ milestone("Construction completed", form.construction_completed_planned, form.construction_completed_actual) }}
 
                 <div class="govuk-button-group">
                     {{ govukButton({
@@ -71,17 +71,15 @@
                 }
             }) }}
         </div>
-        {% if actual_field %}
-            <div class="govuk-grid-column-one-half">
-                {{ actual_field(params={
-                    "fieldset": {
-                        "describedBy": "date-hint",
-                        "legend": {
-                            "text": "Actual date"
-                        }
+        <div class="govuk-grid-column-one-half">
+            {{ actual_field(params={
+                "fieldset": {
+                    "describedBy": "date-hint",
+                    "legend": {
+                        "text": "Actual date"
                     }
-                }) }}
-            </div>
-        {% endif %}
+                }
+            }) }}
+        </div>
     </div>
 {%- endmacro %}

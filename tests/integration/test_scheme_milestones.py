@@ -151,24 +151,20 @@ class TestSchemeMilestones:
         assert (
             change_milestone_dates_page.form.feasibility_design_completed.planned.name
             == "feasibility_design_completed_planned"
-            and change_milestone_dates_page.form.feasibility_design_completed.actual
             and change_milestone_dates_page.form.feasibility_design_completed.actual.name
             == "feasibility_design_completed_actual"
             and change_milestone_dates_page.form.preliminary_design_completed.planned.name
             == "preliminary_design_completed_planned"
-            and change_milestone_dates_page.form.preliminary_design_completed.actual
             and change_milestone_dates_page.form.preliminary_design_completed.actual.name
             == "preliminary_design_completed_actual"
             and change_milestone_dates_page.form.detailed_design_completed.planned.name
             == "detailed_design_completed_planned"
-            and change_milestone_dates_page.form.detailed_design_completed.actual
             and change_milestone_dates_page.form.detailed_design_completed.actual.name
             == "detailed_design_completed_actual"
             and change_milestone_dates_page.form.construction_started.planned.name == "construction_started_planned"
-            and change_milestone_dates_page.form.construction_started.actual
             and change_milestone_dates_page.form.construction_started.actual.name == "construction_started_actual"
             and change_milestone_dates_page.form.construction_completed.planned.name == "construction_completed_planned"
-            and change_milestone_dates_page.form.construction_completed.actual is None
+            and change_milestone_dates_page.form.construction_completed.actual.name == "construction_completed_actual"
         )
 
     def test_milestones_form_shows_date(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -178,7 +174,7 @@ class TestSchemeMilestones:
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1, 12), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
-                observation_type=ObservationType.PLANNED,
+                observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
                 source=DataSource.ATF4_BID,
             )
@@ -188,7 +184,7 @@ class TestSchemeMilestones:
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
         assert change_milestone_dates_page.title == "Update your capital schemes - Active Travel England - GOV.UK"
-        assert change_milestone_dates_page.form.construction_started.planned.value == "2 1 2020"
+        assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
 
     def test_milestones_form_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
@@ -238,7 +234,7 @@ class TestSchemeMilestones:
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1, 12), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
-                observation_type=ObservationType.PLANNED,
+                observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
                 source=DataSource.ATF4_BID,
             )
@@ -246,7 +242,7 @@ class TestSchemeMilestones:
         schemes.add(scheme)
 
         client.post(
-            "/schemes/1/milestones", data={"csrf_token": csrf_token, "construction_started_planned": ["3", "1", "2020"]}
+            "/schemes/1/milestones", data={"csrf_token": csrf_token, "construction_started_actual": ["3", "1", "2020"]}
         )
 
         actual_scheme = schemes.get(1)
@@ -258,7 +254,7 @@ class TestSchemeMilestones:
         assert (
             milestone_revision2.effective == DateRange(datetime(2020, 2, 1, 13), None)
             and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
-            and milestone_revision2.observation_type == ObservationType.PLANNED
+            and milestone_revision2.observation_type == ObservationType.ACTUAL
             and milestone_revision2.status_date == date(2020, 1, 3)
             and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
         )
@@ -279,7 +275,7 @@ class TestSchemeMilestones:
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1, 12), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
-                observation_type=ObservationType.PLANNED,
+                observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
                 source=DataSource.ATF4_BID,
             )
@@ -290,7 +286,7 @@ class TestSchemeMilestones:
             client.post(
                 "/schemes/1/milestones",
                 data=self.empty_change_milestone_dates_form()
-                | {"csrf_token": csrf_token, "construction_started_planned": ["x", "x", "x"]},
+                | {"csrf_token": csrf_token, "construction_started_actual": ["x", "x", "x"]},
             )
         )
 
@@ -298,13 +294,13 @@ class TestSchemeMilestones:
             change_milestone_dates_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
         )
         assert change_milestone_dates_page.errors and list(change_milestone_dates_page.errors) == [
-            "Construction started planned date must be a real date"
+            "Construction started actual date must be a real date"
         ]
         assert (
-            change_milestone_dates_page.form.construction_started.planned.is_errored
-            and change_milestone_dates_page.form.construction_started.planned.error
-            == "Error: Construction started planned date must be a real date"
-            and change_milestone_dates_page.form.construction_started.planned.value == "x x x"
+            change_milestone_dates_page.form.construction_started.actual.is_errored
+            and change_milestone_dates_page.form.construction_started.actual.error
+            == "Error: Construction started actual date must be a real date"
+            and change_milestone_dates_page.form.construction_started.actual.value == "x x x"
         )
         actual_scheme = schemes.get(1)
         assert actual_scheme
@@ -314,7 +310,7 @@ class TestSchemeMilestones:
             milestone_revision1.id == 1
             and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and milestone_revision1.milestone == Milestone.CONSTRUCTION_STARTED
-            and milestone_revision1.observation_type == ObservationType.PLANNED
+            and milestone_revision1.observation_type == ObservationType.ACTUAL
             and milestone_revision1.status_date == date(2020, 1, 2)
             and milestone_revision1.source == DataSource.ATF4_BID
         )
@@ -385,4 +381,5 @@ class TestSchemeMilestones:
             "construction_started_planned": empty_date,
             "construction_started_actual": empty_date,
             "construction_completed_planned": empty_date,
+            "construction_completed_actual": empty_date,
         }

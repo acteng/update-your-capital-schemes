@@ -146,6 +146,10 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
         required_message="Enter a construction completed planned date",
         invalid_message="Construction completed planned date must be a real date",
     )
+    construction_completed_actual = MilestoneDateField(
+        required_message="Enter a construction completed actual date",
+        invalid_message="Construction completed actual date must be a real date",
+    )
 
     @classmethod
     def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:
@@ -177,6 +181,9 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
             construction_completed_planned=milestones.get_current_status_date(
                 Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED
             ),
+            construction_completed_actual=milestones.get_current_status_date(
+                Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL
+            ),
         )
 
     def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
@@ -206,7 +213,11 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
             self.construction_started_actual.data,
             Milestone.CONSTRUCTION_STARTED,
         )
-        update_milestone(self.construction_completed_planned.data, None, Milestone.CONSTRUCTION_COMPLETED)
+        update_milestone(
+            self.construction_completed_planned.data,
+            self.construction_completed_actual.data,
+            Milestone.CONSTRUCTION_COMPLETED,
+        )
 
 
 @dataclass(frozen=True)

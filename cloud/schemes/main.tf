@@ -16,7 +16,7 @@ locals {
 
   schemes_database = {
     env = {
-      dev = "test"
+      dev  = "test"
       test = "test"
       prod = "prod"
     }

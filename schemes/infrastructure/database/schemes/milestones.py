@@ -12,7 +12,7 @@ class MilestoneMapper:
         Milestone.DETAILED_DESIGN_COMPLETED: 6,
         Milestone.CONSTRUCTION_STARTED: 7,
         Milestone.CONSTRUCTION_COMPLETED: 8,
-        Milestone.INSPECTION: 9,
+        Milestone.FUNDING_COMPLETED: 9,
         Milestone.NOT_PROGRESSED: 10,
         Milestone.SUPERSEDED: 11,
         Milestone.REMOVED: 12,

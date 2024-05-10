@@ -70,7 +70,7 @@ class MilestoneContext:
         Milestone.DETAILED_DESIGN_COMPLETED: "Detailed design completed",
         Milestone.CONSTRUCTION_STARTED: "Construction started",
         Milestone.CONSTRUCTION_COMPLETED: "Construction completed",
-        Milestone.INSPECTION: "Inspection",
+        Milestone.FUNDING_COMPLETED: "Funding completed",
         Milestone.NOT_PROGRESSED: "Not progressed",
         Milestone.SUPERSEDED: "Superseded",
         Milestone.REMOVED: "Removed",
@@ -257,7 +257,7 @@ class MilestoneRepr(Enum):
     DETAILED_DESIGN_COMPLETED = "detailed design completed"
     CONSTRUCTION_STARTED = "construction started"
     CONSTRUCTION_COMPLETED = "construction completed"
-    INSPECTION = "inspection"
+    FUNDING_COMPLETED = "funding completed"
     NOT_PROGRESSED = "not progressed"
     SUPERSEDED = "superseded"
     REMOVED = "removed"
@@ -280,7 +280,7 @@ class MilestoneRepr(Enum):
             Milestone.DETAILED_DESIGN_COMPLETED: MilestoneRepr.DETAILED_DESIGN_COMPLETED,
             Milestone.CONSTRUCTION_STARTED: MilestoneRepr.CONSTRUCTION_STARTED,
             Milestone.CONSTRUCTION_COMPLETED: MilestoneRepr.CONSTRUCTION_COMPLETED,
-            Milestone.INSPECTION: MilestoneRepr.INSPECTION,
+            Milestone.FUNDING_COMPLETED: MilestoneRepr.FUNDING_COMPLETED,
             Milestone.NOT_PROGRESSED: MilestoneRepr.NOT_PROGRESSED,
             Milestone.SUPERSEDED: MilestoneRepr.SUPERSEDED,
             Milestone.REMOVED: MilestoneRepr.REMOVED,

@@ -99,7 +99,7 @@ class TestScheme:
         "milestone, expected_updateable",
         [
             pytest.param(Milestone.PUBLIC_CONSULTATION_COMPLETED, True, id="active and incomplete"),
-            pytest.param(Milestone.CONSTRUCTION_COMPLETED, False, id="complete"),
+            pytest.param(Milestone.FUNDING_COMPLETED, False, id="complete"),
             pytest.param(Milestone.NOT_PROGRESSED, False, id="inactive"),
         ],
     )
@@ -198,7 +198,7 @@ class TestScheme:
             MilestoneRevision(
                 id_=3,
                 effective=DateRange(datetime(2000, 1, 1), datetime(2000, 2, 1)),
-                milestone=Milestone.CONSTRUCTION_STARTED,
+                milestone=Milestone.CONSTRUCTION_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2000, 1, 1),
                 source=DataSource.ATF4_BID,
@@ -206,7 +206,7 @@ class TestScheme:
             MilestoneRevision(
                 id_=4,
                 effective=DateRange(datetime(2000, 2, 1), None),
-                milestone=Milestone.CONSTRUCTION_COMPLETED,
+                milestone=Milestone.FUNDING_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2000, 2, 1),
                 source=DataSource.ATF4_BID,

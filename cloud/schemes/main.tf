@@ -15,7 +15,11 @@ locals {
   location = "europe-west1"
 
   schemes_database = {
-    env = "test"
+    env = {
+      dev = "test"
+      test = "test"
+      prod = "prod"
+    }
   }
 }
 
@@ -25,7 +29,7 @@ data "terraform_remote_state" "schemes_database" {
     bucket = "dft-ate-capitalschemes-common-tf-backend"
     prefix = "schemes-database"
   }
-  workspace = local.schemes_database.env
+  workspace = local.schemes_database.env[local.env]
 }
 
 module "secret_manager" {

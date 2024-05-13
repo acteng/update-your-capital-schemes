@@ -22,6 +22,12 @@ locals {
     }
   }
 
+  keep_idle = {
+    dev  = false
+    test = false
+    prod = true
+  }
+
   basic_auth = {
     dev  = true
     test = true
@@ -67,6 +73,7 @@ module "cloud_run" {
   capital_schemes_database_name            = data.terraform_remote_state.schemes_database.outputs.name
   capital_schemes_database_username        = data.terraform_remote_state.schemes_database.outputs.username
   capital_schemes_database_password        = data.terraform_remote_state.schemes_database.outputs.password
+  keep_idle                                = local.keep_idle[local.env]
   basic_auth                               = local.basic_auth[local.env]
 
   depends_on = [

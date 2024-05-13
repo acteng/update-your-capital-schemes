@@ -58,6 +58,11 @@ variable "capital_schemes_database_password" {
   type        = string
 }
 
+variable "keep_idle" {
+  description = "Whether to keep an instance idle to prevent cold starts"
+  type        = bool
+}
+
 variable "basic_auth" {
   description = "Whether to enable basic auth"
   type        = bool

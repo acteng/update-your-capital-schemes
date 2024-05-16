@@ -21,11 +21,16 @@ class TestAuth:
     @pytest.fixture(name="oauth")
     def oauth_fixture(self) -> Generator[OAuth, None, None]:
         oauth = current_app.extensions["authlib.integrations.flask_client"]
-        previous_authorize_access_token = oauth.govuk.authorize_access_token
-        previous_userinfo = oauth.govuk.userinfo
+        oauth_app = oauth.govuk
+        previous_server_metadata = oauth_app.server_metadata
+        previous_client_cls = oauth_app.client_cls
+        previous_authorize_access_token = oauth_app.authorize_access_token
+        previous_userinfo = oauth_app.userinfo
         yield oauth
-        oauth.govuk.authorize_access_token = previous_authorize_access_token
-        oauth.govuk.userinfo = previous_userinfo
+        oauth_app.server_metadata = previous_server_metadata
+        oauth_app.client_cls = previous_client_cls
+        oauth_app.authorize_access_token = previous_authorize_access_token
+        oauth_app.userinfo = previous_userinfo
 
     def test_callback_logs_in(self, oauth: OAuth, users: UserRepository, client: FlaskClient) -> None:
         users.add(User("boardman@example.com", authority_id=1))

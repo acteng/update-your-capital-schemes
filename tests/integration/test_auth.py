@@ -88,6 +88,19 @@ class TestAuth:
         with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "aud"'):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
+    def test_callback_when_invalid_nonce_raises_error(
+        self, oauth: OAuth, users: UserRepository, client: FlaskClient
+    ) -> None:
+        users.add(User("boardman@example.com", authority_id=1))
+        server = StubOAuth2Server()
+        oauth.govuk.server_metadata["jwks"] = server.key_set()
+        oauth.govuk.client_cls = server.create_client_class(nonce="789")
+        with client.session_transaction() as setup_session:
+            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+
+        with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "nonce"'):
+            client.get("/auth", query_string={"code": "x", "state": "123"})
+
     def test_callback_when_unauthorized_returns_forbidden(
         self, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:

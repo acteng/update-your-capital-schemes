@@ -18,18 +18,11 @@ from cryptography.hazmat.primitives.serialization import (
 from requests.sessions import default_headers
 
 
-def _generate_key_pair() -> tuple[bytes, bytes]:
-    key_pair = rsa.generate_private_key(backend=default_backend(), public_exponent=65537, key_size=2048)
-    private_key = key_pair.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
-    public_key = key_pair.public_key().public_bytes(Encoding.OpenSSH, PublicFormat.OpenSSH)
-    return private_key, public_key
-
-
 class StubOAuth2Server:
     def __init__(self) -> None:
         self._issuer = "https://stub.example/"
         self._key_id = "stub_key"
-        self._private_key, self._public_key = _generate_key_pair()
+        self._private_key, self._public_key = self._generate_key_pair()
 
     def key_set(self) -> dict[str, Any]:
         key = JsonWebKey.import_key(self._public_key, {"kty": "RSA", "kid": self._key_id})
@@ -115,3 +108,10 @@ class StubOAuth2Server:
                 pass
 
         return StubOAuth2Client
+
+    @staticmethod
+    def _generate_key_pair() -> tuple[bytes, bytes]:
+        key_pair = rsa.generate_private_key(backend=default_backend(), public_exponent=65537, key_size=2048)
+        private_key = key_pair.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
+        public_key = key_pair.public_key().public_bytes(Encoding.OpenSSH, PublicFormat.OpenSSH)
+        return private_key, public_key

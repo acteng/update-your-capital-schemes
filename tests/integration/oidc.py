@@ -5,6 +5,7 @@ from types import TracebackType
 from typing import Any, Callable, Type
 
 from authlib.jose import JsonWebKey, jwt
+from authlib.oauth2 import OAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -24,11 +25,7 @@ def _generate_key_pair() -> tuple[bytes, bytes]:
     return private_key, public_key
 
 
-class StubOAuth2Client:
-    """
-    Test stub of `authlib.oauth2.client.OAuth2Client`.
-    """
-
+class StubOAuth2Client(OAuth2Client):  # type: ignore
     issuer = "https://stub.example/"
     _subject = "stub_subject"
     nonce: str | None = None
@@ -50,7 +47,21 @@ class StubOAuth2Client:
         update_token: Callable[[OAuth2Token], None] | None = None,
         **metadata: Any,
     ):
-        self._client_id = client_id
+        super().__init__(
+            None,
+            client_id,
+            client_secret,
+            token_endpoint_auth_method,
+            revocation_endpoint_auth_method,
+            scope,
+            state,
+            redirect_uri,
+            code_challenge_method,
+            token,
+            token_placement,
+            update_token,
+            **metadata,
+        )
         self.headers = default_headers()
 
     def fetch_token(
@@ -74,7 +85,7 @@ class StubOAuth2Client:
         payload = {
             "iss": self.issuer,
             "sub": self._subject,
-            "aud": self._client_id,
+            "aud": self.client_id,
             "exp": int(issued_at + 60),
             "iat": issued_at,
             "nonce": self.nonce,

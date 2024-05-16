@@ -4,11 +4,13 @@ from unittest.mock import Mock
 import pytest
 from authlib.integrations.base_client import OAuthError
 from authlib.integrations.flask_client import OAuth
+from authlib.jose.errors import InvalidClaimError
 from authlib.oidc.core import UserInfo
 from flask import current_app, session
 from flask.testing import FlaskClient
 
 from schemes.domain.users import User, UserRepository
+from tests.integration.oidc import StubOAuth2Client
 
 
 class TestAuth:
@@ -49,6 +51,24 @@ class TestAuth:
 
         with pytest.raises(OAuthError, match="invalid_request: Unsupported response"):
             client.get("/auth", query_string={"error": "invalid_request", "error_description": "Unsupported response"})
+
+    def test_callback_when_invalid_issuer_raises_error(
+        self, oauth: OAuth, users: UserRepository, client: FlaskClient
+    ) -> None:
+        oauth.govuk.server_metadata = {
+            "issuer": "https://stub.example/",
+            "jwks": StubOAuth2Client.key_set(),
+            "_loaded_at": 1,
+        }
+        oauth.govuk.client_cls = StubOAuth2Client
+        StubOAuth2Client.issuer = "https://malicious.example/"
+        StubOAuth2Client.nonce = "456"
+        users.add(User("boardman@example.com", authority_id=1))
+        with client.session_transaction() as setup_session:
+            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+
+        with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "iss"'):
+            client.get("/auth", query_string={"code": "x", "state": "123"})
 
     def test_callback_when_unauthorized_returns_forbidden(
         self, oauth: OAuth, users: UserRepository, client: FlaskClient

@@ -28,7 +28,9 @@ class StubOAuth2Server:
         key = JsonWebKey.import_key(self._public_key, {"kty": "RSA", "kid": self._key_id})
         return {"keys": [key.as_dict()]}
 
-    def create_client_class(self, issuer: str | None = None, nonce: str | None = None) -> Type[OAuth2Client]:
+    def create_client_class(
+        self, issuer: str | None = None, audience: str | None = None, nonce: str | None = None
+    ) -> Type[OAuth2Client]:
         server = self
         subject = "stub_subject"
 
@@ -86,7 +88,7 @@ class StubOAuth2Server:
                 payload = {
                     "iss": issuer or server._issuer,
                     "sub": subject,
-                    "aud": self.client_id,
+                    "aud": audience or self.client_id,
                     "exp": int(issued_at + 60),
                     "iat": issued_at,
                     "nonce": nonce,

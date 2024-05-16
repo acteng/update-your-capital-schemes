@@ -17,7 +17,13 @@ bp = Blueprint("auth", __name__)
 @inject.autoparams()
 def callback(users: UserRepository) -> BaseResponse:
     oauth = _get_oauth()
-    token = oauth.govuk.authorize_access_token()
+    server_metadata = oauth.govuk.load_server_metadata()
+    token = oauth.govuk.authorize_access_token(
+        claims_options={
+            "iss": {"value": server_metadata.get("issuer")},
+            "aud": {"value": oauth.govuk.client_id},
+        }
+    )
     user = oauth.govuk.userinfo(token=token)
 
     if not _is_authorized(users, user):

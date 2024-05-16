@@ -26,10 +26,8 @@ def _generate_key_pair() -> tuple[bytes, bytes]:
 
 
 class StubOAuth2Server:
-    def __init__(self, issuer: str = "https://stub.example/", nonce: str | None = None):
-        self._issuer = issuer
-        self._subject = "stub_subject"
-        self._nonce = nonce
+    def __init__(self) -> None:
+        self._issuer = "https://stub.example/"
         self._key_id = "stub_key"
         self._private_key, self._public_key = _generate_key_pair()
 
@@ -37,8 +35,9 @@ class StubOAuth2Server:
         key = JsonWebKey.import_key(self._public_key, {"kty": "RSA", "kid": self._key_id})
         return {"keys": [key.as_dict()]}
 
-    def create_client_class(self) -> Type[OAuth2Client]:
+    def create_client_class(self, issuer: str | None = None, nonce: str | None = None) -> Type[OAuth2Client]:
         server = self
+        subject = "stub_subject"
 
         class StubOAuth2Client(OAuth2Client):  # type: ignore
             def __init__(
@@ -92,12 +91,12 @@ class StubOAuth2Server:
                 }
 
                 payload = {
-                    "iss": server._issuer,
-                    "sub": server._subject,
+                    "iss": issuer or server._issuer,
+                    "sub": subject,
                     "aud": self.client_id,
                     "exp": int(issued_at + 60),
                     "iat": issued_at,
-                    "nonce": server._nonce,
+                    "nonce": nonce,
                 }
 
                 id_token = jwt.encode(header, payload, server._private_key)

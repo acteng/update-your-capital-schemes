@@ -65,10 +65,10 @@ class TestAuth:
         self, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
-        server = StubOAuth2Server(issuer="https://malicious.example/", nonce="456")
+        server = StubOAuth2Server()
         oauth.govuk.server_metadata["issuer"] = "https://stub.example/"
         oauth.govuk.server_metadata["jwks"] = server.key_set()
-        oauth.govuk.client_cls = server.create_client_class()
+        oauth.govuk.client_cls = server.create_client_class(issuer="https://malicious.example/", nonce="456")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 

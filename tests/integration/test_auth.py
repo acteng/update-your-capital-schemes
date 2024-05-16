@@ -32,6 +32,10 @@ class TestAuth:
         oauth_app.authorize_access_token = previous_authorize_access_token
         oauth_app.userinfo = previous_userinfo
 
+    @pytest.fixture(autouse=True)
+    def stub_server_metadata(self, oauth: OAuth) -> None:
+        oauth.govuk.server_metadata = {"_loaded_at": 1}
+
     def test_callback_logs_in(self, oauth: OAuth, users: UserRepository, client: FlaskClient) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         oauth.govuk.authorize_access_token = Mock(return_value={"id_token": "jwt"})
@@ -61,11 +65,8 @@ class TestAuth:
         self, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         server = StubOAuth2Server(issuer="https://malicious.example/", nonce="456")
-        oauth.govuk.server_metadata = {
-            "issuer": "https://stub.example/",
-            "jwks": server.key_set(),
-            "_loaded_at": 1,
-        }
+        oauth.govuk.server_metadata["issuer"] = "https://stub.example/"
+        oauth.govuk.server_metadata["jwks"] = server.key_set()
         oauth.govuk.client_cls = server.create_client_class()
         users.add(User("boardman@example.com", authority_id=1))
         with client.session_transaction() as setup_session:

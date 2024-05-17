@@ -43,7 +43,7 @@ class StubOidcServer:
         issued_at: int | None = None,
         nonce: str | None = None,
         signature: bytes | None = None,
-    ) -> None:
+    ) -> str:
         access_token = "stub_access_token"
         subject = "stub_subject"
         now = time()
@@ -62,7 +62,7 @@ class StubOidcServer:
             "nonce": nonce,
         }
 
-        id_token = jwt.encode(header, payload, self._private_key).decode()
+        id_token: str = jwt.encode(header, payload, self._private_key).decode()
 
         if signature:
             encoded_header, encoded_body, _ = id_token.split(".")
@@ -71,10 +71,15 @@ class StubOidcServer:
 
         responses.add(responses.POST, self.token_endpoint, json={"access_token": access_token, "id_token": id_token})
 
+        return id_token
+
     def given_token_endpoint_returns_error(self, error: str, error_description: str) -> None:
         responses.add(
             responses.POST, self.token_endpoint, json={"error": error, "error_description": error_description}
         )
+
+    def given_userinfo_endpoint_returns_claims(self, email: str) -> None:
+        responses.add(responses.GET, self.userinfo_endpoint, json={"email": email})
 
     def given_userinfo_endpoint_returns_error(self, error: str, error_description: str) -> None:
         responses.add(

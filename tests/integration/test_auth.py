@@ -1,5 +1,4 @@
 from typing import Any, Generator, Mapping
-from unittest.mock import Mock
 
 import pytest
 import responses
@@ -32,12 +31,8 @@ class TestAuth:
         oauth = current_app.extensions["authlib.integrations.flask_client"]
         oauth_app = oauth.govuk
         previous_server_metadata = oauth_app.server_metadata
-        previous_authorize_access_token = oauth_app.authorize_access_token
-        previous_userinfo = oauth_app.userinfo
         yield oauth
         oauth_app.server_metadata = previous_server_metadata
-        oauth_app.authorize_access_token = previous_authorize_access_token
-        oauth_app.userinfo = previous_userinfo
 
     @pytest.fixture(autouse=True)
     def stub_server_metadata(self, oauth: OAuth) -> None:
@@ -51,22 +46,28 @@ class TestAuth:
         oauth.govuk.server_metadata["jwks"] = oidc_server.key_set()
         return oidc_server
 
-    def test_callback_logs_in(self, oauth: OAuth, users: UserRepository, client: FlaskClient) -> None:
+    @responses.activate
+    def test_callback_logs_in(self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient) -> None:
         users.add(User("boardman@example.com", authority_id=1))
-        oauth.govuk.authorize_access_token = Mock(return_value={"id_token": "jwt"})
-        oauth.govuk.userinfo = Mock(return_value=UserInfo({"email": "boardman@example.com"}))
+        id_token = oidc_server.given_token_endpoint_returns_id_token(nonce="456")
+        oidc_server.given_userinfo_endpoint_returns_claims(email="boardman@example.com")
+        given_session_has_authentication_request(client, state="123", nonce="456")
 
         with client:
-            client.get("/auth")
+            client.get("/auth", query_string={"code": "x", "state": "123"})
 
-            assert session["user"] == UserInfo({"email": "boardman@example.com"}) and session["id_token"] == "jwt"
+            assert session["user"] == UserInfo({"email": "boardman@example.com"}) and session["id_token"] == id_token
 
-    def test_callback_redirects_to_schemes(self, oauth: OAuth, users: UserRepository, client: FlaskClient) -> None:
+    @responses.activate
+    def test_callback_redirects_to_schemes(
+        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
+    ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
-        oauth.govuk.authorize_access_token = Mock(return_value={"id_token": "jwt"})
-        oauth.govuk.userinfo = Mock(return_value=(UserInfo({"email": "boardman@example.com"})))
+        oidc_server.given_token_endpoint_returns_id_token(nonce="456")
+        oidc_server.given_userinfo_endpoint_returns_claims(email="boardman@example.com")
+        given_session_has_authentication_request(client, state="123", nonce="456")
 
-        response = client.get("/auth")
+        response = client.get("/auth", query_string={"code": "x", "state": "123"})
 
         assert response.status_code == 302 and response.location == "/schemes"
 
@@ -156,14 +157,16 @@ class TestAuth:
         with pytest.raises(HTTPError, match=f"401 Client Error: Unauthorized for url: {oidc_server.userinfo_endpoint}"):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
+    @responses.activate
     def test_callback_when_unauthorized_returns_forbidden(
-        self, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
-        oauth.govuk.authorize_access_token = Mock(return_value={"id_token": "jwt"})
-        oauth.govuk.userinfo = Mock(return_value=(UserInfo({"email": "obree@example.com"})))
+        oidc_server.given_token_endpoint_returns_id_token(nonce="456")
+        oidc_server.given_userinfo_endpoint_returns_claims(email="obree@example.com")
+        given_session_has_authentication_request(client, state="123", nonce="456")
 
-        response = client.get("/auth")
+        response = client.get("/auth", query_string={"code": "x", "state": "123"})
 
         assert response.status_code == 403
 

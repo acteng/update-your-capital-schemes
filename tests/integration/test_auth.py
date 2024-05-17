@@ -35,6 +35,10 @@ class TestAuth:
     def stub_server_metadata(self, oauth: OAuth) -> None:
         oauth.govuk.server_metadata = {"_loaded_at": 1}
 
+    @pytest.fixture(name="oidc_server")
+    def oidc_server_fixture(self) -> StubOAuth2Server:
+        return StubOAuth2Server()
+
     def test_callback_logs_in(self, oauth: OAuth, users: UserRepository, client: FlaskClient) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         oauth.govuk.authorize_access_token = Mock(return_value={"id_token": "jwt"})
@@ -62,14 +66,13 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_invalid_issuer_raises_error(
-        self, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOAuth2Server, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
-        server = StubOAuth2Server()
-        server.given_token_endpoint_returns(issuer="https://malicious.example/", nonce="456")
-        oauth.govuk.server_metadata["token_endpoint"] = server.token_endpoint
+        oidc_server.given_token_endpoint_returns(issuer="https://malicious.example/", nonce="456")
+        oauth.govuk.server_metadata["token_endpoint"] = oidc_server.token_endpoint
         oauth.govuk.server_metadata["issuer"] = "https://stub.example/"
-        oauth.govuk.server_metadata["jwks"] = server.key_set()
+        oauth.govuk.server_metadata["jwks"] = oidc_server.key_set()
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
@@ -78,13 +81,12 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_invalid_audience_raises_error(
-        self, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOAuth2Server, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
-        server = StubOAuth2Server()
-        server.given_token_endpoint_returns(audience="another_client_id", nonce="456")
-        oauth.govuk.server_metadata["token_endpoint"] = server.token_endpoint
-        oauth.govuk.server_metadata["jwks"] = server.key_set()
+        oidc_server.given_token_endpoint_returns(audience="another_client_id", nonce="456")
+        oauth.govuk.server_metadata["token_endpoint"] = oidc_server.token_endpoint
+        oauth.govuk.server_metadata["jwks"] = oidc_server.key_set()
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
@@ -93,13 +95,12 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_invalid_nonce_raises_error(
-        self, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOAuth2Server, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
-        server = StubOAuth2Server()
-        server.given_token_endpoint_returns(nonce="789")
-        oauth.govuk.server_metadata["token_endpoint"] = server.token_endpoint
-        oauth.govuk.server_metadata["jwks"] = server.key_set()
+        oidc_server.given_token_endpoint_returns(nonce="789")
+        oauth.govuk.server_metadata["token_endpoint"] = oidc_server.token_endpoint
+        oauth.govuk.server_metadata["jwks"] = oidc_server.key_set()
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
@@ -108,13 +109,12 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_expired_raises_error(
-        self, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOAuth2Server, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
-        server = StubOAuth2Server()
-        server.given_token_endpoint_returns(expiration_time=1, nonce="456")
-        oauth.govuk.server_metadata["token_endpoint"] = server.token_endpoint
-        oauth.govuk.server_metadata["jwks"] = server.key_set()
+        oidc_server.given_token_endpoint_returns(expiration_time=1, nonce="456")
+        oauth.govuk.server_metadata["token_endpoint"] = oidc_server.token_endpoint
+        oauth.govuk.server_metadata["jwks"] = oidc_server.key_set()
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 

@@ -27,14 +27,19 @@ from tests.integration.fakes import (
 )
 
 
+@pytest.fixture(name="oidc_client_id", scope="class")
+def oidc_client_id_fixture() -> str:
+    return "test"
+
+
 @pytest.fixture(name="config", scope="class")
-def config_fixture() -> Mapping[str, Any]:
+def config_fixture(oidc_client_id: str) -> Mapping[str, Any]:
     private_key, public_key = _generate_key_pair()
 
     return {
         "TESTING": True,
         "SECRET_KEY": b"secret_key",
-        "GOVUK_CLIENT_ID": "test",
+        "GOVUK_CLIENT_ID": oidc_client_id,
         "GOVUK_CLIENT_SECRET": private_key.decode(),
         "GOVUK_SERVER_METADATA_URL": "test",
         "GOVUK_TOKEN_ENDPOINT": "test",

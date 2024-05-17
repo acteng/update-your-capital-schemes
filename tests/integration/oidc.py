@@ -16,12 +16,11 @@ from cryptography.hazmat.primitives.serialization import (
 
 
 class StubOidcServer:
-    def __init__(self) -> None:
+    def __init__(self, client_id: str) -> None:
         self._issuer = "https://stub.example/"
         self._key_id = "stub_key"
         self._private_key, self._public_key = self._generate_key_pair()
-        # TODO: share with client_id in config_fixture
-        self._client_id = "test"
+        self._client_id = client_id
 
     @property
     def token_endpoint(self) -> str:

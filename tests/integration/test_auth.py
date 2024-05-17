@@ -36,8 +36,8 @@ class TestAuth:
         oauth.govuk.server_metadata = {"_loaded_at": 1}
 
     @pytest.fixture(name="oidc_server")
-    def oidc_server_fixture(self, oauth: OAuth) -> StubOidcServer:
-        oidc_server = StubOidcServer()
+    def oidc_server_fixture(self, oidc_client_id: str, oauth: OAuth) -> StubOidcServer:
+        oidc_server = StubOidcServer(client_id=oidc_client_id)
         oauth.govuk.server_metadata["token_endpoint"] = oidc_server.token_endpoint
         oauth.govuk.server_metadata["jwks"] = oidc_server.key_set()
         return oidc_server

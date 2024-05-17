@@ -68,17 +68,14 @@ class TestAuth:
 
         assert response.status_code == 302 and response.location == "/schemes"
 
-    def test_callback_when_authentication_error_raises_error(self, users: UserRepository, client: FlaskClient) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
-
+    def test_callback_when_authentication_error_raises_error(self, client: FlaskClient) -> None:
         with pytest.raises(OAuthError, match="invalid_request: Unsupported response"):
             client.get("/auth", query_string={"error": "invalid_request", "error_description": "Unsupported response"})
 
     @responses.activate
     def test_callback_when_id_token_issuer_invalid_raises_error(
-        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, oauth: OAuth, client: FlaskClient
     ) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(issuer="https://malicious.example/", nonce="456")
         oauth.govuk.server_metadata["issuer"] = "https://stub.example/"
         with client.session_transaction() as setup_session:
@@ -89,9 +86,8 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_audience_invalid_raises_error(
-        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(audience="another_client_id", nonce="456")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
@@ -101,9 +97,8 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_nonce_invalid_raises_error(
-        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(nonce="789")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
@@ -113,9 +108,8 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_expired_raises_error(
-        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(expiration_time=1, nonce="456")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
@@ -125,9 +119,8 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_issued_in_future_raises_error(
-        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(issued_at=self.YEAR_3000, nonce="456")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
@@ -139,9 +132,8 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_signature_invalid_raises_error(
-        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(nonce="456", signature="invalid_signature".encode())
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}

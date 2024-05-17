@@ -75,7 +75,7 @@ class TestAuth:
             client.get("/auth", query_string={"error": "invalid_request", "error_description": "Unsupported response"})
 
     @responses.activate
-    def test_callback_when_invalid_issuer_raises_error(
+    def test_callback_when_id_token_issuer_invalid_raises_error(
         self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
@@ -88,7 +88,7 @@ class TestAuth:
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
     @responses.activate
-    def test_callback_when_invalid_audience_raises_error(
+    def test_callback_when_id_token_audience_invalid_raises_error(
         self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
@@ -100,7 +100,7 @@ class TestAuth:
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
     @responses.activate
-    def test_callback_when_invalid_nonce_raises_error(
+    def test_callback_when_id_token_nonce_invalid_raises_error(
         self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
@@ -138,7 +138,7 @@ class TestAuth:
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
     @responses.activate
-    def test_callback_when_invalid_signature_raises_error(
+    def test_callback_when_id_token_signature_invalid_raises_error(
         self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))

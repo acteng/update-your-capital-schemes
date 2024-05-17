@@ -22,9 +22,13 @@ from tests.integration.oidc import StubOidcServer
 class TestAuth:
     YEAR_3000 = 32503680000
 
+    @pytest.fixture(name="client_id", scope="class")
+    def client_id_fixture(self) -> str:
+        return "stub_client_id"
+
     @pytest.fixture(name="config", scope="class")
-    def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
-        return dict(config) | {"GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
+    def config_fixture(self, config: Mapping[str, Any], client_id: str) -> Mapping[str, Any]:
+        return dict(config) | {"GOVUK_CLIENT_ID": client_id, "GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
 
     @pytest.fixture(name="oauth")
     def oauth_fixture(self) -> Generator[OAuth, None, None]:
@@ -39,8 +43,8 @@ class TestAuth:
         oauth.govuk.server_metadata = {"_loaded_at": 1}
 
     @pytest.fixture(name="oidc_server")
-    def oidc_server_fixture(self, oidc_client_id: str, oauth: OAuth) -> StubOidcServer:
-        oidc_server = StubOidcServer(client_id=oidc_client_id)
+    def oidc_server_fixture(self, client_id: str, oauth: OAuth) -> StubOidcServer:
+        oidc_server = StubOidcServer(client_id=client_id)
         oauth.govuk.server_metadata["token_endpoint"] = oidc_server.token_endpoint
         oauth.govuk.server_metadata["userinfo_endpoint"] = oidc_server.userinfo_endpoint
         oauth.govuk.server_metadata["jwks"] = oidc_server.key_set()

@@ -5,7 +5,7 @@ import pytest
 import responses
 from authlib.integrations.base_client import OAuthError
 from authlib.integrations.flask_client import OAuth
-from authlib.jose.errors import ExpiredTokenError, InvalidClaimError
+from authlib.jose.errors import ExpiredTokenError, InvalidClaimError, InvalidTokenError
 from authlib.oidc.core import UserInfo
 from flask import current_app, session
 from flask.testing import FlaskClient
@@ -15,6 +15,8 @@ from tests.integration.oidc import StubOidcServer
 
 
 class TestAuth:
+    YEAR_3000 = 32503680000
+
     @pytest.fixture(name="config", scope="class")
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
@@ -114,6 +116,20 @@ class TestAuth:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
         with pytest.raises(ExpiredTokenError, match="expired_token: The token is expired"):
+            client.get("/auth", query_string={"code": "x", "state": "123"})
+
+    @responses.activate
+    def test_callback_when_id_token_issued_in_future_raises_error(
+        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
+    ) -> None:
+        users.add(User("boardman@example.com", authority_id=1))
+        oidc_server.given_token_endpoint_returns(issued_at=self.YEAR_3000, nonce="456")
+        with client.session_transaction() as setup_session:
+            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+
+        with pytest.raises(
+            InvalidTokenError, match="invalid_token: The token is not valid as it was issued in the future"
+        ):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
     def test_callback_when_unauthorized_returns_forbidden(

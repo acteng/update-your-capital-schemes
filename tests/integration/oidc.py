@@ -35,10 +35,11 @@ class StubOidcServer:
         issuer: str | None = None,
         audience: str | None = None,
         expiration_time: int | None = None,
+        issued_at: int | None = None,
         nonce: str | None = None,
     ) -> None:
         subject = "stub_subject"
-        issued_at = time()
+        now = time()
 
         header = {
             "kid": self._key_id,
@@ -49,8 +50,8 @@ class StubOidcServer:
             "iss": issuer or self._issuer,
             "sub": subject,
             "aud": audience or self._client_id,
-            "exp": expiration_time or int(issued_at + 60),
-            "iat": issued_at,
+            "exp": expiration_time or int(now + 60),
+            "iat": issued_at or now,
             "nonce": nonce,
         }
 

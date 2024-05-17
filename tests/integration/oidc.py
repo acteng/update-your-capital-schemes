@@ -31,7 +31,7 @@ class StubOidcServer:
         key = JsonWebKey.import_key(self._public_key, {"kty": "RSA", "kid": self._key_id})
         return {"keys": [key.as_dict()]}
 
-    def given_token_endpoint_returns(
+    def given_token_endpoint_returns_id_token(
         self,
         issuer: str | None = None,
         audience: str | None = None,

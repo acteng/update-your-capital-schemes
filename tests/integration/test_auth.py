@@ -76,7 +76,7 @@ class TestAuth:
     def test_callback_when_id_token_issuer_invalid_raises_error(
         self, oidc_server: StubOidcServer, oauth: OAuth, client: FlaskClient
     ) -> None:
-        oidc_server.given_token_endpoint_returns(issuer="https://malicious.example/", nonce="456")
+        oidc_server.given_token_endpoint_returns_id_token(issuer="https://malicious.example/", nonce="456")
         oauth.govuk.server_metadata["issuer"] = "https://stub.example/"
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
@@ -88,7 +88,7 @@ class TestAuth:
     def test_callback_when_id_token_audience_invalid_raises_error(
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        oidc_server.given_token_endpoint_returns(audience="another_client_id", nonce="456")
+        oidc_server.given_token_endpoint_returns_id_token(audience="another_client_id", nonce="456")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
@@ -99,7 +99,7 @@ class TestAuth:
     def test_callback_when_id_token_nonce_invalid_raises_error(
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        oidc_server.given_token_endpoint_returns(nonce="789")
+        oidc_server.given_token_endpoint_returns_id_token(nonce="789")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
@@ -110,7 +110,7 @@ class TestAuth:
     def test_callback_when_id_token_expired_raises_error(
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        oidc_server.given_token_endpoint_returns(expiration_time=1, nonce="456")
+        oidc_server.given_token_endpoint_returns_id_token(expiration_time=1, nonce="456")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
@@ -121,7 +121,7 @@ class TestAuth:
     def test_callback_when_id_token_issued_in_future_raises_error(
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        oidc_server.given_token_endpoint_returns(issued_at=self.YEAR_3000, nonce="456")
+        oidc_server.given_token_endpoint_returns_id_token(issued_at=self.YEAR_3000, nonce="456")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
@@ -134,7 +134,7 @@ class TestAuth:
     def test_callback_when_id_token_signature_invalid_raises_error(
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        oidc_server.given_token_endpoint_returns(nonce="456", signature="invalid_signature".encode())
+        oidc_server.given_token_endpoint_returns_id_token(nonce="456", signature="invalid_signature".encode())
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 

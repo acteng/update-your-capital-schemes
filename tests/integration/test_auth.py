@@ -14,6 +14,7 @@ from authlib.jose.errors import (
 from authlib.oidc.core import UserInfo
 from flask import current_app, session
 from flask.testing import FlaskClient
+from requests import HTTPError
 
 from schemes.domain.users import User, UserRepository
 from tests.integration.oidc import StubOidcServer
@@ -46,6 +47,7 @@ class TestAuth:
     def oidc_server_fixture(self, oidc_client_id: str, oauth: OAuth) -> StubOidcServer:
         oidc_server = StubOidcServer(client_id=oidc_client_id)
         oauth.govuk.server_metadata["token_endpoint"] = oidc_server.token_endpoint
+        oauth.govuk.server_metadata["userinfo_endpoint"] = oidc_server.userinfo_endpoint
         oauth.govuk.server_metadata["jwks"] = oidc_server.key_set()
         return oidc_server
 
@@ -148,6 +150,18 @@ class TestAuth:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
         with pytest.raises(OAuthError, match="invalid_request: invalid scope"):
+            client.get("/auth", query_string={"code": "x", "state": "123"})
+
+    @responses.activate
+    def test_callback_when_userinfo_error_raises_error(self, oidc_server: StubOidcServer, client: FlaskClient) -> None:
+        oidc_server.given_token_endpoint_returns_id_token(nonce="456")
+        oidc_server.given_userinfo_endpoint_returns_error(
+            error="invalid_token", error_description="The Access Token expired"
+        )
+        with client.session_transaction() as setup_session:
+            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+
+        with pytest.raises(HTTPError, match=f"401 Client Error: Unauthorized for url: {oidc_server.userinfo_endpoint}"):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
     def test_callback_when_unauthorized_returns_forbidden(

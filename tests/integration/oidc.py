@@ -27,6 +27,10 @@ class StubOidcServer:
     def token_endpoint(self) -> str:
         return f"{self._issuer}token"
 
+    @property
+    def userinfo_endpoint(self) -> str:
+        return f"{self._issuer}userinfo"
+
     def key_set(self) -> dict[str, Any]:
         key = JsonWebKey.import_key(self._public_key, {"kty": "RSA", "kid": self._key_id})
         return {"keys": [key.as_dict()]}
@@ -40,6 +44,7 @@ class StubOidcServer:
         nonce: str | None = None,
         signature: bytes | None = None,
     ) -> None:
+        access_token = "stub_access_token"
         subject = "stub_subject"
         now = time()
 
@@ -64,11 +69,19 @@ class StubOidcServer:
             encoded_signature = urlsafe_b64encode(signature)
             id_token = ".".join([encoded_header, encoded_body, encoded_signature.decode()])
 
-        responses.add(responses.POST, self.token_endpoint, json={"id_token": id_token})
+        responses.add(responses.POST, self.token_endpoint, json={"access_token": access_token, "id_token": id_token})
 
     def given_token_endpoint_returns_error(self, error: str, error_description: str) -> None:
         responses.add(
             responses.POST, self.token_endpoint, json={"error": error, "error_description": error_description}
+        )
+
+    def given_userinfo_endpoint_returns_error(self, error: str, error_description: str) -> None:
+        responses.add(
+            responses.GET,
+            self.userinfo_endpoint,
+            status=401,
+            json={"error": error, "error_description": error_description},
         )
 
     @staticmethod

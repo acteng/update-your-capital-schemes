@@ -89,7 +89,7 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_audience_invalid_raises_error(
-        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(audience="another_client_id", nonce="456")
@@ -101,7 +101,7 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_nonce_invalid_raises_error(
-        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(nonce="789")
@@ -113,7 +113,7 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_expired_raises_error(
-        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(expiration_time=1, nonce="456")
@@ -125,7 +125,7 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_issued_in_future_raises_error(
-        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(issued_at=self.YEAR_3000, nonce="456")
@@ -139,7 +139,7 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_signature_invalid_raises_error(
-        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(nonce="456", signature="invalid_signature".encode())
@@ -160,7 +160,7 @@ class TestAuth:
 
         assert response.status_code == 403
 
-    def test_logout_logs_out_from_oidc(self, oauth: OAuth, client: FlaskClient) -> None:
+    def test_logout_logs_out_from_oidc(self, client: FlaskClient) -> None:
         with client.session_transaction() as setup_session:
             setup_session["user"] = UserInfo({"email": "boardman@example.com"})
             setup_session["id_token"] = "jwt"
@@ -173,7 +173,7 @@ class TestAuth:
             == "https://example.com/logout?id_token_hint=jwt&post_logout_redirect_uri=http%3A%2F%2Flocalhost%2F"
         )
 
-    def test_logout_logs_out_from_schemes(self, oauth: OAuth, client: FlaskClient) -> None:
+    def test_logout_logs_out_from_schemes(self, client: FlaskClient) -> None:
         with client.session_transaction() as setup_session:
             setup_session["user"] = UserInfo({"email": "boardman@example.com"})
             setup_session["id_token"] = "jwt"

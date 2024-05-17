@@ -2,6 +2,7 @@ from typing import Any, Generator, Mapping
 from unittest.mock import Mock
 
 import pytest
+import responses
 from authlib.integrations.base_client import OAuthError
 from authlib.integrations.flask_client import OAuth
 from authlib.jose.errors import ExpiredTokenError, InvalidClaimError
@@ -23,12 +24,10 @@ class TestAuth:
         oauth = current_app.extensions["authlib.integrations.flask_client"]
         oauth_app = oauth.govuk
         previous_server_metadata = oauth_app.server_metadata
-        previous_client_cls = oauth_app.client_cls
         previous_authorize_access_token = oauth_app.authorize_access_token
         previous_userinfo = oauth_app.userinfo
         yield oauth
         oauth_app.server_metadata = previous_server_metadata
-        oauth_app.client_cls = previous_client_cls
         oauth_app.authorize_access_token = previous_authorize_access_token
         oauth_app.userinfo = previous_userinfo
 
@@ -61,53 +60,61 @@ class TestAuth:
         with pytest.raises(OAuthError, match="invalid_request: Unsupported response"):
             client.get("/auth", query_string={"error": "invalid_request", "error_description": "Unsupported response"})
 
+    @responses.activate
     def test_callback_when_invalid_issuer_raises_error(
         self, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         server = StubOAuth2Server()
+        server.given_token_endpoint_returns(issuer="https://malicious.example/", nonce="456")
+        oauth.govuk.server_metadata["token_endpoint"] = server.token_endpoint
         oauth.govuk.server_metadata["issuer"] = "https://stub.example/"
         oauth.govuk.server_metadata["jwks"] = server.key_set()
-        oauth.govuk.client_cls = server.create_client_class(issuer="https://malicious.example/", nonce="456")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
         with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "iss"'):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
+    @responses.activate
     def test_callback_when_invalid_audience_raises_error(
         self, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         server = StubOAuth2Server()
+        server.given_token_endpoint_returns(audience="another_client_id", nonce="456")
+        oauth.govuk.server_metadata["token_endpoint"] = server.token_endpoint
         oauth.govuk.server_metadata["jwks"] = server.key_set()
-        oauth.govuk.client_cls = server.create_client_class(audience="another_client_id", nonce="456")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
         with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "aud"'):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
+    @responses.activate
     def test_callback_when_invalid_nonce_raises_error(
         self, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         server = StubOAuth2Server()
+        server.given_token_endpoint_returns(nonce="789")
+        oauth.govuk.server_metadata["token_endpoint"] = server.token_endpoint
         oauth.govuk.server_metadata["jwks"] = server.key_set()
-        oauth.govuk.client_cls = server.create_client_class(nonce="789")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
         with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "nonce"'):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
+    @responses.activate
     def test_callback_when_id_token_expired_raises_error(
         self, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         server = StubOAuth2Server()
+        server.given_token_endpoint_returns(expiration_time=1, nonce="456")
+        oauth.govuk.server_metadata["token_endpoint"] = server.token_endpoint
         oauth.govuk.server_metadata["jwks"] = server.key_set()
-        oauth.govuk.client_cls = server.create_client_class(expiration_time=1, nonce="456")
         with client.session_transaction() as setup_session:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 

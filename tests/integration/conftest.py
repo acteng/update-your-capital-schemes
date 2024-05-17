@@ -2,6 +2,14 @@ from typing import Any, Callable, Generator, Mapping
 
 import inject
 import pytest
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.serialization import (
+    Encoding,
+    NoEncryption,
+    PrivateFormat,
+    PublicFormat,
+)
 from flask import Flask, session
 from flask.testing import FlaskClient
 from flask_wtf.csrf import generate_csrf
@@ -21,11 +29,13 @@ from tests.integration.fakes import (
 
 @pytest.fixture(name="config", scope="class")
 def config_fixture() -> Mapping[str, Any]:
+    private_key, public_key = _generate_key_pair()
+
     return {
         "TESTING": True,
         "SECRET_KEY": b"secret_key",
         "GOVUK_CLIENT_ID": "test",
-        "GOVUK_CLIENT_SECRET": "test",
+        "GOVUK_CLIENT_SECRET": private_key.decode(),
         "GOVUK_SERVER_METADATA_URL": "test",
         "GOVUK_TOKEN_ENDPOINT": "test",
         "GOVUK_PROFILE_URL": "test",
@@ -88,3 +98,10 @@ def _test_bindings(app: Flask) -> Callable[[Binder], None]:
         binder.bind(SchemeRepository, MemorySchemeRepository())
 
     return _bindings
+
+
+def _generate_key_pair() -> tuple[bytes, bytes]:
+    key_pair = rsa.generate_private_key(backend=default_backend(), public_exponent=65537, key_size=2048)
+    private_key = key_pair.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
+    public_key = key_pair.public_key().public_bytes(Encoding.OpenSSH, PublicFormat.OpenSSH)
+    return private_key, public_key

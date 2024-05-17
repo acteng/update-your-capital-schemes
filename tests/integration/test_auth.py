@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 from authlib.integrations.base_client import OAuthError
 from authlib.integrations.flask_client import OAuth
-from authlib.jose.errors import InvalidClaimError
+from authlib.jose.errors import ExpiredTokenError, InvalidClaimError
 from authlib.oidc.core import UserInfo
 from flask import current_app, session
 from flask.testing import FlaskClient
@@ -99,6 +99,19 @@ class TestAuth:
             setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
 
         with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "nonce"'):
+            client.get("/auth", query_string={"code": "x", "state": "123"})
+
+    def test_callback_when_id_token_expired_raises_error(
+        self, oauth: OAuth, users: UserRepository, client: FlaskClient
+    ) -> None:
+        users.add(User("boardman@example.com", authority_id=1))
+        server = StubOAuth2Server()
+        oauth.govuk.server_metadata["jwks"] = server.key_set()
+        oauth.govuk.client_cls = server.create_client_class(expiration_time=1, nonce="456")
+        with client.session_transaction() as setup_session:
+            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+
+        with pytest.raises(ExpiredTokenError, match="expired_token: The token is expired"):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
     def test_callback_when_unauthorized_returns_forbidden(

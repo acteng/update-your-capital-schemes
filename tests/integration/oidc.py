@@ -29,7 +29,11 @@ class StubOAuth2Server:
         return {"keys": [key.as_dict()]}
 
     def create_client_class(
-        self, issuer: str | None = None, audience: str | None = None, nonce: str | None = None
+        self,
+        issuer: str | None = None,
+        audience: str | None = None,
+        expiration_time: int | None = None,
+        nonce: str | None = None,
     ) -> Type[OAuth2Client]:
         server = self
         subject = "stub_subject"
@@ -89,7 +93,7 @@ class StubOAuth2Server:
                     "iss": issuer or server._issuer,
                     "sub": subject,
                     "aud": audience or self.client_id,
-                    "exp": int(issued_at + 60),
+                    "exp": expiration_time or int(issued_at + 60),
                     "iat": issued_at,
                     "nonce": nonce,
                 }

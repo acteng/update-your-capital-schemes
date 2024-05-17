@@ -15,7 +15,7 @@ from cryptography.hazmat.primitives.serialization import (
 )
 
 
-class StubOAuth2Server:
+class StubOidcServer:
     def __init__(self) -> None:
         self._issuer = "https://stub.example/"
         self._key_id = "stub_key"

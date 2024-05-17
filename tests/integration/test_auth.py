@@ -11,7 +11,7 @@ from flask import current_app, session
 from flask.testing import FlaskClient
 
 from schemes.domain.users import User, UserRepository
-from tests.integration.oidc import StubOAuth2Server
+from tests.integration.oidc import StubOidcServer
 
 
 class TestAuth:
@@ -36,8 +36,8 @@ class TestAuth:
         oauth.govuk.server_metadata = {"_loaded_at": 1}
 
     @pytest.fixture(name="oidc_server")
-    def oidc_server_fixture(self) -> StubOAuth2Server:
-        return StubOAuth2Server()
+    def oidc_server_fixture(self) -> StubOidcServer:
+        return StubOidcServer()
 
     def test_callback_logs_in(self, oauth: OAuth, users: UserRepository, client: FlaskClient) -> None:
         users.add(User("boardman@example.com", authority_id=1))
@@ -66,7 +66,7 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_invalid_issuer_raises_error(
-        self, oidc_server: StubOAuth2Server, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(issuer="https://malicious.example/", nonce="456")
@@ -81,7 +81,7 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_invalid_audience_raises_error(
-        self, oidc_server: StubOAuth2Server, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(audience="another_client_id", nonce="456")
@@ -95,7 +95,7 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_invalid_nonce_raises_error(
-        self, oidc_server: StubOAuth2Server, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(nonce="789")
@@ -109,7 +109,7 @@ class TestAuth:
 
     @responses.activate
     def test_callback_when_id_token_expired_raises_error(
-        self, oidc_server: StubOAuth2Server, oauth: OAuth, users: UserRepository, client: FlaskClient
+        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
         oidc_server.given_token_endpoint_returns(expiration_time=1, nonce="456")

@@ -5,7 +5,12 @@ import pytest
 import responses
 from authlib.integrations.base_client import OAuthError
 from authlib.integrations.flask_client import OAuth
-from authlib.jose.errors import ExpiredTokenError, InvalidClaimError, InvalidTokenError
+from authlib.jose.errors import (
+    BadSignatureError,
+    ExpiredTokenError,
+    InvalidClaimError,
+    InvalidTokenError,
+)
 from authlib.oidc.core import UserInfo
 from flask import current_app, session
 from flask.testing import FlaskClient
@@ -130,6 +135,18 @@ class TestAuth:
         with pytest.raises(
             InvalidTokenError, match="invalid_token: The token is not valid as it was issued in the future"
         ):
+            client.get("/auth", query_string={"code": "x", "state": "123"})
+
+    @responses.activate
+    def test_callback_when_invalid_signature_raises_error(
+        self, oidc_server: StubOidcServer, oauth: OAuth, users: UserRepository, client: FlaskClient
+    ) -> None:
+        users.add(User("boardman@example.com", authority_id=1))
+        oidc_server.given_token_endpoint_returns(nonce="456", signature="invalid_signature".encode())
+        with client.session_transaction() as setup_session:
+            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+
+        with pytest.raises(BadSignatureError):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
     def test_callback_when_unauthorized_returns_forbidden(

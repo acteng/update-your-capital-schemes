@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from base64 import urlsafe_b64encode
 from time import time
 from typing import Any
 
@@ -37,6 +38,7 @@ class StubOidcServer:
         expiration_time: int | None = None,
         issued_at: int | None = None,
         nonce: str | None = None,
+        signature: bytes | None = None,
     ) -> None:
         subject = "stub_subject"
         now = time()
@@ -55,9 +57,14 @@ class StubOidcServer:
             "nonce": nonce,
         }
 
-        id_token = jwt.encode(header, payload, self._private_key)
+        id_token = jwt.encode(header, payload, self._private_key).decode()
 
-        responses.add(responses.POST, self.token_endpoint, json={"id_token": id_token.decode()})
+        if signature:
+            encoded_header, encoded_body, _ = id_token.split(".")
+            encoded_signature = urlsafe_b64encode(signature)
+            id_token = ".".join([encoded_header, encoded_body, encoded_signature.decode()])
+
+        responses.add(responses.POST, self.token_endpoint, json={"id_token": id_token})
 
     @staticmethod
     def _generate_key_pair() -> tuple[bytes, bytes]:

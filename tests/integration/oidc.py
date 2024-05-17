@@ -65,9 +65,7 @@ class StubOidcServer:
         id_token: str = jwt.encode(header, payload, self._private_key).decode()
 
         if signature:
-            encoded_header, encoded_body, _ = id_token.split(".")
-            encoded_signature = urlsafe_b64encode(signature)
-            id_token = ".".join([encoded_header, encoded_body, encoded_signature.decode()])
+            id_token = self._replace_signature(id_token, signature)
 
         responses.add(responses.POST, self.token_endpoint, json={"access_token": access_token, "id_token": id_token})
 
@@ -95,3 +93,8 @@ class StubOidcServer:
         private_key = key_pair.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
         public_key = key_pair.public_key().public_bytes(Encoding.OpenSSH, PublicFormat.OpenSSH)
         return private_key, public_key
+
+    @staticmethod
+    def _replace_signature(token: str, signature: bytes) -> str:
+        header, body, _ = token.split(".")
+        return ".".join([header, body, urlsafe_b64encode(signature).decode()])

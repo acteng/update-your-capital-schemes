@@ -80,8 +80,7 @@ class TestAuth:
     ) -> None:
         oidc_server.given_token_endpoint_returns_id_token(issuer="https://malicious.example/", nonce="456")
         oauth.govuk.server_metadata["issuer"] = "https://stub.example/"
-        with client.session_transaction() as setup_session:
-            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+        given_session_has_authentication_request(client, state="123", nonce="456")
 
         with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "iss"'):
             client.get("/auth", query_string={"code": "x", "state": "123"})
@@ -91,8 +90,7 @@ class TestAuth:
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
         oidc_server.given_token_endpoint_returns_id_token(audience="another_client_id", nonce="456")
-        with client.session_transaction() as setup_session:
-            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+        given_session_has_authentication_request(client, state="123", nonce="456")
 
         with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "aud"'):
             client.get("/auth", query_string={"code": "x", "state": "123"})
@@ -102,8 +100,7 @@ class TestAuth:
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
         oidc_server.given_token_endpoint_returns_id_token(nonce="789")
-        with client.session_transaction() as setup_session:
-            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+        given_session_has_authentication_request(client, state="123", nonce="456")
 
         with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "nonce"'):
             client.get("/auth", query_string={"code": "x", "state": "123"})
@@ -113,8 +110,7 @@ class TestAuth:
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
         oidc_server.given_token_endpoint_returns_id_token(expiration_time=1, nonce="456")
-        with client.session_transaction() as setup_session:
-            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+        given_session_has_authentication_request(client, state="123", nonce="456")
 
         with pytest.raises(ExpiredTokenError, match="expired_token: The token is expired"):
             client.get("/auth", query_string={"code": "x", "state": "123"})
@@ -124,8 +120,7 @@ class TestAuth:
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
         oidc_server.given_token_endpoint_returns_id_token(issued_at=self.YEAR_3000, nonce="456")
-        with client.session_transaction() as setup_session:
-            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+        given_session_has_authentication_request(client, state="123", nonce="456")
 
         with pytest.raises(
             InvalidTokenError, match="invalid_token: The token is not valid as it was issued in the future"
@@ -137,8 +132,7 @@ class TestAuth:
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
         oidc_server.given_token_endpoint_returns_id_token(nonce="456", signature="invalid_signature".encode())
-        with client.session_transaction() as setup_session:
-            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+        given_session_has_authentication_request(client, state="123", nonce="456")
 
         with pytest.raises(BadSignatureError):
             client.get("/auth", query_string={"code": "x", "state": "123"})
@@ -146,8 +140,7 @@ class TestAuth:
     @responses.activate
     def test_callback_when_token_error_raises_error(self, oidc_server: StubOidcServer, client: FlaskClient) -> None:
         oidc_server.given_token_endpoint_returns_error(error="invalid_request", error_description="invalid scope")
-        with client.session_transaction() as setup_session:
-            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+        given_session_has_authentication_request(client, state="123", nonce="456")
 
         with pytest.raises(OAuthError, match="invalid_request: invalid scope"):
             client.get("/auth", query_string={"code": "x", "state": "123"})
@@ -158,8 +151,7 @@ class TestAuth:
         oidc_server.given_userinfo_endpoint_returns_error(
             error="invalid_token", error_description="The Access Token expired"
         )
-        with client.session_transaction() as setup_session:
-            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+        given_session_has_authentication_request(client, state="123", nonce="456")
 
         with pytest.raises(HTTPError, match=f"401 Client Error: Unauthorized for url: {oidc_server.userinfo_endpoint}"):
             client.get("/auth", query_string={"code": "x", "state": "123"})
@@ -197,3 +189,8 @@ class TestAuth:
             client.get("/auth/logout")
 
             assert "user" not in session and "id_token" not in session
+
+
+def given_session_has_authentication_request(client: FlaskClient, state: str, nonce: str) -> None:
+    with client.session_transaction() as setup_session:
+        setup_session[f"_state_govuk_{state}"] = {"data": {"nonce": nonce}}

@@ -66,6 +66,11 @@ class StubOidcServer:
 
         responses.add(responses.POST, self.token_endpoint, json={"id_token": id_token})
 
+    def given_token_endpoint_returns_error(self, error: str, error_description: str) -> None:
+        responses.add(
+            responses.POST, self.token_endpoint, json={"error": error, "error_description": error_description}
+        )
+
     @staticmethod
     def _generate_key_pair() -> tuple[bytes, bytes]:
         key_pair = rsa.generate_private_key(backend=default_backend(), public_exponent=65537, key_size=2048)

@@ -141,6 +141,15 @@ class TestAuth:
         with pytest.raises(BadSignatureError):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
+    @responses.activate
+    def test_callback_when_token_error_raises_error(self, oidc_server: StubOidcServer, client: FlaskClient) -> None:
+        oidc_server.given_token_endpoint_returns_error(error="invalid_request", error_description="invalid scope")
+        with client.session_transaction() as setup_session:
+            setup_session["_state_govuk_123"] = {"data": {"nonce": "456"}}
+
+        with pytest.raises(OAuthError, match="invalid_request: invalid scope"):
+            client.get("/auth", query_string={"code": "x", "state": "123"})
+
     def test_callback_when_unauthorized_returns_forbidden(
         self, oauth: OAuth, users: UserRepository, client: FlaskClient
     ) -> None:

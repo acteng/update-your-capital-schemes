@@ -18,18 +18,18 @@ from cryptography.hazmat.primitives.serialization import (
 
 class StubOidcServer:
     def __init__(self, client_id: str) -> None:
-        self._issuer = "https://stub.example/"
+        self._url = "https://stub.example"
         self._key_id = "stub_key"
         self._private_key, self._public_key = self._generate_key_pair()
         self._client_id = client_id
 
     @property
     def token_endpoint(self) -> str:
-        return f"{self._issuer}token"
+        return f"{self._url}/token"
 
     @property
     def userinfo_endpoint(self) -> str:
-        return f"{self._issuer}userinfo"
+        return f"{self._url}/userinfo"
 
     def key_set(self) -> dict[str, Any]:
         key = JsonWebKey.import_key(self._public_key, {"kty": "RSA", "kid": self._key_id})
@@ -54,7 +54,7 @@ class StubOidcServer:
         }
 
         payload = {
-            "iss": issuer or self._issuer,
+            "iss": issuer or self._url,
             "sub": subject,
             "aud": audience or self._client_id,
             "exp": expiration_time or int(now + 60),

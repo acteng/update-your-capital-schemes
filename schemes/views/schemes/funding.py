@@ -176,7 +176,7 @@ class FinancialTypeRepr(Enum):
     EXPECTED_COST = "expected cost"
     ACTUAL_COST = "actual cost"
     FUNDING_ALLOCATION = "funding allocation"
-    SPENT_TO_DATE = "spent to date"
+    SPEND_TO_DATE = "spend to date"
     FUNDING_REQUEST = "funding request"
 
     @classmethod
@@ -192,6 +192,6 @@ class FinancialTypeRepr(Enum):
             FinancialType.EXPECTED_COST: FinancialTypeRepr.EXPECTED_COST,
             FinancialType.ACTUAL_COST: FinancialTypeRepr.ACTUAL_COST,
             FinancialType.FUNDING_ALLOCATION: FinancialTypeRepr.FUNDING_ALLOCATION,
-            FinancialType.SPENT_TO_DATE: FinancialTypeRepr.SPENT_TO_DATE,
+            FinancialType.SPEND_TO_DATE: FinancialTypeRepr.SPEND_TO_DATE,
             FinancialType.FUNDING_REQUEST: FinancialTypeRepr.FUNDING_REQUEST,
         }

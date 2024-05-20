@@ -1076,7 +1076,7 @@ class TestDatabaseSchemeRepository:
             FinancialRevision(
                 id_=3,
                 effective=DateRange(datetime(2020, 2, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=60_000,
                 source=DataSource.AUTHORITY_UPDATE,
             )

@@ -49,7 +49,7 @@ class TestSchemeFundingContext:
             FinancialRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
             )
@@ -72,7 +72,7 @@ class TestSchemeFundingContext:
             FinancialRevision(
                 id_=2,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
             ),
@@ -98,7 +98,7 @@ class TestChangeSpendToDateContext:
             FinancialRevision(
                 id_=2,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=40_000,
                 source=DataSource.ATF4_BID,
             ),
@@ -124,7 +124,7 @@ class TestChangeSpendToDateForm:
             FinancialRevision(
                 id_=2,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
             ),
@@ -148,7 +148,7 @@ class TestChangeSpendToDateForm:
             FinancialRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
             )
@@ -162,7 +162,7 @@ class TestChangeSpendToDateForm:
         assert financial_revision1.id == 1 and financial_revision1.effective.date_to == datetime(2020, 2, 1)
         assert (
             financial_revision2.effective == DateRange(datetime(2020, 2, 1), None)
-            and financial_revision2.type == FinancialType.SPENT_TO_DATE
+            and financial_revision2.type == FinancialType.SPEND_TO_DATE
             and financial_revision2.amount == 60_000
             and financial_revision2.source == DataSource.AUTHORITY_UPDATE
         )
@@ -370,7 +370,7 @@ class TestFinancialRevisionRepr:
         (FinancialType.EXPECTED_COST, "expected cost"),
         (FinancialType.ACTUAL_COST, "actual cost"),
         (FinancialType.FUNDING_ALLOCATION, "funding allocation"),
-        (FinancialType.SPENT_TO_DATE, "spent to date"),
+        (FinancialType.SPEND_TO_DATE, "spend to date"),
         (FinancialType.FUNDING_REQUEST, "funding request"),
     ],
 )

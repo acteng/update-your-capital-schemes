@@ -115,25 +115,25 @@ class TestSchemeFunding:
 
         assert funding.financial_revisions == [financial_revision]
 
-    def test_cannot_update_financial_with_another_current_spent_to_date(self) -> None:
+    def test_cannot_update_financial_with_another_current_spend_to_date(self) -> None:
         funding = SchemeFunding()
         financial_revision = FinancialRevision(
             id_=1,
             effective=DateRange(datetime(2020, 1, 1), None),
-            type_=FinancialType.SPENT_TO_DATE,
+            type_=FinancialType.SPEND_TO_DATE,
             amount=100_000,
             source=DataSource.ATF4_BID,
         )
         funding.update_financial(financial_revision)
 
         with pytest.raises(
-            ValueError, match=re.escape(f"Current spent to date already exists: {repr(financial_revision)}")
+            ValueError, match=re.escape(f"Current spend to date already exists: {repr(financial_revision)}")
         ):
             funding.update_financial(
                 FinancialRevision(
                     id_=2,
                     effective=DateRange(datetime(2020, 1, 1), None),
-                    type_=FinancialType.SPENT_TO_DATE,
+                    type_=FinancialType.SPEND_TO_DATE,
                     amount=200_000,
                     source=DataSource.ATF4_BID,
                 )
@@ -166,7 +166,7 @@ class TestSchemeFunding:
             FinancialRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1, 12), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
             )
@@ -186,7 +186,7 @@ class TestSchemeFunding:
         assert (
             financial_revision.id is None
             and financial_revision.effective == DateRange(datetime(2020, 2, 1, 13), None)
-            and financial_revision.type == FinancialType.SPENT_TO_DATE
+            and financial_revision.type == FinancialType.SPEND_TO_DATE
             and financial_revision.amount == 60_000
             and financial_revision.source == DataSource.AUTHORITY_UPDATE
         )
@@ -279,7 +279,7 @@ class TestSchemeFunding:
             FinancialRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
             )
@@ -293,7 +293,7 @@ class TestSchemeFunding:
             FinancialRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
             ),
@@ -314,14 +314,14 @@ class TestSchemeFunding:
             FinancialRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=100_000,
                 source=DataSource.ATF4_BID,
             ),
             FinancialRevision(
                 id_=2,
                 effective=DateRange(datetime(2020, 2, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=200_000,
                 source=DataSource.ATF4_BID,
             ),
@@ -361,7 +361,7 @@ class TestSchemeFunding:
             FinancialRevision(
                 id_=2,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
             ),
@@ -375,7 +375,7 @@ class TestSchemeFunding:
             FinancialRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
             )
@@ -441,7 +441,7 @@ class TestFinancialRevision:
         [
             (None, FinancialType.FUNDING_ALLOCATION, True),
             (datetime(2000, 2, 1), FinancialType.FUNDING_ALLOCATION, False),
-            (None, FinancialType.SPENT_TO_DATE, False),
+            (None, FinancialType.SPEND_TO_DATE, False),
         ],
     )
     def test_is_current_funding_allocation(
@@ -460,12 +460,12 @@ class TestFinancialRevision:
     @pytest.mark.parametrize(
         "effective_date_to, type_, expected",
         [
-            (None, FinancialType.SPENT_TO_DATE, True),
-            (datetime(2000, 2, 1), FinancialType.SPENT_TO_DATE, False),
+            (None, FinancialType.SPEND_TO_DATE, True),
+            (datetime(2000, 2, 1), FinancialType.SPEND_TO_DATE, False),
             (None, FinancialType.FUNDING_ALLOCATION, False),
         ],
     )
-    def test_is_current_spent_to_date(self, effective_date_to: datetime, type_: FinancialType, expected: bool) -> None:
+    def test_is_current_spend_to_date(self, effective_date_to: datetime, type_: FinancialType, expected: bool) -> None:
         financial_revision = FinancialRevision(
             id_=1,
             effective=DateRange(datetime(2000, 1, 1), effective_date_to),
@@ -474,4 +474,4 @@ class TestFinancialRevision:
             source=DataSource.ATF4_BID,
         )
 
-        assert financial_revision.is_current_spent_to_date == expected
+        assert financial_revision.is_current_spend_to_date == expected

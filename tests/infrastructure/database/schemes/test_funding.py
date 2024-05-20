@@ -31,7 +31,7 @@ class TestBidStatusMapper:
         (FinancialType.EXPECTED_COST, 1),
         (FinancialType.ACTUAL_COST, 2),
         (FinancialType.FUNDING_ALLOCATION, 3),
-        (FinancialType.SPENT_TO_DATE, 4),
+        (FinancialType.SPEND_TO_DATE, 4),
         (FinancialType.FUNDING_REQUEST, 5),
     ],
 )

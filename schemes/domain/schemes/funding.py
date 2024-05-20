@@ -44,8 +44,8 @@ class SchemeFunding:
         return list(self._financial_revisions)
 
     def update_financial(self, financial_revision: FinancialRevision) -> None:
-        if financial_revision.is_current_spent_to_date:
-            self._ensure_no_current_spent_to_date()
+        if financial_revision.is_current_spend_to_date:
+            self._ensure_no_current_spend_to_date()
 
         self._financial_revisions.append(financial_revision)
 
@@ -53,25 +53,25 @@ class SchemeFunding:
         for financial_revision in financial_revisions:
             self.update_financial(financial_revision)
 
-    def _ensure_no_current_spent_to_date(self) -> None:
-        current_spent_to_date = self._current_spent_to_date
-        if current_spent_to_date:
-            raise ValueError(f"Current spent to date already exists: {current_spent_to_date}")
+    def _ensure_no_current_spend_to_date(self) -> None:
+        current_spend_to_date = self._current_spend_to_date
+        if current_spend_to_date:
+            raise ValueError(f"Current spend to date already exists: {current_spend_to_date}")
 
     @property
-    def _current_spent_to_date(self) -> FinancialRevision | None:
-        return next((revision for revision in self._financial_revisions if revision.is_current_spent_to_date), None)
+    def _current_spend_to_date(self) -> FinancialRevision | None:
+        return next((revision for revision in self._financial_revisions if revision.is_current_spend_to_date), None)
 
     def update_spend_to_date(self, now: datetime, amount: int) -> None:
-        current_spent_to_date = self._current_spent_to_date
-        if current_spent_to_date:
-            current_spent_to_date.effective = DateRange(current_spent_to_date.effective.date_from, now)
+        current_spend_to_date = self._current_spend_to_date
+        if current_spend_to_date:
+            current_spend_to_date.effective = DateRange(current_spend_to_date.effective.date_from, now)
 
         self.update_financial(
             FinancialRevision(
                 id_=None,
                 effective=DateRange(now, None),
-                type_=FinancialType.SPENT_TO_DATE,
+                type_=FinancialType.SPEND_TO_DATE,
                 amount=amount,
                 source=DataSource.AUTHORITY_UPDATE,
             )
@@ -88,7 +88,7 @@ class SchemeFunding:
 
     @property
     def spend_to_date(self) -> int | None:
-        amounts = (revision.amount for revision in self._financial_revisions if revision.is_current_spent_to_date)
+        amounts = (revision.amount for revision in self._financial_revisions if revision.is_current_spend_to_date)
         return next(amounts, None)
 
     @property
@@ -129,8 +129,8 @@ class FinancialRevision:
         return self.type == FinancialType.FUNDING_ALLOCATION and self.effective.date_to is None
 
     @property
-    def is_current_spent_to_date(self) -> bool:
-        return self.type == FinancialType.SPENT_TO_DATE and self.effective.date_to is None
+    def is_current_spend_to_date(self) -> bool:
+        return self.type == FinancialType.SPEND_TO_DATE and self.effective.date_to is None
 
 
 @unique
@@ -138,5 +138,5 @@ class FinancialType(Enum):
     EXPECTED_COST = auto()
     ACTUAL_COST = auto()
     FUNDING_ALLOCATION = auto()
-    SPENT_TO_DATE = auto()
+    SPEND_TO_DATE = auto()
     FUNDING_REQUEST = auto()

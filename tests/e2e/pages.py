@@ -123,6 +123,7 @@ class SchemesTableComponent:
         self._rows = table.get_by_role("row")
 
     def __iter__(self) -> Iterator[SchemeRowComponent]:
+        self._rows.first.wait_for()
         return (SchemeRowComponent(row) for row in self._rows.all()[1:])
 
     def __getitem__(self, reference: str) -> SchemeRowComponent:
@@ -181,6 +182,7 @@ class TagComponent:
 
     @property
     def text(self) -> str:
+        self._tag.first.wait_for()
         texts = self._tag.all_text_contents()
         return texts[0].strip() if texts else ""
 
@@ -314,6 +316,7 @@ class SchemeMilestonesTableComponent:
         self._rows = table.get_by_role("row")
 
     def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
+        self._rows.first.wait_for()
         return (SchemeMilestoneRowComponent(row) for row in self._rows.all()[1:])
 
     def __getitem__(self, milestone: str) -> SchemeMilestoneRowComponent:
@@ -355,6 +358,7 @@ class SchemeOutputsTableComponent:
         self._rows = table.get_by_role("row")
 
     def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
+        self._rows.first.wait_for()
         return (SchemeOutputRowComponent(row) for row in self._rows.all()[1:])
 
     def to_dicts(self) -> list[dict[str, str | None]]:
@@ -498,6 +502,7 @@ class ErrorSummaryComponent:
         self._listitems = alert.get_by_role("listitem")
 
     def __iter__(self) -> Iterator[str]:
+        self._listitems.first.wait_for()
         return (text_content.strip() for text_content in self._listitems.all_text_contents())
 
 

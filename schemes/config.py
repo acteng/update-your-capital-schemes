@@ -23,5 +23,8 @@ class TestConfig(Config):
 
 class ProdConfig(Config):
     # GOV.UK One Login
-    # TODO: GH-95: Set client id when provided by GOV.UK One Login
-    GOVUK_CLIENT_ID = "XXX"
+    GOVUK_SERVER_METADATA_URL = "https://oidc.account.gov.uk/.well-known/openid-configuration"
+    GOVUK_TOKEN_ENDPOINT = "https://oidc.account.gov.uk/token"
+    GOVUK_PROFILE_URL = "https://home.account.gov.uk/"
+    GOVUK_END_SESSION_ENDPOINT = "https://oidc.account.gov.uk/logout"
+    GOVUK_CLIENT_ID = "S1hl5G31dSsMYqPaOuiRVOLhBX0"

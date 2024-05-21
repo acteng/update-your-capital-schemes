@@ -8,6 +8,7 @@ dependencies = [
     "authlib~=1.3.0",
     "dataclass-wizard~=0.22.0",
     "flask~=3.0.0",
+    "flask-session[sqlalchemy]~=0.8.0",
     "govuk-frontend-jinja~=3.0.0",
     "govuk-frontend-wtf~=3.0.0",
     "gunicorn~=22.0.0",
@@ -58,6 +59,7 @@ strict = true
 module = [
     "authlib.*",
     "dataclass_wizard.*",
+    "flask_session.*",
     "flask_wtf.*",
     "govuk_frontend_wtf.*",
     "pytest_flask.*",

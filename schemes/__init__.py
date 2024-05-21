@@ -2,6 +2,7 @@ import os
 from typing import Any, Callable, Mapping
 
 import alembic.config
+import flask_session
 import inject
 from alembic import command
 from authlib.integrations.flask_client import OAuth
@@ -18,6 +19,7 @@ from flask import (
     request,
     url_for,
 )
+from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from flask_wtf.csrf import CSRFError
 from govuk_frontend_wtf.main import WTFormsHelpers
@@ -66,6 +68,8 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
     inject.configure(bindings(app), bind_in_runtime=False)
 
+    app.config["SESSION_SQLALCHEMY"] = SQLAlchemy(app)
+    flask_session.Session(app)
     _configure_dataclass_wizard()
     _configure_jinja(app)
     _configure_error_pages(app)
@@ -99,6 +103,7 @@ def destroy_app(_app: Flask) -> None:
 
 def bindings(app: Flask) -> Callable[[Binder], None]:
     def _bindings(binder: Binder) -> None:
+        binder.bind(Flask, app)
         binder.bind(Config, app.config)
         binder.bind(Clock, FakeClock() if app.testing else SystemClock())
         binder.bind_to_constructor(ReportingWindowService, DefaultReportingWindowService)
@@ -113,8 +118,10 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
 
 
 @inject.autoparams()
-def _create_engine(config: Config) -> Engine:
-    engine = create_engine(config["SQLALCHEMY_DATABASE_URI"])
+def _create_engine(app: Flask, config: Config) -> Engine:
+    flask_sqlalchemy_extension: SQLAlchemy = config["SESSION_SQLALCHEMY"]
+    # TODO: Use flask_sqlalchemy_extension.engine when current_app available
+    engine: Engine = flask_sqlalchemy_extension._app_engines[app][None]
 
     if engine.dialect.name == SQLiteDialect.name:
         event.listen(engine, "connect", _enforce_sqlite_foreign_keys)

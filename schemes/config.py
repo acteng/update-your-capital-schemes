@@ -1,6 +1,10 @@
 class Config:
     # SQLAlchemy
-    SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///file::memory:?uri=true"
+    SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///:memory:"
+
+    # Flask-Session
+    SESSION_TYPE = "sqlalchemy"
+    PERMANENT_SESSION_LIFETIME = 60 * 60  # 1 hour
 
     # GOV.UK One Login
     GOVUK_SERVER_METADATA_URL = "https://oidc.integration.account.gov.uk/.well-known/openid-configuration"

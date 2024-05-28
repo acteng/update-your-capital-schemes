@@ -15,7 +15,7 @@ dependencies = [
     "inject~=5.2.0",
     "pg8000~=1.31.0",
     "python-dotenv~=1.0.0",
-    "requests~=2.31.0",
+    "requests~=2.32.0",
     "sqlalchemy~=2.0.0"
 ]
 
@@ -32,7 +32,7 @@ dev = [
     "ruff~=0.4.0",
     "responses~=0.25.0",
     "types-beautifulsoup4~=4.12.0",
-    "types-requests~=2.31.0.0",
+    "types-requests~=2.32.0.0",
     "types-wtforms~=3.1.0.20240205"
 ]
 

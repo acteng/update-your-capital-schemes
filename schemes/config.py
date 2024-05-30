@@ -5,6 +5,7 @@ class Config:
     # Flask-Session
     SESSION_TYPE = "sqlalchemy"
     PERMANENT_SESSION_LIFETIME = 60 * 60  # 1 hour
+    SESSION_CLEANUP_N_REQUESTS = 100
 
     # GOV.UK One Login
     GOVUK_SERVER_METADATA_URL = "https://oidc.integration.account.gov.uk/.well-known/openid-configuration"

@@ -1,10 +1,12 @@
 class Config:
+    # Flask
+    PERMANENT_SESSION_LIFETIME = 60 * 60  # 1 hour
+
     # Flask-SQLAlchemy
     SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///:memory:"
 
     # Flask-Session
     SESSION_TYPE = "sqlalchemy"
-    PERMANENT_SESSION_LIFETIME = 60 * 60  # 1 hour
     SESSION_CLEANUP_N_REQUESTS = 100
 
     # GOV.UK One Login

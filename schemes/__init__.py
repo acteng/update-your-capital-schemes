@@ -54,6 +54,7 @@ from schemes.infrastructure.database import (
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
 from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.database.users import DatabaseUserRepository
+from schemes.sessions import RequestFilteringSessionInterface
 from schemes.views import auth, authorities, clock, schemes, start, users
 from schemes.views.filters import date, pounds, remove_exponent
 
@@ -70,6 +71,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
 
     app.config["SESSION_SQLALCHEMY"] = SQLAlchemy(app)
     flask_session.Session(app)
+    app.session_interface = RequestFilteringSessionInterface(app.session_interface, f"{app.static_url_path}/")
     _configure_dataclass_wizard()
     _configure_jinja(app)
     _configure_error_pages(app)

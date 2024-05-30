@@ -1,5 +1,5 @@
 class Config:
-    # SQLAlchemy
+    # Flask-SQLAlchemy
     SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///:memory:"
 
     # Flask-Session

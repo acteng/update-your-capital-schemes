@@ -120,10 +120,10 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
 
 
 @inject.autoparams()
-def _create_engine(app: Flask, config: Config) -> Engine:
-    flask_sqlalchemy_extension: SQLAlchemy = config["SESSION_SQLALCHEMY"]
-    # TODO: Use flask_sqlalchemy_extension.engine when current_app available
-    engine: Engine = flask_sqlalchemy_extension._app_engines[app][None]
+def _create_engine(app: Flask) -> Engine:
+    flask_sqlalchemy_extension: SQLAlchemy = app.extensions["sqlalchemy"]
+    with app.app_context():
+        engine = flask_sqlalchemy_extension.engine
 
     if engine.dialect.name == SQLiteDialect.name:
         event.listen(engine, "connect", _enforce_sqlite_foreign_keys)

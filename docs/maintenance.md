@@ -64,14 +64,42 @@ hasn't been released yet. To upgrade:
 
 1. Copy the contents of
    [the service header Nunjucks template](https://raw.githubusercontent.com/govuk-one-login/service-header/main/src/nunjucks/template.njk)
-   to `schemes/views/templates/govuk_one_login_service_header/macro.html`, replacing the contents of the Jinja macro:
+   to `schemes/views/templates/ate_service_header/macro.html`, replacing the contents of the Jinja macro:
 
    ```
-   {% macro govukOneLoginServiceHeader(params) %}
+   {% macro ateServiceHeader(params) %}
 
    <PASTE HERE>
 
    {% endmacro %}
+   ```
+
+1. Apply the following diff to workaround https://github.com/govuk-one-login/service-header/issues/40:
+
+   ```diff
+          <div class="one-login-header__logo">
+            <a href="{{ homepageLink }}" class="one-login-header__link one-login-header__link--homepage">
+   -          <span class="one-login-header__logotype">
+   -            <!--[if gt IE 8]><!-->
+   -              <svg
+   -                aria-hidden="true"
+   -                focusable="false"
+   -                class="one-login-header__logotype-crown"
+   -                xmlns="http://www.w3.org/2000/svg"
+   -                viewBox="0 0 32 30"
+   -                height="30"
+   -                width="32">
+   -                <path fill="currentColor" fill-rule="evenodd" d="M22.6 10.4c-1 .4-2-.1-2.4-1-.4-.9.1-2 1-2.4.9-.4 2 .1 2.4 1s-.1 2-1 2.4m-5.9 6.7c-.9.4-2-.1-2.4-1-.4-.9.1-2 1-2.4.9-.4 2 .1 2.4 1s-.1 2-1 2.4m10.8-3.7c-1 .4-2-.1-2.4-1-.4-.9.1-2 1-2.4.9-.4 2 .1 2.4 1s0 2-1 2.4m3.3 4.
+   -            </svg>
+   -            <!--<![endif]-->
+   -            <span>
+   -              GOV.UK
+   -            </span>
+   -          </span>
+   +          <img class="one-login-header__logotype ate-header__logotype" src="{{ url_for('static', filename='ate-header/ATE_WHITE_LANDSCP_AW.png') }}" alt="Active Travel England"/>
+   +          <img class="one-login-header__logotype ate-header__logotype--focus" src="{{ url_for('static', filename='ate-header/ATE_BLK_LANDSCP_AW.png') }}" alt="Active Travel England"/>
+            </a>
+          </div>
    ```
 
 ## Upgrading Terraform providers

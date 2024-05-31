@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "govuk_one_login_service_header/macro.html" import govukOneLoginServiceHeader -%}
+{% from "ate_service_header/macro.html" import ateServiceHeader -%}
 
 {% block head %}
     {{ super() }}
@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block header %}
-    {{ govukOneLoginServiceHeader({
+    {{ ateServiceHeader({
         "serviceName": "Update your capital schemes",
         "homepageLink": url_for("start.index"),
         "oneLoginLink": oneLoginLink,

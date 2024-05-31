@@ -14,24 +14,22 @@ locals {
   project  = "dft-schemes-${local.env}"
   location = "europe-west1"
 
-  schemes_database = {
-    env = {
-      dev  = "test"
-      test = "test"
-      prod = "prod"
+  config = {
+    dev = {
+      schemes_database = "test"
+      keep_idle        = false
+      basic_auth       = true
     }
-  }
-
-  keep_idle = {
-    dev  = false
-    test = false
-    prod = true
-  }
-
-  basic_auth = {
-    dev  = true
-    test = true
-    prod = false
+    test = {
+      schemes_database = "test"
+      keep_idle        = false
+      basic_auth       = true
+    }
+    prod = {
+      schemes_database = "prod"
+      keep_idle        = true
+      basic_auth       = false
+    }
   }
 }
 
@@ -41,7 +39,7 @@ data "terraform_remote_state" "schemes_database" {
     bucket = "dft-ate-capitalschemes-common-tf-backend"
     prefix = "schemes-database"
   }
-  workspace = local.schemes_database.env[local.env]
+  workspace = local.config[local.env].schemes_database
 }
 
 module "secret_manager" {
@@ -73,8 +71,8 @@ module "cloud_run" {
   capital_schemes_database_name            = data.terraform_remote_state.schemes_database.outputs.name
   capital_schemes_database_username        = data.terraform_remote_state.schemes_database.outputs.username
   capital_schemes_database_password        = data.terraform_remote_state.schemes_database.outputs.password
-  keep_idle                                = local.keep_idle[local.env]
-  basic_auth                               = local.basic_auth[local.env]
+  keep_idle                                = local.config[local.env].keep_idle
+  basic_auth                               = local.config[local.env].basic_auth
 
   depends_on = [
     module.secret_manager

@@ -19,16 +19,19 @@ locals {
       schemes_database = "test"
       keep_idle        = false
       basic_auth       = true
+      database_backups = false
     }
     test = {
       schemes_database = "test"
       keep_idle        = false
       basic_auth       = true
+      database_backups = false
     }
     prod = {
       schemes_database = "prod"
       keep_idle        = true
       basic_auth       = false
+      database_backups = true
     }
   }
 }
@@ -48,9 +51,10 @@ module "secret_manager" {
 }
 
 module "cloud_sql" {
-  source  = "./cloud-sql"
-  project = local.project
-  region  = local.location
+  source           = "./cloud-sql"
+  project          = local.project
+  region           = local.location
+  database_backups = local.config[local.env].database_backups
 
   depends_on = [
     module.secret_manager

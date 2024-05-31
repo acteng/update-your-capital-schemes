@@ -12,6 +12,17 @@ resource "google_sql_database_instance" "main" {
     tier                  = "db-f1-micro"
     connector_enforcement = "REQUIRED"
 
+    backup_configuration {
+      enabled                        = var.database_backups
+      point_in_time_recovery_enabled = var.database_backups
+      start_time                     = "21:00"
+      transaction_log_retention_days = 7
+
+      backup_retention_settings {
+        retained_backups = 30
+      }
+    }
+
     ip_configuration {
       ipv4_enabled = true
       require_ssl  = true

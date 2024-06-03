@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Generator, Mapping
 
 import pytest
@@ -20,8 +21,6 @@ from tests.integration.oidc import StubOidcServer
 
 
 class TestAuth:
-    YEAR_3000 = 32503680000
-
     @pytest.fixture(name="client_id", scope="class")
     def client_id_fixture(self) -> str:
         return "stub_client_id"
@@ -141,7 +140,7 @@ class TestAuth:
     def test_callback_when_id_token_issued_in_future_raises_error(
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        oidc_server.given_token_endpoint_returns_id_token(issued_at=self.YEAR_3000, nonce="456")
+        oidc_server.given_token_endpoint_returns_id_token(issued_at=int(datetime(3000, 1, 1).timestamp()), nonce="456")
         given_session_has_authentication_request(client, state="123", nonce="456")
 
         with pytest.raises(

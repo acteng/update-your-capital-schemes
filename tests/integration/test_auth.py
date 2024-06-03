@@ -45,10 +45,27 @@ class TestAuth:
     @pytest.fixture(name="oidc_server")
     def oidc_server_fixture(self, client_id: str, oauth: OAuth) -> StubOidcServer:
         oidc_server = StubOidcServer(client_id=client_id)
+        oauth.govuk.server_metadata["authorization_endpoint"] = "https://stub.example/authorize"
         oauth.govuk.server_metadata["token_endpoint"] = oidc_server.token_endpoint
         oauth.govuk.server_metadata["userinfo_endpoint"] = oidc_server.userinfo_endpoint
         oauth.govuk.server_metadata["jwks"] = oidc_server.key_set()
         return oidc_server
+
+    def test_authorize_redirect_sets_secure_session_cookie(
+        self, oidc_server: StubOidcServer, client: FlaskClient
+    ) -> None:
+        response = client.get("/schemes")
+
+        cookie = response.headers["Set-Cookie"]
+        assert cookie.startswith("session=") and "; Secure;" in cookie
+
+    def test_authorize_redirect_sets_http_only_session_cookie(
+        self, oidc_server: StubOidcServer, client: FlaskClient
+    ) -> None:
+        response = client.get("/schemes")
+
+        cookie = response.headers["Set-Cookie"]
+        assert cookie.startswith("session=") and "; HttpOnly;" in cookie
 
     @responses.activate
     def test_callback_logs_in(self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient) -> None:

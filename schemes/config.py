@@ -1,5 +1,6 @@
 class Config:
     # Flask
+    SESSION_COOKIE_SECURE = True
     PERMANENT_SESSION_LIFETIME = 60 * 60  # 1 hour
 
     # Flask-SQLAlchemy

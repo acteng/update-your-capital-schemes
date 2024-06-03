@@ -1,7 +1,10 @@
+from datetime import timedelta
+
+
 class Config:
     # Flask
     SESSION_COOKIE_SECURE = True
-    PERMANENT_SESSION_LIFETIME = 60 * 60  # 1 hour
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=1)
 
     # Flask-SQLAlchemy
     SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///:memory:"

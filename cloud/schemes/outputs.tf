@@ -1,6 +1,6 @@
-output "url" {
-  description = "Cloud Run service URL"
-  value       = module.cloud_run.url
+output "ip_address" {
+  description = "Load balancer IP address"
+  value       = module.load_balancer.ip_address
 }
 
 output "github_action_deploy_private_key" {

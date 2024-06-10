@@ -1,6 +1,6 @@
-output "url" {
-  description = "Cloud Run service URL"
-  value       = google_cloud_run_v2_service.schemes.uri
+output "name" {
+  description = "Cloud Run service name"
+  value       = google_cloud_run_v2_service.schemes.name
 }
 
 output "service_account_id" {

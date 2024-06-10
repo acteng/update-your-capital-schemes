@@ -13,6 +13,7 @@ locals {
   env      = terraform.workspace
   project  = "dft-schemes-${local.env}"
   location = "europe-west1"
+  domain   = "update-your-capital-schemes.activetravelengland.gov.uk"
 
   config = {
     dev = {
@@ -20,18 +21,21 @@ locals {
       keep_idle        = false
       basic_auth       = true
       database_backups = false
+      domain           = "dev.${local.domain}"
     }
     test = {
       schemes_database = "test"
       keep_idle        = false
       basic_auth       = true
       database_backups = false
+      domain           = "test.${local.domain}"
     }
     prod = {
       schemes_database = "prod"
       keep_idle        = true
       basic_auth       = false
       database_backups = true
+      domain           = local.domain
     }
   }
 }
@@ -81,6 +85,13 @@ module "cloud_run" {
   depends_on = [
     module.secret_manager
   ]
+}
+
+module "load_balancer" {
+  source                 = "./load-balancer"
+  region                 = local.location
+  domain                 = local.config[local.env].domain
+  cloud_run_service_name = module.cloud_run.name
 }
 
 module "github_action_deploy" {

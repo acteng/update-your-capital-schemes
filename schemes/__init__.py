@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from typing import Any, Callable, Mapping
 
 import alembic.config
@@ -74,6 +75,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.session_interface = RequestFilteringSessionInterface(app.session_interface, f"{app.static_url_path}/")
     _configure_dataclass_wizard()
     _configure_jinja(app)
+    _configure_http(app)
     _configure_error_pages(app)
     csrf = CSRFProtect(app)
     _configure_govuk_frontend(app)
@@ -181,6 +183,15 @@ def _configure_jinja(app: Flask) -> None:
         }
     )
     app.jinja_loader = ChoiceLoader([default_loader, package_loaders])
+
+
+def _configure_http(app: Flask) -> None:
+    hsts_max_age = int(timedelta(days=365).total_seconds())
+
+    @app.after_request
+    def set_headers(response: Response) -> Response:
+        response.headers["Strict-Transport-Security"] = f"max-age={hsts_max_age}"
+        return response
 
 
 def _configure_error_pages(app: Flask) -> None:

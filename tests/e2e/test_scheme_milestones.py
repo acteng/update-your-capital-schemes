@@ -85,7 +85,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_scheme_change_milestones(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
+def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
     app_client.set_clock("2023-08-01T13:00:00")
     app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
     app_client.add_users(1, UserRepr(email="boardman@example.com"))

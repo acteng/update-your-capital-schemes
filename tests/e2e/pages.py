@@ -20,6 +20,7 @@ class StartPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
         self._start = page.get_by_role("button")
+        self.footer = FooterComponent(page.get_by_role("contentinfo"))
 
     @classmethod
     def open(cls, page: Page) -> StartPage:
@@ -42,6 +43,24 @@ class StartPage(PageObject):
     def start_when_unauthenticated(self) -> LoginPage:
         self.start()
         return LoginPage(self._page)
+
+
+class FooterComponent:
+    def __init__(self, footer: Locator):
+        self._footer = footer
+
+    def cookies(self) -> CookiesPage:
+        self._footer.get_by_role("link", name="Cookies").click()
+        return CookiesPage(self._footer.page)
+
+
+class CookiesPage(PageObject):
+    def __init__(self, page: Page):
+        super().__init__(page)
+
+    @property
+    def is_visible(self) -> bool:
+        return self._page.get_by_role("heading", name="Cookies").first.is_visible()
 
 
 class LoginPage(PageObject):

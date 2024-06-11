@@ -55,7 +55,7 @@ from schemes.infrastructure.database.authorities import DatabaseAuthorityReposit
 from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.database.users import DatabaseUserRepository
 from schemes.sessions import RequestFilteringSessionInterface
-from schemes.views import auth, authorities, clock, schemes, start, users
+from schemes.views import auth, authorities, clock, legal, schemes, start, users
 from schemes.views.filters import date, pounds, remove_exponent
 
 
@@ -83,6 +83,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.register_blueprint(clock.bp, url_prefix="/clock")
     csrf.exempt(clock.set_clock)
     app.register_blueprint(start.bp)
+    app.register_blueprint(legal.bp)
     app.register_blueprint(auth.bp, url_prefix="/auth")
     app.register_blueprint(authorities.bp, url_prefix="/authorities")
     csrf.exempt(authorities.add)

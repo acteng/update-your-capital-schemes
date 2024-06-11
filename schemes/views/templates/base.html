@@ -36,3 +36,16 @@
         initAll();
     </script>
 {% endblock %}
+
+{% block footer %}
+    {{ govukFooter({
+        "meta": {
+            "items": [
+                {
+                    "text": "Cookies",
+                    "href": url_for("legal.cookies")
+                }
+            ]
+        }
+    }) }}
+{% endblock %}

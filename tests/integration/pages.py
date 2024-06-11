@@ -22,6 +22,7 @@ class StartPage(PageObject):
         self.header = HeaderComponent(one(self._soup.select("header")))
         heading = self._soup.select_one("main h1")
         self.is_visible = heading.string == "Update your capital schemes" if heading else False
+        self.footer = FooterComponent(one(self._soup.select("footer")))
 
     @classmethod
     def open(cls, client: FlaskClient) -> StartPage:
@@ -32,6 +33,23 @@ class StartPage(PageObject):
 class HeaderComponent:
     def __init__(self, header: Tag):
         self.home_url = one(header.select("a.govuk-header__link"))["href"]
+
+
+class FooterComponent:
+    def __init__(self, footer: Tag):
+        self.cookies_url = one(footer.select(".govuk-footer__inline-list a"))["href"]
+
+
+class CookiesPage(PageObject):
+    def __init__(self, response: TestResponse):
+        super().__init__(response)
+        heading = self._soup.select_one("main h1")
+        self.is_visible = heading.string == "Cookies" if heading else False
+
+    @classmethod
+    def open(cls, client: FlaskClient) -> CookiesPage:
+        response = client.get("/cookies")
+        return cls(response)
 
 
 class ForbiddenPage(PageObject):

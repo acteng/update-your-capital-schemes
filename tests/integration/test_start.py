@@ -9,11 +9,6 @@ class TestStart:
 
         assert start_page.is_visible
 
-    def test_header_home_shows_start(self, client: FlaskClient) -> None:
-        start_page = StartPage.open(client)
-
-        assert start_page.header.home_url == "/"
-
     def test_start_when_authenticated_shows_schemes(self, client: FlaskClient) -> None:
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}

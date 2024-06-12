@@ -49,9 +49,22 @@ class FooterComponent:
     def __init__(self, footer: Locator):
         self._footer = footer
 
+    def privacy(self) -> PrivacyPage:
+        self._footer.get_by_role("link", name="Privacy").click()
+        return PrivacyPage(self._footer.page)
+
     def cookies(self) -> CookiesPage:
         self._footer.get_by_role("link", name="Cookies").click()
         return CookiesPage(self._footer.page)
+
+
+class PrivacyPage(PageObject):
+    def __init__(self, page: Page):
+        super().__init__(page)
+
+    @property
+    def is_visible(self) -> bool:
+        return self._page.get_by_role("heading", name="Privacy notice").first.is_visible()
 
 
 class CookiesPage(PageObject):

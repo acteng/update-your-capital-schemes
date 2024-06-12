@@ -464,31 +464,36 @@ class ChangeSpendToDateFormComponent:
 class ChangeMilestoneDatesPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
+        self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
         self.form = ChangeMilestoneDatesFormComponent(page.get_by_role("form"))
 
 
 class ChangeMilestoneDatesFormComponent:
     def __init__(self, form: Locator):
         self._form = form
-        self._construction_started = ChangeMilestoneDateFormRowComponent(
+        self.construction_started = ChangeMilestoneDateFormRowComponent(
             form.get_by_role("heading", name="Construction started")
         )
-        self._construction_completed = ChangeMilestoneDateFormRowComponent(
+        self.construction_completed = ChangeMilestoneDateFormRowComponent(
             form.get_by_role("heading", name="Construction completed")
         )
         self._confirm = form.get_by_role("button", name="Confirm")
 
     def enter_construction_started(self, actual: str) -> ChangeMilestoneDatesFormComponent:
-        self._construction_started.actual.value = actual
+        self.construction_started.actual.value = actual
         return self
 
     def enter_construction_completed(self, planned: str) -> ChangeMilestoneDatesFormComponent:
-        self._construction_completed.planned.value = planned
+        self.construction_completed.planned.value = planned
         return self
 
     def confirm(self) -> SchemePage:
         self._confirm.click()
         return SchemePage(self._form.page)
+
+    def confirm_when_error(self) -> ChangeMilestoneDatesPage:
+        self._confirm.click()
+        return ChangeMilestoneDatesPage(self._form.page)
 
 
 class ChangeMilestoneDateFormRowComponent:
@@ -500,9 +505,11 @@ class ChangeMilestoneDateFormRowComponent:
 
 class DateComponent:
     def __init__(self, fieldset: Locator):
+        form_group = fieldset.locator("xpath=..")
         self.day = TextComponent(fieldset.get_by_label("Day"))
         self.month = TextComponent(fieldset.get_by_label("Month"))
         self.year = TextComponent(fieldset.get_by_label("Year"))
+        self._error = form_group.locator(".govuk-error-message")
 
     @property
     def value(self) -> str:
@@ -514,6 +521,15 @@ class DateComponent:
         self.day.value = values[0]
         self.month.value = values[1]
         self.year.value = values[2]
+
+    @property
+    def is_errored(self) -> bool:
+        return self.day.is_errored and self.month.is_errored and self.year.is_errored
+
+    @property
+    def error(self) -> str | None:
+        text_content = self._error.text_content()
+        return text_content.strip() if text_content else None
 
 
 class ErrorSummaryComponent:

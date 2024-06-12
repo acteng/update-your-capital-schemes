@@ -223,3 +223,128 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
             source="Authority Update",
         ),
     ]
+
+
+@pytest.mark.usefixtures("live_server", "oidc_server")
+def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
+    app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
+    app_client.add_users(1, UserRepr(email="boardman@example.com"))
+    app_client.add_schemes(
+        1,
+        build_scheme(
+            id_=1,
+            name="Wirral Package",
+            milestone_revisions=[
+                MilestoneRevisionRepr(
+                    id=1,
+                    effective_date_from="2020-01-01T12:00:00",
+                    effective_date_to=None,
+                    milestone="feasibility design completed",
+                    observation_type="Actual",
+                    status_date="2020-11-30",
+                    source="ATF4 Bid",
+                ),
+                MilestoneRevisionRepr(
+                    id=2,
+                    effective_date_from="2020-01-01T12:00:00",
+                    effective_date_to=None,
+                    milestone="preliminary design completed",
+                    observation_type="Actual",
+                    status_date="2022-06-30",
+                    source="ATF4 Bid",
+                ),
+                MilestoneRevisionRepr(
+                    id=3,
+                    effective_date_from="2020-01-01T12:00:00",
+                    effective_date_to=None,
+                    milestone="detailed design completed",
+                    observation_type="Actual",
+                    status_date="2022-06-30",
+                    source="ATF4 Bid",
+                ),
+                MilestoneRevisionRepr(
+                    id=4,
+                    effective_date_from="2020-01-01T12:00:00",
+                    effective_date_to=None,
+                    milestone="construction started",
+                    observation_type="Planned",
+                    status_date="2023-06-05",
+                    source="ATF4 Bid",
+                ),
+                MilestoneRevisionRepr(
+                    id=5,
+                    effective_date_from="2020-01-01T12:00:00",
+                    effective_date_to=None,
+                    milestone="construction completed",
+                    observation_type="Planned",
+                    status_date="2023-08-31",
+                    source="ATF4 Bid",
+                ),
+            ],
+        ),
+    )
+    oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
+
+    change_milestone_page = (
+        SchemePage.open(page, id_=1)
+        .milestones.change_milestone_dates()
+        .form.enter_construction_completed(planned="30th Sept 2023")
+        .confirm_when_error()
+    )
+
+    assert change_milestone_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
+    assert list(change_milestone_page.errors) == ["Construction completed planned date must be a real date"]
+    assert (
+        change_milestone_page.form.construction_completed.planned.is_errored
+        and change_milestone_page.form.construction_completed.planned.error
+        == "Error: Construction completed planned date must be a real date"
+        and change_milestone_page.form.construction_completed.planned.value == "30th Sept 2023"
+    )
+
+    assert app_client.get_scheme(id_=1).milestone_revisions == [
+        MilestoneRevisionRepr(
+            id=1,
+            effective_date_from="2020-01-01T12:00:00",
+            effective_date_to=None,
+            milestone="feasibility design completed",
+            observation_type="Actual",
+            status_date="2020-11-30",
+            source="ATF4 Bid",
+        ),
+        MilestoneRevisionRepr(
+            id=2,
+            effective_date_from="2020-01-01T12:00:00",
+            effective_date_to=None,
+            milestone="preliminary design completed",
+            observation_type="Actual",
+            status_date="2022-06-30",
+            source="ATF4 Bid",
+        ),
+        MilestoneRevisionRepr(
+            id=3,
+            effective_date_from="2020-01-01T12:00:00",
+            effective_date_to=None,
+            milestone="detailed design completed",
+            observation_type="Actual",
+            status_date="2022-06-30",
+            source="ATF4 Bid",
+        ),
+        MilestoneRevisionRepr(
+            id=4,
+            effective_date_from="2020-01-01T12:00:00",
+            effective_date_to=None,
+            milestone="construction started",
+            observation_type="Planned",
+            status_date="2023-06-05",
+            source="ATF4 Bid",
+        ),
+        MilestoneRevisionRepr(
+            id=5,
+            effective_date_from="2020-01-01T12:00:00",
+            effective_date_to=None,
+            milestone="construction completed",
+            observation_type="Planned",
+            status_date="2023-08-31",
+            source="ATF4 Bid",
+        ),
+    ]

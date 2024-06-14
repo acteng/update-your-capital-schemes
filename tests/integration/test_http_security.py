@@ -18,3 +18,14 @@ class TestHttpSecurity:
         assert (
             response.status_code == 200 and response.headers.get("Referrer-Policy") == "strict-origin-when-cross-origin"
         )
+
+    def test_content_security_policy(self, client: FlaskClient) -> None:
+        response = client.get("/")
+
+        assert (
+            response.status_code == 200
+            and response.headers.get("Content-Security-Policy")
+            == "script-src 'sha256-GUQ5ad8JK5KmEWmROf3LZd9ge94daqNvd8xy9YS1iDw=' "
+            "'sha256-qlEoMJwhtzSzuQBNcUtKL5nwWlPXO6xVXHxEUboRWW4=' 'self'; "
+            "default-src 'self';"
+        )

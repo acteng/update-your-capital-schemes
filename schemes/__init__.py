@@ -187,12 +187,17 @@ def _configure_jinja(app: Flask) -> None:
 
 def _configure_http(app: Flask) -> None:
     hsts_max_age = int(timedelta(days=365).total_seconds())
+    csp_govuk_frontend = "'sha256-GUQ5ad8JK5KmEWmROf3LZd9ge94daqNvd8xy9YS1iDw='"
+    csp_govuk_frontend_init = "'sha256-qlEoMJwhtzSzuQBNcUtKL5nwWlPXO6xVXHxEUboRWW4='"
 
     @app.after_request
     def set_headers(response: Response) -> Response:
         response.headers["Strict-Transport-Security"] = f"max-age={hsts_max_age}"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Content-Security-Policy"] = (
+            f"script-src {csp_govuk_frontend} {csp_govuk_frontend_init} 'self'; default-src 'self';"
+        )
         return response
 
 

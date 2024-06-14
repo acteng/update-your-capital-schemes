@@ -53,3 +53,28 @@ resource "google_compute_global_forwarding_rule" "schemes_https" {
   port_range            = "443"
   load_balancing_scheme = "EXTERNAL_MANAGED"
 }
+
+# HTTP-to-HTTPS redirect
+
+resource "google_compute_url_map" "https_redirect" {
+  name = "schemes-https-redirect"
+
+  default_url_redirect {
+    https_redirect         = true
+    redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"
+    strip_query            = false
+  }
+}
+
+resource "google_compute_target_http_proxy" "schemes_http" {
+  name    = "schemes-http"
+  url_map = google_compute_url_map.https_redirect.id
+}
+
+resource "google_compute_global_forwarding_rule" "schemes_http" {
+  name                  = "schemes-http"
+  ip_address            = google_compute_global_address.schemes.id
+  target                = google_compute_target_http_proxy.schemes_http.id
+  port_range            = "80"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+}

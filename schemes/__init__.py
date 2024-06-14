@@ -191,6 +191,7 @@ def _configure_http(app: Flask) -> None:
     @app.after_request
     def set_headers(response: Response) -> Response:
         response.headers["Strict-Transport-Security"] = f"max-age={hsts_max_age}"
+        response.headers["X-Content-Type-Options"] = "nosniff"
         return response
 
 

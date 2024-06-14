@@ -66,6 +66,14 @@ class TestAuth:
         value = response.headers["Set-Cookie"].split("; ")
         assert value[0].startswith("session=") and "HttpOnly" in value
 
+    def test_authorize_redirect_sets_same_site_session_cookie(
+        self, oidc_server: StubOidcServer, client: FlaskClient
+    ) -> None:
+        response = client.get("/schemes")
+
+        value = response.headers["Set-Cookie"].split("; ")
+        assert value[0].startswith("session=") and "SameSite=Lax" in value
+
     @responses.activate
     def test_callback_logs_in(self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient) -> None:
         users.add(User("boardman@example.com", authority_id=1))

@@ -4,6 +4,7 @@ from datetime import timedelta
 class Config:
     # Flask
     SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = "Lax"
     PERMANENT_SESSION_LIFETIME = timedelta(hours=1)
 
     # Flask-SQLAlchemy

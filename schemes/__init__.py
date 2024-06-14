@@ -192,6 +192,7 @@ def _configure_http(app: Flask) -> None:
     def set_headers(response: Response) -> Response:
         response.headers["Strict-Transport-Security"] = f"max-age={hsts_max_age}"
         response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         return response
 
 

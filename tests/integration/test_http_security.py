@@ -11,3 +11,10 @@ class TestHttpSecurity:
         response = client.get("/")
 
         assert response.status_code == 200 and response.headers.get("X-Content-Type-Options") == "nosniff"
+
+    def test_referrer_policy(self, client: FlaskClient) -> None:
+        response = client.get("/")
+
+        assert (
+            response.status_code == 200 and response.headers.get("Referrer-Policy") == "strict-origin-when-cross-origin"
+        )

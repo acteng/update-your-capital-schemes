@@ -39,8 +39,8 @@ resource "google_compute_ssl_policy" "schemes" {
   profile = "RESTRICTED"
 }
 
-resource "google_compute_target_https_proxy" "schemes" {
-  name             = "schemes"
+resource "google_compute_target_https_proxy" "schemes_https" {
+  name             = "schemes-https"
   url_map          = google_compute_url_map.schemes.id
   ssl_certificates = [google_compute_managed_ssl_certificate.schemes.id]
   ssl_policy       = google_compute_ssl_policy.schemes.id
@@ -49,7 +49,7 @@ resource "google_compute_target_https_proxy" "schemes" {
 resource "google_compute_global_forwarding_rule" "schemes_https" {
   name                  = "schemes-https"
   ip_address            = google_compute_global_address.schemes.id
-  target                = google_compute_target_https_proxy.schemes.id
+  target                = google_compute_target_https_proxy.schemes_https.id
   port_range            = "443"
   load_balancing_scheme = "EXTERNAL_MANAGED"
 }

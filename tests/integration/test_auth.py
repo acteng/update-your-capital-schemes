@@ -55,16 +55,16 @@ class TestAuth:
     ) -> None:
         response = client.get("/schemes")
 
-        cookie = response.headers["Set-Cookie"]
-        assert cookie.startswith("session=") and "; Secure;" in cookie
+        value = response.headers["Set-Cookie"].split("; ")
+        assert value[0].startswith("session=") and "Secure" in value
 
     def test_authorize_redirect_sets_http_only_session_cookie(
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
         response = client.get("/schemes")
 
-        cookie = response.headers["Set-Cookie"]
-        assert cookie.startswith("session=") and "; HttpOnly;" in cookie
+        value = response.headers["Set-Cookie"].split("; ")
+        assert value[0].startswith("session=") and "HttpOnly" in value
 
     @responses.activate
     def test_callback_logs_in(self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient) -> None:

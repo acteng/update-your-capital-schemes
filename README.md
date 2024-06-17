@@ -313,6 +313,16 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-
 * Logout URLs: https://test.update-your-capital-schemes.activetravelengland.gov.uk/
 * Sector identifier URI: https://test.update-your-capital-schemes.activetravelengland.gov.uk
 
+### Prod
+
+* Service name: Update your capital schemes
+* Service redirect URLs: https://update-your-capital-schemes.activetravelengland.gov.uk/auth
+* Service contact email address: mark.hobson@activetravelengland.gov.uk
+* Scopes: openid email
+* Public key: (see "Schemes GOV.UK One Login Public Key (Prod)" in Bitwarden)
+* Logout URLs: https://update-your-capital-schemes.activetravelengland.gov.uk/
+* Sector identifier URI: https://update-your-capital-schemes.activetravelengland.gov.uk
+
 ## See also
 
 * [Maintenance](docs/maintenance.md)

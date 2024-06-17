@@ -197,6 +197,8 @@ def _configure_http(app: Flask) -> None:
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.content_security_policy.script_src = f"{csp_govuk_frontend} {csp_govuk_frontend_init} 'self';"
         response.content_security_policy.default_src = "'self';"
+        if not response.direct_passthrough:
+            response.cache_control.no_store = True
         return response
 
 

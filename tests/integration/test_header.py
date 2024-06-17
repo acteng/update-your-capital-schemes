@@ -9,10 +9,10 @@ from tests.integration.pages import SchemesPage, StartPage
 
 
 class TestHeaderWhenUnauthenticated:
-    def test_home_shows_start(self, client: FlaskClient) -> None:
+    def test_home_shows_website(self, client: FlaskClient) -> None:
         start_page = StartPage.open(client)
 
-        assert start_page.header.home_url == "/"
+        assert start_page.header.home_url == "https://www.gov.uk/government/organisations/active-travel-england"
 
 
 class TestHeaderWhenAuthenticated:
@@ -27,10 +27,10 @@ class TestHeaderWhenAuthenticated:
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
-    def test_home_shows_start(self, client: FlaskClient) -> None:
+    def test_home_shows_website(self, client: FlaskClient) -> None:
         schemes_page = SchemesPage.open(client)
 
-        assert schemes_page.header.home_url == "/"
+        assert schemes_page.header.home_url == "https://www.gov.uk/government/organisations/active-travel-england"
 
     def test_profile_shows_profile(self, client: FlaskClient) -> None:
         schemes_page = SchemesPage.open(client)

@@ -14,6 +14,11 @@ class DelegatingSessionInterface(SessionInterface):
 
 
 class RequestFilteringSessionInterface(DelegatingSessionInterface):
+    """
+    Session interface decorator that avoids opening sessions for specific paths.
+
+    See: https://github.com/pallets-eco/flask-session/issues/254
+    """
     def __init__(self, delegate: SessionInterface, exclude_path_prefix: str):
         super().__init__(delegate)
         self._exclude_path_prefix = exclude_path_prefix

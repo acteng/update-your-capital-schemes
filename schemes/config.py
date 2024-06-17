@@ -6,6 +6,7 @@ class Config:
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_SAMESITE = "Lax"
     PERMANENT_SESSION_LIFETIME = timedelta(hours=1)
+    SEND_FILE_MAX_AGE_DEFAULT = timedelta(hours=1)
 
     # Flask-SQLAlchemy
     SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///:memory:"

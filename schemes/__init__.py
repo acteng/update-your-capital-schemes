@@ -195,9 +195,8 @@ def _configure_http(app: Flask) -> None:
         response.headers["Strict-Transport-Security"] = f"max-age={hsts_max_age}"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["Content-Security-Policy"] = (
-            f"script-src {csp_govuk_frontend} {csp_govuk_frontend_init} 'self'; default-src 'self';"
-        )
+        response.content_security_policy.script_src = f"{csp_govuk_frontend} {csp_govuk_frontend_init} 'self';"
+        response.content_security_policy.default_src = "'self';"
         return response
 
 

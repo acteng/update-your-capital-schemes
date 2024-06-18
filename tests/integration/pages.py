@@ -383,7 +383,7 @@ class ErrorSummaryComponent:
 
 class NotificationBannerComponent:
     def __init__(self, banner: Tag):
-        self.heading = one(banner.select("p")).string
+        self.heading = (one(banner.select("p")).string or "").strip()
 
     @classmethod
     def for_important(cls, soup: BeautifulSoup) -> NotificationBannerComponent | None:

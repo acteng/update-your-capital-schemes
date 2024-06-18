@@ -293,7 +293,7 @@ class TestSchemeFunding:
         assert (
             change_spend_to_date_page.form.amount.is_errored
             and change_spend_to_date_page.form.amount.error == "Error: Enter spend to date"
-            and change_spend_to_date_page.form.amount.value is None
+            and change_spend_to_date_page.form.amount.value == ""
         )
         actual_scheme = schemes.get(1)
         assert actual_scheme

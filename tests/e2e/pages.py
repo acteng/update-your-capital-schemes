@@ -138,8 +138,8 @@ class NotificationBannerComponent:
         self._heading = banner.get_by_role("paragraph")
 
     @property
-    def heading(self) -> str | None:
-        return self._heading.text_content()
+    def heading(self) -> str:
+        return (self._heading.text_content() or "").strip()
 
     @classmethod
     def for_important(cls, page: Page) -> NotificationBannerComponent:

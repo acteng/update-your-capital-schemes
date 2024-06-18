@@ -49,9 +49,9 @@ data "terraform_remote_state" "schemes_database" {
   workspace = local.config[local.env].schemes_database
 }
 
-module "secret_manager" {
-  source  = "./secret-manager"
+resource "google_project_service" "secret_manager" {
   project = local.project
+  service = "secretmanager.googleapis.com"
 }
 
 module "cloud_sql" {
@@ -61,7 +61,7 @@ module "cloud_sql" {
   database_backups = local.config[local.env].database_backups
 
   depends_on = [
-    module.secret_manager
+    google_project_service.secret_manager
   ]
 }
 
@@ -83,7 +83,7 @@ module "cloud_run" {
   basic_auth                               = local.config[local.env].basic_auth
 
   depends_on = [
-    module.secret_manager
+    google_project_service.secret_manager
   ]
 }
 

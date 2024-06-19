@@ -9,7 +9,7 @@ resource "google_sql_database_instance" "main" {
   database_version = "POSTGRES_15"
 
   settings {
-    tier                  = "db-f1-micro"
+    tier                  = "db-custom-1-3840"
     connector_enforcement = "REQUIRED"
 
     backup_configuration {

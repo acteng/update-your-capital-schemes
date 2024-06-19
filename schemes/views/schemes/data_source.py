@@ -24,6 +24,7 @@ class DataSourceRepr(Enum):
     PULSE_2023_24_Q4 = "Pulse 2023/24 Q4"
     INITIAL_SCHEME_LIST = "Initial Scheme List"
     AUTHORITY_UPDATE = "Authority Update"
+    UNKNOWN = "Unknown"
     PULSE_2023_24_Q2_DATA_CLEANSE = "Pulse 2023/24 Q2 Data Cleanse"
     PULSE_2023_24_Q3_DATA_CLEANSE = "Pulse 2023/24 Q3 Data Cleanse"
 
@@ -53,6 +54,7 @@ class DataSourceRepr(Enum):
             DataSource.PULSE_2023_24_Q4: DataSourceRepr.PULSE_2023_24_Q4,
             DataSource.INITIAL_SCHEME_LIST: DataSourceRepr.INITIAL_SCHEME_LIST,
             DataSource.AUTHORITY_UPDATE: DataSourceRepr.AUTHORITY_UPDATE,
+            DataSource.UNKNOWN: DataSourceRepr.UNKNOWN,
             DataSource.PULSE_2023_24_Q2_DATA_CLEANSE: DataSourceRepr.PULSE_2023_24_Q2_DATA_CLEANSE,
             DataSource.PULSE_2023_24_Q3_DATA_CLEANSE: DataSourceRepr.PULSE_2023_24_Q3_DATA_CLEANSE,
         }

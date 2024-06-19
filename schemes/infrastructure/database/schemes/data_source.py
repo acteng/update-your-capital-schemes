@@ -20,8 +20,9 @@ class DataSourceMapper:
         DataSource.PULSE_2023_24_Q4: 14,
         DataSource.INITIAL_SCHEME_LIST: 15,
         DataSource.AUTHORITY_UPDATE: 16,
-        DataSource.PULSE_2023_24_Q2_DATA_CLEANSE: 17,
-        DataSource.PULSE_2023_24_Q3_DATA_CLEANSE: 18,
+        DataSource.UNKNOWN: 17,
+        DataSource.PULSE_2023_24_Q2_DATA_CLEANSE: 18,
+        DataSource.PULSE_2023_24_Q3_DATA_CLEANSE: 19,
     }
 
     def to_id(self, data_source: DataSource) -> int:

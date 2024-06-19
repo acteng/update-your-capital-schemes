@@ -23,6 +23,7 @@ from schemes.views.schemes.data_source import DataSourceRepr
         (DataSource.PULSE_2023_24_Q4, "Pulse 2023/24 Q4"),
         (DataSource.INITIAL_SCHEME_LIST, "Initial Scheme List"),
         (DataSource.AUTHORITY_UPDATE, "Authority Update"),
+        (DataSource.UNKNOWN, "Unknown"),
         (DataSource.PULSE_2023_24_Q2_DATA_CLEANSE, "Pulse 2023/24 Q2 Data Cleanse"),
         (DataSource.PULSE_2023_24_Q3_DATA_CLEANSE, "Pulse 2023/24 Q3 Data Cleanse"),
     ],

@@ -289,3 +289,77 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_govuk_clie
   role      = "roles/secretmanager.secretAccessor"
   secret_id = data.google_secret_manager_secret.govuk_client_secret.id
 }
+
+# monitoring
+
+data "google_secret_manager_secret_version" "basic_auth_username" {
+  count = var.basic_auth ? 1 : 0
+
+  secret = data.google_secret_manager_secret.basic_auth_username[0].id
+}
+
+data "google_secret_manager_secret_version" "basic_auth_password" {
+  count = var.basic_auth ? 1 : 0
+
+  secret = data.google_secret_manager_secret.basic_auth_password[0].id
+}
+
+resource "google_monitoring_uptime_check_config" "schemes" {
+  display_name = "Schemes uptime check"
+  timeout      = "60s"
+  period       = "300s"
+
+  http_check {
+    use_ssl = true
+
+    dynamic "auth_info" {
+      for_each = var.basic_auth ? [1] : []
+      content {
+        username = data.google_secret_manager_secret_version.basic_auth_username[0].secret_data
+        password = data.google_secret_manager_secret_version.basic_auth_password[0].secret_data
+      }
+    }
+  }
+
+  monitored_resource {
+    type = "uptime_url"
+    labels = {
+      project_id = var.project
+      host       = var.domain
+    }
+  }
+}
+
+resource "google_monitoring_notification_channel" "schemes" {
+  display_name = "Schemes support email"
+  type         = "email"
+  labels = {
+    email_address = "update-your-capital-schemes@activetravelengland.gov.uk"
+  }
+}
+
+resource "google_monitoring_alert_policy" "schemes_uptime" {
+  display_name = "Schemes uptime alert"
+  combiner     = "OR"
+
+  conditions {
+    display_name = "Uptime check failed"
+
+    condition_threshold {
+      filter = join("", [
+        "metric.type=\"monitoring.googleapis.com/uptime_check/check_passed\" ",
+        "AND metric.label.check_id=\"${google_monitoring_uptime_check_config.schemes.uptime_check_id}\" ",
+        "AND resource.type=\"uptime_url\""
+      ])
+      duration        = "300s"
+      comparison      = "COMPARISON_LT"
+      threshold_value = "1"
+
+      trigger {
+        count = 1
+      }
+    }
+  }
+
+  notification_channels = [google_monitoring_notification_channel.schemes.id]
+}

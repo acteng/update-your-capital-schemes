@@ -54,6 +54,11 @@ resource "google_project_service" "secret_manager" {
   service = "secretmanager.googleapis.com"
 }
 
+resource "google_project_service" "monitoring" {
+  project = local.project
+  service = "monitoring.googleapis.com"
+}
+
 module "cloud_sql" {
   source           = "./cloud-sql"
   project          = local.project
@@ -81,9 +86,11 @@ module "cloud_run" {
   capital_schemes_database_password        = data.terraform_remote_state.schemes_database.outputs.password
   keep_idle                                = local.config[local.env].keep_idle
   basic_auth                               = local.config[local.env].basic_auth
+  domain                                   = local.config[local.env].domain
 
   depends_on = [
-    google_project_service.secret_manager
+    google_project_service.secret_manager,
+    google_project_service.monitoring
   ]
 }
 

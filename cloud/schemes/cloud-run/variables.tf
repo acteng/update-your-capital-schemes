@@ -67,3 +67,8 @@ variable "basic_auth" {
   description = "Whether to enable basic auth"
   type        = bool
 }
+
+variable "domain" {
+  description = "Domain name to monitor"
+  type        = string
+}

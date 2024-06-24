@@ -20,6 +20,11 @@ resource "google_project_service" "artifact_registry" {
   service = "artifactregistry.googleapis.com"
 }
 
+resource "google_project_service" "container_scanning" {
+  project = local.project
+  service = "containerscanning.googleapis.com"
+}
+
 resource "google_artifact_registry_repository" "main" {
   project       = local.project
   repository_id = "docker"

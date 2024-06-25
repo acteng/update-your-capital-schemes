@@ -224,10 +224,6 @@ class TestFundingProgrammes:
             (FundingProgrammes.ATF3, "ATF3"),
             (FundingProgrammes.ATF4, "ATF4"),
             (FundingProgrammes.ATF4E, "ATF4e"),
-            (FundingProgrammes.ATF5, "ATF5"),
-            (FundingProgrammes.MRN, "MRN"),
-            (FundingProgrammes.LUF, "LUF"),
-            (FundingProgrammes.CRSTS, "CRSTS"),
         ],
     )
     def test_code(self, funding_programme: FundingProgramme, expected_code: str) -> None:
@@ -240,10 +236,6 @@ class TestFundingProgrammes:
             (FundingProgrammes.ATF3, False),
             (FundingProgrammes.ATF4, False),
             (FundingProgrammes.ATF4E, False),
-            (FundingProgrammes.ATF5, False),
-            (FundingProgrammes.MRN, False),
-            (FundingProgrammes.LUF, False),
-            (FundingProgrammes.CRSTS, False),
         ],
     )
     def test_is_under_embargo(self, funding_programme: FundingProgramme, expected_is_under_embargo: bool) -> None:

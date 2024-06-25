@@ -70,10 +70,6 @@ class FundingProgrammes:
     ATF3 = FundingProgramme("ATF3", False)
     ATF4 = FundingProgramme("ATF4", False)
     ATF4E = FundingProgramme("ATF4e", False)
-    ATF5 = FundingProgramme("ATF5", False)
-    MRN = FundingProgramme("MRN", False)
-    LUF = FundingProgramme("LUF", False)
-    CRSTS = FundingProgramme("CRSTS", False)
 
 
 class SchemeRepository:

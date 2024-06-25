@@ -342,10 +342,6 @@ class TestFundingProgrammeContext:
             (FundingProgrammes.ATF3, "ATF3"),
             (FundingProgrammes.ATF4, "ATF4"),
             (FundingProgrammes.ATF4E, "ATF4e"),
-            (FundingProgrammes.ATF5, "ATF5"),
-            (FundingProgrammes.MRN, "MRN"),
-            (FundingProgrammes.LUF, "LUF"),
-            (FundingProgrammes.CRSTS, "CRSTS"),
         ],
     )
     def test_from_domain(self, funding_programme: FundingProgramme, expected_name: str) -> None:
@@ -800,10 +796,6 @@ class TestSchemeTypeRepr:
         (FundingProgrammes.ATF3, "ATF3"),
         (FundingProgrammes.ATF4, "ATF4"),
         (FundingProgrammes.ATF4E, "ATF4e"),
-        (FundingProgrammes.ATF5, "ATF5"),
-        (FundingProgrammes.MRN, "MRN"),
-        (FundingProgrammes.LUF, "LUF"),
-        (FundingProgrammes.CRSTS, "CRSTS"),
     ],
 )
 class TestFundingProgrammeRepr:

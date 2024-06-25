@@ -232,10 +232,6 @@ class FundingProgrammeContext:
         FundingProgrammes.ATF3: "ATF3",
         FundingProgrammes.ATF4: "ATF4",
         FundingProgrammes.ATF4E: "ATF4e",
-        FundingProgrammes.ATF5: "ATF5",
-        FundingProgrammes.MRN: "MRN",
-        FundingProgrammes.LUF: "LUF",
-        FundingProgrammes.CRSTS: "CRSTS",
     }
 
     @classmethod
@@ -482,8 +478,4 @@ class FundingProgrammeRepr(Enum):
             FundingProgrammes.ATF3: FundingProgrammeRepr.ATF3,
             FundingProgrammes.ATF4: FundingProgrammeRepr.ATF4,
             FundingProgrammes.ATF4E: FundingProgrammeRepr.ATF4E,
-            FundingProgrammes.ATF5: FundingProgrammeRepr.ATF5,
-            FundingProgrammes.MRN: FundingProgrammeRepr.MRN,
-            FundingProgrammes.LUF: FundingProgrammeRepr.LUF,
-            FundingProgrammes.CRSTS: FundingProgrammeRepr.CRSTS,
         }

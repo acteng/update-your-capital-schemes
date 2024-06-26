@@ -114,3 +114,9 @@ Upgrade each Terraform root module in `cloud`:
    ```bash
    terraform init -upgrade
    ```
+
+## Upgrading GitHub Actions
+
+Upgrade all workflow actions in `.github/workflows`:
+
+1. Upgrade each action to its latest major version, e.g. for `actions/setup-python` see [actions/setup-python](https://github.com/actions/setup-python/releases)

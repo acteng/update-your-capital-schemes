@@ -291,7 +291,7 @@ gcloud run deploy schemes \
 
 ## Authentication
 
-We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-up-your-service-s-configuration/#register-your-service-to-use-gov-uk-one-login) the following two services with [GOV.UK One Login](https://www.sign-in.service.gov.uk/):
+We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-up-your-service-s-configuration/#register-your-service-to-use-gov-uk-one-login) the following services with [GOV.UK One Login](https://www.sign-in.service.gov.uk/):
 
 ### Dev
 

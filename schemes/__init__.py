@@ -137,7 +137,8 @@ def _create_engine(app: Flask) -> Engine:
 @inject.autoparams()
 def _create_capital_schemes_engine(config: Config, engine: Engine) -> Engine:
     database_uri = config.get("CAPITAL_SCHEMES_DATABASE_URI")
-    return create_engine(database_uri) if database_uri else engine
+    engine_options = config["SQLALCHEMY_ENGINE_OPTIONS"]
+    return create_engine(database_uri, **engine_options) if database_uri else engine
 
 
 @inject.params(engine=Engine, capital_schemes_engine=(Engine, CapitalSchemeEntity))

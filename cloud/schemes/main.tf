@@ -21,6 +21,7 @@ locals {
       keep_idle        = false
       basic_auth       = true
       database_backups = false
+      monitoring       = false
       domain           = "dev.${local.domain}"
     }
     test = {
@@ -28,6 +29,7 @@ locals {
       keep_idle        = false
       basic_auth       = true
       database_backups = false
+      monitoring       = false
       domain           = "test.${local.domain}"
     }
     prod = {
@@ -35,6 +37,7 @@ locals {
       keep_idle        = true
       basic_auth       = false
       database_backups = true
+      monitoring       = true
       domain           = local.domain
     }
   }
@@ -86,6 +89,7 @@ module "cloud_run" {
   capital_schemes_database_password        = data.terraform_remote_state.schemes_database.outputs.password
   keep_idle                                = local.config[local.env].keep_idle
   basic_auth                               = local.config[local.env].basic_auth
+  monitoring                               = local.config[local.env].monitoring
   domain                                   = local.config[local.env].domain
 
   depends_on = [

@@ -293,18 +293,20 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_govuk_clie
 # monitoring
 
 data "google_secret_manager_secret_version" "basic_auth_username" {
-  count = var.basic_auth ? 1 : 0
+  count = var.monitoring && var.basic_auth ? 1 : 0
 
   secret = data.google_secret_manager_secret.basic_auth_username[0].id
 }
 
 data "google_secret_manager_secret_version" "basic_auth_password" {
-  count = var.basic_auth ? 1 : 0
+  count = var.monitoring && var.basic_auth ? 1 : 0
 
   secret = data.google_secret_manager_secret.basic_auth_password[0].id
 }
 
 resource "google_monitoring_uptime_check_config" "schemes" {
+  count = var.monitoring ? 1 : 0
+
   display_name = "Schemes uptime check"
   timeout      = "60s"
   period       = "300s"
@@ -331,6 +333,8 @@ resource "google_monitoring_uptime_check_config" "schemes" {
 }
 
 resource "google_monitoring_notification_channel" "schemes" {
+  count = var.monitoring ? 1 : 0
+
   display_name = "Schemes support email"
   type         = "email"
   labels = {
@@ -339,6 +343,8 @@ resource "google_monitoring_notification_channel" "schemes" {
 }
 
 resource "google_monitoring_alert_policy" "schemes_uptime" {
+  count = var.monitoring ? 1 : 0
+
   display_name = "Schemes uptime alert"
   combiner     = "OR"
 
@@ -348,7 +354,7 @@ resource "google_monitoring_alert_policy" "schemes_uptime" {
     condition_threshold {
       filter = join("", [
         "metric.type=\"monitoring.googleapis.com/uptime_check/check_passed\" ",
-        "AND metric.label.check_id=\"${google_monitoring_uptime_check_config.schemes.uptime_check_id}\" ",
+        "AND metric.label.check_id=\"${google_monitoring_uptime_check_config.schemes[0].uptime_check_id}\" ",
         "AND resource.type=\"uptime_url\""
       ])
       duration        = "300s"
@@ -361,5 +367,5 @@ resource "google_monitoring_alert_policy" "schemes_uptime" {
     }
   }
 
-  notification_channels = [google_monitoring_notification_channel.schemes.id]
+  notification_channels = [google_monitoring_notification_channel.schemes[0].id]
 }

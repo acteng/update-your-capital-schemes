@@ -71,21 +71,21 @@ def clock_fixture(app: Flask) -> Clock:
 
 @pytest.fixture(name="authorities")
 def authorities_fixture(app: Flask) -> Generator[AuthorityRepository, None, None]:
-    authorities: AuthorityRepository = inject.instance(AuthorityRepository)
+    authorities = inject.instance(AuthorityRepository)
     yield authorities
     authorities.clear()
 
 
 @pytest.fixture(name="users")
 def users_fixture(app: Flask) -> Generator[UserRepository, None, None]:
-    users: UserRepository = inject.instance(UserRepository)
+    users = inject.instance(UserRepository)
     yield users
     users.clear()
 
 
 @pytest.fixture(name="schemes")
 def schemes_fixture(app: Flask) -> Generator[SchemeRepository, None, None]:
-    schemes: SchemeRepository = inject.instance(SchemeRepository)
+    schemes = inject.instance(SchemeRepository)
     yield schemes
     schemes.clear()
 

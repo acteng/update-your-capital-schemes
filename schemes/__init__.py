@@ -245,7 +245,7 @@ def _configure_oidc(app: Flask) -> None:
 
 
 def _migrate_database() -> None:
-    engine: Engine = inject.instance(Engine)
+    engine = inject.instance(Engine)
 
     alembic_config = alembic.config.Config()
     alembic_config.set_main_option("script_location", "schemes:infrastructure/database/migrations")

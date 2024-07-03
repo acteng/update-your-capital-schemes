@@ -126,6 +126,7 @@ class TestMilestoneContext:
         "milestone, expected_name",
         [
             (Milestone.PUBLIC_CONSULTATION_COMPLETED, "Public consultation completed"),
+            (Milestone.FEASIBILITY_DESIGN_STARTED, "Feasibility design started"),
             (Milestone.FEASIBILITY_DESIGN_COMPLETED, "Feasibility design completed"),
             (Milestone.PRELIMINARY_DESIGN_COMPLETED, "Preliminary design completed"),
             (Milestone.OUTLINE_DESIGN_COMPLETED, "Outline design completed"),

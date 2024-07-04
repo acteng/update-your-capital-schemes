@@ -368,7 +368,7 @@ resource "google_monitoring_alert_policy" "schemes_uptime" {
   }
 
   notification_channels = [google_monitoring_notification_channel.schemes[0].id]
-  severity = "CRITICAL"
+  severity              = "CRITICAL"
 }
 
 resource "google_monitoring_alert_policy" "schemes_error" {

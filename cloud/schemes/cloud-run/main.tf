@@ -370,3 +370,31 @@ resource "google_monitoring_alert_policy" "schemes_uptime" {
   notification_channels = [google_monitoring_notification_channel.schemes[0].id]
   severity = "CRITICAL"
 }
+
+resource "google_monitoring_alert_policy" "schemes_error" {
+  count = var.monitoring ? 1 : 0
+
+  display_name = "Schemes error alert"
+  combiner     = "OR"
+
+  conditions {
+    display_name = "Cloud Run error"
+
+    condition_matched_log {
+      filter = join("", [
+        "resource.type=\"cloud_run_revision\" ",
+        "AND severity=ERROR"
+      ])
+    }
+  }
+
+  notification_channels = [google_monitoring_notification_channel.schemes[0].id]
+
+  alert_strategy {
+    notification_rate_limit {
+      period = "300s"
+    }
+  }
+
+  severity = "ERROR"
+}

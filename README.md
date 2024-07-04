@@ -326,3 +326,4 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-
 ## See also
 
 * [Maintenance](docs/maintenance.md)
+* [Releasing](docs/releasing.md)

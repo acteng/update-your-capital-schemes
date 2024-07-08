@@ -18,6 +18,7 @@ from requests import HTTPError
 
 from schemes.domain.users import User, UserRepository
 from tests.integration.oidc import StubOidcServer
+from tests.integration.pages import ForbiddenPage
 
 
 class TestAuth:
@@ -186,7 +187,7 @@ class TestAuth:
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
     @responses.activate
-    def test_callback_when_unauthorized_returns_forbidden(
+    def test_callback_when_unauthorized_redirects_to_forbidden(
         self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
     ) -> None:
         users.add(User("boardman@example.com", authority_id=1))
@@ -196,7 +197,12 @@ class TestAuth:
 
         response = client.get("/auth", query_string={"code": "x", "state": "123"})
 
-        assert response.status_code == 403
+        assert response.status_code == 302 and response.location == "/auth/forbidden"
+
+    def test_forbidden(self, client: FlaskClient) -> None:
+        forbidden_page = ForbiddenPage.open(client)
+
+        assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
     def test_logout_logs_out_from_oidc(self, client: FlaskClient) -> None:
         with client.session_transaction() as setup_session:

@@ -73,6 +73,11 @@ class ForbiddenPage(PageObject):
         self.is_visible = heading.string == "Forbidden" if heading else False
         self.is_forbidden = response.status_code == 403
 
+    @classmethod
+    def open(cls, client: FlaskClient) -> ForbiddenPage:
+        response = client.get("/auth/forbidden")
+        return cls(response)
+
 
 class NotFoundPage(PageObject):
     def __init__(self, response: TestResponse):

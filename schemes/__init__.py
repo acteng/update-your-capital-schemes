@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from logging import Logger
 from typing import Any, Callable, Mapping
 
 import alembic.config
@@ -68,6 +69,8 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.config.from_prefixed_env()
     app.config.from_mapping(test_config)
 
+    _configure_logger(app)
+
     inject.configure(bindings(app), bind_in_runtime=False)
 
     app.config["SESSION_SQLALCHEMY"] = SQLAlchemy(app)
@@ -110,6 +113,7 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
     def _bindings(binder: Binder) -> None:
         binder.bind(Flask, app)
         binder.bind(Config, app.config)
+        binder.bind(Logger, app.logger)
         binder.bind(Clock, FakeClock() if app.testing else SystemClock())
         binder.bind_to_constructor(ReportingWindowService, DefaultReportingWindowService)
         binder.bind_to_constructor(Engine, _create_engine)
@@ -120,6 +124,10 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
         binder.bind_to_constructor(SchemeRepository, DatabaseSchemeRepository)
 
     return _bindings
+
+
+def _configure_logger(app):
+    app.logger.setLevel(app.config["LOGGER_LEVEL"])
 
 
 @inject.autoparams()

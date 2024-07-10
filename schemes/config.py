@@ -1,7 +1,11 @@
+import logging
 from datetime import timedelta
 
 
 class Config:
+    # Logging
+    LOGGER_LEVEL = logging.INFO
+
     # Flask
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_SAMESITE = "Lax"
@@ -26,6 +30,9 @@ class Config:
 
 class LocalConfig(Config):
     name = "local"
+
+    # Logging
+    LOGGER_LEVEL = logging.DEBUG
 
 
 class DevConfig(Config):

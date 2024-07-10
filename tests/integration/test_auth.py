@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import Any, Generator, Mapping
 
@@ -14,6 +15,7 @@ from authlib.jose.errors import (
 from authlib.oidc.core import UserInfo
 from flask import current_app, session
 from flask.testing import FlaskClient
+from pytest import LogCaptureFixture
 from requests import HTTPError
 
 from schemes.domain.users import User, UserRepository
@@ -86,6 +88,23 @@ class TestAuth:
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
             assert session["user"] == UserInfo({"email": "boardman@example.com"}) and session["id_token"] == id_token
+
+    @responses.activate
+    def test_callback_logs_successful_sign_in(
+        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient, caplog: LogCaptureFixture
+    ) -> None:
+        users.add(User("boardman@example.com", authority_id=1))
+        oidc_server.given_token_endpoint_returns_id_token(nonce="456")
+        oidc_server.given_userinfo_endpoint_returns_claims(email="boardman@example.com")
+        given_session_has_authentication_request(client, state="123", nonce="456")
+
+        with client, caplog.at_level(logging.INFO):
+            client.get("/auth", query_string={"code": "x", "state": "123"})
+
+        assert (
+            caplog.records[0].levelname == "INFO"
+            and caplog.records[0].message == "User 'boardman@example.com' successfully signed in"
+        )
 
     @responses.activate
     def test_callback_redirects_to_schemes(

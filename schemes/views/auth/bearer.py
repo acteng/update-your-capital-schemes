@@ -1,4 +1,5 @@
 from functools import wraps
+from logging import Logger
 from typing import Callable, ParamSpec, TypeVar
 from urllib.parse import urlencode, urlparse
 
@@ -23,7 +24,7 @@ bp = Blueprint("auth", __name__)
 
 @bp.get("")
 @inject.autoparams()
-def callback(users: UserRepository) -> BaseResponse:
+def callback(users: UserRepository, logger: Logger) -> BaseResponse:
     oauth = _get_oauth()
     server_metadata = oauth.govuk.load_server_metadata()
     token = oauth.govuk.authorize_access_token(
@@ -39,6 +40,9 @@ def callback(users: UserRepository) -> BaseResponse:
 
     session["user"] = user
     session["id_token"] = token["id_token"]
+
+    logger.info("User '%s' successfully signed in", user.email)
+
     return redirect(url_for("schemes.index"))
 
 

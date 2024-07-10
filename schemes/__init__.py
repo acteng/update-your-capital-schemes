@@ -33,7 +33,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import ConnectionPoolEntry
 from werkzeug import Response as BaseResponse
 
-from schemes.config import DevConfig
+from schemes.config import LocalConfig
 from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.reporting_window import (
     DefaultReportingWindowService,
@@ -61,7 +61,7 @@ from schemes.views.filters import date, pounds, remove_exponent
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
-    env = os.environ.get("FLASK_ENV", DevConfig.name)
+    env = os.environ.get("FLASK_ENV", LocalConfig.name)
 
     app = Flask(__name__, static_folder="views/static", template_folder="views/templates")
     app.config.from_object(f"schemes.config.{env.title()}Config")

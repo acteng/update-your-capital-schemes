@@ -21,13 +21,15 @@ class Config:
     GOVUK_TOKEN_ENDPOINT = "https://oidc.integration.account.gov.uk/token"
     GOVUK_PROFILE_URL = "https://home.integration.account.gov.uk/"
     GOVUK_END_SESSION_ENDPOINT = "https://oidc.integration.account.gov.uk/logout"
+    GOVUK_CLIENT_ID = "ACQWA69dKqUjccEMgMVKu0jX0q4"
+
+
+class LocalConfig(Config):
+    name = "local"
 
 
 class DevConfig(Config):
-    name = "dev"
-
-    # GOV.UK One Login
-    GOVUK_CLIENT_ID = "ACQWA69dKqUjccEMgMVKu0jX0q4"
+    pass
 
 
 class TestConfig(Config):

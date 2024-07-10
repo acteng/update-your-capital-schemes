@@ -126,7 +126,7 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
     return _bindings
 
 
-def _configure_logger(app):
+def _configure_logger(app: Flask) -> None:
     app.logger.setLevel(app.config["LOGGER_LEVEL"])
 
 

@@ -36,6 +36,7 @@ def callback(users: UserRepository, logger: Logger) -> BaseResponse:
     user = oauth.govuk.userinfo(token=token)
 
     if not _is_authorized(users, user):
+        logger.warning("User '%s' unauthorized sign in attempt", user.email)
         return redirect(url_for("auth.forbidden"))
 
     session["user"] = user

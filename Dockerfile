@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-ENV PORT 5000
+ENV PORT=5000
 
 WORKDIR /usr/src/app
 COPY schemes ./schemes

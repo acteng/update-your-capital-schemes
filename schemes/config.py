@@ -14,7 +14,7 @@ class Config:
 
     # Flask-SQLAlchemy
     SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///:memory:"
-    SQLALCHEMY_ENGINE_OPTIONS = {"pool_recycle": int(timedelta(minutes=30).total_seconds())}
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": int(timedelta(minutes=30).total_seconds())}
 
     # Flask-Session
     SESSION_TYPE = "sqlalchemy"

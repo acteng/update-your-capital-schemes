@@ -54,10 +54,13 @@ def forbidden() -> Response:
 
 
 @bp.get("/logout")
-def logout() -> BaseResponse:
+@inject.autoparams()
+def logout(logger: Logger) -> BaseResponse:
     id_token = session["id_token"]
-    del session["user"]
+    user = session.pop("user")
     del session["id_token"]
+
+    logger.info("User '%s' signed out", user["email"])
 
     end_session_endpoint = current_app.config["GOVUK_END_SESSION_ENDPOINT"]
     post_logout_redirect_uri = url_for("start.index", _external=True)

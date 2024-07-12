@@ -264,6 +264,19 @@ class TestAuth:
             == "https://example.com/logout?id_token_hint=jwt&post_logout_redirect_uri=http%3A%2F%2Flocalhost%2F"
         )
 
+    def test_logout_logs_sign_out(self, client: FlaskClient, caplog: LogCaptureFixture) -> None:
+        with client.session_transaction() as setup_session:
+            setup_session["user"] = UserInfo({"email": "boardman@example.com"})
+            setup_session["id_token"] = "jwt"
+
+        with caplog.at_level(logging.INFO):
+            client.get("/auth/logout")
+
+        assert (
+            caplog.records[0].levelname == "INFO"
+            and caplog.records[0].message == "User 'boardman@example.com' signed out"
+        )
+
     def test_logout_logs_out_from_schemes(self, client: FlaskClient) -> None:
         with client.session_transaction() as setup_session:
             setup_session["user"] = UserInfo({"email": "boardman@example.com"})

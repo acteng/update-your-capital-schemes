@@ -119,6 +119,18 @@ class TestAuth:
 
         assert response.status_code == 302 and response.location == "/schemes"
 
+    @responses.activate
+    def test_callback_when_authenticated_redirects_to_schemes(
+        self, oidc_server: StubOidcServer, client: FlaskClient
+    ) -> None:
+        with client.session_transaction() as setup_session:
+            setup_session["user"] = UserInfo({"email": "boardman@example.com"})
+            setup_session["id_token"] = "jwt"
+
+        response = client.get("/auth", query_string={"code": "x", "state": "123"})
+
+        assert response.status_code == 302 and response.location == "/schemes"
+
     def test_callback_when_authentication_error_raises_error(self, client: FlaskClient) -> None:
         with pytest.raises(OAuthError, match="invalid_request: Unsupported response"):
             client.get("/auth", query_string={"error": "invalid_request", "error_description": "Unsupported response"})

@@ -25,24 +25,25 @@ bp = Blueprint("auth", __name__)
 @bp.get("")
 @inject.autoparams()
 def callback(users: UserRepository, logger: Logger) -> BaseResponse:
-    oauth = _get_oauth()
-    server_metadata = oauth.govuk.load_server_metadata()
-    token = oauth.govuk.authorize_access_token(
-        claims_options={
-            "iss": {"value": server_metadata.get("issuer")},
-            "aud": {"value": oauth.govuk.client_id},
-        }
-    )
-    user = oauth.govuk.userinfo(token=token)
+    if "user" not in session:
+        oauth = _get_oauth()
+        server_metadata = oauth.govuk.load_server_metadata()
+        token = oauth.govuk.authorize_access_token(
+            claims_options={
+                "iss": {"value": server_metadata.get("issuer")},
+                "aud": {"value": oauth.govuk.client_id},
+            }
+        )
+        user = oauth.govuk.userinfo(token=token)
 
-    if not _is_authorized(users, user):
-        logger.warning("User '%s' unauthorized sign in attempt", user.email)
-        return redirect(url_for("auth.forbidden"))
+        if not _is_authorized(users, user):
+            logger.warning("User '%s' unauthorized sign in attempt", user.email)
+            return redirect(url_for("auth.forbidden"))
 
-    session["user"] = user
-    session["id_token"] = token["id_token"]
+        session["user"] = user
+        session["id_token"] = token["id_token"]
 
-    logger.info("User '%s' successfully signed in", user.email)
+        logger.info("User '%s' successfully signed in", user.email)
 
     return redirect(url_for("schemes.index"))
 

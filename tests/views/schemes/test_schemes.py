@@ -374,10 +374,10 @@ class TestSchemeRepr:
             bid_status_revisions=[
                 BidStatusRevision(
                     id_=2,
-                    effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 12)),
+                    effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13)),
                     status=BidStatus.SUBMITTED,
                 ),
-                BidStatusRevision(id_=3, effective=DateRange(datetime(2020, 2, 1, 12), None), status=BidStatus.FUNDED),
+                BidStatusRevision(id_=3, effective=DateRange(datetime(2020, 2, 1, 13), None), status=BidStatus.FUNDED),
             ],
         )
 
@@ -387,12 +387,12 @@ class TestSchemeRepr:
             BidStatusRevisionRepr(
                 id=2,
                 effective_date_from="2020-01-01T12:00:00",
-                effective_date_to="2020-02-01T12:00:00",
+                effective_date_to="2020-02-01T13:00:00",
                 status=BidStatusRepr.SUBMITTED,
             ),
             BidStatusRevisionRepr(
                 id=3,
-                effective_date_from="2020-02-01T12:00:00",
+                effective_date_from="2020-02-01T13:00:00",
                 effective_date_to=None,
                 status=BidStatusRepr.FUNDED,
             ),
@@ -575,7 +575,7 @@ class TestSchemeRepr:
                     status=BidStatusRepr.SUBMITTED,
                 ),
                 BidStatusRevisionRepr(
-                    id=3, effective_date_from="2020-02-01T12:00:00", effective_date_to=None, status=BidStatusRepr.FUNDED
+                    id=3, effective_date_from="2020-02-01T13:00:00", effective_date_to=None, status=BidStatusRepr.FUNDED
                 ),
             ],
         )
@@ -592,7 +592,7 @@ class TestSchemeRepr:
         )
         assert (
             bid_status_revision2.id == 3
-            and bid_status_revision2.effective == DateRange(datetime(2020, 2, 1, 12), None)
+            and bid_status_revision2.effective == DateRange(datetime(2020, 2, 1, 13), None)
             and bid_status_revision2.status == BidStatus.FUNDED
         )
 

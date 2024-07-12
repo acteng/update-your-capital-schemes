@@ -14,7 +14,7 @@
     "govuk-frontend:copy-assets": "cp -rT node_modules/govuk-frontend/dist/govuk/assets schemes/views/static/govuk-frontend/assets",
     "govuk-frontend:build": "npm run govuk-frontend:build-css && npm run govuk-frontend:copy-js && npm run govuk-frontend:copy-assets",
     "govuk-one-login-service-header:build-css": "sass --style compressed --load-path=node_modules/govuk-frontend/dist schemes/views/assets/govuk-one-login-service-header.scss schemes/views/static/govuk-one-login-service-header/govuk-one-login-service-header.min.css",
-    "govuk-one-login-service-header:build-js": "terser node_modules/govuk-one-login-service-header/dist/scripts/service-header.js node_modules/govuk-one-login-service-header/dist/scripts/init-service-header.js --source-map includeSources --output schemes/views/static/govuk-one-login-service-header/govuk-one-login-service-header.min.js",
+    "govuk-one-login-service-header:build-js": "terser node_modules/govuk-one-login-service-header/dist/scripts/service-header-with-init.js --source-map includeSources --output schemes/views/static/govuk-one-login-service-header/govuk-one-login-service-header.min.js",
     "govuk-one-login-service-header:build": "npm run govuk-one-login-service-header:build-css && npm run govuk-one-login-service-header:build-js",
     "build": "npm run application:build && npm run govuk-frontend:build && npm run govuk-one-login-service-header:build"
   },
@@ -22,7 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "govuk-frontend": "~5.4.0",
-    "govuk-one-login-service-header": "govuk-one-login/service-header#f9ce92e4e9f5a8c0311e77bce211520a785e4ebc"
+    "govuk-one-login-service-header": "govuk-one-login/service-header#a823f1a5ddc2879945f7d4f2cce889d100d3441c"
   },
   "devDependencies": {
     "sass": "^1.69.0",

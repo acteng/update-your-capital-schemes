@@ -27,16 +27,16 @@ class SchemeFunding:
             self.update_bid_status(bid_status_revision)
 
     def _ensure_no_current_bid_status(self) -> None:
-        current_bid_status = self._current_bid_status()
-        if current_bid_status:
-            raise ValueError(f"Current bid status already exists: {current_bid_status}")
+        current_bid_status_revision = self._current_bid_status_revision()
+        if current_bid_status_revision:
+            raise ValueError(f"Current bid status already exists: {current_bid_status_revision}")
 
     @property
     def bid_status(self) -> BidStatus | None:
-        current_bid_status = self._current_bid_status()
-        return current_bid_status.status if current_bid_status else None
+        current_bid_status_revision = self._current_bid_status_revision()
+        return current_bid_status_revision.status if current_bid_status_revision else None
 
-    def _current_bid_status(self) -> BidStatusRevision | None:
+    def _current_bid_status_revision(self) -> BidStatusRevision | None:
         return next((revision for revision in self.bid_status_revisions if revision.effective.date_to is None), None)
 
     @property

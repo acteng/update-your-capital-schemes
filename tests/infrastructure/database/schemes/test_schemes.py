@@ -90,7 +90,7 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_bid_status_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme1 = build_scheme(
+        scheme = build_scheme(
             id_=1,
             name="Wirral Package",
             authority_id=1,
@@ -102,7 +102,7 @@ class TestDatabaseSchemeRepository:
             ],
         )
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1, bid_status_revisions=[]))
+        schemes.add(scheme)
 
         row1: CapitalSchemeBidStatusEntity
         row2: CapitalSchemeBidStatusEntity
@@ -128,8 +128,8 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_financial_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.funding.update_financials(
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.funding.update_financials(
             FinancialRevision(
                 id_=2,
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
@@ -146,7 +146,7 @@ class TestDatabaseSchemeRepository:
             ),
         )
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
+        schemes.add(scheme)
 
         row1: CapitalSchemeFinancialEntity
         row2: CapitalSchemeFinancialEntity
@@ -176,8 +176,8 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_milestone_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.milestones.update_milestones(
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=2,
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
@@ -196,7 +196,7 @@ class TestDatabaseSchemeRepository:
             ),
         )
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
+        schemes.add(scheme)
 
         row1: CapitalSchemeMilestoneEntity
         row2: CapitalSchemeMilestoneEntity
@@ -228,8 +228,8 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_output_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.outputs.update_outputs(
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.outputs.update_outputs(
             OutputRevision(
                 id_=3,
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
@@ -246,7 +246,7 @@ class TestDatabaseSchemeRepository:
             ),
         )
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
+        schemes.add(scheme)
 
         row1: CapitalSchemeInterventionEntity
         row2: CapitalSchemeInterventionEntity
@@ -278,13 +278,13 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_authority_reviews(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
-        scheme1.reviews.update_authority_reviews(
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
             AuthorityReview(id_=3, review_date=datetime(2020, 2, 1), source=DataSource.PULSE_6),
         )
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
+        schemes.add(scheme)
 
         row1: CapitalSchemeAuthorityReviewEntity
         row2: CapitalSchemeAuthorityReviewEntity

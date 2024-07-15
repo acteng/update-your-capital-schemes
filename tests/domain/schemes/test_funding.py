@@ -69,13 +69,11 @@ class TestSchemeFunding:
 
     def test_get_bid_status(self) -> None:
         funding = SchemeFunding()
-        funding.update_bid_status(
+        funding.update_bid_statuses(
             BidStatusRevision(
                 id_=1, effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)), status=BidStatus.SUBMITTED
-            )
-        )
-        funding.update_bid_status(
-            BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 2, 1), None), status=BidStatus.FUNDED)
+            ),
+            BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 2, 1), None), status=BidStatus.FUNDED),
         )
 
         assert funding.bid_status == BidStatus.FUNDED

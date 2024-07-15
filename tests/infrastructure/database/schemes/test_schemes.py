@@ -656,7 +656,7 @@ class TestDatabaseSchemeRepository:
             and scheme1.type == SchemeType.DEVELOPMENT
             and scheme1.funding_programme == FundingProgrammes.ATF3
         )
-        assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme1.authority_id == 1
+        assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme2.authority_id == 1
 
     def test_get_all_schemes_bid_status_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]

@@ -81,6 +81,16 @@ class TestSchemeReview:
         )
 
         assert schemes_page.is_visible
+
+    def test_review_shows_success_notification(
+        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        schemes_page = SchemesPage(
+            client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}, follow_redirects=True)
+        )
+
         assert (
             schemes_page.success_notification
             and schemes_page.success_notification.heading == "Wirral Package has been reviewed"

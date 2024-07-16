@@ -19,6 +19,11 @@ class SchemeOverview:
             self.update_overview(overview_revision)
 
     @property
+    def name(self) -> str | None:
+        current_overview_revision = self._current_overview_revision()
+        return current_overview_revision.name if current_overview_revision else None
+
+    @property
     def authority_id(self) -> int | None:
         current_overview_revision = self._current_overview_revision()
         return current_overview_revision.authority_id if current_overview_revision else None
@@ -29,7 +34,8 @@ class SchemeOverview:
 
 class OverviewRevision:
     # TODO: domain identifier should be mandatory for transient instances
-    def __init__(self, id_: int | None, effective: DateRange, authority_id: int):
+    def __init__(self, id_: int | None, effective: DateRange, name: str, authority_id: int):
         self.id = id_
         self.effective = effective
+        self.name = name
         self.authority_id = authority_id

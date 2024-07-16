@@ -98,7 +98,6 @@ class DatabaseSchemeRepository(SchemeRepository):
     def _capital_scheme_from_domain(self, scheme: Scheme) -> CapitalSchemeEntity:
         return CapitalSchemeEntity(
             capital_scheme_id=scheme.id,
-            scheme_name=scheme.name,
             scheme_type_id=self._scheme_type_mapper.to_id(scheme.type),
             funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
             capital_scheme_overviews=[
@@ -130,7 +129,6 @@ class DatabaseSchemeRepository(SchemeRepository):
     def _capital_scheme_to_domain(self, capital_scheme: CapitalSchemeEntity) -> Scheme:
         scheme = Scheme(
             id_=capital_scheme.capital_scheme_id,
-            name=capital_scheme.scheme_name,
             type_=self._scheme_type_mapper.to_domain(capital_scheme.scheme_type_id),
             funding_programme=self._funding_programme_mapper.to_domain(capital_scheme.funding_programme_id),
         )
@@ -162,6 +160,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             capital_scheme_overview_id=overview_revision.id,
             effective_date_from=overview_revision.effective.date_from,
             effective_date_to=overview_revision.effective.date_to,
+            scheme_name=overview_revision.name,
             bid_submitting_authority_id=overview_revision.authority_id,
         )
 
@@ -171,6 +170,7 @@ class DatabaseSchemeRepository(SchemeRepository):
         return OverviewRevision(
             id_=capital_scheme_overview.capital_scheme_overview_id,
             effective=DateRange(capital_scheme_overview.effective_date_from, capital_scheme_overview.effective_date_to),
+            name=capital_scheme_overview.scheme_name,
             authority_id=capital_scheme_overview.bid_submitting_authority_id,
         )
 

@@ -23,7 +23,6 @@ def build_scheme(
 ) -> SchemeRepr:
     return SchemeRepr(
         id=id_,
-        name=name,
         type=type_,
         funding_programme=funding_programme,
         overview_revisions=[
@@ -31,6 +30,7 @@ def build_scheme(
                 id=None,
                 effective_date_from="1970-01-01",
                 effective_date_to=None,
+                name=name,
                 authority_id=authority_id,
             )
         ],

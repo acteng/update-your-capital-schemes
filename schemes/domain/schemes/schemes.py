@@ -11,9 +11,8 @@ from schemes.domain.schemes.reviews import SchemeReviews
 
 
 class Scheme:
-    def __init__(self, id_: int, name: str, type_: SchemeType, funding_programme: FundingProgramme):
+    def __init__(self, id_: int, type_: SchemeType, funding_programme: FundingProgramme):
         self.id = id_
-        self.name = name
         self.type = type_
         self.funding_programme = funding_programme
         self._overview = SchemeOverview()

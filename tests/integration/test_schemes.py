@@ -93,7 +93,7 @@ class TestSchemes:
             build_scheme(id_=2, name="School Streets", authority_id=1),
             build_scheme(id_=3, name="Runcorn Busway", authority_id=1, bid_status=BidStatus.SUBMITTED),
             build_scheme(id_=4, name="Hospital Fields Road", authority_id=2),
-            build_scheme(id_=5, name="People Streets", overview_revisions=[]),
+            build_scheme(id_=5, overview_revisions=[]),
         )
 
         schemes_page = SchemesPage.open(client)
@@ -180,18 +180,8 @@ class TestSchemesApi:
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
-                {
-                    "id": 1,
-                    "name": "Wirral Package",
-                    "type": "construction",
-                    "funding_programme": "ATF4",
-                },
-                {
-                    "id": 2,
-                    "name": "School Streets",
-                    "type": "construction",
-                    "funding_programme": "ATF4",
-                },
+                {"id": 1, "type": "construction", "funding_programme": "ATF4"},
+                {"id": 2, "type": "construction", "funding_programme": "ATF4"},
             ],
         )
 
@@ -201,14 +191,12 @@ class TestSchemesApi:
         assert (
             scheme1
             and scheme1.id == 1
-            and scheme1.name == "Wirral Package"
             and scheme1.type == SchemeType.CONSTRUCTION
             and scheme1.funding_programme == FundingProgrammes.ATF4
         )
         assert (
             scheme2
             and scheme2.id == 2
-            and scheme2.name == "School Streets"
             and scheme2.type == SchemeType.CONSTRUCTION
             and scheme2.funding_programme == FundingProgrammes.ATF4
         )
@@ -220,7 +208,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "name": "Wirral Package",
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "overview_revisions": [
@@ -228,6 +215,7 @@ class TestSchemesApi:
                             "id": 2,
                             "effective_date_from": "2020-01-01T12:00:00",
                             "effective_date_to": None,
+                            "name": "Wirral Package",
                             "authority_id": 1,
                         }
                     ],
@@ -243,6 +231,7 @@ class TestSchemesApi:
         assert (
             overview_revision1.id == 2
             and overview_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
+            and overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_id == 1
         )
 
@@ -253,7 +242,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "name": "Wirral Package",
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "bid_status_revisions": [
@@ -286,7 +274,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "name": "Wirral Package",
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "financial_revisions": [
@@ -323,7 +310,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "name": "Wirral Package",
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "milestone_revisions": [
@@ -362,7 +348,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "name": "Wirral Package",
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "output_revisions": [
@@ -400,7 +385,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "name": "Wirral Package",
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "authority_reviews": [
@@ -426,17 +410,7 @@ class TestSchemesApi:
         )
 
     def test_cannot_add_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
-            "/schemes",
-            json=[
-                {
-                    "id": 1,
-                    "name": "Wirral Package",
-                    "type": "construction",
-                    "funding_programme": "ATF4",
-                }
-            ],
-        )
+        response = client.post("/schemes", json=[{"id": 1, "type": "construction", "funding_programme": "ATF4"}])
 
         assert response.status_code == 401
         assert not schemes.get(1)
@@ -447,14 +421,7 @@ class TestSchemesApi:
         response = client.post(
             "/schemes",
             headers={"Authorization": "API-Key obree"},
-            json=[
-                {
-                    "id": 1,
-                    "name": "Wirral Package",
-                    "type": "construction",
-                    "funding_programme": "ATF4",
-                }
-            ],
+            json=[{"id": 1, "type": "construction", "funding_programme": "ATF4"}],
         )
 
         assert response.status_code == 401
@@ -464,15 +431,7 @@ class TestSchemesApi:
         response = client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[
-                {
-                    "id": 1,
-                    "name": "Wirral Package",
-                    "type": "construction",
-                    "funding_programme": "ATF4",
-                    "foo": "bar",
-                }
-            ],
+            json=[{"id": 1, "type": "construction", "funding_programme": "ATF4", "foo": "bar"}],
         )
 
         assert response.status_code == 400
@@ -510,14 +469,7 @@ class TestSchemesApiWhenDisabled:
         response = client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[
-                {
-                    "id": 1,
-                    "name": "Wirral Package",
-                    "type": "construction",
-                    "funding_programme": "ATF4",
-                }
-            ],
+            json=[{"id": 1, "type": "construction", "funding_programme": "ATF4"}],
         )
 
         assert response.status_code == 401

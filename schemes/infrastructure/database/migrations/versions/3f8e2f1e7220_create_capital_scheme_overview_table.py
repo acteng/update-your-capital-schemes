@@ -29,6 +29,7 @@ def upgrade() -> None:
             ),
             nullable=False,
         ),
+        sa.Column("scheme_name", sa.Text, nullable=False),
         sa.Column(
             "bid_submitting_authority_id",
             sa.Integer,
@@ -52,21 +53,25 @@ def upgrade() -> None:
         INSERT INTO capital_scheme.capital_scheme_overview
         (
             capital_scheme_id,
+            scheme_name,
             bid_submitting_authority_id,
             effective_date_from
         )
         SELECT
             cs.capital_scheme_id,
+            cs.scheme_name,
             cs.bid_submitting_authority_id,
             earliest_bid_status.effective_date_from
         FROM capital_scheme.capital_scheme cs
         LEFT JOIN earliest_bid_status ON cs.capital_scheme_id = earliest_bid_status.capital_scheme_id;
         """
     )
+    op.drop_column("capital_scheme", column_name="scheme_name", schema="capital_scheme")
     op.drop_column("capital_scheme", column_name="bid_submitting_authority_id", schema="capital_scheme")
 
 
 def downgrade() -> None:
+    op.add_column("capital_scheme", column=sa.Column("scheme_name", sa.Text), schema="capital_scheme")
     op.add_column(
         "capital_scheme",
         column=sa.Column(
@@ -79,12 +84,15 @@ def downgrade() -> None:
     op.execute(
         """
         UPDATE capital_scheme.capital_scheme cs
-        SET bid_submitting_authority_id = cso.bid_submitting_authority_id
+        SET
+            scheme_name = cso.scheme_name,
+            bid_submitting_authority_id = cso.bid_submitting_authority_id
         FROM capital_scheme.capital_scheme_overview cso
         WHERE cs.capital_scheme_id = cso.capital_scheme_id
         AND cso.effective_date_to IS NULL;
         """
     )
     with op.batch_alter_table("capital_scheme", schema="capital_scheme") as batch_op:
+        batch_op.alter_column("scheme_name", nullable=False)
         batch_op.alter_column("bid_submitting_authority_id", nullable=False)
     op.drop_table("capital_scheme_overview", schema="capital_scheme")

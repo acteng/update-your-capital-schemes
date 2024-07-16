@@ -70,7 +70,6 @@ class UserRepr:
 @dataclass(frozen=True)
 class SchemeRepr:
     id: int
-    name: str
     type: str
     funding_programme: str
     overview_revisions: list[OverviewRevisionRepr] = field(default_factory=list)
@@ -85,6 +84,7 @@ class SchemeRepr:
 class OverviewRevisionRepr:
     effective_date_from: str
     effective_date_to: str | None
+    name: str
     authority_id: int
     id: int | None = None
 

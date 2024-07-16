@@ -34,7 +34,6 @@ class CapitalSchemeEntity(Base):
     __table_args__ = {"schema": "capital_scheme"}
 
     capital_scheme_id: Mapped[int] = mapped_column(primary_key=True)
-    scheme_name: Mapped[str] = mapped_column(Text)
     scheme_type_id: Mapped[int]
     funding_programme_id: Mapped[int]
     capital_scheme_overviews: Mapped[list[CapitalSchemeOverviewEntity]] = relationship()
@@ -56,6 +55,7 @@ class CapitalSchemeOverviewEntity(Base):
         ),
         nullable=False,
     )
+    scheme_name: Mapped[str] = mapped_column(Text)
     bid_submitting_authority_id = mapped_column(
         ForeignKey("authority.authority.authority_id", name="capital_scheme_overview_bid_submitting_authority_id_fkey"),
         nullable=False,

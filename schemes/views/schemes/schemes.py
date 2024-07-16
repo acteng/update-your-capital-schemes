@@ -128,11 +128,14 @@ class SchemeRowContext:
 
     @classmethod
     def from_domain(cls, reporting_window: ReportingWindow, scheme: Scheme) -> SchemeRowContext:
+        name = scheme.overview.name
+        assert name is not None
+
         return cls(
             id=scheme.id,
             reference=scheme.reference,
             funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
-            name=scheme.name,
+            name=name,
             needs_review=scheme.reviews.needs_review(reporting_window),
             last_reviewed=scheme.reviews.last_reviewed,
         )
@@ -199,10 +202,13 @@ class SchemeContext:
 
     @classmethod
     def from_domain(cls, reporting_window: ReportingWindow, authority: Authority, scheme: Scheme) -> SchemeContext:
+        name = scheme.overview.name
+        assert name is not None
+
         return cls(
             id=scheme.id,
             authority_name=authority.name,
-            name=scheme.name,
+            name=name,
             needs_review=scheme.reviews.needs_review(reporting_window),
             overview=SchemeOverviewContext.from_domain(scheme),
             funding=SchemeFundingContext.from_domain(scheme.funding),
@@ -372,7 +378,7 @@ def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, schem
     form.update_domain(scheme.reviews, clock.now)
     schemes.update(scheme)
 
-    flash(f"{scheme.name} has been reviewed")
+    flash(f"{scheme.overview.name} has been reviewed")
     return redirect(url_for("schemes.index"))
 
 
@@ -387,7 +393,6 @@ def clear(schemes: SchemeRepository) -> Response:
 @dataclass(frozen=True)
 class SchemeRepr:
     id: int
-    name: str
     type: SchemeTypeRepr
     funding_programme: FundingProgrammeRepr
     overview_revisions: list[OverviewRevisionRepr] = field(default_factory=list)
@@ -401,7 +406,6 @@ class SchemeRepr:
     def from_domain(cls, scheme: Scheme) -> SchemeRepr:
         return cls(
             id=scheme.id,
-            name=scheme.name,
             type=SchemeTypeRepr.from_domain(scheme.type),
             funding_programme=FundingProgrammeRepr.from_domain(scheme.funding_programme),
             overview_revisions=[
@@ -430,12 +434,7 @@ class SchemeRepr:
         )
 
     def to_domain(self) -> Scheme:
-        scheme = Scheme(
-            id_=self.id,
-            name=self.name,
-            type_=self.type.to_domain(),
-            funding_programme=self.funding_programme.to_domain(),
-        )
+        scheme = Scheme(id_=self.id, type_=self.type.to_domain(), funding_programme=self.funding_programme.to_domain())
 
         for overview_revision_repr in self.overview_revisions:
             scheme.overview.update_overviews(overview_revision_repr.to_domain())

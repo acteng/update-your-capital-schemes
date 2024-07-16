@@ -9,6 +9,7 @@ from schemes.domain.schemes import OverviewRevision
 
 @dataclass(frozen=True)
 class OverviewRevisionRepr:
+    name: str
     authority_id: int
     effective_date_from: str
     effective_date_to: str | None
@@ -22,6 +23,7 @@ class OverviewRevisionRepr:
             effective_date_to=(
                 overview_revision.effective.date_to.isoformat() if overview_revision.effective.date_to else None
             ),
+            name=overview_revision.name,
             authority_id=overview_revision.authority_id,
         )
 
@@ -32,5 +34,6 @@ class OverviewRevisionRepr:
                 date_from=datetime.fromisoformat(self.effective_date_from),
                 date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
             ),
+            name=self.name,
             authority_id=self.authority_id,
         )

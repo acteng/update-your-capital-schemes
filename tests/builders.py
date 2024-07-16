@@ -14,7 +14,7 @@ from schemes.domain.schemes import (
 
 def build_scheme(
     id_: int,
-    name: str,
+    name: str | None = None,
     authority_id: int | None = None,
     type_: SchemeType = SchemeType.CONSTRUCTION,
     funding_programme: FundingProgramme = FundingProgrammes.ATF2,
@@ -22,14 +22,14 @@ def build_scheme(
     bid_status: BidStatus = BidStatus.FUNDED,
     bid_status_revisions: list[BidStatusRevision] | None = None,
 ) -> Scheme:
-    if (authority_id is not None) == (overview_revisions is not None):
+    if any((name is not None, authority_id is not None)) == (overview_revisions is not None):
         assert False, "Either overview fields or revisions must be specified"
 
     if overview_revisions is not None:
         overview_revisions = overview_revisions
-    elif authority_id is not None:
+    elif name is not None and authority_id is not None:
         overview_revisions = [
-            OverviewRevision(id_=None, effective=DateRange(datetime.min, None), authority_id=authority_id)
+            OverviewRevision(id_=None, effective=DateRange(datetime.min, None), name=name, authority_id=authority_id)
         ]
     else:
         assert False, "Overview fields must be specified"
@@ -40,7 +40,7 @@ def build_scheme(
         else [BidStatusRevision(id_=None, effective=DateRange(datetime.min, None), status=bid_status)]
     )
 
-    scheme = Scheme(id_, name, type_, funding_programme)
+    scheme = Scheme(id_, type_, funding_programme)
     scheme.overview.update_overviews(*overview_revisions)
     scheme.funding.update_bid_statuses(*bid_status_revisions)
     return scheme

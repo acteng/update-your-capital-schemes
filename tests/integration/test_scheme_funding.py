@@ -200,7 +200,7 @@ class TestSchemeFunding:
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
     def test_cannot_spend_to_date_form_when_no_authority(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", overview_revisions=[]))
+        schemes.add(build_scheme(id_=2, overview_revisions=[]))
 
         forbidden_page = ChangeSpendToDatePage.open_when_unauthorized(client, id_=2)
 
@@ -357,7 +357,7 @@ class TestSchemeFunding:
     def test_cannot_spend_to_date_when_no_authority(
         self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", overview_revisions=[]))
+        schemes.add(build_scheme(id_=2, overview_revisions=[]))
 
         response = client.post("/schemes/2/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
 

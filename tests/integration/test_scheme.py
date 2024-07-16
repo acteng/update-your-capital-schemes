@@ -107,7 +107,7 @@ class TestScheme:
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
     def test_cannot_scheme_when_no_authority(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", overview_revisions=[]))
+        schemes.add(build_scheme(id_=2, overview_revisions=[]))
 
         forbidden_page = SchemePage.open_when_unauthorized(client, id_=2)
 
@@ -132,20 +132,12 @@ class TestSchemeApi:
         return dict(config) | {"API_KEY": "boardman"}
 
     def test_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(
-            Scheme(
-                id_=1,
-                name="Wirral Package",
-                type_=SchemeType.CONSTRUCTION,
-                funding_programme=FundingProgrammes.ATF4,
-            )
-        )
+        schemes.add(Scheme(id_=1, type_=SchemeType.CONSTRUCTION, funding_programme=FundingProgrammes.ATF4))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
 
         assert response.json == {
             "id": 1,
-            "name": "Wirral Package",
             "type": "construction",
             "funding_programme": "ATF4",
             "overview_revisions": [],
@@ -159,11 +151,11 @@ class TestSchemeApi:
     def test_get_scheme_overview_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(
             id_=1,
-            name="Wirral Package",
             overview_revisions=[
                 OverviewRevision(
                     id_=2,
                     effective=DateRange(datetime(2020, 1, 1, 12), None),
+                    name="Wirral Package",
                     authority_id=1,
                 )
             ],
@@ -178,6 +170,7 @@ class TestSchemeApi:
                 "id": 2,
                 "effective_date_from": "2020-01-01T12:00:00",
                 "effective_date_to": None,
+                "name": "Wirral Package",
                 "authority_id": 1,
             }
         ]

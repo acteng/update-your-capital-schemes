@@ -160,7 +160,7 @@ class TestSchemeReview:
     def test_cannot_review_when_no_authority(
         self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", overview_revisions=[]))
+        schemes.add(build_scheme(id_=2, overview_revisions=[]))
 
         response = client.post("/schemes/2", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 

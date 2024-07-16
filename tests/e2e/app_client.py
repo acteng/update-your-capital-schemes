@@ -73,8 +73,8 @@ class UserRepr:
 class SchemeRepr:
     id: int
     name: str
-    type: str | None = None
-    funding_programme: str | None = None
+    type: str
+    funding_programme: str
     bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)

@@ -1,8 +1,10 @@
 from datetime import datetime
 
+import pytest
+
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import OverviewRevision
-from schemes.views.schemes.overview import OverviewRevisionRepr
+from schemes.domain.schemes import OverviewRevision, SchemeType
+from schemes.views.schemes.overview import OverviewRevisionRepr, SchemeTypeRepr
 
 
 class TestOverviewRevisionRepr:
@@ -12,6 +14,7 @@ class TestOverviewRevisionRepr:
             effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13)),
             name="Wirral Package",
             authority_id=2,
+            type_=SchemeType.CONSTRUCTION,
         )
 
         overview_revision_repr = OverviewRevisionRepr.from_domain(overview_revision)
@@ -22,6 +25,7 @@ class TestOverviewRevisionRepr:
             effective_date_to="2020-02-01T13:00:00",
             name="Wirral Package",
             authority_id=2,
+            type=SchemeTypeRepr.CONSTRUCTION,
         )
 
     def test_from_domain_when_no_effective_date_to(self) -> None:
@@ -30,6 +34,7 @@ class TestOverviewRevisionRepr:
             effective=DateRange(datetime(2020, 1, 1), None),
             name="Wirral Package",
             authority_id=2,
+            type_=SchemeType.CONSTRUCTION,
         )
 
         overview_revision_repr = OverviewRevisionRepr.from_domain(overview_revision)
@@ -43,6 +48,7 @@ class TestOverviewRevisionRepr:
             effective_date_to="2020-02-01T13:00:00",
             name="Wirral Package",
             authority_id=2,
+            type=SchemeTypeRepr.CONSTRUCTION,
         )
 
         overview_revision = overview_revision_repr.to_domain()
@@ -52,6 +58,7 @@ class TestOverviewRevisionRepr:
             and overview_revision.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13))
             and overview_revision.name == "Wirral Package"
             and overview_revision.authority_id == 2
+            and overview_revision.type == SchemeType.CONSTRUCTION
         )
 
     def test_to_domain_when_no_effective_date_to(self) -> None:
@@ -61,8 +68,21 @@ class TestOverviewRevisionRepr:
             effective_date_to=None,
             name="Wirral Package",
             authority_id=2,
+            type=SchemeTypeRepr.CONSTRUCTION,
         )
 
         overview_revision = overview_revision_repr.to_domain()
 
         assert overview_revision.effective.date_to is None
+
+
+@pytest.mark.parametrize(
+    "type_, type_repr",
+    [(SchemeType.DEVELOPMENT, "development"), (SchemeType.CONSTRUCTION, "construction")],
+)
+class TestSchemeTypeRepr:
+    def test_from_domain(self, type_: SchemeType, type_repr: str) -> None:
+        assert SchemeTypeRepr.from_domain(type_).value == type_repr
+
+    def test_to_domain(self, type_: SchemeType, type_repr: str) -> None:
+        assert SchemeTypeRepr(type_repr).to_domain() == type_

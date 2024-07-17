@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum, auto, unique
 
 from schemes.domain.schemes.funding import BidStatus, SchemeFunding
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestones
@@ -11,9 +10,8 @@ from schemes.domain.schemes.reviews import SchemeReviews
 
 
 class Scheme:
-    def __init__(self, id_: int, type_: SchemeType, funding_programme: FundingProgramme):
+    def __init__(self, id_: int, funding_programme: FundingProgramme):
         self.id = id_
-        self.type = type_
         self.funding_programme = funding_programme
         self._overview = SchemeOverview()
         self._funding = SchemeFunding()
@@ -55,12 +53,6 @@ class Scheme:
     @staticmethod
     def _is_active_and_incomplete(milestone: Milestone | None) -> bool:
         return not milestone or (milestone.is_active and not milestone.is_complete)
-
-
-@unique
-class SchemeType(Enum):
-    DEVELOPMENT = auto()
-    CONSTRUCTION = auto()
 
 
 @dataclass(frozen=True)

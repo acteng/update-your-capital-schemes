@@ -227,9 +227,12 @@ class SchemeOverviewContext:
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> SchemeOverviewContext:
+        type_ = scheme.overview.type
+        assert type_
+
         return cls(
             reference=scheme.reference,
-            type=SchemeTypeContext.from_domain(scheme.type),
+            type=SchemeTypeContext.from_domain(type_),
             funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
             current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
         )
@@ -393,7 +396,6 @@ def clear(schemes: SchemeRepository) -> Response:
 @dataclass(frozen=True)
 class SchemeRepr:
     id: int
-    type: SchemeTypeRepr
     funding_programme: FundingProgrammeRepr
     overview_revisions: list[OverviewRevisionRepr] = field(default_factory=list)
     bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
@@ -406,7 +408,6 @@ class SchemeRepr:
     def from_domain(cls, scheme: Scheme) -> SchemeRepr:
         return cls(
             id=scheme.id,
-            type=SchemeTypeRepr.from_domain(scheme.type),
             funding_programme=FundingProgrammeRepr.from_domain(scheme.funding_programme),
             overview_revisions=[
                 OverviewRevisionRepr.from_domain(overview_revision)
@@ -434,7 +435,7 @@ class SchemeRepr:
         )
 
     def to_domain(self) -> Scheme:
-        scheme = Scheme(id_=self.id, type_=self.type.to_domain(), funding_programme=self.funding_programme.to_domain())
+        scheme = Scheme(id_=self.id, funding_programme=self.funding_programme.to_domain())
 
         for overview_revision_repr in self.overview_revisions:
             scheme.overview.update_overviews(overview_revision_repr.to_domain())
@@ -455,26 +456,6 @@ class SchemeRepr:
             scheme.reviews.update_authority_review(authority_review_repr.to_domain())
 
         return scheme
-
-
-@unique
-class SchemeTypeRepr(Enum):
-    DEVELOPMENT = "development"
-    CONSTRUCTION = "construction"
-
-    @classmethod
-    def from_domain(cls, type_: SchemeType) -> SchemeTypeRepr:
-        return cls._members()[type_]
-
-    def to_domain(self) -> SchemeType:
-        return inverse_dict(self._members())[self]
-
-    @staticmethod
-    def _members() -> dict[SchemeType, SchemeTypeRepr]:
-        return {
-            SchemeType.DEVELOPMENT: SchemeTypeRepr.DEVELOPMENT,
-            SchemeType.CONSTRUCTION: SchemeTypeRepr.CONSTRUCTION,
-        }
 
 
 @unique

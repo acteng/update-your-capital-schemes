@@ -15,7 +15,6 @@ from schemes.domain.schemes import (
     OverviewRevision,
     Scheme,
     SchemeRepository,
-    SchemeType,
 )
 from schemes.infrastructure.database import (
     CapitalSchemeAuthorityReviewEntity,
@@ -34,6 +33,7 @@ from schemes.infrastructure.database.schemes.funding import (
 from schemes.infrastructure.database.schemes.milestones import MilestoneMapper
 from schemes.infrastructure.database.schemes.observations import ObservationTypeMapper
 from schemes.infrastructure.database.schemes.outputs import OutputTypeMeasureMapper
+from schemes.infrastructure.database.schemes.overview import SchemeTypeMapper
 
 
 class DatabaseSchemeRepository(SchemeRepository):
@@ -98,7 +98,6 @@ class DatabaseSchemeRepository(SchemeRepository):
     def _capital_scheme_from_domain(self, scheme: Scheme) -> CapitalSchemeEntity:
         return CapitalSchemeEntity(
             capital_scheme_id=scheme.id,
-            scheme_type_id=self._scheme_type_mapper.to_id(scheme.type),
             funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
             capital_scheme_overviews=[
                 self._capital_scheme_overview_from_domain(overview_revision)
@@ -129,7 +128,6 @@ class DatabaseSchemeRepository(SchemeRepository):
     def _capital_scheme_to_domain(self, capital_scheme: CapitalSchemeEntity) -> Scheme:
         scheme = Scheme(
             id_=capital_scheme.capital_scheme_id,
-            type_=self._scheme_type_mapper.to_domain(capital_scheme.scheme_type_id),
             funding_programme=self._funding_programme_mapper.to_domain(capital_scheme.funding_programme_id),
         )
 
@@ -162,6 +160,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             effective_date_to=overview_revision.effective.date_to,
             scheme_name=overview_revision.name,
             bid_submitting_authority_id=overview_revision.authority_id,
+            scheme_type_id=self._scheme_type_mapper.to_id(overview_revision.type),
         )
 
     def _capital_scheme_overview_to_domain(
@@ -172,6 +171,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             effective=DateRange(capital_scheme_overview.effective_date_from, capital_scheme_overview.effective_date_to),
             name=capital_scheme_overview.scheme_name,
             authority_id=capital_scheme_overview.bid_submitting_authority_id,
+            type_=self._scheme_type_mapper.to_domain(capital_scheme_overview.scheme_type_id),
         )
 
     def _capital_scheme_bid_status_from_domain(
@@ -291,19 +291,6 @@ class DatabaseSchemeRepository(SchemeRepository):
             review_date=capital_scheme_authority_review.review_date,
             source=self._data_source_mapper.to_domain(capital_scheme_authority_review.data_source_id),
         )
-
-
-class SchemeTypeMapper:
-    _IDS = {
-        SchemeType.DEVELOPMENT: 1,
-        SchemeType.CONSTRUCTION: 2,
-    }
-
-    def to_id(self, type_: SchemeType) -> int:
-        return self._IDS[type_]
-
-    def to_domain(self, id_: int) -> SchemeType:
-        return inverse_dict(self._IDS)[id_]
 
 
 class FundingProgrammeMapper:

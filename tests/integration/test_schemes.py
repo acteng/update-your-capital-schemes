@@ -179,27 +179,14 @@ class TestSchemesApi:
         response = client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[
-                {"id": 1, "type": "construction", "funding_programme": "ATF4"},
-                {"id": 2, "type": "construction", "funding_programme": "ATF4"},
-            ],
+            json=[{"id": 1, "funding_programme": "ATF4"}, {"id": 2, "funding_programme": "ATF4"}],
         )
 
         assert response.status_code == 201
         scheme1 = schemes.get(1)
         scheme2 = schemes.get(2)
-        assert (
-            scheme1
-            and scheme1.id == 1
-            and scheme1.type == SchemeType.CONSTRUCTION
-            and scheme1.funding_programme == FundingProgrammes.ATF4
-        )
-        assert (
-            scheme2
-            and scheme2.id == 2
-            and scheme2.type == SchemeType.CONSTRUCTION
-            and scheme2.funding_programme == FundingProgrammes.ATF4
-        )
+        assert scheme1 and scheme1.id == 1 and scheme1.funding_programme == FundingProgrammes.ATF4
+        assert scheme2 and scheme2.id == 2 and scheme2.funding_programme == FundingProgrammes.ATF4
 
     def test_add_schemes_overview_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -208,7 +195,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "type": "construction",
                     "funding_programme": "ATF4",
                     "overview_revisions": [
                         {
@@ -217,6 +203,7 @@ class TestSchemesApi:
                             "effective_date_to": None,
                             "name": "Wirral Package",
                             "authority_id": 1,
+                            "type": "construction",
                         }
                     ],
                 },
@@ -233,6 +220,7 @@ class TestSchemesApi:
             and overview_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_id == 1
+            and overview_revision1.type == SchemeType.CONSTRUCTION
         )
 
     def test_add_schemes_bid_status_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -242,7 +230,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "type": "construction",
                     "funding_programme": "ATF4",
                     "bid_status_revisions": [
                         {
@@ -274,7 +261,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "type": "construction",
                     "funding_programme": "ATF4",
                     "financial_revisions": [
                         {
@@ -310,7 +296,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "type": "construction",
                     "funding_programme": "ATF4",
                     "milestone_revisions": [
                         {
@@ -348,7 +333,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "type": "construction",
                     "funding_programme": "ATF4",
                     "output_revisions": [
                         {
@@ -385,7 +369,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "type": "construction",
                     "funding_programme": "ATF4",
                     "authority_reviews": [
                         {
@@ -410,7 +393,7 @@ class TestSchemesApi:
         )
 
     def test_cannot_add_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post("/schemes", json=[{"id": 1, "type": "construction", "funding_programme": "ATF4"}])
+        response = client.post("/schemes", json=[{"id": 1, "funding_programme": "ATF4"}])
 
         assert response.status_code == 401
         assert not schemes.get(1)
@@ -421,7 +404,7 @@ class TestSchemesApi:
         response = client.post(
             "/schemes",
             headers={"Authorization": "API-Key obree"},
-            json=[{"id": 1, "type": "construction", "funding_programme": "ATF4"}],
+            json=[{"id": 1, "funding_programme": "ATF4"}],
         )
 
         assert response.status_code == 401
@@ -431,7 +414,7 @@ class TestSchemesApi:
         response = client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "type": "construction", "funding_programme": "ATF4", "foo": "bar"}],
+            json=[{"id": 1, "funding_programme": "ATF4", "foo": "bar"}],
         )
 
         assert response.status_code == 400
@@ -469,7 +452,7 @@ class TestSchemesApiWhenDisabled:
         response = client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "type": "construction", "funding_programme": "ATF4"}],
+            json=[{"id": 1, "funding_programme": "ATF4"}],
         )
 
         assert response.status_code == 401

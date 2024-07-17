@@ -17,20 +17,15 @@ from schemes.domain.schemes import (
     SchemeOutputs,
     SchemeOverview,
     SchemeReviews,
-    SchemeType,
 )
 from tests.builders import build_scheme
 
 
 class TestScheme:
     def test_create(self) -> None:
-        scheme = Scheme(id_=1, type_=SchemeType.CONSTRUCTION, funding_programme=FundingProgrammes.ATF4)
+        scheme = Scheme(id_=1, funding_programme=FundingProgrammes.ATF4)
 
-        assert (
-            scheme.id == 1
-            and scheme.type == SchemeType.CONSTRUCTION
-            and scheme.funding_programme == FundingProgrammes.ATF4
-        )
+        assert scheme.id == 1 and scheme.funding_programme == FundingProgrammes.ATF4
 
     def test_get_reference(self) -> None:
         scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)

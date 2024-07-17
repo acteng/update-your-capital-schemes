@@ -38,6 +38,7 @@ def upgrade() -> None:
             ),
             nullable=False,
         ),
+        sa.Column("scheme_type_id", sa.Integer, nullable=False),
         sa.Column("effective_date_from", sa.DateTime, nullable=False),
         sa.Column("effective_date_to", sa.DateTime),
         schema="capital_scheme",
@@ -55,12 +56,14 @@ def upgrade() -> None:
             capital_scheme_id,
             scheme_name,
             bid_submitting_authority_id,
+            scheme_type_id,
             effective_date_from
         )
         SELECT
             cs.capital_scheme_id,
             cs.scheme_name,
             cs.bid_submitting_authority_id,
+            cs.scheme_type_id,
             earliest_bid_status.effective_date_from
         FROM capital_scheme.capital_scheme cs
         LEFT JOIN earliest_bid_status ON cs.capital_scheme_id = earliest_bid_status.capital_scheme_id;
@@ -68,6 +71,7 @@ def upgrade() -> None:
     )
     op.drop_column("capital_scheme", column_name="scheme_name", schema="capital_scheme")
     op.drop_column("capital_scheme", column_name="bid_submitting_authority_id", schema="capital_scheme")
+    op.drop_column("capital_scheme", column_name="scheme_type_id", schema="capital_scheme")
 
 
 def downgrade() -> None:
@@ -81,12 +85,14 @@ def downgrade() -> None:
         ),
         schema="capital_scheme",
     )
+    op.add_column("capital_scheme", column=sa.Column("scheme_type_id", sa.Integer), schema="capital_scheme")
     op.execute(
         """
         UPDATE capital_scheme.capital_scheme cs
         SET
             scheme_name = cso.scheme_name,
-            bid_submitting_authority_id = cso.bid_submitting_authority_id
+            bid_submitting_authority_id = cso.bid_submitting_authority_id,
+            scheme_type_id = cso.scheme_type_id
         FROM capital_scheme.capital_scheme_overview cso
         WHERE cs.capital_scheme_id = cso.capital_scheme_id
         AND cso.effective_date_to IS NULL;
@@ -95,4 +101,5 @@ def downgrade() -> None:
     with op.batch_alter_table("capital_scheme", schema="capital_scheme") as batch_op:
         batch_op.alter_column("scheme_name", nullable=False)
         batch_op.alter_column("bid_submitting_authority_id", nullable=False)
+        batch_op.alter_column("scheme_type_id", nullable=False)
     op.drop_table("capital_scheme_overview", schema="capital_scheme")

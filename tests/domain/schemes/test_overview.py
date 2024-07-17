@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import OverviewRevision, SchemeOverview
+from schemes.domain.schemes import OverviewRevision, SchemeOverview, SchemeType
 
 
 class TestSchemeOverview:
@@ -14,7 +14,11 @@ class TestSchemeOverview:
         overview = SchemeOverview()
         overview.update_overviews(
             OverviewRevision(
-                id_=1, effective=DateRange(datetime(2020, 1, 1), None), name="Wirral Package", authority_id=2
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                name="Wirral Package",
+                authority_id=2,
+                type_=SchemeType.CONSTRUCTION,
             )
         )
 
@@ -25,7 +29,11 @@ class TestSchemeOverview:
     def test_update_overview(self) -> None:
         overview = SchemeOverview()
         overview_revision = OverviewRevision(
-            id_=1, effective=DateRange(datetime(2020, 1, 1), None), name="Wirral Package", authority_id=2
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1), None),
+            name="Wirral Package",
+            authority_id=2,
+            type_=SchemeType.CONSTRUCTION,
         )
 
         overview.update_overview(overview_revision)
@@ -39,9 +47,14 @@ class TestSchemeOverview:
             effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
             name="Wirral Package",
             authority_id=1,
+            type_=SchemeType.DEVELOPMENT,
         )
         overview_revision2 = OverviewRevision(
-            id_=2, effective=DateRange(datetime(2020, 2, 1), None), name="School Streets", authority_id=2
+            id_=2,
+            effective=DateRange(datetime(2020, 2, 1), None),
+            name="School Streets",
+            authority_id=2,
+            type_=SchemeType.CONSTRUCTION,
         )
 
         overview.update_overviews(overview_revision1, overview_revision2)
@@ -56,9 +69,14 @@ class TestSchemeOverview:
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 name="Wirral Package",
                 authority_id=1,
+                type_=SchemeType.DEVELOPMENT,
             ),
             OverviewRevision(
-                id_=2, effective=DateRange(datetime(2020, 2, 1), None), name="School Streets", authority_id=2
+                id_=2,
+                effective=DateRange(datetime(2020, 2, 1), None),
+                name="School Streets",
+                authority_id=2,
+                type_=SchemeType.CONSTRUCTION,
             ),
         )
 
@@ -77,9 +95,14 @@ class TestSchemeOverview:
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 name="Wirral Package",
                 authority_id=1,
+                type_=SchemeType.DEVELOPMENT,
             ),
             OverviewRevision(
-                id_=2, effective=DateRange(datetime(2020, 2, 1), None), name="School Streets", authority_id=2
+                id_=2,
+                effective=DateRange(datetime(2020, 2, 1), None),
+                name="School Streets",
+                authority_id=2,
+                type_=SchemeType.CONSTRUCTION,
             ),
         )
 
@@ -90,11 +113,41 @@ class TestSchemeOverview:
 
         assert overview.authority_id is None
 
+    def test_get_type(self) -> None:
+        overview = SchemeOverview()
+        overview.update_overviews(
+            OverviewRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
+                name="Wirral Package",
+                authority_id=1,
+                type_=SchemeType.DEVELOPMENT,
+            ),
+            OverviewRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 2, 1), None),
+                name="Wirral Package",
+                authority_id=2,
+                type_=SchemeType.CONSTRUCTION,
+            ),
+        )
+
+        assert overview.type == SchemeType.CONSTRUCTION
+
+    def test_get_type_when_no_revisions(self) -> None:
+        overview = SchemeOverview()
+
+        assert overview.type is None
+
 
 class TestOverviewRevision:
     def test_create(self) -> None:
         overview_revision = OverviewRevision(
-            id_=1, effective=DateRange(datetime(2020, 1, 1), None), name="Wirral Package", authority_id=2
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1), None),
+            name="Wirral Package",
+            authority_id=2,
+            type_=SchemeType.CONSTRUCTION,
         )
 
         assert (
@@ -102,4 +155,5 @@ class TestOverviewRevision:
             and overview_revision.effective == DateRange(datetime(2020, 1, 1), None)
             and overview_revision.name == "Wirral Package"
             and overview_revision.authority_id == 2
+            and overview_revision.type == SchemeType.CONSTRUCTION
         )

@@ -43,7 +43,7 @@ from schemes.views.schemes.outputs import (
     OutputRevisionRepr,
     OutputTypeRepr,
 )
-from schemes.views.schemes.overview import OverviewRevisionRepr
+from schemes.views.schemes.overview import OverviewRevisionRepr, SchemeTypeRepr
 from schemes.views.schemes.reviews import AuthorityReviewRepr
 from schemes.views.schemes.schemes import (
     FundingProgrammeContext,
@@ -53,7 +53,6 @@ from schemes.views.schemes.schemes import (
     SchemeRowContext,
     SchemesContext,
     SchemeTypeContext,
-    SchemeTypeRepr,
 )
 from tests.builders import build_scheme
 
@@ -354,20 +353,15 @@ class TestFundingProgrammeContext:
 
 class TestSchemeRepr:
     def test_from_domain(self) -> None:
-        scheme = Scheme(id_=1, type_=SchemeType.CONSTRUCTION, funding_programme=FundingProgrammes.ATF4)
+        scheme = Scheme(id_=1, funding_programme=FundingProgrammes.ATF4)
 
         scheme_repr = SchemeRepr.from_domain(scheme)
 
-        assert scheme_repr == SchemeRepr(
-            id=1,
-            type=SchemeTypeRepr.CONSTRUCTION,
-            funding_programme=FundingProgrammeRepr.ATF4,
-        )
+        assert scheme_repr == SchemeRepr(id=1, funding_programme=FundingProgrammeRepr.ATF4)
 
     def test_from_domain_sets_overview_revisions(self) -> None:
         scheme = build_scheme(
             id_=0,
-            type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF3,
             overview_revisions=[
                 OverviewRevision(
@@ -375,12 +369,14 @@ class TestSchemeRepr:
                     effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13)),
                     name="Wirral Package",
                     authority_id=1,
+                    type_=SchemeType.DEVELOPMENT,
                 ),
                 OverviewRevision(
                     id_=2,
                     effective=DateRange(datetime(2020, 2, 1, 13), None),
                     name="School Streets",
                     authority_id=2,
+                    type_=SchemeType.CONSTRUCTION,
                 ),
             ],
         )
@@ -394,6 +390,7 @@ class TestSchemeRepr:
                 effective_date_to="2020-02-01T13:00:00",
                 name="Wirral Package",
                 authority_id=1,
+                type=SchemeTypeRepr.DEVELOPMENT,
             ),
             OverviewRevisionRepr(
                 id=2,
@@ -401,6 +398,7 @@ class TestSchemeRepr:
                 effective_date_to=None,
                 name="School Streets",
                 authority_id=2,
+                type=SchemeTypeRepr.CONSTRUCTION,
             ),
         ]
 
@@ -585,20 +583,15 @@ class TestSchemeRepr:
         ]
 
     def test_to_domain(self) -> None:
-        scheme_repr = SchemeRepr(id=1, type=SchemeTypeRepr.CONSTRUCTION, funding_programme=FundingProgrammeRepr.ATF4)
+        scheme_repr = SchemeRepr(id=1, funding_programme=FundingProgrammeRepr.ATF4)
 
         scheme = scheme_repr.to_domain()
 
-        assert (
-            scheme.id == 1
-            and scheme.type == SchemeType.CONSTRUCTION
-            and scheme.funding_programme == FundingProgrammes.ATF4
-        )
+        assert scheme.id == 1 and scheme.funding_programme == FundingProgrammes.ATF4
 
     def test_to_domain_sets_overview_revisions(self) -> None:
         scheme_repr = SchemeRepr(
             id=0,
-            type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             overview_revisions=[
                 OverviewRevisionRepr(
@@ -607,6 +600,7 @@ class TestSchemeRepr:
                     effective_date_to="2020-02-01T13:00:00",
                     name="Wirral Package",
                     authority_id=1,
+                    type=SchemeTypeRepr.DEVELOPMENT,
                 ),
                 OverviewRevisionRepr(
                     id=2,
@@ -614,6 +608,7 @@ class TestSchemeRepr:
                     effective_date_to=None,
                     name="School Streets",
                     authority_id=2,
+                    type=SchemeTypeRepr.CONSTRUCTION,
                 ),
             ],
         )
@@ -628,18 +623,19 @@ class TestSchemeRepr:
             and overview_revision1.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13))
             and overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_id == 1
+            and overview_revision1.type == SchemeType.DEVELOPMENT
         )
         assert (
             overview_revision2.id == 2
             and overview_revision2.effective == DateRange(datetime(2020, 2, 1, 13), None)
             and overview_revision2.name == "School Streets"
             and overview_revision2.authority_id == 2
+            and overview_revision2.type == SchemeType.CONSTRUCTION
         )
 
     def test_to_domain_sets_bid_status_revisions(self) -> None:
         scheme_repr = SchemeRepr(
             id=0,
-            type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             bid_status_revisions=[
                 BidStatusRevisionRepr(
@@ -673,7 +669,6 @@ class TestSchemeRepr:
     def test_to_domain_sets_financial_revisions(self) -> None:
         scheme_repr = SchemeRepr(
             id=0,
-            type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             financial_revisions=[
                 FinancialRevisionRepr(
@@ -718,7 +713,6 @@ class TestSchemeRepr:
     def test_to_domain_sets_milestone_revisions(self) -> None:
         scheme_repr = SchemeRepr(
             id=0,
-            type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             milestone_revisions=[
                 MilestoneRevisionRepr(
@@ -767,7 +761,6 @@ class TestSchemeRepr:
     def test_to_domain_sets_output_revisions(self) -> None:
         scheme_repr = SchemeRepr(
             id=0,
-            type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             output_revisions=[
                 OutputRevisionRepr(
@@ -814,7 +807,6 @@ class TestSchemeRepr:
     def test_to_domain_sets_authority_reviews(self) -> None:
         scheme_repr = SchemeRepr(
             id=0,
-            type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             authority_reviews=[
                 AuthorityReviewRepr(
@@ -845,18 +837,6 @@ class TestSchemeRepr:
             and authority_review2.review_date == datetime(2020, 1, 2, 12)
             and authority_review2.source == DataSource.PULSE_6
         )
-
-
-@pytest.mark.parametrize(
-    "type_, type_repr",
-    [(SchemeType.DEVELOPMENT, "development"), (SchemeType.CONSTRUCTION, "construction")],
-)
-class TestSchemeTypeRepr:
-    def test_from_domain(self, type_: SchemeType, type_repr: str) -> None:
-        assert SchemeTypeRepr.from_domain(type_).value == type_repr
-
-    def test_to_domain(self, type_: SchemeType, type_repr: str) -> None:
-        assert SchemeTypeRepr(type_repr).to_domain() == type_
 
 
 @pytest.mark.parametrize(

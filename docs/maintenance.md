@@ -48,7 +48,7 @@ To upgrade packages to their latest patch versions:
 npm upgrade
 ```
 
-### Upgrading GOV.UK One Login Server Header package
+### Upgrading GOV.UK One Login Service Header package
 
 This dependency uses a [GitHub URL](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#github-urls) as
 [it hasn't been released yet](https://github.com/govuk-one-login/service-header/issues/46). To upgrade:

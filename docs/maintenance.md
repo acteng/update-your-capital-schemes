@@ -50,8 +50,8 @@ npm upgrade
 
 ### Upgrading GOV.UK One Login Server Header package
 
-This dependency uses a [GitHub URL](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#github-urls) as it
-hasn't been released yet. To upgrade:
+This dependency uses a [GitHub URL](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#github-urls) as
+[it hasn't been released yet](https://github.com/govuk-one-login/service-header/issues/46). To upgrade:
 
 1. Update the commit hash for the dependency `govuk-one-login-service-header` in `package.json` to the
    [latest commit](https://github.com/govuk-one-login/service-header/commits/main/)

@@ -132,13 +132,12 @@ class TestSchemeApi:
         return dict(config) | {"API_KEY": "boardman"}
 
     def test_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1, funding_programme=FundingProgrammes.ATF4))
+        schemes.add(Scheme(id_=1))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
 
         assert response.json == {
             "id": 1,
-            "funding_programme": "ATF4",
             "overview_revisions": [],
             "bid_status_revisions": [],
             "financial_revisions": [],
@@ -157,6 +156,7 @@ class TestSchemeApi:
                     name="Wirral Package",
                     authority_id=1,
                     type_=SchemeType.CONSTRUCTION,
+                    funding_programme=FundingProgrammes.ATF4,
                 )
             ],
         )
@@ -173,6 +173,7 @@ class TestSchemeApi:
                 "name": "Wirral Package",
                 "authority_id": 1,
                 "type": "construction",
+                "funding_programme": "ATF4",
             }
         ]
 

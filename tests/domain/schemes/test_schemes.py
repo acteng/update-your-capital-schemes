@@ -23,9 +23,9 @@ from tests.builders import build_scheme
 
 class TestScheme:
     def test_create(self) -> None:
-        scheme = Scheme(id_=1, funding_programme=FundingProgrammes.ATF4)
+        scheme = Scheme(id_=1)
 
-        assert scheme.id == 1 and scheme.funding_programme == FundingProgrammes.ATF4
+        assert scheme.id == 1
 
     def test_get_reference(self) -> None:
         scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
@@ -207,6 +207,11 @@ class TestScheme:
         )
 
         assert scheme.is_updateable is False
+
+    def test_is_updateable_when_no_overview_revision(self) -> None:
+        scheme = build_scheme(id_=1, bid_status=BidStatus.FUNDED, overview_revisions=[])
+
+        assert scheme.is_updateable is True
 
 
 class TestFundingProgrammes:

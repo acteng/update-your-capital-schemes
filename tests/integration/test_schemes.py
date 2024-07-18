@@ -176,17 +176,13 @@ class TestSchemesApi:
         return dict(config) | {"API_KEY": "boardman"}
 
     def test_add_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
-            "/schemes",
-            headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "funding_programme": "ATF4"}, {"id": 2, "funding_programme": "ATF4"}],
-        )
+        response = client.post("/schemes", headers={"Authorization": "API-Key boardman"}, json=[{"id": 1}, {"id": 2}])
 
         assert response.status_code == 201
         scheme1 = schemes.get(1)
         scheme2 = schemes.get(2)
-        assert scheme1 and scheme1.id == 1 and scheme1.funding_programme == FundingProgrammes.ATF4
-        assert scheme2 and scheme2.id == 2 and scheme2.funding_programme == FundingProgrammes.ATF4
+        assert scheme1 and scheme1.id == 1
+        assert scheme2 and scheme2.id == 2
 
     def test_add_schemes_overview_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -195,7 +191,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "funding_programme": "ATF4",
                     "overview_revisions": [
                         {
                             "id": 2,
@@ -204,6 +199,7 @@ class TestSchemesApi:
                             "name": "Wirral Package",
                             "authority_id": 1,
                             "type": "construction",
+                            "funding_programme": "ATF4",
                         }
                     ],
                 },
@@ -221,6 +217,7 @@ class TestSchemesApi:
             and overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_id == 1
             and overview_revision1.type == SchemeType.CONSTRUCTION
+            and overview_revision1.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_add_schemes_bid_status_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -230,7 +227,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "funding_programme": "ATF4",
                     "bid_status_revisions": [
                         {
                             "id": 2,
@@ -261,7 +257,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "funding_programme": "ATF4",
                     "financial_revisions": [
                         {
                             "id": 2,
@@ -296,7 +291,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "funding_programme": "ATF4",
                     "milestone_revisions": [
                         {
                             "id": 2,
@@ -333,7 +327,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "funding_programme": "ATF4",
                     "output_revisions": [
                         {
                             "id": 2,
@@ -369,7 +362,6 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
-                    "funding_programme": "ATF4",
                     "authority_reviews": [
                         {
                             "id": 2,
@@ -393,7 +385,7 @@ class TestSchemesApi:
         )
 
     def test_cannot_add_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post("/schemes", json=[{"id": 1, "funding_programme": "ATF4"}])
+        response = client.post("/schemes", json=[{"id": 1}])
 
         assert response.status_code == 401
         assert not schemes.get(1)
@@ -401,11 +393,7 @@ class TestSchemesApi:
     def test_cannot_add_schemes_when_incorrect_credentials(
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        response = client.post(
-            "/schemes",
-            headers={"Authorization": "API-Key obree"},
-            json=[{"id": 1, "funding_programme": "ATF4"}],
-        )
+        response = client.post("/schemes", headers={"Authorization": "API-Key obree"}, json=[{"id": 1}])
 
         assert response.status_code == 401
         assert not schemes.get(1)
@@ -414,7 +402,7 @@ class TestSchemesApi:
         response = client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "funding_programme": "ATF4", "foo": "bar"}],
+            json=[{"id": 1, "foo": "bar"}],
         )
 
         assert response.status_code == 400
@@ -449,11 +437,7 @@ class TestSchemesApi:
 
 class TestSchemesApiWhenDisabled:
     def test_cannot_add_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
-            "/schemes",
-            headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "funding_programme": "ATF4"}],
-        )
+        response = client.post("/schemes", headers={"Authorization": "API-Key boardman"}, json=[{"id": 1}])
 
         assert response.status_code == 401
         assert not schemes.get(1)

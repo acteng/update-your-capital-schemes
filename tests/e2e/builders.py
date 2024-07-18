@@ -23,7 +23,6 @@ def build_scheme(
 ) -> SchemeRepr:
     return SchemeRepr(
         id=id_,
-        funding_programme=funding_programme,
         overview_revisions=[
             OverviewRevisionRepr(
                 id=None,
@@ -32,6 +31,7 @@ def build_scheme(
                 name=name,
                 authority_id=authority_id,
                 type=type_,
+                funding_programme=funding_programme,
             )
         ],
         bid_status_revisions=[

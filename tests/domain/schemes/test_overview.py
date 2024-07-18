@@ -1,7 +1,12 @@
 from datetime import datetime
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import OverviewRevision, SchemeOverview, SchemeType
+from schemes.domain.schemes import (
+    FundingProgrammes,
+    OverviewRevision,
+    SchemeOverview,
+    SchemeType,
+)
 
 
 class TestSchemeOverview:
@@ -19,6 +24,7 @@ class TestSchemeOverview:
                 name="Wirral Package",
                 authority_id=2,
                 type_=SchemeType.CONSTRUCTION,
+                funding_programme=FundingProgrammes.ATF4,
             )
         )
 
@@ -34,6 +40,7 @@ class TestSchemeOverview:
             name="Wirral Package",
             authority_id=2,
             type_=SchemeType.CONSTRUCTION,
+            funding_programme=FundingProgrammes.ATF4,
         )
 
         overview.update_overview(overview_revision)
@@ -48,6 +55,7 @@ class TestSchemeOverview:
             name="Wirral Package",
             authority_id=1,
             type_=SchemeType.DEVELOPMENT,
+            funding_programme=FundingProgrammes.ATF3,
         )
         overview_revision2 = OverviewRevision(
             id_=2,
@@ -55,6 +63,7 @@ class TestSchemeOverview:
             name="School Streets",
             authority_id=2,
             type_=SchemeType.CONSTRUCTION,
+            funding_programme=FundingProgrammes.ATF4,
         )
 
         overview.update_overviews(overview_revision1, overview_revision2)
@@ -70,6 +79,7 @@ class TestSchemeOverview:
                 name="Wirral Package",
                 authority_id=1,
                 type_=SchemeType.DEVELOPMENT,
+                funding_programme=FundingProgrammes.ATF3,
             ),
             OverviewRevision(
                 id_=2,
@@ -77,6 +87,7 @@ class TestSchemeOverview:
                 name="School Streets",
                 authority_id=2,
                 type_=SchemeType.CONSTRUCTION,
+                funding_programme=FundingProgrammes.ATF4,
             ),
         )
 
@@ -96,6 +107,7 @@ class TestSchemeOverview:
                 name="Wirral Package",
                 authority_id=1,
                 type_=SchemeType.DEVELOPMENT,
+                funding_programme=FundingProgrammes.ATF3,
             ),
             OverviewRevision(
                 id_=2,
@@ -103,6 +115,7 @@ class TestSchemeOverview:
                 name="School Streets",
                 authority_id=2,
                 type_=SchemeType.CONSTRUCTION,
+                funding_programme=FundingProgrammes.ATF4,
             ),
         )
 
@@ -122,6 +135,7 @@ class TestSchemeOverview:
                 name="Wirral Package",
                 authority_id=1,
                 type_=SchemeType.DEVELOPMENT,
+                funding_programme=FundingProgrammes.ATF3,
             ),
             OverviewRevision(
                 id_=2,
@@ -129,6 +143,7 @@ class TestSchemeOverview:
                 name="Wirral Package",
                 authority_id=2,
                 type_=SchemeType.CONSTRUCTION,
+                funding_programme=FundingProgrammes.ATF4,
             ),
         )
 
@@ -139,6 +154,34 @@ class TestSchemeOverview:
 
         assert overview.type is None
 
+    def test_get_funding_programme(self) -> None:
+        overview = SchemeOverview()
+        overview.update_overviews(
+            OverviewRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
+                name="Wirral Package",
+                authority_id=1,
+                type_=SchemeType.DEVELOPMENT,
+                funding_programme=FundingProgrammes.ATF3,
+            ),
+            OverviewRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 2, 1), None),
+                name="Wirral Package",
+                authority_id=2,
+                type_=SchemeType.CONSTRUCTION,
+                funding_programme=FundingProgrammes.ATF4,
+            ),
+        )
+
+        assert overview.funding_programme == FundingProgrammes.ATF4
+
+    def test_get_funding_programme_when_no_revisions(self) -> None:
+        overview = SchemeOverview()
+
+        assert overview.funding_programme is None
+
 
 class TestOverviewRevision:
     def test_create(self) -> None:
@@ -148,6 +191,7 @@ class TestOverviewRevision:
             name="Wirral Package",
             authority_id=2,
             type_=SchemeType.CONSTRUCTION,
+            funding_programme=FundingProgrammes.ATF4,
         )
 
         assert (
@@ -156,4 +200,5 @@ class TestOverviewRevision:
             and overview_revision.name == "Wirral Package"
             and overview_revision.authority_id == 2
             and overview_revision.type == SchemeType.CONSTRUCTION
+            and overview_revision.funding_programme == FundingProgrammes.ATF4
         )

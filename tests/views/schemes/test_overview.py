@@ -3,8 +3,17 @@ from datetime import datetime
 import pytest
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import OverviewRevision, SchemeType
-from schemes.views.schemes.overview import OverviewRevisionRepr, SchemeTypeRepr
+from schemes.domain.schemes import (
+    FundingProgramme,
+    FundingProgrammes,
+    OverviewRevision,
+    SchemeType,
+)
+from schemes.views.schemes.overview import (
+    FundingProgrammeRepr,
+    OverviewRevisionRepr,
+    SchemeTypeRepr,
+)
 
 
 class TestOverviewRevisionRepr:
@@ -15,6 +24,7 @@ class TestOverviewRevisionRepr:
             name="Wirral Package",
             authority_id=2,
             type_=SchemeType.CONSTRUCTION,
+            funding_programme=FundingProgrammes.ATF4,
         )
 
         overview_revision_repr = OverviewRevisionRepr.from_domain(overview_revision)
@@ -26,6 +36,7 @@ class TestOverviewRevisionRepr:
             name="Wirral Package",
             authority_id=2,
             type=SchemeTypeRepr.CONSTRUCTION,
+            funding_programme=FundingProgrammeRepr.ATF4,
         )
 
     def test_from_domain_when_no_effective_date_to(self) -> None:
@@ -35,6 +46,7 @@ class TestOverviewRevisionRepr:
             name="Wirral Package",
             authority_id=2,
             type_=SchemeType.CONSTRUCTION,
+            funding_programme=FundingProgrammes.ATF4,
         )
 
         overview_revision_repr = OverviewRevisionRepr.from_domain(overview_revision)
@@ -49,6 +61,7 @@ class TestOverviewRevisionRepr:
             name="Wirral Package",
             authority_id=2,
             type=SchemeTypeRepr.CONSTRUCTION,
+            funding_programme=FundingProgrammeRepr.ATF4,
         )
 
         overview_revision = overview_revision_repr.to_domain()
@@ -59,6 +72,7 @@ class TestOverviewRevisionRepr:
             and overview_revision.name == "Wirral Package"
             and overview_revision.authority_id == 2
             and overview_revision.type == SchemeType.CONSTRUCTION
+            and overview_revision.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_to_domain_when_no_effective_date_to(self) -> None:
@@ -69,6 +83,7 @@ class TestOverviewRevisionRepr:
             name="Wirral Package",
             authority_id=2,
             type=SchemeTypeRepr.CONSTRUCTION,
+            funding_programme=FundingProgrammeRepr.ATF4,
         )
 
         overview_revision = overview_revision_repr.to_domain()
@@ -86,3 +101,20 @@ class TestSchemeTypeRepr:
 
     def test_to_domain(self, type_: SchemeType, type_repr: str) -> None:
         assert SchemeTypeRepr(type_repr).to_domain() == type_
+
+
+@pytest.mark.parametrize(
+    "funding_programme, funding_programme_repr",
+    [
+        (FundingProgrammes.ATF2, "ATF2"),
+        (FundingProgrammes.ATF3, "ATF3"),
+        (FundingProgrammes.ATF4, "ATF4"),
+        (FundingProgrammes.ATF4E, "ATF4e"),
+    ],
+)
+class TestFundingProgrammeRepr:
+    def test_from_domain(self, funding_programme: FundingProgramme, funding_programme_repr: str) -> None:
+        assert FundingProgrammeRepr.from_domain(funding_programme).value == funding_programme_repr
+
+    def test_to_domain(self, funding_programme: FundingProgramme, funding_programme_repr: str) -> None:
+        assert FundingProgrammeRepr(funding_programme_repr).to_domain() == funding_programme

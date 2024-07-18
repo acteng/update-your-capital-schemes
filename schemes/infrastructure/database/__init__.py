@@ -34,7 +34,6 @@ class CapitalSchemeEntity(Base):
     __table_args__ = {"schema": "capital_scheme"}
 
     capital_scheme_id: Mapped[int] = mapped_column(primary_key=True)
-    funding_programme_id: Mapped[int]
     capital_scheme_overviews: Mapped[list[CapitalSchemeOverviewEntity]] = relationship()
     capital_scheme_bid_statuses: Mapped[list[CapitalSchemeBidStatusEntity]] = relationship()
     capital_scheme_financials: Mapped[list[CapitalSchemeFinancialEntity]] = relationship()
@@ -60,6 +59,7 @@ class CapitalSchemeOverviewEntity(Base):
         nullable=False,
     )
     scheme_type_id: Mapped[int]
+    funding_programme_id: Mapped[int]
     effective_date_from: Mapped[datetime]
     effective_date_to: Mapped[datetime | None]
 

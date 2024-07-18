@@ -2,14 +2,11 @@ import inject
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, selectinload, sessionmaker
 
-from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     AuthorityReview,
     BidStatusRevision,
     FinancialRevision,
-    FundingProgramme,
-    FundingProgrammes,
     MilestoneRevision,
     OutputRevision,
     OverviewRevision,
@@ -33,7 +30,10 @@ from schemes.infrastructure.database.schemes.funding import (
 from schemes.infrastructure.database.schemes.milestones import MilestoneMapper
 from schemes.infrastructure.database.schemes.observations import ObservationTypeMapper
 from schemes.infrastructure.database.schemes.outputs import OutputTypeMeasureMapper
-from schemes.infrastructure.database.schemes.overview import SchemeTypeMapper
+from schemes.infrastructure.database.schemes.overview import (
+    FundingProgrammeMapper,
+    SchemeTypeMapper,
+)
 
 
 class DatabaseSchemeRepository(SchemeRepository):
@@ -98,7 +98,6 @@ class DatabaseSchemeRepository(SchemeRepository):
     def _capital_scheme_from_domain(self, scheme: Scheme) -> CapitalSchemeEntity:
         return CapitalSchemeEntity(
             capital_scheme_id=scheme.id,
-            funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
             capital_scheme_overviews=[
                 self._capital_scheme_overview_from_domain(overview_revision)
                 for overview_revision in scheme.overview.overview_revisions
@@ -126,10 +125,7 @@ class DatabaseSchemeRepository(SchemeRepository):
         )
 
     def _capital_scheme_to_domain(self, capital_scheme: CapitalSchemeEntity) -> Scheme:
-        scheme = Scheme(
-            id_=capital_scheme.capital_scheme_id,
-            funding_programme=self._funding_programme_mapper.to_domain(capital_scheme.funding_programme_id),
-        )
+        scheme = Scheme(id_=capital_scheme.capital_scheme_id)
 
         for capital_scheme_overview in capital_scheme.capital_scheme_overviews:
             scheme.overview.update_overview(self._capital_scheme_overview_to_domain(capital_scheme_overview))
@@ -161,6 +157,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             scheme_name=overview_revision.name,
             bid_submitting_authority_id=overview_revision.authority_id,
             scheme_type_id=self._scheme_type_mapper.to_id(overview_revision.type),
+            funding_programme_id=self._funding_programme_mapper.to_id(overview_revision.funding_programme),
         )
 
     def _capital_scheme_overview_to_domain(
@@ -172,6 +169,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             name=capital_scheme_overview.scheme_name,
             authority_id=capital_scheme_overview.bid_submitting_authority_id,
             type_=self._scheme_type_mapper.to_domain(capital_scheme_overview.scheme_type_id),
+            funding_programme=self._funding_programme_mapper.to_domain(capital_scheme_overview.funding_programme_id),
         )
 
     def _capital_scheme_bid_status_from_domain(
@@ -291,13 +289,3 @@ class DatabaseSchemeRepository(SchemeRepository):
             review_date=capital_scheme_authority_review.review_date,
             source=self._data_source_mapper.to_domain(capital_scheme_authority_review.data_source_id),
         )
-
-
-class FundingProgrammeMapper:
-    _IDS = {FundingProgrammes.ATF2: 1, FundingProgrammes.ATF3: 2, FundingProgrammes.ATF4: 3, FundingProgrammes.ATF4E: 4}
-
-    def to_id(self, funding_programme: FundingProgramme) -> int:
-        return self._IDS[funding_programme]
-
-    def to_domain(self, id_: int) -> FundingProgramme:
-        return inverse_dict(self._IDS)[id_]

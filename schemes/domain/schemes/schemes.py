@@ -1,18 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from schemes.domain.schemes.funding import BidStatus, SchemeFunding
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
-from schemes.domain.schemes.overview import SchemeOverview
+from schemes.domain.schemes.overview import FundingProgramme, SchemeOverview
 from schemes.domain.schemes.reviews import SchemeReviews
 
 
 class Scheme:
-    def __init__(self, id_: int, funding_programme: FundingProgramme):
+    def __init__(self, id_: int):
         self.id = id_
-        self.funding_programme = funding_programme
         self._overview = SchemeOverview()
         self._funding = SchemeFunding()
         self._milestones = SchemeMilestones()
@@ -47,25 +44,16 @@ class Scheme:
     def is_updateable(self) -> bool:
         is_funded = self.funding.bid_status == BidStatus.FUNDED
         is_active_and_incomplete = self._is_active_and_incomplete(self.milestones.current_milestone)
-        is_under_embargo = self.funding_programme.is_under_embargo
+        is_under_embargo = self._is_under_embargo(self.overview.funding_programme)
         return is_funded and is_active_and_incomplete and not is_under_embargo
 
     @staticmethod
     def _is_active_and_incomplete(milestone: Milestone | None) -> bool:
         return not milestone or (milestone.is_active and not milestone.is_complete)
 
-
-@dataclass(frozen=True)
-class FundingProgramme:
-    code: str
-    is_under_embargo: bool
-
-
-class FundingProgrammes:
-    ATF2 = FundingProgramme("ATF2", False)
-    ATF3 = FundingProgramme("ATF3", False)
-    ATF4 = FundingProgramme("ATF4", False)
-    ATF4E = FundingProgramme("ATF4e", False)
+    @staticmethod
+    def _is_under_embargo(funding_programme: FundingProgramme | None) -> bool:
+        return funding_programme.is_under_embargo if funding_programme else False
 
 
 class SchemeRepository:

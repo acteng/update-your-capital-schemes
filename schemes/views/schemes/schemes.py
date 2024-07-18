@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum, unique
 
 import dataclass_wizard
 import inject
@@ -23,7 +22,7 @@ from flask import (
 )
 from werkzeug import Response as BaseResponse
 
-from schemes.dicts import as_shallow_dict, inverse_dict
+from schemes.dicts import as_shallow_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
 from schemes.domain.schemes import (
@@ -128,13 +127,15 @@ class SchemeRowContext:
 
     @classmethod
     def from_domain(cls, reporting_window: ReportingWindow, scheme: Scheme) -> SchemeRowContext:
+        funding_programme = scheme.overview.funding_programme
+        assert funding_programme
         name = scheme.overview.name
         assert name is not None
 
         return cls(
             id=scheme.id,
             reference=scheme.reference,
-            funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
+            funding_programme=FundingProgrammeContext.from_domain(funding_programme),
             name=name,
             needs_review=scheme.reviews.needs_review(reporting_window),
             last_reviewed=scheme.reviews.last_reviewed,
@@ -229,11 +230,13 @@ class SchemeOverviewContext:
     def from_domain(cls, scheme: Scheme) -> SchemeOverviewContext:
         type_ = scheme.overview.type
         assert type_
+        funding_programme = scheme.overview.funding_programme
+        assert funding_programme
 
         return cls(
             reference=scheme.reference,
             type=SchemeTypeContext.from_domain(type_),
-            funding_programme=FundingProgrammeContext.from_domain(scheme.funding_programme),
+            funding_programme=FundingProgrammeContext.from_domain(funding_programme),
             current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
         )
 
@@ -396,7 +399,6 @@ def clear(schemes: SchemeRepository) -> Response:
 @dataclass(frozen=True)
 class SchemeRepr:
     id: int
-    funding_programme: FundingProgrammeRepr
     overview_revisions: list[OverviewRevisionRepr] = field(default_factory=list)
     bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
@@ -408,7 +410,6 @@ class SchemeRepr:
     def from_domain(cls, scheme: Scheme) -> SchemeRepr:
         return cls(
             id=scheme.id,
-            funding_programme=FundingProgrammeRepr.from_domain(scheme.funding_programme),
             overview_revisions=[
                 OverviewRevisionRepr.from_domain(overview_revision)
                 for overview_revision in scheme.overview.overview_revisions
@@ -435,7 +436,7 @@ class SchemeRepr:
         )
 
     def to_domain(self) -> Scheme:
-        scheme = Scheme(id_=self.id, funding_programme=self.funding_programme.to_domain())
+        scheme = Scheme(id_=self.id)
 
         for overview_revision_repr in self.overview_revisions:
             scheme.overview.update_overviews(overview_revision_repr.to_domain())
@@ -456,31 +457,3 @@ class SchemeRepr:
             scheme.reviews.update_authority_review(authority_review_repr.to_domain())
 
         return scheme
-
-
-@unique
-class FundingProgrammeRepr(Enum):
-    ATF2 = "ATF2"
-    ATF3 = "ATF3"
-    ATF4 = "ATF4"
-    ATF4E = "ATF4e"
-    ATF5 = "ATF5"
-    MRN = "MRN"
-    LUF = "LUF"
-    CRSTS = "CRSTS"
-
-    @classmethod
-    def from_domain(cls, funding_programme: FundingProgramme) -> FundingProgrammeRepr:
-        return cls._members()[funding_programme]
-
-    def to_domain(self) -> FundingProgramme:
-        return inverse_dict(self._members())[self]
-
-    @staticmethod
-    def _members() -> dict[FundingProgramme, FundingProgrammeRepr]:
-        return {
-            FundingProgrammes.ATF2: FundingProgrammeRepr.ATF2,
-            FundingProgrammes.ATF3: FundingProgrammeRepr.ATF3,
-            FundingProgrammes.ATF4: FundingProgrammeRepr.ATF4,
-            FundingProgrammes.ATF4E: FundingProgrammeRepr.ATF4E,
-        }

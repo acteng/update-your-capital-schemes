@@ -6,10 +6,13 @@ from enum import Enum, unique
 
 import dataclass_wizard
 import inject
+from dataclass_wizard import fromlist
+from dataclass_wizard.errors import UnknownJSONKey
 from flask import (
     Blueprint,
     Response,
     abort,
+    current_app,
     flash,
     make_response,
     redirect,
@@ -56,6 +59,20 @@ from schemes.views.schemes.reviews import (
 )
 
 bp = Blueprint("schemes", __name__)
+
+
+@bp.post("")
+@api_key_auth
+@inject.autoparams("schemes")
+def add_schemes(schemes: SchemeRepository) -> Response:
+    try:
+        schemes_repr = fromlist(SchemeRepr, request.get_json())
+    except UnknownJSONKey as error:
+        current_app.logger.error(error)
+        return Response(status=400)
+
+    schemes.add(*[scheme_repr.to_domain() for scheme_repr in schemes_repr])
+    return Response(status=201)
 
 
 @bp.get("")
@@ -370,6 +387,7 @@ def clear(schemes: SchemeRepository) -> Response:
 class SchemeRepr:
     id: int
     name: str
+    authority_id: int
     type: SchemeTypeRepr
     funding_programme: FundingProgrammeRepr
     bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
@@ -383,6 +401,7 @@ class SchemeRepr:
         return cls(
             id=scheme.id,
             name=scheme.name,
+            authority_id=scheme.authority_id,
             type=SchemeTypeRepr.from_domain(scheme.type),
             funding_programme=FundingProgrammeRepr.from_domain(scheme.funding_programme),
             bid_status_revisions=[
@@ -406,11 +425,11 @@ class SchemeRepr:
             ],
         )
 
-    def to_domain(self, authority_id: int) -> Scheme:
+    def to_domain(self) -> Scheme:
         scheme = Scheme(
             id_=self.id,
             name=self.name,
-            authority_id=authority_id,
+            authority_id=self.authority_id,
             type_=self.type.to_domain(),
             funding_programme=self.funding_programme.to_domain(),
         )

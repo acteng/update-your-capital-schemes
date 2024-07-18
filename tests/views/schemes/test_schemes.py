@@ -363,7 +363,11 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr.from_domain(scheme)
 
         assert scheme_repr == SchemeRepr(
-            id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION, funding_programme=FundingProgrammeRepr.ATF4
+            id=1,
+            name="Wirral Package",
+            authority_id=2,
+            type=SchemeTypeRepr.CONSTRUCTION,
+            funding_programme=FundingProgrammeRepr.ATF4,
         )
 
     def test_from_domain_sets_bid_status_revisions(self) -> None:
@@ -548,10 +552,14 @@ class TestSchemeRepr:
 
     def test_to_domain(self) -> None:
         scheme_repr = SchemeRepr(
-            id=1, name="Wirral Package", type=SchemeTypeRepr.CONSTRUCTION, funding_programme=FundingProgrammeRepr.ATF4
+            id=1,
+            name="Wirral Package",
+            authority_id=2,
+            type=SchemeTypeRepr.CONSTRUCTION,
+            funding_programme=FundingProgrammeRepr.ATF4,
         )
 
-        scheme = scheme_repr.to_domain(2)
+        scheme = scheme_repr.to_domain()
 
         assert (
             scheme.id == 1
@@ -565,6 +573,7 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
+            authority_id=0,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             bid_status_revisions=[
@@ -580,7 +589,7 @@ class TestSchemeRepr:
             ],
         )
 
-        scheme = scheme_repr.to_domain(0)
+        scheme = scheme_repr.to_domain()
 
         bid_status_revision1: BidStatusRevision
         bid_status_revision2: BidStatusRevision
@@ -600,6 +609,7 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
+            authority_id=0,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             financial_revisions=[
@@ -622,7 +632,7 @@ class TestSchemeRepr:
             ],
         )
 
-        scheme = scheme_repr.to_domain(0)
+        scheme = scheme_repr.to_domain()
 
         financial_revision1: FinancialRevision
         financial_revision2: FinancialRevision
@@ -646,6 +656,7 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
+            authority_id=0,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             milestone_revisions=[
@@ -670,7 +681,7 @@ class TestSchemeRepr:
             ],
         )
 
-        scheme = scheme_repr.to_domain(0)
+        scheme = scheme_repr.to_domain()
 
         milestone_revision1: MilestoneRevision
         milestone_revision2: MilestoneRevision
@@ -696,6 +707,7 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
+            authority_id=0,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             output_revisions=[
@@ -720,7 +732,7 @@ class TestSchemeRepr:
             ],
         )
 
-        scheme = scheme_repr.to_domain(0)
+        scheme = scheme_repr.to_domain()
 
         output_revision1: OutputRevision
         output_revision2: OutputRevision
@@ -744,6 +756,7 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
+            authority_id=0,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             authority_reviews=[
@@ -760,7 +773,7 @@ class TestSchemeRepr:
             ],
         )
 
-        scheme = scheme_repr.to_domain(0)
+        scheme = scheme_repr.to_domain()
 
         authority_review1: AuthorityReview
         authority_review2: AuthorityReview

@@ -139,6 +139,7 @@ class TestSchemeApi:
         assert response.json == {
             "id": 1,
             "name": "Wirral Package",
+            "authority_id": 1,
             "type": "construction",
             "funding_programme": "ATF4",
             "bid_status_revisions": [],

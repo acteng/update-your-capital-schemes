@@ -11,6 +11,7 @@ from tests.e2e.app_client import (
 def build_scheme(
     id_: int,
     name: str,
+    authority_id: int,
     type_: str = "construction",
     funding_programme: str = "ATF2",
     bid_status: str = "funded",
@@ -22,6 +23,7 @@ def build_scheme(
     return SchemeRepr(
         id=id_,
         name=name,
+        authority_id=authority_id,
         type=type_,
         funding_programme=funding_programme,
         bid_status_revisions=[

@@ -14,10 +14,10 @@ def test_scheme_review(app_client: AppClient, oidc_client: OidcClient, page: Pag
     app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
     app_client.add_users(1, UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
-        1,
         build_scheme(
             id_=1,
             name="Wirral Package",
+            authority_id=1,
             authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 Bid")],
         ),
     )
@@ -39,10 +39,10 @@ def test_scheme_cannot_review_when_error(app_client: AppClient, oidc_client: Oid
     app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
     app_client.add_users(1, UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
-        1,
         build_scheme(
             id_=1,
             name="Wirral Package",
+            authority_id=1,
             authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 Bid")],
         ),
     )

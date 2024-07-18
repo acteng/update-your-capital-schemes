@@ -18,10 +18,10 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
     app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
     app_client.add_users(1, UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
-        1,
         build_scheme(
             id_=1,
             name="Wirral Package",
+            authority_id=1,
             milestone_revisions=[
                 MilestoneRevisionRepr(
                     id=1,
@@ -90,10 +90,10 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
     app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
     app_client.add_users(1, UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
-        1,
         build_scheme(
             id_=1,
             name="Wirral Package",
+            authority_id=1,
             milestone_revisions=[
                 MilestoneRevisionRepr(
                     id=1,
@@ -230,10 +230,10 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
     app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
     app_client.add_users(1, UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
-        1,
         build_scheme(
             id_=1,
             name="Wirral Package",
+            authority_id=1,
             milestone_revisions=[
                 MilestoneRevisionRepr(
                     id=1,

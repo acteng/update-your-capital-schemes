@@ -30,11 +30,9 @@ class AppClient:
         )
         response.raise_for_status()
 
-    def add_schemes(self, authority_id: int, *schemes: SchemeRepr) -> None:
+    def add_schemes(self, *schemes: SchemeRepr) -> None:
         json = [asdict(scheme) for scheme in schemes]
-        response = self._session.post(
-            f"{self._url}/authorities/{authority_id}/schemes", json=json, timeout=self.DEFAULT_TIMEOUT
-        )
+        response = self._session.post(f"{self._url}/schemes", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
     def get_scheme(self, id_: int) -> SchemeRepr:
@@ -73,6 +71,7 @@ class UserRepr:
 class SchemeRepr:
     id: int
     name: str
+    authority_id: int
     type: str
     funding_programme: str
     bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)

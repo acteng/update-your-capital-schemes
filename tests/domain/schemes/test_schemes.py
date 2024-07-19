@@ -15,6 +15,7 @@ from schemes.domain.schemes import (
     SchemeFunding,
     SchemeMilestones,
     SchemeOutputs,
+    SchemeOverview,
     SchemeReviews,
     SchemeType,
 )
@@ -26,7 +27,6 @@ class TestScheme:
         scheme = Scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=2,
             type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
@@ -34,7 +34,6 @@ class TestScheme:
         assert (
             scheme.id == 1
             and scheme.name == "Wirral Package"
-            and scheme.authority_id == 2
             and scheme.type == SchemeType.CONSTRUCTION
             and scheme.funding_programme == FundingProgrammes.ATF4
         )
@@ -43,6 +42,11 @@ class TestScheme:
         scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
 
         assert scheme.reference == "ATE00001"
+
+    def test_get_overview(self) -> None:
+        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+
+        assert isinstance(scheme.overview, SchemeOverview)
 
     def test_get_funding(self) -> None:
         scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)

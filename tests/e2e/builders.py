@@ -4,6 +4,7 @@ from tests.e2e.app_client import (
     FinancialRevisionRepr,
     MilestoneRevisionRepr,
     OutputRevisionRepr,
+    OverviewRevisionRepr,
     SchemeRepr,
 )
 
@@ -23,9 +24,16 @@ def build_scheme(
     return SchemeRepr(
         id=id_,
         name=name,
-        authority_id=authority_id,
         type=type_,
         funding_programme=funding_programme,
+        overview_revisions=[
+            OverviewRevisionRepr(
+                id=None,
+                effective_date_from="1970-01-01",
+                effective_date_to=None,
+                authority_id=authority_id,
+            )
+        ],
         bid_status_revisions=[
             BidStatusRevisionRepr(id=None, effective_date_from="1970-01-01", effective_date_to=None, status=bid_status)
         ],

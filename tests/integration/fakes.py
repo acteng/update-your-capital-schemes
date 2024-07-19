@@ -50,7 +50,7 @@ class MemorySchemeRepository(SchemeRepository):
 
     def get_by_authority(self, authority_id: int) -> list[Scheme]:
         return sorted(
-            [deepcopy(scheme) for scheme in self._schemes.values() if scheme.authority_id == authority_id],
+            [deepcopy(scheme) for scheme in self._schemes.values() if scheme.overview.authority_id == authority_id],
             key=lambda scheme: scheme.id,
         )
 

@@ -52,6 +52,7 @@ from schemes.views.schemes.milestones import (
     SchemeMilestonesContext,
 )
 from schemes.views.schemes.outputs import OutputRevisionRepr, SchemeOutputsContext
+from schemes.views.schemes.overview import OverviewRevisionRepr
 from schemes.views.schemes.reviews import (
     AuthorityReviewRepr,
     SchemeReviewContext,
@@ -165,7 +166,7 @@ def get_html(
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.authority_id:
+    if user.authority_id != scheme.overview.authority_id:
         abort(403)
 
     context = SchemeContext.from_domain(reporting_window, authority, scheme)
@@ -268,7 +269,7 @@ def spend_to_date_form(scheme_id: int, users: UserRepository, schemes: SchemeRep
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.authority_id:
+    if user.authority_id != scheme.overview.authority_id:
         abort(403)
 
     context = ChangeSpendToDateContext.from_domain(scheme)
@@ -288,7 +289,7 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.authority_id:
+    if user.authority_id != scheme.overview.authority_id:
         abort(403)
 
     form = ChangeSpendToDateForm.from_domain(scheme.funding)
@@ -314,7 +315,7 @@ def milestones_form(scheme_id: int, users: UserRepository, schemes: SchemeReposi
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.authority_id:
+    if user.authority_id != scheme.overview.authority_id:
         abort(403)
 
     context = ChangeMilestoneDatesContext.from_domain(scheme)
@@ -334,7 +335,7 @@ def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, s
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.authority_id:
+    if user.authority_id != scheme.overview.authority_id:
         abort(403)
 
     form = ChangeMilestoneDatesForm.from_domain(scheme.milestones)
@@ -360,7 +361,7 @@ def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, schem
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.authority_id:
+    if user.authority_id != scheme.overview.authority_id:
         abort(403)
 
     form = SchemeReviewForm()
@@ -387,9 +388,9 @@ def clear(schemes: SchemeRepository) -> Response:
 class SchemeRepr:
     id: int
     name: str
-    authority_id: int
     type: SchemeTypeRepr
     funding_programme: FundingProgrammeRepr
+    overview_revisions: list[OverviewRevisionRepr] = field(default_factory=list)
     bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
@@ -401,9 +402,12 @@ class SchemeRepr:
         return cls(
             id=scheme.id,
             name=scheme.name,
-            authority_id=scheme.authority_id,
             type=SchemeTypeRepr.from_domain(scheme.type),
             funding_programme=FundingProgrammeRepr.from_domain(scheme.funding_programme),
+            overview_revisions=[
+                OverviewRevisionRepr.from_domain(overview_revision)
+                for overview_revision in scheme.overview.overview_revisions
+            ],
             bid_status_revisions=[
                 BidStatusRevisionRepr.from_domain(bid_status_revision)
                 for bid_status_revision in scheme.funding.bid_status_revisions
@@ -429,10 +433,12 @@ class SchemeRepr:
         scheme = Scheme(
             id_=self.id,
             name=self.name,
-            authority_id=self.authority_id,
             type_=self.type.to_domain(),
             funding_programme=self.funding_programme.to_domain(),
         )
+
+        for overview_revision_repr in self.overview_revisions:
+            scheme.overview.update_overviews(overview_revision_repr.to_domain())
 
         for bid_status_revision_repr in self.bid_status_revisions:
             scheme.funding.update_bid_status(bid_status_revision_repr.to_domain())

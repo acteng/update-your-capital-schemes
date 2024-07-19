@@ -20,6 +20,7 @@ from schemes.domain.schemes import (
     ObservationType,
     OutputRevision,
     OutputTypeMeasure,
+    OverviewRevision,
     SchemeRepository,
     SchemeType,
 )
@@ -92,6 +93,7 @@ class TestSchemes:
             build_scheme(id_=2, name="School Streets", authority_id=1),
             build_scheme(id_=3, name="Runcorn Busway", authority_id=1, bid_status=BidStatus.SUBMITTED),
             build_scheme(id_=4, name="Hospital Fields Road", authority_id=2),
+            build_scheme(id_=5, name="People Streets", overview_revisions=[]),
         )
 
         schemes_page = SchemesPage.open(client)
@@ -181,14 +183,12 @@ class TestSchemesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
-                    "authority_id": 1,
                     "type": "construction",
                     "funding_programme": "ATF4",
                 },
                 {
                     "id": 2,
                     "name": "School Streets",
-                    "authority_id": 1,
                     "type": "construction",
                     "funding_programme": "ATF4",
                 },
@@ -202,7 +202,6 @@ class TestSchemesApi:
             scheme1
             and scheme1.id == 1
             and scheme1.name == "Wirral Package"
-            and scheme1.authority_id == 1
             and scheme1.type == SchemeType.CONSTRUCTION
             and scheme1.funding_programme == FundingProgrammes.ATF4
         )
@@ -210,9 +209,41 @@ class TestSchemesApi:
             scheme2
             and scheme2.id == 2
             and scheme2.name == "School Streets"
-            and scheme2.authority_id == 1
             and scheme2.type == SchemeType.CONSTRUCTION
             and scheme2.funding_programme == FundingProgrammes.ATF4
+        )
+
+    def test_add_schemes_overview_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        response = client.post(
+            "/schemes",
+            headers={"Authorization": "API-Key boardman"},
+            json=[
+                {
+                    "id": 1,
+                    "name": "Wirral Package",
+                    "type": "construction",
+                    "funding_programme": "ATF4",
+                    "overview_revisions": [
+                        {
+                            "id": 2,
+                            "effective_date_from": "2020-01-01T12:00:00",
+                            "effective_date_to": None,
+                            "authority_id": 1,
+                        }
+                    ],
+                },
+            ],
+        )
+
+        assert response.status_code == 201
+        scheme1 = schemes.get(1)
+        assert scheme1 and scheme1.id == 1
+        overview_revision1: OverviewRevision
+        (overview_revision1,) = scheme1.overview.overview_revisions
+        assert (
+            overview_revision1.id == 2
+            and overview_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
+            and overview_revision1.authority_id == 1
         )
 
     def test_add_schemes_bid_status_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -223,7 +254,6 @@ class TestSchemesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
-                    "authority_id": 1,
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "bid_status_revisions": [
@@ -257,7 +287,6 @@ class TestSchemesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
-                    "authority_id": 1,
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "financial_revisions": [
@@ -295,7 +324,6 @@ class TestSchemesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
-                    "authority_id": 1,
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "milestone_revisions": [
@@ -335,7 +363,6 @@ class TestSchemesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
-                    "authority_id": 1,
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "output_revisions": [
@@ -374,7 +401,6 @@ class TestSchemesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
-                    "authority_id": 1,
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "authority_reviews": [
@@ -406,7 +432,6 @@ class TestSchemesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
-                    "authority_id": 1,
                     "type": "construction",
                     "funding_programme": "ATF4",
                 }
@@ -426,7 +451,6 @@ class TestSchemesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
-                    "authority_id": 1,
                     "type": "construction",
                     "funding_programme": "ATF4",
                 }
@@ -444,7 +468,6 @@ class TestSchemesApi:
                 {
                     "id": 1,
                     "name": "Wirral Package",
-                    "authority_id": 1,
                     "type": "construction",
                     "funding_programme": "ATF4",
                     "foo": "bar",
@@ -491,7 +514,6 @@ class TestSchemesApiWhenDisabled:
                 {
                     "id": 1,
                     "name": "Wirral Package",
-                    "authority_id": 1,
                     "type": "construction",
                     "funding_programme": "ATF4",
                 }

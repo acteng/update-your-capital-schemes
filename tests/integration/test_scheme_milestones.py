@@ -209,6 +209,13 @@ class TestSchemeMilestones:
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
+    def test_cannot_milestones_form_when_no_authority(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", overview_revisions=[]))
+
+        forbidden_page = ChangeMilestoneDatesPage.open_when_unauthorized(client, id_=2)
+
+        assert forbidden_page.is_visible and forbidden_page.is_forbidden
+
     def test_cannot_milestones_form_when_unknown_scheme(self, client: FlaskClient) -> None:
         not_found_page = ChangeMilestoneDatesPage.open_when_not_found(client, id_=1)
 
@@ -349,6 +356,15 @@ class TestSchemeMilestones:
     ) -> None:
         authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
         schemes.add(build_scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+
+        response = client.post("/schemes/2/milestones", data={"csrf_token": csrf_token})
+
+        assert response.status_code == 403
+
+    def test_cannot_milestones_when_no_authority(
+        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", overview_revisions=[]))
 
         response = client.post("/schemes/2/milestones", data={"csrf_token": csrf_token})
 

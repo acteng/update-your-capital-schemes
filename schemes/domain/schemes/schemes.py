@@ -6,16 +6,17 @@ from enum import Enum, auto, unique
 from schemes.domain.schemes.funding import BidStatus, SchemeFunding
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
+from schemes.domain.schemes.overview import SchemeOverview
 from schemes.domain.schemes.reviews import SchemeReviews
 
 
 class Scheme:
-    def __init__(self, id_: int, name: str, authority_id: int, type_: SchemeType, funding_programme: FundingProgramme):
+    def __init__(self, id_: int, name: str, type_: SchemeType, funding_programme: FundingProgramme):
         self.id = id_
         self.name = name
-        self.authority_id = authority_id
         self.type = type_
         self.funding_programme = funding_programme
+        self._overview = SchemeOverview()
         self._funding = SchemeFunding()
         self._milestones = SchemeMilestones()
         self._outputs = SchemeOutputs()
@@ -24,6 +25,10 @@ class Scheme:
     @property
     def reference(self) -> str:
         return f"ATE{self.id:05}"
+
+    @property
+    def overview(self) -> SchemeOverview:
+        return self._overview
 
     @property
     def funding(self) -> SchemeFunding:

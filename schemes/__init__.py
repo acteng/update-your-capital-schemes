@@ -51,6 +51,7 @@ from schemes.infrastructure.database import (
     CapitalSchemeFinancialEntity,
     CapitalSchemeInterventionEntity,
     CapitalSchemeMilestoneEntity,
+    CapitalSchemeOverviewEntity,
     UserEntity,
 )
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
@@ -160,6 +161,7 @@ def _create_session_maker(engine: Engine, capital_schemes_engine: Engine) -> ses
             CapitalSchemeFinancialEntity: capital_schemes_engine,
             CapitalSchemeInterventionEntity: capital_schemes_engine,
             CapitalSchemeMilestoneEntity: capital_schemes_engine,
+            CapitalSchemeOverviewEntity: capital_schemes_engine,
             UserEntity: engine,
         }
     )

@@ -20,6 +20,7 @@ from schemes.domain.schemes import (
     ObservationType,
     OutputRevision,
     OutputTypeMeasure,
+    OverviewRevision,
     Scheme,
     SchemeType,
 )
@@ -42,6 +43,7 @@ from schemes.views.schemes.outputs import (
     OutputRevisionRepr,
     OutputTypeRepr,
 )
+from schemes.views.schemes.overview import OverviewRevisionRepr
 from schemes.views.schemes.reviews import AuthorityReviewRepr
 from schemes.views.schemes.schemes import (
     FundingProgrammeContext,
@@ -355,7 +357,6 @@ class TestSchemeRepr:
         scheme = Scheme(
             id_=1,
             name="Wirral Package",
-            authority_id=2,
             type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
@@ -365,10 +366,46 @@ class TestSchemeRepr:
         assert scheme_repr == SchemeRepr(
             id=1,
             name="Wirral Package",
-            authority_id=2,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
         )
+
+    def test_from_domain_sets_overview_revisions(self) -> None:
+        scheme = build_scheme(
+            id_=0,
+            name="Wirral Package",
+            type_=SchemeType.CONSTRUCTION,
+            funding_programme=FundingProgrammes.ATF3,
+            overview_revisions=[
+                OverviewRevision(
+                    id_=1,
+                    effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13)),
+                    authority_id=1,
+                ),
+                OverviewRevision(
+                    id_=2,
+                    effective=DateRange(datetime(2020, 2, 1, 13), None),
+                    authority_id=2,
+                ),
+            ],
+        )
+
+        scheme_repr = SchemeRepr.from_domain(scheme)
+
+        assert scheme_repr.overview_revisions == [
+            OverviewRevisionRepr(
+                id=1,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to="2020-02-01T13:00:00",
+                authority_id=1,
+            ),
+            OverviewRevisionRepr(
+                id=2,
+                effective_date_from="2020-02-01T13:00:00",
+                effective_date_to=None,
+                authority_id=2,
+            ),
+        ]
 
     def test_from_domain_sets_bid_status_revisions(self) -> None:
         scheme = build_scheme(
@@ -554,7 +591,6 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=1,
             name="Wirral Package",
-            authority_id=2,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
         )
@@ -564,16 +600,52 @@ class TestSchemeRepr:
         assert (
             scheme.id == 1
             and scheme.name == "Wirral Package"
-            and scheme.authority_id == 2
             and scheme.type == SchemeType.CONSTRUCTION
             and scheme.funding_programme == FundingProgrammes.ATF4
+        )
+
+    def test_to_domain_sets_overview_revisions(self) -> None:
+        scheme_repr = SchemeRepr(
+            id=0,
+            name="",
+            type=SchemeTypeRepr.CONSTRUCTION,
+            funding_programme=FundingProgrammeRepr.ATF4,
+            overview_revisions=[
+                OverviewRevisionRepr(
+                    id=1,
+                    effective_date_from="2020-01-01T12:00:00",
+                    effective_date_to="2020-02-01T13:00:00",
+                    authority_id=1,
+                ),
+                OverviewRevisionRepr(
+                    id=2,
+                    effective_date_from="2020-02-01T13:00:00",
+                    effective_date_to=None,
+                    authority_id=2,
+                ),
+            ],
+        )
+
+        scheme = scheme_repr.to_domain()
+
+        overview_revision1: OverviewRevision
+        overview_revision2: OverviewRevision
+        overview_revision1, overview_revision2 = scheme.overview.overview_revisions
+        assert (
+            overview_revision1.id == 1
+            and overview_revision1.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13))
+            and overview_revision1.authority_id == 1
+        )
+        assert (
+            overview_revision2.id == 2
+            and overview_revision2.effective == DateRange(datetime(2020, 2, 1, 13), None)
+            and overview_revision2.authority_id == 2
         )
 
     def test_to_domain_sets_bid_status_revisions(self) -> None:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
-            authority_id=0,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             bid_status_revisions=[
@@ -609,7 +681,6 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
-            authority_id=0,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             financial_revisions=[
@@ -656,7 +727,6 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
-            authority_id=0,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             milestone_revisions=[
@@ -707,7 +777,6 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
-            authority_id=0,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             output_revisions=[
@@ -756,7 +825,6 @@ class TestSchemeRepr:
         scheme_repr = SchemeRepr(
             id=0,
             name="",
-            authority_id=0,
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
             authority_reviews=[

@@ -5,6 +5,9 @@ services:
     env_file: .env
     environment:
       FLASK_SQLALCHEMY_DATABASE_URI: "postgresql+pg8000://schemes:password@database/schemes"
+      FLASK_CAPITAL_SCHEMES_DATABASE_URI: "postgresql+pg8000://ate:password@database:5433/capital-schemes"
+    networks:
+      - schemes-network
     ports:
       - "5000:5000"
     depends_on:
@@ -16,8 +19,14 @@ services:
     environment:
       POSTGRES_USER: schemes
       POSTGRES_PASSWORD: password
+    networks:
+      - schemes-network
     ports:
       - "5432:5432"
     healthcheck:
       test: pg_isready -U $$POSTGRES_USER
       interval: 5s
+
+networks:
+  schemes-network:
+    external: true

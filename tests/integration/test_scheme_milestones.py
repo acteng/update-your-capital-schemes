@@ -49,11 +49,10 @@ class TestSchemeMilestones:
 
     def test_scheme_shows_milestones(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
-        current = DateRange(datetime(2020, 1, 1), None)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 1,
-                current,
+                DateRange(datetime(2020, 1, 1), None),
                 Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 2, 1),
@@ -61,7 +60,7 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 2,
-                current,
+                DateRange(datetime(2020, 1, 1), None),
                 Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 ObservationType.ACTUAL,
                 date(2020, 2, 2),
@@ -69,7 +68,7 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 3,
-                current,
+                DateRange(datetime(2020, 1, 1), None),
                 Milestone.PRELIMINARY_DESIGN_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 3, 1),
@@ -77,7 +76,7 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 4,
-                current,
+                DateRange(datetime(2020, 1, 1), None),
                 Milestone.PRELIMINARY_DESIGN_COMPLETED,
                 ObservationType.ACTUAL,
                 date(2020, 3, 2),
@@ -85,7 +84,7 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 5,
-                current,
+                DateRange(datetime(2020, 1, 1), None),
                 Milestone.DETAILED_DESIGN_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 4, 1),
@@ -93,7 +92,7 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 6,
-                current,
+                DateRange(datetime(2020, 1, 1), None),
                 Milestone.DETAILED_DESIGN_COMPLETED,
                 ObservationType.ACTUAL,
                 date(2020, 4, 2),
@@ -101,7 +100,7 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 7,
-                current,
+                DateRange(datetime(2020, 1, 1), None),
                 Milestone.CONSTRUCTION_STARTED,
                 ObservationType.PLANNED,
                 date(2020, 5, 1),
@@ -109,7 +108,7 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 8,
-                current,
+                DateRange(datetime(2020, 1, 1), None),
                 Milestone.CONSTRUCTION_STARTED,
                 ObservationType.ACTUAL,
                 date(2020, 5, 2),
@@ -117,7 +116,7 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 9,
-                current,
+                DateRange(datetime(2020, 1, 1), None),
                 Milestone.CONSTRUCTION_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 6, 1),

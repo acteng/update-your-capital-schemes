@@ -30,11 +30,9 @@ class AppClient:
         )
         response.raise_for_status()
 
-    def add_schemes(self, authority_id: int, *schemes: SchemeRepr) -> None:
+    def add_schemes(self, *schemes: SchemeRepr) -> None:
         json = [asdict(scheme) for scheme in schemes]
-        response = self._session.post(
-            f"{self._url}/authorities/{authority_id}/schemes", json=json, timeout=self.DEFAULT_TIMEOUT
-        )
+        response = self._session.post(f"{self._url}/schemes", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
     def get_scheme(self, id_: int) -> SchemeRepr:
@@ -72,14 +70,23 @@ class UserRepr:
 @dataclass(frozen=True)
 class SchemeRepr:
     id: int
-    name: str
-    type: str
-    funding_programme: str
+    overview_revisions: list[OverviewRevisionRepr] = field(default_factory=list)
     bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
     milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
     output_revisions: list[OutputRevisionRepr] = field(default_factory=list)
     authority_reviews: list[AuthorityReviewRepr] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class OverviewRevisionRepr:
+    effective_date_from: str
+    effective_date_to: str | None
+    name: str
+    authority_id: int
+    type: str
+    funding_programme: str
+    id: int | None = None
 
 
 @dataclass(frozen=True)

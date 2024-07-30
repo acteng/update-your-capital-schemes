@@ -51,6 +51,7 @@ from schemes.infrastructure.database import (
     CapitalSchemeFinancialEntity,
     CapitalSchemeInterventionEntity,
     CapitalSchemeMilestoneEntity,
+    CapitalSchemeOverviewEntity,
     UserEntity,
 )
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
@@ -93,9 +94,9 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.register_blueprint(authorities.bp, url_prefix="/authorities")
     csrf.exempt(authorities.add)
     csrf.exempt(authorities.add_users)
-    csrf.exempt(authorities.add_schemes)
     csrf.exempt(authorities.clear)
     app.register_blueprint(schemes.bp, url_prefix="/schemes")
+    csrf.exempt(schemes.schemes.add_schemes)
     csrf.exempt(schemes.schemes.clear)
     app.register_blueprint(users.bp, url_prefix="/users")
     csrf.exempt(users.clear)
@@ -160,6 +161,7 @@ def _create_session_maker(engine: Engine, capital_schemes_engine: Engine) -> ses
             CapitalSchemeFinancialEntity: capital_schemes_engine,
             CapitalSchemeInterventionEntity: capital_schemes_engine,
             CapitalSchemeMilestoneEntity: capital_schemes_engine,
+            CapitalSchemeOverviewEntity: capital_schemes_engine,
             UserEntity: engine,
         }
     )

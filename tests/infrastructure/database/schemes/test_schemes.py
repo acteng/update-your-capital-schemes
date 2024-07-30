@@ -14,13 +14,13 @@ from schemes.domain.schemes import (
     DataSource,
     FinancialRevision,
     FinancialType,
-    FundingProgramme,
     FundingProgrammes,
     Milestone,
     MilestoneRevision,
     ObservationType,
     OutputRevision,
     OutputTypeMeasure,
+    OverviewRevision,
     Scheme,
     SchemeType,
 )
@@ -31,13 +31,10 @@ from schemes.infrastructure.database import (
     CapitalSchemeFinancialEntity,
     CapitalSchemeInterventionEntity,
     CapitalSchemeMilestoneEntity,
+    CapitalSchemeOverviewEntity,
 )
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
 from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
-from schemes.infrastructure.database.schemes.schemes import (
-    FundingProgrammeMapper,
-    SchemeTypeMapper,
-)
 from tests.builders import build_scheme
 
 
@@ -60,13 +57,7 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_add_schemes(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
-        scheme1 = Scheme(
-            id_=1,
-            name="Wirral Package",
-            authority_id=1,
-            type_=SchemeType.DEVELOPMENT,
-            funding_programme=FundingProgrammes.ATF3,
-        )
+        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
 
         schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
 
@@ -74,17 +65,62 @@ class TestDatabaseSchemeRepository:
         row2: CapitalSchemeEntity
         with session_maker() as session:
             row1, row2 = session.scalars(select(CapitalSchemeEntity).order_by(CapitalSchemeEntity.capital_scheme_id))
+        assert row1.capital_scheme_id == 1
+        assert row2.capital_scheme_id == 2
+
+    def test_add_schemes_overview_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        scheme = build_scheme(
+            id_=1,
+            overview_revisions=[
+                OverviewRevision(
+                    id_=2,
+                    effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
+                    name="Wirral Package",
+                    authority_id=1,
+                    type_=SchemeType.DEVELOPMENT,
+                    funding_programme=FundingProgrammes.ATF3,
+                ),
+                OverviewRevision(
+                    id_=3,
+                    effective=DateRange(datetime(2020, 2, 1), None),
+                    name="School Streets",
+                    authority_id=2,
+                    type_=SchemeType.CONSTRUCTION,
+                    funding_programme=FundingProgrammes.ATF4,
+                ),
+            ],
+        )
+
+        schemes.add(scheme)
+
+        row1: CapitalSchemeOverviewEntity
+        row2: CapitalSchemeOverviewEntity
+        with session_maker() as session:
+            row1, row2 = session.scalars(
+                select(CapitalSchemeOverviewEntity).order_by(CapitalSchemeOverviewEntity.capital_scheme_overview_id)
+            )
+
         assert (
-            row1.capital_scheme_id == 1
+            row1.capital_scheme_overview_id == 2
+            and row1.capital_scheme_id == 1
+            and row1.effective_date_from == datetime(2020, 1, 1)
+            and row1.effective_date_to == datetime(2020, 2, 1)
             and row1.scheme_name == "Wirral Package"
             and row1.bid_submitting_authority_id == 1
             and row1.scheme_type_id == 1
             and row1.funding_programme_id == 2
         )
         assert (
-            row2.capital_scheme_id == 2
+            row2.capital_scheme_overview_id == 3
+            and row2.capital_scheme_id == 1
+            and row2.effective_date_from == datetime(2020, 2, 1)
+            and row2.effective_date_to is None
             and row2.scheme_name == "School Streets"
-            and row2.bid_submitting_authority_id == 1
+            and row2.bid_submitting_authority_id == 2
+            and row2.scheme_type_id == 2
+            and row2.funding_programme_id == 3
         )
 
     def test_add_schemes_bid_status_revisions(
@@ -309,26 +345,65 @@ class TestDatabaseSchemeRepository:
 
     def test_get_scheme(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
         with session_maker() as session:
-            session.add(
-                CapitalSchemeEntity(
-                    capital_scheme_id=1,
-                    scheme_name="Wirral Package",
-                    bid_submitting_authority_id=1,
-                    scheme_type_id=1,
-                    funding_programme_id=2,
-                )
+            session.add(CapitalSchemeEntity(capital_scheme_id=1))
+            session.commit()
+
+        scheme = schemes.get(1)
+
+        assert scheme and scheme.id == 1
+
+    def test_get_scheme_overview_revisions(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
+            session.add_all(
+                [
+                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=2,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=datetime(2020, 2, 1),
+                        scheme_name="Wirral Package",
+                        bid_submitting_authority_id=1,
+                        scheme_type_id=1,
+                        funding_programme_id=2,
+                    ),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=3,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 2, 1),
+                        effective_date_to=None,
+                        scheme_name="School Streets",
+                        bid_submitting_authority_id=2,
+                        scheme_type_id=2,
+                        funding_programme_id=3,
+                    ),
+                ]
             )
             session.commit()
 
         scheme = schemes.get(1)
 
+        assert scheme
+        overview_revision1: OverviewRevision
+        overview_revision2: OverviewRevision
+        overview_revision1, overview_revision2 = scheme.overview.overview_revisions
         assert (
-            scheme
-            and scheme.id == 1
-            and scheme.name == "Wirral Package"
-            and scheme.authority_id == 1
-            and scheme.type == SchemeType.DEVELOPMENT
-            and scheme.funding_programme == FundingProgrammes.ATF3
+            overview_revision1.id == 2
+            and overview_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
+            and overview_revision1.name == "Wirral Package"
+            and overview_revision1.authority_id == 1
+            and overview_revision1.type == SchemeType.DEVELOPMENT
+            and overview_revision1.funding_programme == FundingProgrammes.ATF3
+        )
+        assert (
+            overview_revision2.id == 3
+            and overview_revision2.effective == DateRange(datetime(2020, 2, 1), None)
+            and overview_revision2.name == "School Streets"
+            and overview_revision2.authority_id == 2
+            and overview_revision2.type == SchemeType.CONSTRUCTION
+            and overview_revision2.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_get_scheme_bid_status_revisions(
@@ -337,13 +412,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
-                        capital_scheme_id=1,
-                        scheme_name="Wirral Package",
-                        bid_submitting_authority_id=1,
-                        scheme_type_id=2,
-                        funding_programme_id=3,
-                    ),
+                    CapitalSchemeEntity(capital_scheme_id=1),
                     CapitalSchemeBidStatusEntity(
                         capital_scheme_bid_status_id=2,
                         capital_scheme_id=1,
@@ -385,13 +454,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
-                        capital_scheme_id=1,
-                        scheme_name="Wirral Package",
-                        bid_submitting_authority_id=1,
-                        scheme_type_id=2,
-                        funding_programme_id=3,
-                    ),
+                    CapitalSchemeEntity(capital_scheme_id=1),
                     CapitalSchemeFinancialEntity(
                         capital_scheme_financial_id=2,
                         capital_scheme_id=1,
@@ -441,13 +504,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
-                        capital_scheme_id=1,
-                        scheme_name="Wirral Package",
-                        bid_submitting_authority_id=1,
-                        scheme_type_id=2,
-                        funding_programme_id=3,
-                    ),
+                    CapitalSchemeEntity(capital_scheme_id=1),
                     CapitalSchemeMilestoneEntity(
                         capital_scheme_milestone_id=2,
                         capital_scheme_id=1,
@@ -501,13 +558,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
-                        capital_scheme_id=1,
-                        scheme_name="Wirral Package",
-                        bid_submitting_authority_id=1,
-                        scheme_type_id=2,
-                        funding_programme_id=3,
-                    ),
+                    CapitalSchemeEntity(capital_scheme_id=1),
                     CapitalSchemeInterventionEntity(
                         capital_scheme_intervention_id=2,
                         capital_scheme_id=1,
@@ -557,13 +608,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
-                        capital_scheme_id=1,
-                        scheme_name="Wirral Package",
-                        bid_submitting_authority_id=1,
-                        scheme_type_id=2,
-                        funding_programme_id=3,
-                    ),
+                    CapitalSchemeEntity(capital_scheme_id=1),
                     CapitalSchemeAuthorityReviewEntity(
                         capital_scheme_authority_review_id=2,
                         capital_scheme_id=1,
@@ -601,15 +646,7 @@ class TestDatabaseSchemeRepository:
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
-            session.add(
-                CapitalSchemeEntity(
-                    capital_scheme_id=1,
-                    scheme_name="Wirral Package",
-                    bid_submitting_authority_id=1,
-                    scheme_type_id=2,
-                    funding_programme_id=3,
-                )
-            )
+            session.add(CapitalSchemeEntity(capital_scheme_id=1))
             session.commit()
 
         assert schemes.get(2) is None
@@ -620,22 +657,34 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=4,
                         capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
-                        scheme_type_id=1,
+                        scheme_type_id=2,
                         funding_programme_id=2,
                     ),
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=5,
                         capital_scheme_id=2,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="School Streets",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=3),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=6,
                         capital_scheme_id=3,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="Hospital Fields Road",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
@@ -649,14 +698,55 @@ class TestDatabaseSchemeRepository:
         scheme2: Scheme
         scheme1, scheme2 = schemes.get_by_authority(1)
 
+        assert scheme1.id == 1
+        assert scheme2.id == 2
+
+    def test_get_all_schemes_overview_revisions_by_authority(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
+        with session_maker() as session:
+            session.add_all(
+                [
+                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=3,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
+                        scheme_name="Wirral Package",
+                        bid_submitting_authority_id=1,
+                        scheme_type_id=1,
+                        funding_programme_id=2,
+                    ),
+                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=4,
+                        capital_scheme_id=2,
+                        effective_date_from=datetime(2020, 2, 1),
+                        effective_date_to=None,
+                        scheme_name="School Streets",
+                        bid_submitting_authority_id=2,
+                        scheme_type_id=2,
+                        funding_programme_id=3,
+                    ),
+                ]
+            )
+            session.commit()
+
+        scheme1: Scheme
+        (scheme1,) = schemes.get_by_authority(1)
+
+        assert scheme1.id == 1
+        overview_revision1: OverviewRevision
+        (overview_revision1,) = scheme1.overview.overview_revisions
         assert (
-            scheme1.id == 1
-            and scheme1.name == "Wirral Package"
-            and scheme1.authority_id == 1
-            and scheme1.type == SchemeType.DEVELOPMENT
-            and scheme1.funding_programme == FundingProgrammes.ATF3
+            overview_revision1.id == 3
+            and overview_revision1.effective == DateRange(datetime(2020, 1, 1), None)
+            and overview_revision1.name == "Wirral Package"
+            and overview_revision1.authority_id == 1
+            and overview_revision1.type == SchemeType.DEVELOPMENT
+            and overview_revision1.funding_programme == FundingProgrammes.ATF3
         )
-        assert scheme2.id == 2 and scheme2.name == "School Streets" and scheme2.authority_id == 1
 
     def test_get_all_schemes_bid_status_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
@@ -664,29 +754,37 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=3,
                         capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeBidStatusEntity(
-                        capital_scheme_bid_status_id=3,
+                        capital_scheme_bid_status_id=5,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
                         bid_status_id=2,
                     ),
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=4,
                         capital_scheme_id=2,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="School Streets",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeBidStatusEntity(
-                        capital_scheme_bid_status_id=4,
+                        capital_scheme_bid_status_id=6,
                         capital_scheme_id=2,
                         effective_date_from=datetime(2020, 2, 1),
                         effective_date_to=None,
@@ -703,7 +801,7 @@ class TestDatabaseSchemeRepository:
         bid_status_revision1: BidStatusRevision
         (bid_status_revision1,) = scheme1.funding.bid_status_revisions
         assert (
-            bid_status_revision1.id == 3
+            bid_status_revision1.id == 5
             and bid_status_revision1.effective == DateRange(datetime(2020, 1, 1), None)
             and bid_status_revision1.status == BidStatus.FUNDED
         )
@@ -714,15 +812,19 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=3,
                         capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeFinancialEntity(
-                        capital_scheme_financial_id=3,
+                        capital_scheme_financial_id=5,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
@@ -730,15 +832,19 @@ class TestDatabaseSchemeRepository:
                         amount=100_000,
                         data_source_id=3,
                     ),
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=4,
                         capital_scheme_id=2,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="School Streets",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeFinancialEntity(
-                        capital_scheme_financial_id=4,
+                        capital_scheme_financial_id=6,
                         capital_scheme_id=2,
                         effective_date_from=datetime(2020, 2, 1),
                         effective_date_to=None,
@@ -757,7 +863,7 @@ class TestDatabaseSchemeRepository:
         financial_revision1: FinancialRevision
         (financial_revision1,) = scheme1.funding.financial_revisions
         assert (
-            financial_revision1.id == 3
+            financial_revision1.id == 5
             and financial_revision1.effective == DateRange(datetime(2020, 1, 1), None)
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
@@ -770,15 +876,19 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=4,
                         capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeMilestoneEntity(
-                        capital_scheme_milestone_id=4,
+                        capital_scheme_milestone_id=7,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
@@ -787,15 +897,19 @@ class TestDatabaseSchemeRepository:
                         status_date=date(2020, 2, 1),
                         data_source_id=3,
                     ),
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=5,
                         capital_scheme_id=2,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="School Streets",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeMilestoneEntity(
-                        capital_scheme_milestone_id=5,
+                        capital_scheme_milestone_id=8,
                         capital_scheme_id=2,
                         effective_date_from=datetime(2020, 2, 1),
                         effective_date_to=None,
@@ -804,15 +918,19 @@ class TestDatabaseSchemeRepository:
                         status_date=date(2020, 3, 1),
                         data_source_id=3,
                     ),
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=3),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=6,
                         capital_scheme_id=3,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="Hospital Fields Road",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeMilestoneEntity(
-                        capital_scheme_milestone_id=6,
+                        capital_scheme_milestone_id=9,
                         capital_scheme_id=3,
                         effective_date_from=datetime(2020, 3, 1),
                         effective_date_to=None,
@@ -833,7 +951,7 @@ class TestDatabaseSchemeRepository:
         milestone_revision1: MilestoneRevision
         (milestone_revision1,) = scheme1.milestones.milestone_revisions
         assert (
-            milestone_revision1.id == 4
+            milestone_revision1.id == 7
             and milestone_revision1.effective == DateRange(datetime(2020, 1, 1), None)
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
@@ -844,7 +962,7 @@ class TestDatabaseSchemeRepository:
         milestone_revision2: MilestoneRevision
         (milestone_revision2,) = scheme2.milestones.milestone_revisions
         assert (
-            milestone_revision2.id == 5
+            milestone_revision2.id == 8
             and milestone_revision2.effective == DateRange(datetime(2020, 2, 1), None)
             and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision2.observation_type == ObservationType.PLANNED
@@ -858,15 +976,19 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=4,
                         capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeInterventionEntity(
-                        capital_scheme_intervention_id=4,
+                        capital_scheme_intervention_id=7,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
                         effective_date_to=None,
@@ -874,15 +996,19 @@ class TestDatabaseSchemeRepository:
                         intervention_value=Decimal(10),
                         observation_type_id=1,
                     ),
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=5,
                         capital_scheme_id=2,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="School Streets",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeInterventionEntity(
-                        capital_scheme_intervention_id=5,
+                        capital_scheme_intervention_id=8,
                         capital_scheme_id=2,
                         effective_date_from=datetime(2020, 2, 1),
                         effective_date_to=None,
@@ -890,15 +1016,19 @@ class TestDatabaseSchemeRepository:
                         intervention_value=Decimal(20),
                         observation_type_id=1,
                     ),
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=3),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=6,
                         capital_scheme_id=3,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="Hospital Fields Road",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeInterventionEntity(
-                        capital_scheme_intervention_id=6,
+                        capital_scheme_intervention_id=9,
                         capital_scheme_id=3,
                         effective_date_from=datetime(2020, 3, 1),
                         effective_date_to=None,
@@ -918,7 +1048,7 @@ class TestDatabaseSchemeRepository:
         output_revision1: OutputRevision
         (output_revision1,) = scheme1.outputs.output_revisions
         assert (
-            output_revision1.id == 4
+            output_revision1.id == 7
             and output_revision1.effective == DateRange(datetime(2020, 1, 1), None)
             and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision1.value == Decimal(10)
@@ -928,7 +1058,7 @@ class TestDatabaseSchemeRepository:
         output_revision2: OutputRevision
         (output_revision2,) = scheme2.outputs.output_revisions
         assert (
-            output_revision2.id == 5
+            output_revision2.id == 8
             and output_revision2.effective == DateRange(datetime(2020, 2, 1), None)
             and output_revision2.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision2.value == Decimal(20)
@@ -941,28 +1071,36 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=3,
                         capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeAuthorityReviewEntity(
-                        capital_scheme_authority_review_id=2,
+                        capital_scheme_authority_review_id=5,
                         capital_scheme_id=1,
                         review_date=datetime(2020, 1, 1),
                         data_source_id=3,
                     ),
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=4,
                         capital_scheme_id=2,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="School Streets",
                         bid_submitting_authority_id=2,
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
                     CapitalSchemeAuthorityReviewEntity(
-                        capital_scheme_authority_review_id=3,
+                        capital_scheme_authority_review_id=6,
                         capital_scheme_id=2,
                         review_date=datetime(2020, 2, 1),
                         data_source_id=2,
@@ -978,7 +1116,7 @@ class TestDatabaseSchemeRepository:
         authority_review1: AuthorityReview
         (authority_review1,) = scheme1.reviews.authority_reviews
         assert (
-            authority_review1.id == 2
+            authority_review1.id == 5
             and authority_review1.review_date == datetime(2020, 1, 1)
             and authority_review1.source == DataSource.ATF4_BID
         )
@@ -987,8 +1125,11 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
+                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeOverviewEntity(
                         capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=2,
@@ -1028,13 +1169,7 @@ class TestDatabaseSchemeRepository:
                     CapitalSchemeAuthorityReviewEntity(
                         capital_scheme_id=1, review_date=datetime(2020, 1, 1, 12), data_source_id=3
                     ),
-                    CapitalSchemeEntity(
-                        capital_scheme_id=2,
-                        scheme_name="School Streets",
-                        bid_submitting_authority_id=1,
-                        scheme_type_id=2,
-                        funding_programme_id=3,
-                    ),
+                    CapitalSchemeEntity(capital_scheme_id=2),
                 ]
             )
             session.commit()
@@ -1050,13 +1185,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
-                        capital_scheme_id=1,
-                        scheme_name="Wirral Package",
-                        bid_submitting_authority_id=1,
-                        scheme_type_id=2,
-                        funding_programme_id=3,
-                    ),
+                    CapitalSchemeEntity(capital_scheme_id=1),
                     CapitalSchemeFinancialEntity(
                         capital_scheme_financial_id=2,
                         capital_scheme_id=1,
@@ -1109,13 +1238,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
-                        capital_scheme_id=1,
-                        scheme_name="Wirral Package",
-                        bid_submitting_authority_id=1,
-                        scheme_type_id=2,
-                        funding_programme_id=3,
-                    ),
+                    CapitalSchemeEntity(capital_scheme_id=1),
                     CapitalSchemeMilestoneEntity(
                         capital_scheme_milestone_id=2,
                         capital_scheme_id=1,
@@ -1171,13 +1294,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(
-                        capital_scheme_id=1,
-                        scheme_name="Wirral Package",
-                        bid_submitting_authority_id=1,
-                        scheme_type_id=2,
-                        funding_programme_id=3,
-                    ),
+                    CapitalSchemeEntity(capital_scheme_id=1),
                     CapitalSchemeAuthorityReviewEntity(
                         capital_scheme_authority_review_id=2,
                         capital_scheme_id=1,
@@ -1206,29 +1323,3 @@ class TestDatabaseSchemeRepository:
             and capital_scheme_authority_review2.review_date == datetime(2020, 1, 2)
             and capital_scheme_authority_review2.data_source_id == 16
         )
-
-
-@pytest.mark.parametrize("type_, id_", [(SchemeType.DEVELOPMENT, 1), (SchemeType.CONSTRUCTION, 2)])
-class TestSchemeTypeMapper:
-    def test_to_id(self, type_: SchemeType, id_: int) -> None:
-        assert SchemeTypeMapper().to_id(type_) == id_
-
-    def test_to_domain(self, type_: SchemeType, id_: int) -> None:
-        assert SchemeTypeMapper().to_domain(id_) == type_
-
-
-@pytest.mark.parametrize(
-    "funding_programme, id_",
-    [
-        (FundingProgrammes.ATF2, 1),
-        (FundingProgrammes.ATF3, 2),
-        (FundingProgrammes.ATF4, 3),
-        (FundingProgrammes.ATF4E, 4),
-    ],
-)
-class TestFundingProgrammeMapper:
-    def test_to_id(self, funding_programme: FundingProgramme, id_: int) -> None:
-        assert FundingProgrammeMapper().to_id(funding_programme) == id_
-
-    def test_to_domain(self, funding_programme: FundingProgramme, id_: int) -> None:
-        assert FundingProgrammeMapper().to_domain(id_) == funding_programme

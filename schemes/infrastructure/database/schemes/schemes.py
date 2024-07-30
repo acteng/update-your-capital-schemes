@@ -2,19 +2,16 @@ import inject
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, selectinload, sessionmaker
 
-from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
     AuthorityReview,
     BidStatusRevision,
     FinancialRevision,
-    FundingProgramme,
-    FundingProgrammes,
     MilestoneRevision,
     OutputRevision,
+    OverviewRevision,
     Scheme,
     SchemeRepository,
-    SchemeType,
 )
 from schemes.infrastructure.database import (
     CapitalSchemeAuthorityReviewEntity,
@@ -23,6 +20,7 @@ from schemes.infrastructure.database import (
     CapitalSchemeFinancialEntity,
     CapitalSchemeInterventionEntity,
     CapitalSchemeMilestoneEntity,
+    CapitalSchemeOverviewEntity,
 )
 from schemes.infrastructure.database.schemes.data_source import DataSourceMapper
 from schemes.infrastructure.database.schemes.funding import (
@@ -32,6 +30,10 @@ from schemes.infrastructure.database.schemes.funding import (
 from schemes.infrastructure.database.schemes.milestones import MilestoneMapper
 from schemes.infrastructure.database.schemes.observations import ObservationTypeMapper
 from schemes.infrastructure.database.schemes.outputs import OutputTypeMeasureMapper
+from schemes.infrastructure.database.schemes.overview import (
+    FundingProgrammeMapper,
+    SchemeTypeMapper,
+)
 
 
 class DatabaseSchemeRepository(SchemeRepository):
@@ -59,6 +61,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             session.execute(delete(CapitalSchemeMilestoneEntity))
             session.execute(delete(CapitalSchemeFinancialEntity))
             session.execute(delete(CapitalSchemeBidStatusEntity))
+            session.execute(delete(CapitalSchemeOverviewEntity))
             session.execute(delete(CapitalSchemeEntity))
             session.commit()
 
@@ -77,7 +80,12 @@ class DatabaseSchemeRepository(SchemeRepository):
             result = session.scalars(
                 select(CapitalSchemeEntity)
                 .options(selectinload("*"))
-                .where(CapitalSchemeEntity.bid_submitting_authority_id == authority_id)
+                .join(
+                    CapitalSchemeEntity.capital_scheme_overviews.and_(
+                        CapitalSchemeOverviewEntity.effective_date_to.is_(None)
+                    )
+                )
+                .where(CapitalSchemeOverviewEntity.bid_submitting_authority_id == authority_id)
                 .order_by(CapitalSchemeEntity.capital_scheme_id)
             )
             return [self._capital_scheme_to_domain(row) for row in result]
@@ -90,10 +98,10 @@ class DatabaseSchemeRepository(SchemeRepository):
     def _capital_scheme_from_domain(self, scheme: Scheme) -> CapitalSchemeEntity:
         return CapitalSchemeEntity(
             capital_scheme_id=scheme.id,
-            scheme_name=scheme.name,
-            bid_submitting_authority_id=scheme.authority_id,
-            scheme_type_id=self._scheme_type_mapper.to_id(scheme.type),
-            funding_programme_id=self._funding_programme_mapper.to_id(scheme.funding_programme),
+            capital_scheme_overviews=[
+                self._capital_scheme_overview_from_domain(overview_revision)
+                for overview_revision in scheme.overview.overview_revisions
+            ],
             capital_scheme_bid_statuses=[
                 self._capital_scheme_bid_status_from_domain(bid_status_revision)
                 for bid_status_revision in scheme.funding.bid_status_revisions
@@ -117,13 +125,10 @@ class DatabaseSchemeRepository(SchemeRepository):
         )
 
     def _capital_scheme_to_domain(self, capital_scheme: CapitalSchemeEntity) -> Scheme:
-        scheme = Scheme(
-            id_=capital_scheme.capital_scheme_id,
-            name=capital_scheme.scheme_name,
-            authority_id=capital_scheme.bid_submitting_authority_id,
-            type_=self._scheme_type_mapper.to_domain(capital_scheme.scheme_type_id),
-            funding_programme=self._funding_programme_mapper.to_domain(capital_scheme.funding_programme_id),
-        )
+        scheme = Scheme(id_=capital_scheme.capital_scheme_id)
+
+        for capital_scheme_overview in capital_scheme.capital_scheme_overviews:
+            scheme.overview.update_overview(self._capital_scheme_overview_to_domain(capital_scheme_overview))
 
         for capital_scheme_bid_status in capital_scheme.capital_scheme_bid_statuses:
             scheme.funding.update_bid_status(self._capital_scheme_bid_status_to_domain(capital_scheme_bid_status))
@@ -143,6 +148,29 @@ class DatabaseSchemeRepository(SchemeRepository):
             )
 
         return scheme
+
+    def _capital_scheme_overview_from_domain(self, overview_revision: OverviewRevision) -> CapitalSchemeOverviewEntity:
+        return CapitalSchemeOverviewEntity(
+            capital_scheme_overview_id=overview_revision.id,
+            effective_date_from=overview_revision.effective.date_from,
+            effective_date_to=overview_revision.effective.date_to,
+            scheme_name=overview_revision.name,
+            bid_submitting_authority_id=overview_revision.authority_id,
+            scheme_type_id=self._scheme_type_mapper.to_id(overview_revision.type),
+            funding_programme_id=self._funding_programme_mapper.to_id(overview_revision.funding_programme),
+        )
+
+    def _capital_scheme_overview_to_domain(
+        self, capital_scheme_overview: CapitalSchemeOverviewEntity
+    ) -> OverviewRevision:
+        return OverviewRevision(
+            id_=capital_scheme_overview.capital_scheme_overview_id,
+            effective=DateRange(capital_scheme_overview.effective_date_from, capital_scheme_overview.effective_date_to),
+            name=capital_scheme_overview.scheme_name,
+            authority_id=capital_scheme_overview.bid_submitting_authority_id,
+            type_=self._scheme_type_mapper.to_domain(capital_scheme_overview.scheme_type_id),
+            funding_programme=self._funding_programme_mapper.to_domain(capital_scheme_overview.funding_programme_id),
+        )
 
     def _capital_scheme_bid_status_from_domain(
         self, bid_status_revision: BidStatusRevision
@@ -261,26 +289,3 @@ class DatabaseSchemeRepository(SchemeRepository):
             review_date=capital_scheme_authority_review.review_date,
             source=self._data_source_mapper.to_domain(capital_scheme_authority_review.data_source_id),
         )
-
-
-class SchemeTypeMapper:
-    _IDS = {
-        SchemeType.DEVELOPMENT: 1,
-        SchemeType.CONSTRUCTION: 2,
-    }
-
-    def to_id(self, type_: SchemeType) -> int:
-        return self._IDS[type_]
-
-    def to_domain(self, id_: int) -> SchemeType:
-        return inverse_dict(self._IDS)[id_]
-
-
-class FundingProgrammeMapper:
-    _IDS = {FundingProgrammes.ATF2: 1, FundingProgrammes.ATF3: 2, FundingProgrammes.ATF4: 3, FundingProgrammes.ATF4E: 4}
-
-    def to_id(self, funding_programme: FundingProgramme) -> int:
-        return self._IDS[funding_programme]
-
-    def to_domain(self, id_: int) -> FundingProgramme:
-        return inverse_dict(self._IDS)[id_]

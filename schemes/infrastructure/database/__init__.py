@@ -34,18 +34,34 @@ class CapitalSchemeEntity(Base):
     __table_args__ = {"schema": "capital_scheme"}
 
     capital_scheme_id: Mapped[int] = mapped_column(primary_key=True)
-    scheme_name: Mapped[str] = mapped_column(Text)
-    bid_submitting_authority_id = mapped_column(
-        ForeignKey("authority.authority.authority_id", name="capital_scheme_bid_submitting_authority_id_fkey"),
-        nullable=False,
-    )
-    scheme_type_id: Mapped[int]
-    funding_programme_id: Mapped[int]
+    capital_scheme_overviews: Mapped[list[CapitalSchemeOverviewEntity]] = relationship()
     capital_scheme_bid_statuses: Mapped[list[CapitalSchemeBidStatusEntity]] = relationship()
     capital_scheme_financials: Mapped[list[CapitalSchemeFinancialEntity]] = relationship()
     capital_scheme_milestones: Mapped[list[CapitalSchemeMilestoneEntity]] = relationship()
     capital_scheme_interventions: Mapped[list[CapitalSchemeInterventionEntity]] = relationship()
     capital_scheme_authority_reviews: Mapped[list[CapitalSchemeAuthorityReviewEntity]] = relationship()
+
+
+class CapitalSchemeOverviewEntity(Base):
+    __tablename__ = "capital_scheme_overview"
+    __table_args__ = {"schema": "capital_scheme"}
+
+    capital_scheme_overview_id: Mapped[int] = mapped_column(primary_key=True)
+    capital_scheme_id = mapped_column(
+        ForeignKey(
+            "capital_scheme.capital_scheme.capital_scheme_id", name="capital_scheme_overview_capital_scheme_id_fkey"
+        ),
+        nullable=False,
+    )
+    scheme_name: Mapped[str] = mapped_column(Text)
+    bid_submitting_authority_id = mapped_column(
+        ForeignKey("authority.authority.authority_id", name="capital_scheme_overview_bid_submitting_authority_id_fkey"),
+        nullable=False,
+    )
+    scheme_type_id: Mapped[int]
+    funding_programme_id: Mapped[int]
+    effective_date_from: Mapped[datetime]
+    effective_date_to: Mapped[datetime | None]
 
 
 class CapitalSchemeBidStatusEntity(Base):

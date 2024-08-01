@@ -3,6 +3,10 @@
 {% from "govuk_frontend_jinja/components/table/macro.html" import govukTable -%}
 {% from "govuk_frontend_jinja/components/tag/macro.html" import govukTag %}
 
+{% block pageTitle -%}
+    Your schemes - {{ super() }}
+{%- endblock %}
+
 {% block content %}
 
     {% with messages = get_flashed_messages() %}

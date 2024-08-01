@@ -38,6 +38,11 @@ class TestSchemes:
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
+    def test_schemes_shows_title(self, client: FlaskClient) -> None:
+        schemes_page = SchemesPage.open(client)
+
+        assert schemes_page.title == "Your schemes - Update your capital schemes - Active Travel England - GOV.UK"
+
     @pytest.mark.parametrize(
         "now, expected_notification_banner",
         [

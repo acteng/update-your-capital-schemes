@@ -2,7 +2,9 @@
 {% from "govuk_frontend_jinja/components/phase-banner/macro.html" import govukPhaseBanner -%}
 {% from "ate_header/macro.html" import ateHeader -%}
 
-{% block pageTitle %}Update your capital schemes - Active Travel England - GOV.UK{% endblock %}
+{% block pageTitle -%}
+    Update your capital schemes - Active Travel England - GOV.UK
+{%- endblock %}
 
 {% block head %}
     <link href="{{ url_for('static', filename='govuk-frontend/govuk-frontend.min.css') }}" rel="stylesheet">

@@ -5,7 +5,9 @@
 {% from "govuk_frontend_jinja/components/tag/macro.html" import govukTag %}
 {% from "govuk_frontend_jinja/components/inset-text/macro.html" import govukInsetText %}
 
-{% block pageTitle %}{% if review.form.errors %}Error: {% endif %}{{ super() }}{% endblock %}
+{% block pageTitle -%}
+    {% if review.form.errors %}Error: {% endif %}{{ super() }}
+{%- endblock %}
 
 {% block beforeContent %}
     {{ super() }}

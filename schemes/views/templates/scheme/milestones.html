@@ -5,7 +5,9 @@
 {% from "govuk_frontend_jinja/components/error-summary/macro.html" import govukErrorSummary %}
 {% from "govuk_frontend_jinja/components/notification-banner/macro.html" import govukNotificationBanner %}
 
-{% block pageTitle %}{% if form.errors %}Error: {% endif %}{{ super() }}{% endblock %}
+{% block pageTitle -%}
+    {% if form.errors %}Error: {% endif %}{{ super() }}
+{%- endblock %}
 
 {% block beforeContent %}
     {{ super() }}

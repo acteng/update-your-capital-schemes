@@ -49,6 +49,13 @@ class TestScheme:
 
         assert response.status_code == 200 and response.content_type == "text/html; charset=utf-8"
 
+    def test_scheme_shows_title(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        scheme_page = SchemePage.open(client, id_=1)
+
+        assert scheme_page.title == "Wirral Package - Update your capital schemes - Active Travel England - GOV.UK"
+
     def test_scheme_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 

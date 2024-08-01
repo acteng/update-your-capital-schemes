@@ -50,7 +50,7 @@ def test_scheme_cannot_review_when_error(app_client: AppClient, oidc_client: Oid
 
     scheme_page = SchemePage.open(page, id_=1).review.form.confirm_when_error()
 
-    assert scheme_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
+    assert scheme_page.title == "Error: Wirral Package - Update your capital schemes - Active Travel England - GOV.UK"
     assert list(scheme_page.errors) == ["Confirm this scheme is up-to-date"]
     assert (
         scheme_page.review.form.up_to_date.is_errored

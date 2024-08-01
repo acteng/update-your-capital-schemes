@@ -6,7 +6,7 @@
 {% from "govuk_frontend_jinja/components/inset-text/macro.html" import govukInsetText %}
 
 {% block pageTitle -%}
-    {% if review.form.errors %}Error: {% endif %}{{ super() }}
+    {% if review.form.errors %}Error: {% endif %}{{ name }} - {{ super() }}
 {%- endblock %}
 
 {% block beforeContent %}

@@ -106,7 +106,9 @@ class TestSchemeReview:
 
         scheme_page = SchemePage(client.post("/schemes/1", data={"csrf_token": csrf_token}, follow_redirects=True))
 
-        assert scheme_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
+        assert (
+            scheme_page.title == "Error: Wirral Package - Update your capital schemes - Active Travel England - GOV.UK"
+        )
         assert scheme_page.errors and list(scheme_page.errors) == ["Confirm this scheme is up-to-date"]
         assert (
             scheme_page.review.form.up_to_date.is_errored

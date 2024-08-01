@@ -135,6 +135,16 @@ class TestSchemeMilestones:
             {"milestone": "Construction completed", "planned": "1 Jun 2020", "actual": ""},
         ]
 
+    def test_milestones_form_shows_title(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+        assert (
+            change_milestone_dates_page.title
+            == "Change milestone dates - Update your capital schemes - Active Travel England - GOV.UK"
+        )
+
     def test_milestones_form_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
@@ -182,7 +192,6 @@ class TestSchemeMilestones:
 
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
-        assert change_milestone_dates_page.title == "Update your capital schemes - Active Travel England - GOV.UK"
         assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
 
     def test_milestones_form_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -297,7 +306,8 @@ class TestSchemeMilestones:
         )
 
         assert (
-            change_milestone_dates_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
+            change_milestone_dates_page.title
+            == "Error: Change milestone dates - Update your capital schemes - Active Travel England - GOV.UK"
         )
         assert change_milestone_dates_page.errors and list(change_milestone_dates_page.errors) == [
             "Construction started actual date must be a real date"

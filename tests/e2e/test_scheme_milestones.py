@@ -292,7 +292,10 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
         .confirm_when_error()
     )
 
-    assert change_milestone_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
+    assert (
+        change_milestone_page.title
+        == "Error: Change milestone dates - Update your capital schemes - Active Travel England - GOV.UK"
+    )
     assert list(change_milestone_page.errors) == ["Construction completed planned date must be a real date"]
     assert (
         change_milestone_page.form.construction_completed.planned.is_errored

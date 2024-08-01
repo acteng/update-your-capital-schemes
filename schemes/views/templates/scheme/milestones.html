@@ -6,7 +6,7 @@
 {% from "govuk_frontend_jinja/components/notification-banner/macro.html" import govukNotificationBanner %}
 
 {% block pageTitle -%}
-    {% if form.errors %}Error: {% endif %}{{ super() }}
+    {% if form.errors %}Error: {% endif %}Change milestone dates - {{ super() }}
 {%- endblock %}
 
 {% block beforeContent %}

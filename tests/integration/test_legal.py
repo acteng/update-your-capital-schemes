@@ -8,6 +8,7 @@ class TestLegal:
         privacy_page = PrivacyPage.open(client)
 
         assert privacy_page.is_visible
+        assert privacy_page.title == "Privacy notice - Update your capital schemes - Active Travel England - GOV.UK"
 
     def test_cookies(self, client: FlaskClient) -> None:
         cookies_page = CookiesPage.open(client)

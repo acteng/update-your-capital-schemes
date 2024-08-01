@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% from "govuk_frontend_jinja/components/table/macro.html" import govukTable -%}
 
+{% block pageTitle -%}
+    Cookies - {{ super() }}
+{%- endblock %}
+
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">

@@ -14,3 +14,4 @@ class TestLegal:
         cookies_page = CookiesPage.open(client)
 
         assert cookies_page.is_visible
+        assert cookies_page.title == "Cookies - Update your capital schemes - Active Travel England - GOV.UK"

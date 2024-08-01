@@ -100,6 +100,16 @@ class TestSchemeFunding:
 
         assert scheme_page.funding.change_spend_to_date_url == "/schemes/1/spend-to-date"
 
+    def test_spend_to_date_form_shows_title(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
+
+        assert (
+            change_spend_to_date_page.title
+            == "Change spend to date - Update your capital schemes - Active Travel England - GOV.UK"
+        )
+
     def test_spend_to_date_form_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
@@ -148,7 +158,6 @@ class TestSchemeFunding:
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-        assert change_spend_to_date_page.title == "Update your capital schemes - Active Travel England - GOV.UK"
         assert change_spend_to_date_page.form.amount.value == "50000"
 
     def test_spend_to_date_form_shows_zero_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -295,7 +304,10 @@ class TestSchemeFunding:
             client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": ""})
         )
 
-        assert change_spend_to_date_page.title == "Error: Update your capital schemes - Active Travel England - GOV.UK"
+        assert (
+            change_spend_to_date_page.title
+            == "Error: Change spend to date - Update your capital schemes - Active Travel England - GOV.UK"
+        )
         assert change_spend_to_date_page.errors and list(change_spend_to_date_page.errors) == ["Enter spend to date"]
         assert (
             change_spend_to_date_page.form.amount.is_errored

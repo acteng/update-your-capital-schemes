@@ -1,7 +1,7 @@
 [project]
 name = "schemes"
 version = "1.0.0"
-description = "ATE Schemes App."
+description = "Update your capital schemes service."
 requires-python = ">=3.12"
 dependencies = [
     "alembic~=1.13.0",

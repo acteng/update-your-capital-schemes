@@ -158,22 +158,22 @@ class TestSchemeMilestones:
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
         assert (
-            change_milestone_dates_page.form.feasibility_design_completed.planned.name
+            change_milestone_dates_page.form.feasibility_design_completed_planned.name
             == "feasibility_design_completed_planned"
-            and change_milestone_dates_page.form.feasibility_design_completed.actual.name
+            and change_milestone_dates_page.form.feasibility_design_completed_actual.name
             == "feasibility_design_completed_actual"
-            and change_milestone_dates_page.form.preliminary_design_completed.planned.name
+            and change_milestone_dates_page.form.preliminary_design_completed_planned.name
             == "preliminary_design_completed_planned"
-            and change_milestone_dates_page.form.preliminary_design_completed.actual.name
+            and change_milestone_dates_page.form.preliminary_design_completed_actual.name
             == "preliminary_design_completed_actual"
-            and change_milestone_dates_page.form.detailed_design_completed.planned.name
+            and change_milestone_dates_page.form.detailed_design_completed_planned.name
             == "detailed_design_completed_planned"
-            and change_milestone_dates_page.form.detailed_design_completed.actual.name
+            and change_milestone_dates_page.form.detailed_design_completed_actual.name
             == "detailed_design_completed_actual"
-            and change_milestone_dates_page.form.construction_started.planned.name == "construction_started_planned"
-            and change_milestone_dates_page.form.construction_started.actual.name == "construction_started_actual"
-            and change_milestone_dates_page.form.construction_completed.planned.name == "construction_completed_planned"
-            and change_milestone_dates_page.form.construction_completed.actual.name == "construction_completed_actual"
+            and change_milestone_dates_page.form.construction_started_planned.name == "construction_started_planned"
+            and change_milestone_dates_page.form.construction_started_actual.name == "construction_started_actual"
+            and change_milestone_dates_page.form.construction_completed_planned.name == "construction_completed_planned"
+            and change_milestone_dates_page.form.construction_completed_actual.name == "construction_completed_actual"
         )
 
     def test_milestones_form_shows_date(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -192,7 +192,7 @@ class TestSchemeMilestones:
 
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
-        assert change_milestone_dates_page.form.construction_started.actual.value == "2 1 2020"
+        assert change_milestone_dates_page.form.construction_started_actual.value == "2 1 2020"
 
     def test_milestones_form_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
@@ -313,10 +313,10 @@ class TestSchemeMilestones:
             "Construction started actual date must be a real date"
         ]
         assert (
-            change_milestone_dates_page.form.construction_started.actual.is_errored
-            and change_milestone_dates_page.form.construction_started.actual.error
+            change_milestone_dates_page.form.construction_started_actual.is_errored
+            and change_milestone_dates_page.form.construction_started_actual.error
             == "Error: Construction started actual date must be a real date"
-            and change_milestone_dates_page.form.construction_started.actual.value == "x x x"
+            and change_milestone_dates_page.form.construction_started_actual.value == "x x x"
         )
         actual_scheme = schemes.get(1)
         assert actual_scheme

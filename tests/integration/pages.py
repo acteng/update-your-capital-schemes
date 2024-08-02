@@ -412,30 +412,37 @@ class ChangeSpendToDateFormComponent:
 class ChangeMilestoneDatesFormComponent:
     def __init__(self, form: Tag):
         self.confirm_url = form["action"]
-        self.feasibility_design_completed = ChangeMilestoneDatesFormRowComponent(
-            one(form.select("h2:-soup-contains('Feasibility design completed')"))
+        self.feasibility_design_completed_planned = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Feasibility design completed Planned date'))"))
         )
-        self.preliminary_design_completed = ChangeMilestoneDatesFormRowComponent(
-            one(form.select("h2:-soup-contains('Preliminary design completed')"))
+        self.feasibility_design_completed_actual = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Feasibility design completed Actual date'))"))
         )
-        self.detailed_design_completed = ChangeMilestoneDatesFormRowComponent(
-            one(form.select("h2:-soup-contains('Detailed design completed')"))
+        self.preliminary_design_completed_planned = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Preliminary design completed Planned date'))"))
         )
-        self.construction_started = ChangeMilestoneDatesFormRowComponent(
-            one(form.select("h2:-soup-contains('Construction started')"))
+        self.preliminary_design_completed_actual = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Preliminary design completed Actual date'))"))
         )
-        self.construction_completed = ChangeMilestoneDatesFormRowComponent(
-            one(form.select("h2:-soup-contains('Construction completed')"))
+        self.detailed_design_completed_planned = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Detailed design completed Planned date'))"))
+        )
+        self.detailed_design_completed_actual = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Detailed design completed Actual date'))"))
+        )
+        self.construction_started_planned = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Construction started Planned date'))"))
+        )
+        self.construction_started_actual = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Construction started Actual date'))"))
+        )
+        self.construction_completed_planned = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Construction completed Planned date'))"))
+        )
+        self.construction_completed_actual = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Construction completed Actual date'))"))
         )
         self.cancel_url = one(form.select("a"))["href"]
-
-
-class ChangeMilestoneDatesFormRowComponent:
-    def __init__(self, heading: Tag):
-        grid_row = heading.find_next_sibling("div", class_="govuk-grid-row")
-        assert isinstance(grid_row, Tag)
-        self.planned = DateComponent(one(grid_row.select("fieldset:has(legend:-soup-contains('Planned date'))")))
-        self.actual = DateComponent(one(grid_row.select("fieldset:has(legend:-soup-contains('Actual date'))")))
 
 
 class DateComponent:

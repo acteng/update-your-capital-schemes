@@ -484,20 +484,20 @@ class ChangeMilestoneDatesPage(PageObject):
 class ChangeMilestoneDatesFormComponent:
     def __init__(self, form: Locator):
         self._form = form
-        self.construction_started = ChangeMilestoneDateFormRowComponent(
-            form.get_by_role("heading", name="Construction started")
+        self.construction_started_actual = DateComponent(
+            form.get_by_role("group", name="Construction started Actual date")
         )
-        self.construction_completed = ChangeMilestoneDateFormRowComponent(
-            form.get_by_role("heading", name="Construction completed")
+        self.construction_completed_planned = DateComponent(
+            form.get_by_role("group", name="Construction completed Planned date")
         )
         self._confirm = form.get_by_role("button", name="Confirm")
 
-    def enter_construction_started(self, actual: str) -> ChangeMilestoneDatesFormComponent:
-        self.construction_started.actual.value = actual
+    def enter_construction_started_actual(self, value: str) -> ChangeMilestoneDatesFormComponent:
+        self.construction_started_actual.value = value
         return self
 
-    def enter_construction_completed(self, planned: str) -> ChangeMilestoneDatesFormComponent:
-        self.construction_completed.planned.value = planned
+    def enter_construction_completed_planned(self, value: str) -> ChangeMilestoneDatesFormComponent:
+        self.construction_completed_planned.value = value
         return self
 
     def confirm(self) -> SchemePage:
@@ -507,13 +507,6 @@ class ChangeMilestoneDatesFormComponent:
     def confirm_when_error(self) -> ChangeMilestoneDatesPage:
         self._confirm.click()
         return ChangeMilestoneDatesPage(self._form.page)
-
-
-class ChangeMilestoneDateFormRowComponent:
-    def __init__(self, heading: Locator):
-        grid_row = heading.locator("xpath=following-sibling::*").first
-        self.planned = DateComponent(grid_row.get_by_role("group", name="Planned date"))
-        self.actual = DateComponent(grid_row.get_by_role("group", name="Actual date"))
 
 
 class DateComponent:

@@ -288,7 +288,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
     change_milestone_page = (
         SchemePage.open(page, id_=1)
         .milestones.change_milestone_dates()
-        .form.enter_construction_completed_planned("30th Sept 2023")
+        .form.enter_construction_completed_planned("x x x")
         .confirm_when_error()
     )
 
@@ -301,7 +301,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
         change_milestone_page.form.construction_completed_planned.is_errored
         and change_milestone_page.form.construction_completed_planned.error
         == "Error: Construction completed planned date must be a real date"
-        and change_milestone_page.form.construction_completed_planned.value == "30th Sept 2023"
+        and change_milestone_page.form.construction_completed_planned.value == "x x x"
     )
 
     assert app_client.get_scheme(id_=1).milestone_revisions == [

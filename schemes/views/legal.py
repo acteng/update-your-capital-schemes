@@ -11,6 +11,12 @@ def privacy() -> str:
     return render_template("legal/privacy.html")
 
 
+@bp.get("/accessibility")
+@basic_auth
+def accessibility() -> str:
+    return render_template("legal/accessibility.html")
+
+
 @bp.get("/cookies")
 @basic_auth
 def cookies() -> str:

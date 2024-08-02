@@ -1,6 +1,6 @@
 from flask.testing import FlaskClient
 
-from tests.integration.pages import CookiesPage, PrivacyPage
+from tests.integration.pages import AccessibilityPage, CookiesPage, PrivacyPage
 
 
 class TestLegal:
@@ -9,6 +9,15 @@ class TestLegal:
 
         assert privacy_page.is_visible
         assert privacy_page.title == "Privacy notice - Update your capital schemes - Active Travel England - GOV.UK"
+
+    def test_accessibility(self, client: FlaskClient) -> None:
+        accessibility_page = AccessibilityPage.open(client)
+
+        assert accessibility_page.is_visible
+        assert (
+            accessibility_page.title
+            == "Accessibility statement - Update your capital schemes - Active Travel England - GOV.UK"
+        )
 
     def test_cookies(self, client: FlaskClient) -> None:
         cookies_page = CookiesPage.open(client)

@@ -53,6 +53,10 @@ class FooterComponent:
         self._footer.get_by_role("link", name="Privacy").click()
         return PrivacyPage(self._footer.page)
 
+    def accessibility(self) -> AccessibilityPage:
+        self._footer.get_by_role("link", name="Accessibility").click()
+        return AccessibilityPage(self._footer.page)
+
     def cookies(self) -> CookiesPage:
         self._footer.get_by_role("link", name="Cookies").click()
         return CookiesPage(self._footer.page)
@@ -65,6 +69,15 @@ class PrivacyPage(PageObject):
     @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Privacy notice").first.is_visible()
+
+
+class AccessibilityPage(PageObject):
+    def __init__(self, page: Page):
+        super().__init__(page)
+
+    @property
+    def is_visible(self) -> bool:
+        return self._page.get_by_role("heading", name="Accessibility statement").first.is_visible()
 
 
 class CookiesPage(PageObject):

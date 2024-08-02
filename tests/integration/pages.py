@@ -39,7 +39,8 @@ class FooterComponent:
     def __init__(self, footer: Tag):
         list_items = footer.select(".govuk-footer__inline-list a")
         self.privacy_url = list_items[0]["href"]
-        self.cookies_url = list_items[1]["href"]
+        self.accessibility_url = list_items[1]["href"]
+        self.cookies_url = list_items[2]["href"]
 
 
 class PrivacyPage(PageObject):
@@ -63,6 +64,18 @@ class CookiesPage(PageObject):
     @classmethod
     def open(cls, client: FlaskClient) -> CookiesPage:
         response = client.get("/cookies")
+        return cls(response)
+
+
+class AccessibilityPage(PageObject):
+    def __init__(self, response: TestResponse):
+        super().__init__(response)
+        heading = self._soup.select_one("main h1")
+        self.is_visible = heading.string == "Accessibility statement" if heading else False
+
+    @classmethod
+    def open(cls, client: FlaskClient) -> AccessibilityPage:
+        response = client.get("/accessibility")
         return cls(response)
 
 

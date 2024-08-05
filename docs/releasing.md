@@ -12,7 +12,7 @@
    ```bash
    git push --tags
    ```
-1. Wait for the [CI](https://github.com/acteng/schemes/actions/workflows/ci.yml) GitHub Action to build and deploy the release to Dev
+1. Wait for the [CI](https://github.com/acteng/update-your-capital-schemes/actions/workflows/ci.yml) GitHub Action to build and deploy the release to Dev
 1. Confirm that Dev is working as expected
 1. Publish a new GitHub release:
    * Tag: `<version>`
@@ -27,7 +27,7 @@
    terraform workspace select test
    terraform apply
    ```
-1. Run the [Deploy](https://github.com/acteng/schemes/actions/workflows/deploy.yml) GitHub Action to deploy the release to Test:
+1. Run the [Deploy](https://github.com/acteng/update-your-capital-schemes/actions/workflows/deploy.yml) GitHub Action to deploy the release to Test:
    * Environment: `Test`
    * Docker image tag: `<version>`
 1. Confirm that Test is working as expected
@@ -40,7 +40,7 @@
    terraform workspace select prod
    terraform apply
    ```
-1. Run the [Deploy](https://github.com/acteng/schemes/actions/workflows/deploy.yml) GitHub Action to deploy the release to Prod:
+1. Run the [Deploy](https://github.com/acteng/update-your-capital-schemes/actions/workflows/deploy.yml) GitHub Action to deploy the release to Prod:
    * Environment: `Prod`
    * Docker image tag: `<version>`
 1. Confirm that Prod is working as expected

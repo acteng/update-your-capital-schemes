@@ -327,3 +327,7 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-
 
 * [Maintenance](docs/maintenance.md)
 * [Releasing](docs/releasing.md)
+
+## Licence
+
+[MIT License](LICENCE)

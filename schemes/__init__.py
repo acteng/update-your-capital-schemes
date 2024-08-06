@@ -63,7 +63,7 @@ from schemes.views.filters import date, pounds, remove_exponent
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
-    env = os.environ.get("FLASK_ENV", LocalConfig.name)
+    env = os.getenv("FLASK_ENV", LocalConfig.name)
 
     app = Flask(__name__, static_folder="views/static", template_folder="views/templates")
     app.config.from_object(f"schemes.config.{env.title()}Config")

@@ -28,7 +28,7 @@ The application can also be configured with the following environment variables:
 
 | Name                               | Value                                                                                       |
 |------------------------------------|---------------------------------------------------------------------------------------------|
-| FLASK_ENV                          | Application environment name (`dev` / `test`)                                               |
+| FLASK_ENV                          | Application environment name (`dev`, `test` or `prod`)                                      |
 | FLASK_SQLALCHEMY_DATABASE_URI      | SQLAlchemy database URI                                                                     |
 | FLASK_CAPITAL_SCHEMES_DATABASE_URI | SQLAlchemy database URI for capital schemes (unset to use primary database URI)             |
 | FLASK_SECRET_KEY                   | Flask session [secret key](https://flask.palletsprojects.com/en/3.0.x/quickstart/#sessions) |

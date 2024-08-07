@@ -71,9 +71,11 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.config.from_mapping(test_config)
 
     _configure_logger(app)
-    app.logger.info("Using environment '%s'", env)
 
     inject.configure(bindings(app), bind_in_runtime=False)
+
+    logger = inject.instance(Logger)
+    logger.info("Using environment '%s'", env)
 
     app.config["SESSION_SQLALCHEMY"] = SQLAlchemy(app)
     flask_session.Session(app)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
+from logging import Logger
 
 import dataclass_wizard
 import inject
@@ -11,7 +12,6 @@ from flask import (
     Blueprint,
     Response,
     abort,
-    current_app,
     flash,
     make_response,
     redirect,
@@ -64,11 +64,11 @@ bp = Blueprint("schemes", __name__)
 @bp.post("")
 @api_key_auth
 @inject.autoparams()
-def add_schemes(schemes: SchemeRepository) -> Response:
+def add_schemes(schemes: SchemeRepository, logger: Logger) -> Response:
     try:
         schemes_repr = fromlist(SchemeRepr, request.get_json())
     except UnknownJSONKey as error:
-        current_app.logger.error(error)
+        logger.error(error)
         return Response(status=400)
 
     schemes.add(*[scheme_repr.to_domain() for scheme_repr in schemes_repr])

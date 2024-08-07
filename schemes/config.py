@@ -14,7 +14,6 @@ class Config:
 
     # Flask-SQLAlchemy
     SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///:memory:"
-    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": int(timedelta(minutes=30).total_seconds())}
 
     # Flask-Session
     SESSION_TYPE = "sqlalchemy"
@@ -35,16 +34,21 @@ class LocalConfig(Config):
     LOGGER_LEVEL = logging.DEBUG
 
 
-class DevConfig(Config):
+class GoogleConfig(Config):
+    # Flask-SQLAlchemy
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": int(timedelta(minutes=30).total_seconds())}
+
+
+class DevConfig(GoogleConfig):
     pass
 
 
-class TestConfig(Config):
+class TestConfig(GoogleConfig):
     # GOV.UK One Login
     GOVUK_CLIENT_ID = "0OJC1ThcrcGoFtEmxxiFXedQsqn"
 
 
-class ProdConfig(Config):
+class ProdConfig(GoogleConfig):
     # GOV.UK One Login
     GOVUK_SERVER_METADATA_URL = "https://oidc.account.gov.uk/.well-known/openid-configuration"
     GOVUK_TOKEN_ENDPOINT = "https://oidc.account.gov.uk/token"

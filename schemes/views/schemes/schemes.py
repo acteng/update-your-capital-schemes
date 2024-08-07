@@ -63,7 +63,7 @@ bp = Blueprint("schemes", __name__)
 
 @bp.post("")
 @api_key_auth
-@inject.autoparams("schemes")
+@inject.autoparams()
 def add_schemes(schemes: SchemeRepository) -> Response:
     try:
         schemes_repr = fromlist(SchemeRepr, request.get_json())

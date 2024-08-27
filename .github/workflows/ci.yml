@@ -45,7 +45,7 @@ jobs:
         run: make test
 
       - name: Upload screenshots on test failures
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: screenshots
@@ -75,7 +75,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           tags: ${{ steps.meta.outputs.tags }}

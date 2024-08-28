@@ -163,7 +163,11 @@ class TestChangeMilestoneDatesContext:
 
         context = ChangeMilestoneDatesContext.from_domain(scheme)
 
-        assert context.id == 1 and context.form.construction_started_planned.data == date(2020, 1, 2)
+        assert (
+            context.id == 1
+            and context.name == "Wirral Package"
+            and context.form.construction_started_planned.data == date(2020, 1, 2)
+        )
 
 
 @pytest.mark.usefixtures("app")

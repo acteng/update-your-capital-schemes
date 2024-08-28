@@ -152,6 +152,13 @@ class TestSchemeMilestones:
 
         assert change_milestone_dates_page.back_url == "/schemes/1"
 
+    def test_milestones_form_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+        assert change_milestone_dates_page.scheme == "Wirral Package"
+
     def test_milestones_form_shows_fields(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 

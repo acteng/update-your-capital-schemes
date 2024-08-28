@@ -85,11 +85,17 @@ class MilestoneContext:
 @dataclass(frozen=True)
 class ChangeMilestoneDatesContext:
     id: int
+    name: str
     form: ChangeMilestoneDatesForm
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> ChangeMilestoneDatesContext:
-        return ChangeMilestoneDatesContext(id=scheme.id, form=ChangeMilestoneDatesForm.from_domain(scheme.milestones))
+        name = scheme.overview.name
+        assert name is not None
+
+        return ChangeMilestoneDatesContext(
+            id=scheme.id, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme.milestones)
+        )
 
 
 class MilestoneDateField(CustomMessageDateField):

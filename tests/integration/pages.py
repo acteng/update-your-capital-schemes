@@ -339,12 +339,13 @@ class SchemeReviewFormComponent:
 class ChangeSpendToDatePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
-        heading = self._soup.select_one("main h1")
+        heading = self._soup.select_one("main h1 span:nth-child(2)")
         self.is_visible = heading.string == "Change spend to date" if heading else False
         self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
+        self.scheme = one(self._soup.select("main h1 .govuk-caption-l")).string
         self.funding_summary = (one(self._soup.select("main h1 ~ p")).string or "").strip()
         self.form = ChangeSpendToDateFormComponent(one(self._soup.select("form")))
 

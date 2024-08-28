@@ -106,7 +106,12 @@ class TestChangeSpendToDateContext:
 
         context = ChangeSpendToDateContext.from_domain(scheme)
 
-        assert context.id == 1 and context.funding_allocation == 100_000 and context.form.amount.data == 40_000
+        assert (
+            context.id == 1
+            and context.name == "Wirral Package"
+            and context.funding_allocation == 100_000
+            and context.form.amount.data == 40_000
+        )
 
 
 @pytest.mark.usefixtures("app")

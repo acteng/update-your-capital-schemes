@@ -31,7 +31,10 @@
                 {% endif %}
             {% endwith %}
 
-            <h1 class="govuk-heading-l">Change spend to date</h1>
+            <h1 class="govuk-heading-l">
+                <span class="govuk-caption-l">{{ name }}</span>
+                <span>Change spend to date</span>
+            </h1>
 
             <p class="govuk-body">
                 This scheme has {% if funding_allocation -%}

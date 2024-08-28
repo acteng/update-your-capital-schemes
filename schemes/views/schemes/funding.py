@@ -40,13 +40,18 @@ class SchemeFundingContext:
 @dataclass(frozen=True)
 class ChangeSpendToDateContext:
     id: int
+    name: str
     funding_allocation: int | None
     form: ChangeSpendToDateForm
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> ChangeSpendToDateContext:
+        name = scheme.overview.name
+        assert name is not None
+
         return cls(
             id=scheme.id,
+            name=name,
             funding_allocation=scheme.funding.funding_allocation,
             form=ChangeSpendToDateForm.from_domain(scheme.funding),
         )

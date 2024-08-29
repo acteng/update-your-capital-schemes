@@ -37,7 +37,7 @@ class TestAuthenticated:
 
         schemes_page = SchemesPage.open(page)
 
-        assert schemes_page.authority == "Liverpool City Region Combined Authority"
+        assert schemes_page.heading.caption == "Liverpool City Region Combined Authority"
         assert schemes_page.schemes.to_dicts() == [
             {
                 "reference": "ATE00001",
@@ -67,7 +67,7 @@ class TestAuthenticated:
 
         scheme_page = SchemesPage.open(page).schemes["ATE00001"].open()
 
-        assert scheme_page.name == "Wirral Package"
+        assert scheme_page.heading.text == "Wirral Package"
 
     def test_schemes_shows_update_schemes_notification(self, app_client: AppClient, page: Page) -> None:
         app_client.set_clock("2023-04-24T12:00:00")

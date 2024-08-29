@@ -153,7 +153,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
         .confirm()
     )
 
-    assert scheme_page.name == "Wirral Package"
+    assert scheme_page.heading.text == "Wirral Package"
     assert (
         scheme_page.milestones.milestones["Construction started"].actual == "5 Jul 2023"
         and scheme_page.milestones.milestones["Construction completed"].planned == "30 Sep 2023"

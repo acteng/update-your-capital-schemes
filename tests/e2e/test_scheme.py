@@ -26,7 +26,7 @@ def test_scheme(app_client: AppClient, oidc_client: OidcClient, page: Page) -> N
     scheme_page = SchemePage.open(page, id_=1)
 
     assert (
-        scheme_page.authority == "Liverpool City Region Combined Authority"
-        and scheme_page.name == "Wirral Package"
+        scheme_page.heading.caption == "Liverpool City Region Combined Authority"
+        and scheme_page.heading.text == "Wirral Package"
         and scheme_page.needs_review
     )

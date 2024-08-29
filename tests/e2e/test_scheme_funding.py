@@ -87,7 +87,7 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
 
     scheme_page = SchemePage.open(page, id_=1).funding.change_spend_to_date().form.enter_amount("60000").confirm()
 
-    assert scheme_page.name == "Wirral Package" and scheme_page.funding.spend_to_date == "£60,000"
+    assert scheme_page.heading.text == "Wirral Package" and scheme_page.funding.spend_to_date == "£60,000"
     assert app_client.get_scheme(id_=1).financial_revisions == [
         FinancialRevisionRepr(
             id=1,

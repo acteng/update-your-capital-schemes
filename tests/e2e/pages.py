@@ -114,7 +114,7 @@ class SchemesPage(PageObject):
         self._main = page.get_by_role("main")
         self.success_notification = NotificationBannerComponent.for_success(page)
         self.important_notification = NotificationBannerComponent.for_important(page)
-        self._authority = self._main.get_by_role("heading").locator(".govuk-caption-xl")
+        self.heading = HeadingComponent(self._main.get_by_role("heading"))
         self.schemes = SchemesTableComponent(self._main.get_by_role("table"))
 
     @classmethod
@@ -131,10 +131,6 @@ class SchemesPage(PageObject):
     def open_when_unauthorized(cls, page: Page) -> ForbiddenPage:
         cls.open(page)
         return ForbiddenPage(page)
-
-    @property
-    def authority(self) -> str | None:
-        return self._authority.text_content()
 
 
 class ServiceHeaderComponent:
@@ -161,6 +157,20 @@ class NotificationBannerComponent:
     @classmethod
     def for_success(cls, page: Page) -> NotificationBannerComponent:
         return NotificationBannerComponent(page.get_by_role("alert", name="Success"))
+
+
+class HeadingComponent:
+    def __init__(self, heading: Locator):
+        self._caption = heading.locator(".govuk-caption-xl")
+        self._text = heading.locator("span").nth(1)
+
+    @property
+    def caption(self) -> str | None:
+        return self._caption.text_content()
+
+    @property
+    def text(self) -> str | None:
+        return self._text.text_content()
 
 
 class SchemesTableComponent:
@@ -237,9 +247,7 @@ class SchemePage(PageObject):
         super().__init__(page)
         self._main = page.get_by_role("main")
         self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
-        heading = self._main.get_by_role("heading").first
-        self._authority = heading.locator(".govuk-caption-xl")
-        self._name = heading.locator("span").nth(1)
+        self.heading = HeadingComponent(self._main.get_by_role("heading").first)
         self._inset_text = InsetTextComponent(self._main.locator(".govuk-inset-text"))
         self.overview = SchemeOverviewComponent(self._main.get_by_role("heading", name="Overview"))
         self.funding = SchemeFundingComponent(self._main.get_by_role("heading", name="Funding"))
@@ -253,14 +261,6 @@ class SchemePage(PageObject):
         page.goto("/schemes")
         page.goto(f"/schemes/{id_}")
         return cls(page)
-
-    @property
-    def authority(self) -> str | None:
-        return self._authority.text_content()
-
-    @property
-    def name(self) -> str | None:
-        return self._name.text_content()
 
     @property
     def needs_review(self) -> bool:

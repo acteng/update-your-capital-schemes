@@ -34,4 +34,4 @@ class TestAuthenticated:
 
         schemes_page = StartPage.open_when_authenticated(page)
 
-        assert schemes_page.authority == "Liverpool City Region Combined Authority"
+        assert schemes_page.heading.caption == "Liverpool City Region Combined Authority"

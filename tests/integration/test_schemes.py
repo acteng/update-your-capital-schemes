@@ -90,7 +90,7 @@ class TestSchemes:
     def test_schemes_shows_authority(self, client: FlaskClient) -> None:
         schemes_page = SchemesPage.open(client)
 
-        assert schemes_page.authority == "Liverpool City Region Combined Authority"
+        assert schemes_page.heading and schemes_page.heading.caption == "Liverpool City Region Combined Authority"
 
     def test_schemes_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(

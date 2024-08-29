@@ -68,14 +68,14 @@ class TestScheme:
 
         scheme_page = SchemePage.open(client, id_=1)
 
-        assert scheme_page.authority == "Liverpool City Region Combined Authority"
+        assert scheme_page.heading and scheme_page.heading.caption == "Liverpool City Region Combined Authority"
 
     def test_scheme_shows_name(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 
-        assert scheme_page.name == "Wirral Package"
+        assert scheme_page.heading and scheme_page.heading.text == "Wirral Package"
 
     @pytest.mark.parametrize(
         "review_date, expected_needs_review",

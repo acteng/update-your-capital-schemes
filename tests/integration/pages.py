@@ -106,9 +106,9 @@ class SchemesPage(PageObject):
         self.header = ServiceHeaderComponent(one(self._soup.select("header")))
         self.success_notification = NotificationBannerComponent.for_success(self._soup)
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
-        self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
-        heading = self._soup.select_one("main h1 span:nth-child(2)")
-        self.is_visible = heading.string == "Your schemes" if heading else False
+        heading_tag = self._soup.select_one("main h1")
+        self.heading = HeadingComponent(heading_tag) if heading_tag else None
+        self.is_visible = self.heading.text == "Your schemes" if self.heading else False
         table = self._soup.select_one("main table")
         self.schemes = SchemesTableComponent(table) if table else None
         paragraph = self._soup.select_one("main h1 ~ p")
@@ -127,6 +127,12 @@ class ServiceHeaderComponent:
         self.home_url = one(header.select("a.one-login-header__link"))["href"]
         self.profile_url = one(header.select("a:-soup-contains('GOV.UK One Login')"))["href"]
         self.sign_out_url = one(header.select("a:-soup-contains('Sign out')"))["href"]
+
+
+class HeadingComponent:
+    def __init__(self, heading: Tag):
+        self.caption = one(heading.select(".govuk-caption-xl, .govuk-caption-l")).string
+        self.text = one(heading.select("span:nth-child(2)")).string
 
 
 class SchemesTableComponent:
@@ -178,8 +184,8 @@ class SchemePage(PageObject):
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
-        self.authority = one(self._soup.select("main h1 .govuk-caption-xl")).string
-        self.name = one(self._soup.select("main h1 span:nth-child(2)")).string
+        heading_tag = self._soup.select_one("main h1")
+        self.heading = HeadingComponent(heading_tag) if heading_tag else None
         inset_text = self._soup.select_one("main .govuk-inset-text")
         self.needs_review = (
             InsetTextComponent(inset_text).has_text(
@@ -339,13 +345,13 @@ class SchemeReviewFormComponent:
 class ChangeSpendToDatePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
-        heading = self._soup.select_one("main h1 span:nth-child(2)")
-        self.is_visible = heading.string == "Change spend to date" if heading else False
         self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
-        self.scheme = one(self._soup.select("main h1 .govuk-caption-l")).string
+        heading_tag = self._soup.select_one("main h1")
+        self.heading = HeadingComponent(heading_tag) if heading_tag else None
+        self.is_visible = self.heading.text == "Change spend to date" if self.heading else False
         self.funding_summary = (one(self._soup.select("main h1 ~ p")).string or "").strip()
         self.form = ChangeSpendToDateFormComponent(one(self._soup.select("form")))
 
@@ -368,13 +374,13 @@ class ChangeSpendToDatePage(PageObject):
 class ChangeMilestoneDatesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
-        heading = self._soup.select_one("main h1 span:nth-child(2)")
-        self.is_visible = heading.string == "Change milestone dates" if heading else False
         self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
-        self.scheme = one(self._soup.select("main h1 .govuk-caption-l")).string
+        heading_tag = self._soup.select_one("main h1")
+        self.heading = HeadingComponent(heading_tag) if heading_tag else None
+        self.is_visible = self.heading.text == "Change milestone dates" if self.heading else False
         self.form = ChangeMilestoneDatesFormComponent(one(self._soup.select("form")))
 
     @classmethod

@@ -157,7 +157,7 @@ class TestSchemeMilestones:
 
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
-        assert change_milestone_dates_page.scheme == "Wirral Package"
+        assert change_milestone_dates_page.heading and change_milestone_dates_page.heading.caption == "Wirral Package"
 
     def test_milestones_form_shows_fields(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))

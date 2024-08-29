@@ -122,7 +122,7 @@ class TestSchemeFunding:
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-        assert change_spend_to_date_page.scheme == "Wirral Package"
+        assert change_spend_to_date_page.heading and change_spend_to_date_page.heading.caption == "Wirral Package"
 
     def test_spend_to_date_form_shows_funding_summary(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)

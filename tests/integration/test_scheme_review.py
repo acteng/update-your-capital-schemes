@@ -130,7 +130,7 @@ class TestSchemeReview:
 
         scheme_page = SchemePage(client.post("/schemes/1", data={}, follow_redirects=True))
 
-        assert scheme_page.name == "Wirral Package"
+        assert scheme_page.heading and scheme_page.heading.text == "Wirral Package"
         assert (
             scheme_page.important_notification
             and scheme_page.important_notification.heading
@@ -142,7 +142,7 @@ class TestSchemeReview:
 
         scheme_page = SchemePage(client.post("/schemes/1", data={"csrf_token": "x"}, follow_redirects=True))
 
-        assert scheme_page.name == "Wirral Package"
+        assert scheme_page.heading and scheme_page.heading.text == "Wirral Package"
         assert (
             scheme_page.important_notification
             and scheme_page.important_notification.heading

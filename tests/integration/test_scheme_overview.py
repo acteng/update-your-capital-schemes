@@ -32,6 +32,7 @@ class TestSchemeOverview:
         schemes.add(
             build_scheme(
                 id_=1,
+                reference="ATE00001",
                 name="Wirral Package",
                 authority_id=1,
                 type_=SchemeType.CONSTRUCTION,
@@ -51,6 +52,7 @@ class TestSchemeOverview:
     def test_scheme_shows_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
             type_=SchemeType.CONSTRUCTION,

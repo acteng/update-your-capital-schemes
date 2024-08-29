@@ -149,7 +149,7 @@ class TestMilestoneContext:
 @pytest.mark.usefixtures("app")
 class TestChangeMilestoneDatesContext:
     def test_from_domain(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=1,

@@ -98,6 +98,7 @@ class DatabaseSchemeRepository(SchemeRepository):
     def _capital_scheme_from_domain(self, scheme: Scheme) -> CapitalSchemeEntity:
         return CapitalSchemeEntity(
             capital_scheme_id=scheme.id,
+            scheme_reference=scheme.reference,
             capital_scheme_overviews=[
                 self._capital_scheme_overview_from_domain(overview_revision)
                 for overview_revision in scheme.overview.overview_revisions
@@ -125,7 +126,7 @@ class DatabaseSchemeRepository(SchemeRepository):
         )
 
     def _capital_scheme_to_domain(self, capital_scheme: CapitalSchemeEntity) -> Scheme:
-        scheme = Scheme(id_=capital_scheme.capital_scheme_id)
+        scheme = Scheme(id_=capital_scheme.capital_scheme_id, reference=capital_scheme.scheme_reference)
 
         for capital_scheme_overview in capital_scheme.capital_scheme_overviews:
             scheme.overview.update_overview(self._capital_scheme_overview_to_domain(capital_scheme_overview))

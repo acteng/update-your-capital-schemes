@@ -70,6 +70,7 @@ class UserRepr:
 @dataclass(frozen=True)
 class SchemeRepr:
     id: int
+    reference: str
     overview_revisions: list[OverviewRevisionRepr] = field(default_factory=list)
     bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)

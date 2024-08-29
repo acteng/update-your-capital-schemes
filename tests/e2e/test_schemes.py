@@ -21,6 +21,7 @@ class TestAuthenticated:
         app_client.add_schemes(
             build_scheme(
                 id_=1,
+                reference="ATE00001",
                 name="Wirral Package",
                 authority_id=1,
                 funding_programme="ATF3",
@@ -28,6 +29,7 @@ class TestAuthenticated:
             ),
             build_scheme(
                 id_=2,
+                reference="ATE00002",
                 name="School Streets",
                 authority_id=1,
                 funding_programme="ATF4",
@@ -63,7 +65,7 @@ class TestAuthenticated:
     def test_scheme_shows_scheme(self, app_client: AppClient, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
         app_client.add_users(1, UserRepr(email="boardman@example.com"))
-        app_client.add_schemes(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        app_client.add_schemes(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         scheme_page = SchemesPage.open(page).schemes["ATE00001"].open()
 
@@ -76,6 +78,7 @@ class TestAuthenticated:
         app_client.add_schemes(
             build_scheme(
                 id_=1,
+                reference="ATE00001",
                 name="Wirral Package",
                 authority_id=1,
                 authority_reviews=[AuthorityReviewRepr(id=1, review_date="2023-01-02", source="ATF4 Bid")],

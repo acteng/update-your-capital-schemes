@@ -57,22 +57,23 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_add_schemes(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
-        scheme1 = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme1 = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
 
-        schemes.add(scheme1, build_scheme(id_=2, name="School Streets", authority_id=1))
+        schemes.add(scheme1, build_scheme(id_=2, reference="ATE00002", name="School Streets", authority_id=1))
 
         row1: CapitalSchemeEntity
         row2: CapitalSchemeEntity
         with session_maker() as session:
             row1, row2 = session.scalars(select(CapitalSchemeEntity).order_by(CapitalSchemeEntity.capital_scheme_id))
-        assert row1.capital_scheme_id == 1
-        assert row2.capital_scheme_id == 2
+        assert row1.capital_scheme_id == 1 and row1.scheme_reference == "ATE00001"
+        assert row2.capital_scheme_id == 2 and row2.scheme_reference == "ATE00002"
 
     def test_add_schemes_overview_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         scheme = build_scheme(
             id_=1,
+            reference="ATE00001",
             overview_revisions=[
                 OverviewRevision(
                     id_=2,
@@ -128,6 +129,7 @@ class TestDatabaseSchemeRepository:
     ) -> None:
         scheme = build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
             bid_status_revisions=[
@@ -164,7 +166,7 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_financial_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=2,
@@ -212,7 +214,7 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_milestone_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=2,
@@ -264,7 +266,7 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_output_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=3,
@@ -314,7 +316,7 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_authority_reviews(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
             AuthorityReview(id_=3, review_date=datetime(2020, 2, 1), source=DataSource.PULSE_6),
@@ -345,12 +347,12 @@ class TestDatabaseSchemeRepository:
 
     def test_get_scheme(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
         with session_maker() as session:
-            session.add(CapitalSchemeEntity(capital_scheme_id=1))
+            session.add(CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"))
             session.commit()
 
         scheme = schemes.get(1)
 
-        assert scheme and scheme.id == 1
+        assert scheme and scheme.id == 1 and scheme.reference == "ATE00001"
 
     def test_get_scheme_overview_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
@@ -358,7 +360,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=2,
                         capital_scheme_id=1,
@@ -412,7 +414,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeBidStatusEntity(
                         capital_scheme_bid_status_id=2,
                         capital_scheme_id=1,
@@ -454,7 +456,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeFinancialEntity(
                         capital_scheme_financial_id=2,
                         capital_scheme_id=1,
@@ -504,7 +506,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeMilestoneEntity(
                         capital_scheme_milestone_id=2,
                         capital_scheme_id=1,
@@ -558,7 +560,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeInterventionEntity(
                         capital_scheme_intervention_id=2,
                         capital_scheme_id=1,
@@ -608,7 +610,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeAuthorityReviewEntity(
                         capital_scheme_authority_review_id=2,
                         capital_scheme_id=1,
@@ -646,7 +648,7 @@ class TestDatabaseSchemeRepository:
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
-            session.add(CapitalSchemeEntity(capital_scheme_id=1))
+            session.add(CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"))
             session.commit()
 
         assert schemes.get(2) is None
@@ -657,7 +659,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=4,
                         capital_scheme_id=1,
@@ -668,7 +670,7 @@ class TestDatabaseSchemeRepository:
                         scheme_type_id=2,
                         funding_programme_id=2,
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=5,
                         capital_scheme_id=2,
@@ -679,7 +681,7 @@ class TestDatabaseSchemeRepository:
                         scheme_type_id=2,
                         funding_programme_id=3,
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=3),
+                    CapitalSchemeEntity(capital_scheme_id=3, scheme_reference="ATE00003"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=6,
                         capital_scheme_id=3,
@@ -707,7 +709,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=3,
                         capital_scheme_id=1,
@@ -718,7 +720,7 @@ class TestDatabaseSchemeRepository:
                         scheme_type_id=1,
                         funding_programme_id=2,
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=4,
                         capital_scheme_id=2,
@@ -754,7 +756,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=3,
                         capital_scheme_id=1,
@@ -772,7 +774,7 @@ class TestDatabaseSchemeRepository:
                         effective_date_to=None,
                         bid_status_id=2,
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=4,
                         capital_scheme_id=2,
@@ -812,7 +814,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=3,
                         capital_scheme_id=1,
@@ -832,7 +834,7 @@ class TestDatabaseSchemeRepository:
                         amount=100_000,
                         data_source_id=3,
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=4,
                         capital_scheme_id=2,
@@ -876,7 +878,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=4,
                         capital_scheme_id=1,
@@ -897,7 +899,7 @@ class TestDatabaseSchemeRepository:
                         status_date=date(2020, 2, 1),
                         data_source_id=3,
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=5,
                         capital_scheme_id=2,
@@ -918,7 +920,7 @@ class TestDatabaseSchemeRepository:
                         status_date=date(2020, 3, 1),
                         data_source_id=3,
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=3),
+                    CapitalSchemeEntity(capital_scheme_id=3, scheme_reference="ATE00003"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=6,
                         capital_scheme_id=3,
@@ -976,7 +978,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=4,
                         capital_scheme_id=1,
@@ -996,7 +998,7 @@ class TestDatabaseSchemeRepository:
                         intervention_value=Decimal(10),
                         observation_type_id=1,
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=5,
                         capital_scheme_id=2,
@@ -1016,7 +1018,7 @@ class TestDatabaseSchemeRepository:
                         intervention_value=Decimal(20),
                         observation_type_id=1,
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=3),
+                    CapitalSchemeEntity(capital_scheme_id=3, scheme_reference="ATE00003"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=6,
                         capital_scheme_id=3,
@@ -1071,7 +1073,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=3,
                         capital_scheme_id=1,
@@ -1088,7 +1090,7 @@ class TestDatabaseSchemeRepository:
                         review_date=datetime(2020, 1, 1),
                         data_source_id=3,
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=4,
                         capital_scheme_id=2,
@@ -1125,7 +1127,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
@@ -1169,7 +1171,7 @@ class TestDatabaseSchemeRepository:
                     CapitalSchemeAuthorityReviewEntity(
                         capital_scheme_id=1, review_date=datetime(2020, 1, 1, 12), data_source_id=3
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=2),
+                    CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
                 ]
             )
             session.commit()
@@ -1185,7 +1187,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeFinancialEntity(
                         capital_scheme_financial_id=2,
                         capital_scheme_id=1,
@@ -1238,7 +1240,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeMilestoneEntity(
                         capital_scheme_milestone_id=2,
                         capital_scheme_id=1,
@@ -1294,7 +1296,7 @@ class TestDatabaseSchemeRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    CapitalSchemeEntity(capital_scheme_id=1),
+                    CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"),
                     CapitalSchemeAuthorityReviewEntity(
                         capital_scheme_authority_review_id=2,
                         capital_scheme_id=1,

@@ -20,6 +20,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
     app_client.add_schemes(
         build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
             milestone_revisions=[
@@ -92,6 +93,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
     app_client.add_schemes(
         build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
             milestone_revisions=[
@@ -232,6 +234,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
     app_client.add_schemes(
         build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
             milestone_revisions=[

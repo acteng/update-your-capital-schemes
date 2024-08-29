@@ -8,8 +8,9 @@ from schemes.domain.schemes.reviews import SchemeReviews
 
 
 class Scheme:
-    def __init__(self, id_: int):
+    def __init__(self, id_: int, reference: str):
         self.id = id_
+        self._reference = reference
         self._overview = SchemeOverview()
         self._funding = SchemeFunding()
         self._milestones = SchemeMilestones()
@@ -18,7 +19,7 @@ class Scheme:
 
     @property
     def reference(self) -> str:
-        return f"ATE{self.id:05}"
+        return self._reference
 
     @property
     def overview(self) -> SchemeOverview:

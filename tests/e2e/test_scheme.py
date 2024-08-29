@@ -16,6 +16,7 @@ def test_scheme(app_client: AppClient, oidc_client: OidcClient, page: Page) -> N
     app_client.add_schemes(
         build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
             authority_reviews=[AuthorityReviewRepr(id=1, review_date="2023-01-02", source="ATF4 Bid")],

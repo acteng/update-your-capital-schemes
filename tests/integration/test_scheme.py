@@ -40,7 +40,7 @@ class TestScheme:
             session["user"] = {"email": "boardman@example.com"}
 
     def test_scheme_shows_html(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
         chromium_default_accept = (
             "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
         )
@@ -50,28 +50,28 @@ class TestScheme:
         assert response.status_code == 200 and response.content_type == "text/html; charset=utf-8"
 
     def test_scheme_shows_title(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 
         assert scheme_page.title == "Wirral Package - Update your capital schemes - Active Travel England - GOV.UK"
 
     def test_scheme_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 
         assert scheme_page.back_url == "/schemes"
 
     def test_scheme_shows_authority(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 
         assert scheme_page.heading and scheme_page.heading.caption == "Liverpool City Region Combined Authority"
 
     def test_scheme_shows_name(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 
@@ -93,7 +93,7 @@ class TestScheme:
         expected_needs_review: bool,
     ) -> None:
         clock.now = datetime(2023, 4, 24)
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
         )
@@ -107,14 +107,14 @@ class TestScheme:
         self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
         authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+        schemes.add(build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_id=2))
 
         forbidden_page = SchemePage.open_when_unauthorized(client, id_=2)
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
     def test_cannot_scheme_when_no_authority(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=2, overview_revisions=[]))
+        schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
 
         forbidden_page = SchemePage.open_when_unauthorized(client, id_=2)
 
@@ -126,7 +126,11 @@ class TestScheme:
         assert not_found_page.is_visible and not_found_page.is_not_found
 
     def test_cannot_scheme_when_not_updateable_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1, bid_status=BidStatus.SUBMITTED))
+        schemes.add(
+            build_scheme(
+                id_=1, reference="ATE00001", name="Wirral Package", authority_id=1, bid_status=BidStatus.SUBMITTED
+            )
+        )
 
         not_found_page = SchemePage.open_when_not_found(client, id_=1)
 
@@ -139,12 +143,13 @@ class TestSchemeApi:
         return dict(config) | {"API_KEY": "boardman"}
 
     def test_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(Scheme(id_=1))
+        schemes.add(Scheme(id_=1, reference="ATE00001"))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
 
         assert response.json == {
             "id": 1,
+            "reference": "ATE00001",
             "overview_revisions": [],
             "bid_status_revisions": [],
             "financial_revisions": [],
@@ -156,6 +161,7 @@ class TestSchemeApi:
     def test_get_scheme_overview_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(
             id_=1,
+            reference="ATE00001",
             overview_revisions=[
                 OverviewRevision(
                     id_=2,
@@ -187,6 +193,7 @@ class TestSchemeApi:
     def test_get_scheme_bid_status_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
             bid_status_revisions=[
@@ -208,7 +215,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=2,
@@ -235,7 +242,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_milestone_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=2,
@@ -264,7 +271,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_output_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.outputs.update_output(
             OutputRevision(
                 id_=2,
@@ -292,7 +299,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_authority_reviews(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1, 12), source=DataSource.ATF4_BID)
         )
@@ -310,14 +317,14 @@ class TestSchemeApi:
         ]
 
     def test_cannot_get_scheme_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json"})
 
         assert response.status_code == 401
 
     def test_cannot_get_scheme_when_incorrect_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key obree"})
 
@@ -326,7 +333,7 @@ class TestSchemeApi:
 
 class TestSchemeApiWhenDisabled:
     def test_cannot_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
 

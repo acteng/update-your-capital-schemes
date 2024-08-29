@@ -11,6 +11,7 @@ from tests.e2e.app_client import (
 
 def build_scheme(
     id_: int,
+    reference: str,
     name: str,
     authority_id: int,
     type_: str = "construction",
@@ -23,6 +24,7 @@ def build_scheme(
 ) -> SchemeRepr:
     return SchemeRepr(
         id=id_,
+        reference=reference,
         overview_revisions=[
             OverviewRevisionRepr(
                 id=None,

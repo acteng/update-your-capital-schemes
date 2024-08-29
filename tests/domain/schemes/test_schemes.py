@@ -23,37 +23,32 @@ from tests.builders import build_scheme
 
 class TestScheme:
     def test_create(self) -> None:
-        scheme = Scheme(id_=1)
+        scheme = Scheme(id_=1, reference="ATE00001")
 
-        assert scheme.id == 1
-
-    def test_get_reference(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
-
-        assert scheme.reference == "ATE00001"
+        assert scheme.id == 1 and scheme.reference == "ATE00001"
 
     def test_get_overview(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
 
         assert isinstance(scheme.overview, SchemeOverview)
 
     def test_get_funding(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
 
         assert isinstance(scheme.funding, SchemeFunding)
 
     def test_get_milestones(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
 
         assert isinstance(scheme.milestones, SchemeMilestones)
 
     def test_get_outputs(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
 
         assert isinstance(scheme.outputs, SchemeOutputs)
 
     def test_get_reviews(self) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
 
         assert isinstance(scheme.reviews, SchemeReviews)
 
@@ -70,6 +65,7 @@ class TestScheme:
     def test_is_updateable_when_funded(self, bid_status: BidStatus, expected_updateable: bool) -> None:
         scheme = build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=2,
             funding_programme=FundingProgrammes.ATF4,
@@ -99,6 +95,7 @@ class TestScheme:
     def test_is_updateable_when_active_and_incomplete(self, milestone: Milestone, expected_updateable: bool) -> None:
         scheme = build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=2,
             funding_programme=FundingProgrammes.ATF4,
@@ -129,6 +126,7 @@ class TestScheme:
     ) -> None:
         scheme = build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=2,
             funding_programme=funding_programme,
@@ -150,6 +148,7 @@ class TestScheme:
     def test_is_updateable_when_no_bid_status_revision(self) -> None:
         scheme = build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=2,
             funding_programme=FundingProgrammes.ATF4,
@@ -171,6 +170,7 @@ class TestScheme:
     def test_is_updateable_when_no_milestone_revision(self) -> None:
         scheme = build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=2,
             funding_programme=FundingProgrammes.ATF4,
@@ -182,6 +182,7 @@ class TestScheme:
     def test_is_updateable_uses_latest_milestone_revision(self) -> None:
         scheme = build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=2,
             funding_programme=FundingProgrammes.ATF4,
@@ -209,7 +210,7 @@ class TestScheme:
         assert scheme.is_updateable is False
 
     def test_is_updateable_when_no_overview_revision(self) -> None:
-        scheme = build_scheme(id_=1, bid_status=BidStatus.FUNDED, overview_revisions=[])
+        scheme = build_scheme(id_=1, reference="ATE00001", bid_status=BidStatus.FUNDED, overview_revisions=[])
 
         assert scheme.is_updateable is True
 

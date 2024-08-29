@@ -14,6 +14,7 @@ from schemes.domain.schemes import (
 
 def build_scheme(
     id_: int,
+    reference: str,
     name: str | None = None,
     authority_id: int | None = None,
     type_: SchemeType | None = None,
@@ -49,7 +50,7 @@ def build_scheme(
         else [BidStatusRevision(id_=None, effective=DateRange(datetime.min, None), status=bid_status)]
     )
 
-    scheme = Scheme(id_)
+    scheme = Scheme(id_, reference)
     scheme.overview.update_overviews(*overview_revisions)
     scheme.funding.update_bid_statuses(*bid_status_revisions)
     return scheme

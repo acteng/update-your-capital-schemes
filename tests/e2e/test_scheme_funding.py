@@ -20,6 +20,7 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Pa
     app_client.add_schemes(
         build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
             financial_revisions=[
@@ -61,6 +62,7 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
     app_client.add_schemes(
         build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
             financial_revisions=[
@@ -123,6 +125,7 @@ def test_cannot_change_spend_to_date_when_error(app_client: AppClient, oidc_clie
     app_client.add_schemes(
         build_scheme(
             id_=1,
+            reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
             financial_revisions=[

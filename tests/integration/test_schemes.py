@@ -60,7 +60,7 @@ class TestSchemes:
         expected_notification_banner: str,
     ) -> None:
         clock.now = now
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -77,7 +77,7 @@ class TestSchemes:
         self, client: FlaskClient, clock: Clock, schemes: SchemeRepository
     ) -> None:
         clock.now = datetime(2020, 3, 1)
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -94,11 +94,13 @@ class TestSchemes:
 
     def test_schemes_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(
-            build_scheme(id_=1, name="Wirral Package", authority_id=1),
-            build_scheme(id_=2, name="School Streets", authority_id=1),
-            build_scheme(id_=3, name="Runcorn Busway", authority_id=1, bid_status=BidStatus.SUBMITTED),
-            build_scheme(id_=4, name="Hospital Fields Road", authority_id=2),
-            build_scheme(id_=5, overview_revisions=[]),
+            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1),
+            build_scheme(id_=2, reference="ATE00002", name="School Streets", authority_id=1),
+            build_scheme(
+                id_=3, reference="ATE00003", name="Runcorn Busway", authority_id=1, bid_status=BidStatus.SUBMITTED
+            ),
+            build_scheme(id_=4, reference="ATE00004", name="Hospital Fields Road", authority_id=2),
+            build_scheme(id_=5, reference="ATE00005", overview_revisions=[]),
         )
 
         schemes_page = SchemesPage.open(client)
@@ -109,7 +111,13 @@ class TestSchemes:
 
     def test_schemes_shows_minimal_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(
-            build_scheme(id_=1, name="Wirral Package", authority_id=1, funding_programme=FundingProgrammes.ATF3)
+            build_scheme(
+                id_=1,
+                reference="ATE00001",
+                name="Wirral Package",
+                authority_id=1,
+                funding_programme=FundingProgrammes.ATF3,
+            )
         )
 
         schemes_page = SchemesPage.open(client)
@@ -126,7 +134,9 @@ class TestSchemes:
         ]
 
     def test_schemes_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1, funding_programme=FundingProgrammes.ATF3)
+        scheme = build_scheme(
+            id_=1, reference="ATE00001", name="Wirral Package", authority_id=1, funding_programme=FundingProgrammes.ATF3
+        )
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
         )
@@ -149,7 +159,7 @@ class TestSchemes:
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
         clock.now = datetime(2023, 4, 24)
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2023, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -161,7 +171,7 @@ class TestSchemes:
         assert [row.needs_review for row in schemes_page.schemes] == [True]
 
     def test_scheme_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         schemes_page = SchemesPage.open(client)
 
@@ -181,13 +191,17 @@ class TestSchemesApi:
         return dict(config) | {"API_KEY": "boardman"}
 
     def test_add_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post("/schemes", headers={"Authorization": "API-Key boardman"}, json=[{"id": 1}, {"id": 2}])
+        response = client.post(
+            "/schemes",
+            headers={"Authorization": "API-Key boardman"},
+            json=[{"id": 1, "reference": "ATE00001"}, {"id": 2, "reference": "ATE00002"}],
+        )
 
         assert response.status_code == 201
         scheme1 = schemes.get(1)
         scheme2 = schemes.get(2)
-        assert scheme1 and scheme1.id == 1
-        assert scheme2 and scheme2.id == 2
+        assert scheme1 and scheme1.id == 1 and scheme1.reference == "ATE00001"
+        assert scheme2 and scheme2.id == 2 and scheme2.reference == "ATE00002"
 
     def test_add_schemes_overview_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -196,6 +210,7 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
+                    "reference": "ATE00001",
                     "overview_revisions": [
                         {
                             "id": 2,
@@ -232,6 +247,7 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
+                    "reference": "ATE00001",
                     "bid_status_revisions": [
                         {
                             "id": 2,
@@ -262,6 +278,7 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
+                    "reference": "ATE00001",
                     "financial_revisions": [
                         {
                             "id": 2,
@@ -296,6 +313,7 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
+                    "reference": "ATE00001",
                     "milestone_revisions": [
                         {
                             "id": 2,
@@ -332,6 +350,7 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
+                    "reference": "ATE00001",
                     "output_revisions": [
                         {
                             "id": 2,
@@ -367,6 +386,7 @@ class TestSchemesApi:
             json=[
                 {
                     "id": 1,
+                    "reference": "ATE00001",
                     "authority_reviews": [
                         {
                             "id": 2,
@@ -390,7 +410,7 @@ class TestSchemesApi:
         )
 
     def test_cannot_add_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post("/schemes", json=[{"id": 1}])
+        response = client.post("/schemes", json=[{"id": 1, "reference": "ATE00001"}])
 
         assert response.status_code == 401
         assert not schemes.get(1)
@@ -398,7 +418,9 @@ class TestSchemesApi:
     def test_cannot_add_schemes_when_incorrect_credentials(
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        response = client.post("/schemes", headers={"Authorization": "API-Key obree"}, json=[{"id": 1}])
+        response = client.post(
+            "/schemes", headers={"Authorization": "API-Key obree"}, json=[{"id": 1, "reference": "ATE00001"}]
+        )
 
         assert response.status_code == 401
         assert not schemes.get(1)
@@ -407,14 +429,14 @@ class TestSchemesApi:
         response = client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
-            json=[{"id": 1, "foo": "bar"}],
+            json=[{"id": 1, "reference": "ATE00001", "foo": "bar"}],
         )
 
         assert response.status_code == 400
         assert not schemes.get(1)
 
     def test_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 
@@ -422,7 +444,7 @@ class TestSchemesApi:
         assert not schemes.get(1)
 
     def test_cannot_clear_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes")
 
@@ -432,7 +454,7 @@ class TestSchemesApi:
     def test_cannot_clear_schemes_when_incorrect_credentials(
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key obree"})
 
@@ -442,13 +464,15 @@ class TestSchemesApi:
 
 class TestSchemesApiWhenDisabled:
     def test_cannot_add_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post("/schemes", headers={"Authorization": "API-Key boardman"}, json=[{"id": 1}])
+        response = client.post(
+            "/schemes", headers={"Authorization": "API-Key boardman"}, json=[{"id": 1, "reference": "ATE00001"}]
+        )
 
         assert response.status_code == 401
         assert not schemes.get(1)
 
     def test_cannot_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 

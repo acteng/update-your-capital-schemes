@@ -27,7 +27,7 @@ class TestSchemeFunding:
             session["user"] = {"email": "boardman@example.com"}
 
     def test_scheme_shows_minimal_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 
@@ -38,7 +38,7 @@ class TestSchemeFunding:
         )
 
     def test_scheme_shows_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=1,
@@ -66,7 +66,7 @@ class TestSchemeFunding:
         )
 
     def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=1,
@@ -94,14 +94,14 @@ class TestSchemeFunding:
         )
 
     def test_scheme_shows_change_spend_to_date(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         scheme_page = SchemePage.open(client, id_=1)
 
         assert scheme_page.funding.change_spend_to_date_url == "/schemes/1/spend-to-date"
 
     def test_spend_to_date_form_shows_title(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
@@ -111,21 +111,21 @@ class TestSchemeFunding:
         )
 
     def test_spend_to_date_form_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
         assert change_spend_to_date_page.back_url == "/schemes/1"
 
     def test_spend_to_date_form_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
         assert change_spend_to_date_page.heading and change_spend_to_date_page.heading.caption == "Wirral Package"
 
     def test_spend_to_date_form_shows_funding_summary(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=1,
@@ -144,14 +144,14 @@ class TestSchemeFunding:
     def test_spend_to_date_form_shows_minimal_funding_summary(
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
         assert change_spend_to_date_page.funding_summary == "This scheme has no funding allocation."
 
     def test_spend_to_date_form_shows_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=1,
@@ -168,7 +168,7 @@ class TestSchemeFunding:
         assert change_spend_to_date_page.form.amount.value == "50000"
 
     def test_spend_to_date_form_shows_zero_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=1,
@@ -185,21 +185,21 @@ class TestSchemeFunding:
         assert change_spend_to_date_page.form.amount.value == "0"
 
     def test_spend_to_date_form_shows_empty_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
         assert not change_spend_to_date_page.form.amount.value
 
     def test_spend_to_date_form_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
         assert change_spend_to_date_page.form.confirm_url == "/schemes/1/spend-to-date"
 
     def test_spend_to_date_form_shows_cancel(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
@@ -209,14 +209,14 @@ class TestSchemeFunding:
         self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
         authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+        schemes.add(build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_id=2))
 
         forbidden_page = ChangeSpendToDatePage.open_when_unauthorized(client, id_=2)
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
     def test_cannot_spend_to_date_form_when_no_authority(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=2, overview_revisions=[]))
+        schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
 
         forbidden_page = ChangeSpendToDatePage.open_when_unauthorized(client, id_=2)
 
@@ -230,7 +230,11 @@ class TestSchemeFunding:
     def test_cannot_spend_to_date_form_when_not_updateable_scheme(
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1, bid_status=BidStatus.SUBMITTED))
+        schemes.add(
+            build_scheme(
+                id_=1, reference="ATE00001", name="Wirral Package", authority_id=1, bid_status=BidStatus.SUBMITTED
+            )
+        )
 
         not_found_page = ChangeSpendToDatePage.open_when_not_found(client, id_=1)
 
@@ -240,7 +244,7 @@ class TestSchemeFunding:
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
         clock.now = datetime(2020, 2, 1, 13)
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=1,
@@ -276,7 +280,7 @@ class TestSchemeFunding:
         )
 
     def test_spend_to_date_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=1,
@@ -295,7 +299,7 @@ class TestSchemeFunding:
     def test_cannot_spend_to_date_when_error(
         self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        scheme = build_scheme(id_=1, name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=1,
@@ -334,7 +338,7 @@ class TestSchemeFunding:
         )
 
     def test_cannot_spend_to_date_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         change_spend_to_date_page = ChangeSpendToDatePage(
             client.post("/schemes/1/spend-to-date", data={"amount": "60000"}, follow_redirects=True)
@@ -350,7 +354,7 @@ class TestSchemeFunding:
     def test_cannot_spend_to_date_when_incorrect_csrf_token(
         self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 
         change_spend_to_date_page = ChangeSpendToDatePage(
             client.post("/schemes/1/spend-to-date", data={"csrf_token": "x", "amount": "60000"}, follow_redirects=True)
@@ -367,7 +371,7 @@ class TestSchemeFunding:
         self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
         authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-        schemes.add(build_scheme(id_=2, name="Hospital Fields Road", authority_id=2))
+        schemes.add(build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_id=2))
 
         response = client.post("/schemes/2/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
 
@@ -376,7 +380,7 @@ class TestSchemeFunding:
     def test_cannot_spend_to_date_when_no_authority(
         self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        schemes.add(build_scheme(id_=2, overview_revisions=[]))
+        schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
 
         response = client.post("/schemes/2/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
 
@@ -390,7 +394,11 @@ class TestSchemeFunding:
     def test_cannot_spend_to_date_when_not_updateable_scheme(
         self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        schemes.add(build_scheme(id_=1, name="Wirral Package", authority_id=1, bid_status=BidStatus.SUBMITTED))
+        schemes.add(
+            build_scheme(
+                id_=1, reference="ATE00001", name="Wirral Package", authority_id=1, bid_status=BidStatus.SUBMITTED
+            )
+        )
 
         response = client.post("/schemes/1/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
 

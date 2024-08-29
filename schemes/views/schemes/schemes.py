@@ -399,6 +399,7 @@ def clear(schemes: SchemeRepository) -> Response:
 @dataclass(frozen=True)
 class SchemeRepr:
     id: int
+    reference: str
     overview_revisions: list[OverviewRevisionRepr] = field(default_factory=list)
     bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
     financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
@@ -410,6 +411,7 @@ class SchemeRepr:
     def from_domain(cls, scheme: Scheme) -> SchemeRepr:
         return cls(
             id=scheme.id,
+            reference=scheme.reference,
             overview_revisions=[
                 OverviewRevisionRepr.from_domain(overview_revision)
                 for overview_revision in scheme.overview.overview_revisions
@@ -436,7 +438,7 @@ class SchemeRepr:
         )
 
     def to_domain(self) -> Scheme:
-        scheme = Scheme(id_=self.id)
+        scheme = Scheme(id_=self.id, reference=self.reference)
 
         for overview_revision_repr in self.overview_revisions:
             scheme.overview.update_overviews(overview_revision_repr.to_domain())

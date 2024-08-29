@@ -16,7 +16,7 @@ class AuthorityEntity(Base):
     __table_args__ = {"schema": "authority"}
 
     authority_id: Mapped[int] = mapped_column(primary_key=True)
-    authority_full_name: Mapped[str] = mapped_column(Text)
+    authority_full_name: Mapped[str] = mapped_column(unique=True)
 
 
 class UserEntity(Base):

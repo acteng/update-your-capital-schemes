@@ -17,7 +17,7 @@ locals {
 
   config = {
     dev = {
-      schemes_database = "test"
+      schemes_database = "dev"
       keep_idle        = false
       basic_auth       = true
       database_backups = false

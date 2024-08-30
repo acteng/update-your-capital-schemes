@@ -4,7 +4,7 @@ from datetime import date, datetime
 from enum import IntEnum, auto
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes.data_source import DataSource
+from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.observations import ObservationType
 
 

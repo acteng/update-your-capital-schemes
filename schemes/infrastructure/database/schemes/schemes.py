@@ -22,7 +22,7 @@ from schemes.infrastructure.database import (
     CapitalSchemeMilestoneEntity,
     CapitalSchemeOverviewEntity,
 )
-from schemes.infrastructure.database.schemes.data_source import DataSourceMapper
+from schemes.infrastructure.database.schemes.data_sources import DataSourceMapper
 from schemes.infrastructure.database.schemes.funding import (
     BidStatusMapper,
     FinancialTypeMapper,

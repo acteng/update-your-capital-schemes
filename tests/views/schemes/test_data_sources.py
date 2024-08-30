@@ -1,7 +1,7 @@
 import pytest
 
 from schemes.domain.schemes import DataSource
-from schemes.views.schemes.data_source import DataSourceRepr
+from schemes.views.schemes.data_sources import DataSourceRepr
 
 
 @pytest.mark.parametrize(

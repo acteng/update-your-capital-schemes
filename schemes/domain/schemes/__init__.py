@@ -1,4 +1,4 @@
-from schemes.domain.schemes.data_source import DataSource as DataSource
+from schemes.domain.schemes.data_sources import DataSource as DataSource
 from schemes.domain.schemes.funding import BidStatus as BidStatus
 from schemes.domain.schemes.funding import BidStatusRevision as BidStatusRevision
 from schemes.domain.schemes.funding import FinancialRevision as FinancialRevision

@@ -9,7 +9,7 @@ from wtforms.validators import InputRequired
 
 from schemes.domain.schemes import AuthorityReview, DataSource, SchemeReviews
 from schemes.views.forms import FieldsetGovCheckboxInput
-from schemes.views.schemes.data_source import DataSourceRepr
+from schemes.views.schemes.data_sources import DataSourceRepr
 
 
 class SchemeReviewForm(FlaskForm):  # type: ignore

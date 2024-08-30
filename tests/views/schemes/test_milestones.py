@@ -12,7 +12,7 @@ from schemes.domain.schemes import (
     ObservationType,
     SchemeMilestones,
 )
-from schemes.views.schemes.data_source import DataSourceRepr
+from schemes.views.schemes.data_sources import DataSourceRepr
 from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,
     ChangeMilestoneDatesForm,

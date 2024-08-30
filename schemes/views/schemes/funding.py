@@ -19,7 +19,7 @@ from schemes.domain.schemes import (
     SchemeFunding,
 )
 from schemes.views.forms import CustomMessageIntegerField
-from schemes.views.schemes.data_source import DataSourceRepr
+from schemes.views.schemes.data_sources import DataSourceRepr
 
 
 @dataclass(frozen=True)

@@ -1,7 +1,7 @@
 import pytest
 
 from schemes.domain.schemes import DataSource
-from schemes.infrastructure.database.schemes.data_source import DataSourceMapper
+from schemes.infrastructure.database.schemes.data_sources import DataSourceMapper
 
 
 @pytest.mark.parametrize(

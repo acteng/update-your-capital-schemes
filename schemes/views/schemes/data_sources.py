@@ -27,6 +27,10 @@ class DataSourceRepr(Enum):
     UNKNOWN = "Unknown"
     PULSE_2023_24_Q2_DATA_CLEANSE = "Pulse 2023/24 Q2 Data Cleanse"
     PULSE_2023_24_Q3_DATA_CLEANSE = "Pulse 2023/24 Q3 Data Cleanse"
+    LUF_SCHEME_LIST = "LUF Scheme List"
+    LUF_QUARTERLY_UPDATE = "LUF Quarterly Update"
+    CRSTS_SCHEME_LIST = "CRSTS Scheme List"
+    CRSTS_QUARTERLY_UPDATE = "CRSTS Quarterly Update"
 
     @classmethod
     def from_domain(cls, data_source: DataSource) -> DataSourceRepr:
@@ -57,4 +61,8 @@ class DataSourceRepr(Enum):
             DataSource.UNKNOWN: DataSourceRepr.UNKNOWN,
             DataSource.PULSE_2023_24_Q2_DATA_CLEANSE: DataSourceRepr.PULSE_2023_24_Q2_DATA_CLEANSE,
             DataSource.PULSE_2023_24_Q3_DATA_CLEANSE: DataSourceRepr.PULSE_2023_24_Q3_DATA_CLEANSE,
+            DataSource.LUF_SCHEME_LIST: DataSourceRepr.LUF_SCHEME_LIST,
+            DataSource.LUF_QUARTERLY_UPDATE: DataSourceRepr.LUF_QUARTERLY_UPDATE,
+            DataSource.CRSTS_SCHEME_LIST: DataSourceRepr.CRSTS_SCHEME_LIST,
+            DataSource.CRSTS_QUARTERLY_UPDATE: DataSourceRepr.CRSTS_QUARTERLY_UPDATE,
         }

@@ -26,6 +26,10 @@ from schemes.views.schemes.data_sources import DataSourceRepr
         (DataSource.UNKNOWN, "Unknown"),
         (DataSource.PULSE_2023_24_Q2_DATA_CLEANSE, "Pulse 2023/24 Q2 Data Cleanse"),
         (DataSource.PULSE_2023_24_Q3_DATA_CLEANSE, "Pulse 2023/24 Q3 Data Cleanse"),
+        (DataSource.LUF_SCHEME_LIST, "LUF Scheme List"),
+        (DataSource.LUF_QUARTERLY_UPDATE, "LUF Quarterly Update"),
+        (DataSource.CRSTS_SCHEME_LIST, "CRSTS Scheme List"),
+        (DataSource.CRSTS_QUARTERLY_UPDATE, "CRSTS Quarterly Update"),
     ],
 )
 class TestDataSourceRepr:

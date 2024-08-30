@@ -92,15 +92,39 @@ class MilestoneRevision:
         status_date: date,
         source: DataSource,
     ):
-        self.id = id_
-        self.effective = effective
-        self.milestone = milestone
-        self.observation_type = observation_type
-        self.status_date = status_date
-        self.source = source
+        self._id = id_
+        self._effective = effective
+        self._milestone = milestone
+        self._observation_type = observation_type
+        self._status_date = status_date
+        self._source = source
+
+    @property
+    def id(self) -> int | None:
+        return self._id
+
+    @property
+    def effective(self) -> DateRange:
+        return self._effective
+
+    @property
+    def milestone(self) -> Milestone:
+        return self._milestone
+
+    @property
+    def observation_type(self) -> ObservationType:
+        return self._observation_type
+
+    @property
+    def status_date(self) -> date:
+        return self._status_date
+
+    @property
+    def source(self) -> DataSource:
+        return self._source
 
     def close(self, effective_date_to: datetime) -> None:
-        self.effective = DateRange(self.effective.date_from, effective_date_to)
+        self._effective = DateRange(self.effective.date_from, effective_date_to)
 
 
 class Milestone(IntEnum):

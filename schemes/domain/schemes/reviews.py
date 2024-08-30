@@ -37,6 +37,18 @@ class SchemeReviews:
 class AuthorityReview:
     # TODO: domain identifier should be mandatory for transient instances
     def __init__(self, id_: int | None, review_date: datetime, source: DataSource):
-        self.id = id_
-        self.review_date = review_date
-        self.source = source
+        self._id = id_
+        self._review_date = review_date
+        self._source = source
+
+    @property
+    def id(self) -> int | None:
+        return self._id
+
+    @property
+    def review_date(self) -> datetime:
+        return self._review_date
+
+    @property
+    def source(self) -> DataSource:
+        return self._source

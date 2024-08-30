@@ -101,9 +101,21 @@ class SchemeFunding:
 class BidStatusRevision:
     # TODO: domain identifier should be mandatory for transient instances
     def __init__(self, id_: int | None, effective: DateRange, status: BidStatus):
-        self.id = id_
-        self.effective = effective
-        self.status = status
+        self._id = id_
+        self._effective = effective
+        self._status = status
+
+    @property
+    def id(self) -> int | None:
+        return self._id
+
+    @property
+    def effective(self) -> DateRange:
+        return self._effective
+
+    @property
+    def status(self) -> BidStatus:
+        return self._status
 
 
 @unique
@@ -118,11 +130,31 @@ class BidStatus(Enum):
 class FinancialRevision:
     # TODO: domain identifier should be mandatory for transient instances
     def __init__(self, id_: int | None, effective: DateRange, type_: FinancialType, amount: int, source: DataSource):
-        self.id = id_
-        self.effective = effective
-        self.type = type_
-        self.amount = amount
-        self.source = source
+        self._id = id_
+        self._effective = effective
+        self._type = type_
+        self._amount = amount
+        self._source = source
+
+    @property
+    def id(self) -> int | None:
+        return self._id
+
+    @property
+    def effective(self) -> DateRange:
+        return self._effective
+
+    @property
+    def type(self) -> FinancialType:
+        return self._type
+
+    @property
+    def amount(self) -> int:
+        return self._amount
+
+    @property
+    def source(self) -> DataSource:
+        return self._source
 
     @property
     def is_current_funding_allocation(self) -> bool:
@@ -133,7 +165,7 @@ class FinancialRevision:
         return self.type == FinancialType.SPEND_TO_DATE and self.effective.date_to is None
 
     def close(self, effective_date_to: datetime) -> None:
-        self.effective = DateRange(self.effective.date_from, effective_date_to)
+        self._effective = DateRange(self.effective.date_from, effective_date_to)
 
 
 @unique

@@ -37,11 +37,31 @@ class OutputRevision:
         value: Decimal,
         observation_type: ObservationType,
     ):
-        self.id = id_
-        self.effective = effective
-        self.type_measure = type_measure
-        self.value = value
-        self.observation_type = observation_type
+        self._id = id_
+        self._effective = effective
+        self._type_measure = type_measure
+        self._value = value
+        self._observation_type = observation_type
+
+    @property
+    def id(self) -> int | None:
+        return self._id
+
+    @property
+    def effective(self) -> DateRange:
+        return self._effective
+
+    @property
+    def type_measure(self) -> OutputTypeMeasure:
+        return self._type_measure
+
+    @property
+    def value(self) -> Decimal:
+        return self._value
+
+    @property
+    def observation_type(self) -> ObservationType:
+        return self._observation_type
 
 
 class OutputType(IntEnum):

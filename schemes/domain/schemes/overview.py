@@ -56,12 +56,36 @@ class OverviewRevision:
         type_: SchemeType,
         funding_programme: FundingProgramme,
     ):
-        self.id = id_
-        self.effective = effective
-        self.name = name
-        self.authority_id = authority_id
-        self.type = type_
-        self.funding_programme = funding_programme
+        self._id = id_
+        self._effective = effective
+        self._name = name
+        self._authority_id = authority_id
+        self._type = type_
+        self._funding_programme = funding_programme
+
+    @property
+    def id(self) -> int | None:
+        return self._id
+
+    @property
+    def effective(self) -> DateRange:
+        return self._effective
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def authority_id(self) -> int:
+        return self._authority_id
+
+    @property
+    def type(self) -> SchemeType:
+        return self._type
+
+    @property
+    def funding_programme(self) -> FundingProgramme:
+        return self._funding_programme
 
 
 @unique

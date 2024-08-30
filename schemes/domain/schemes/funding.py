@@ -65,7 +65,7 @@ class SchemeFunding:
     def update_spend_to_date(self, now: datetime, amount: int) -> None:
         current_spend_to_date = self._current_spend_to_date
         if current_spend_to_date:
-            current_spend_to_date.effective = DateRange(current_spend_to_date.effective.date_from, now)
+            current_spend_to_date.close(now)
 
         self.update_financial(
             FinancialRevision(
@@ -131,6 +131,9 @@ class FinancialRevision:
     @property
     def is_current_spend_to_date(self) -> bool:
         return self.type == FinancialType.SPEND_TO_DATE and self.effective.date_to is None
+
+    def close(self, effective_date_to: datetime) -> None:
+        self.effective = DateRange(self.effective.date_from, effective_date_to)
 
 
 @unique

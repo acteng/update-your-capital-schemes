@@ -473,3 +473,16 @@ class TestFinancialRevision:
         )
 
         assert financial_revision.is_current_spend_to_date == expected
+
+    def test_close(self) -> None:
+        financial_revision = FinancialRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1), None),
+            type_=FinancialType.FUNDING_ALLOCATION,
+            amount=100_000,
+            source=DataSource.ATF4_BID,
+        )
+
+        financial_revision.close(datetime(2020, 2, 1))
+
+        assert financial_revision.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))

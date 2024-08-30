@@ -33,7 +33,7 @@ class SchemeMilestones:
     ) -> None:
         current_milestone_revision = self._current_milestone_revision(milestone, observation_type)
         if current_milestone_revision:
-            current_milestone_revision.effective = DateRange(current_milestone_revision.effective.date_from, now)
+            current_milestone_revision.close(now)
 
         self.update_milestone(
             MilestoneRevision(
@@ -98,6 +98,9 @@ class MilestoneRevision:
         self.observation_type = observation_type
         self.status_date = status_date
         self.source = source
+
+    def close(self, effective_date_to: datetime) -> None:
+        self.effective = DateRange(self.effective.date_from, effective_date_to)
 
 
 class Milestone(IntEnum):

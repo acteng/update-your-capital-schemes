@@ -1202,7 +1202,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
         scheme = schemes.get(1)
         assert scheme
-        scheme.funding.financial_revisions[0].effective = DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
+        scheme.funding.financial_revisions[0].close(datetime(2020, 2, 1))
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=3,
@@ -1256,7 +1256,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
         scheme = schemes.get(1)
         assert scheme
-        scheme.milestones.milestone_revisions[0].effective = DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
+        scheme.milestones.milestone_revisions[0].close(datetime(2020, 2, 1))
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=3,

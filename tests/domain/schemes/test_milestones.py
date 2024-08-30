@@ -283,6 +283,20 @@ class TestMilestoneRevision:
             and milestone_revision.source == DataSource.ATF4_BID
         )
 
+    def test_close(self) -> None:
+        milestone_revision = MilestoneRevision(
+            id_=1,
+            effective=DateRange(datetime(2020, 1, 1), None),
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 1),
+            source=DataSource.ATF4_BID,
+        )
+
+        milestone_revision.close(datetime(2020, 2, 1))
+
+        assert milestone_revision.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
+
 
 class TestMilestone:
     @pytest.mark.parametrize(

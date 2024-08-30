@@ -78,10 +78,6 @@ class FundingProgrammeRepr(Enum):
     ATF3 = "ATF3"
     ATF4 = "ATF4"
     ATF4E = "ATF4e"
-    ATF5 = "ATF5"
-    MRN = "MRN"
-    LUF = "LUF"
-    CRSTS = "CRSTS"
 
     @classmethod
     def from_domain(cls, funding_programme: FundingProgramme) -> FundingProgrammeRepr:

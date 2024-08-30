@@ -78,6 +78,9 @@ class FundingProgrammeRepr(Enum):
     ATF3 = "ATF3"
     ATF4 = "ATF4"
     ATF4E = "ATF4e"
+    CRSTS = "CRSTS"
+    LUF1 = "LUF1"
+    LUF2 = "LUF2"
 
     @classmethod
     def from_domain(cls, funding_programme: FundingProgramme) -> FundingProgrammeRepr:
@@ -93,4 +96,7 @@ class FundingProgrammeRepr(Enum):
             FundingProgrammes.ATF3: FundingProgrammeRepr.ATF3,
             FundingProgrammes.ATF4: FundingProgrammeRepr.ATF4,
             FundingProgrammes.ATF4E: FundingProgrammeRepr.ATF4E,
+            FundingProgrammes.CRSTS: FundingProgrammeRepr.CRSTS,
+            FundingProgrammes.LUF1: FundingProgrammeRepr.LUF1,
+            FundingProgrammes.LUF2: FundingProgrammeRepr.LUF2,
         }

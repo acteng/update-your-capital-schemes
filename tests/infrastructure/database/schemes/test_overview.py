@@ -23,6 +23,9 @@ class TestSchemeTypeMapper:
         (FundingProgrammes.ATF3, 2),
         (FundingProgrammes.ATF4, 3),
         (FundingProgrammes.ATF4E, 4),
+        (FundingProgrammes.CRSTS, 5),
+        (FundingProgrammes.LUF1, 6),
+        (FundingProgrammes.LUF2, 7),
     ],
 )
 class TestFundingProgrammeMapper:

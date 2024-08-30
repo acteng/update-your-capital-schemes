@@ -254,6 +254,9 @@ class TestFundingProgrammes:
             (FundingProgrammes.ATF3, "ATF3"),
             (FundingProgrammes.ATF4, "ATF4"),
             (FundingProgrammes.ATF4E, "ATF4e"),
+            (FundingProgrammes.CRSTS, "CRSTS"),
+            (FundingProgrammes.LUF1, "LUF1"),
+            (FundingProgrammes.LUF2, "LUF2"),
         ],
     )
     def test_code(self, funding_programme: FundingProgramme, expected_code: str) -> None:
@@ -266,6 +269,9 @@ class TestFundingProgrammes:
             (FundingProgrammes.ATF3, False),
             (FundingProgrammes.ATF4, False),
             (FundingProgrammes.ATF4E, False),
+            (FundingProgrammes.CRSTS, False),
+            (FundingProgrammes.LUF1, False),
+            (FundingProgrammes.LUF2, False),
         ],
     )
     def test_is_under_embargo(self, funding_programme: FundingProgramme, expected_is_under_embargo: bool) -> None:
@@ -278,6 +284,9 @@ class TestFundingProgrammes:
             (FundingProgrammes.ATF3, True),
             (FundingProgrammes.ATF4, True),
             (FundingProgrammes.ATF4E, True),
+            (FundingProgrammes.CRSTS, False),
+            (FundingProgrammes.LUF1, False),
+            (FundingProgrammes.LUF2, False),
         ],
     )
     def test_is_eligible_for_authority_update(

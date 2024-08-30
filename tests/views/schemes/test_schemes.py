@@ -348,6 +348,9 @@ class TestFundingProgrammeContext:
             (FundingProgrammes.ATF3, "ATF3"),
             (FundingProgrammes.ATF4, "ATF4"),
             (FundingProgrammes.ATF4E, "ATF4e"),
+            (FundingProgrammes.CRSTS, "CRSTS"),
+            (FundingProgrammes.LUF1, "LUF1"),
+            (FundingProgrammes.LUF2, "LUF2"),
         ],
     )
     def test_from_domain(self, funding_programme: FundingProgramme, expected_name: str) -> None:

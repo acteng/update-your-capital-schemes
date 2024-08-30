@@ -16,7 +16,15 @@ class SchemeTypeMapper:
 
 
 class FundingProgrammeMapper:
-    _IDS = {FundingProgrammes.ATF2: 1, FundingProgrammes.ATF3: 2, FundingProgrammes.ATF4: 3, FundingProgrammes.ATF4E: 4}
+    _IDS = {
+        FundingProgrammes.ATF2: 1,
+        FundingProgrammes.ATF3: 2,
+        FundingProgrammes.ATF4: 3,
+        FundingProgrammes.ATF4E: 4,
+        FundingProgrammes.CRSTS: 5,
+        FundingProgrammes.LUF1: 6,
+        FundingProgrammes.LUF2: 7,
+    }
 
     def to_id(self, funding_programme: FundingProgramme) -> int:
         return self._IDS[funding_programme]

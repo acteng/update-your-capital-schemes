@@ -74,10 +74,11 @@ class SchemeType(Enum):
 class FundingProgramme:
     code: str
     is_under_embargo: bool
+    is_eligible_for_authority_update: bool
 
 
 class FundingProgrammes:
-    ATF2 = FundingProgramme("ATF2", False)
-    ATF3 = FundingProgramme("ATF3", False)
-    ATF4 = FundingProgramme("ATF4", False)
-    ATF4E = FundingProgramme("ATF4e", False)
+    ATF2 = FundingProgramme("ATF2", False, True)
+    ATF3 = FundingProgramme("ATF3", False, True)
+    ATF4 = FundingProgramme("ATF4", False, True)
+    ATF4E = FundingProgramme("ATF4e", False, True)

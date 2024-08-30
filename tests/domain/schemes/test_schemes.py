@@ -118,10 +118,41 @@ class TestScheme:
         "funding_programme, expected_updateable",
         [
             (FundingProgrammes.ATF4, True),
-            (FundingProgramme("ATF100", True), False),
+            (FundingProgramme("ATF100", True, False), False),
         ],
     )
     def test_is_updateable_when_not_under_embargo(
+        self, funding_programme: FundingProgramme, expected_updateable: bool
+    ) -> None:
+        scheme = build_scheme(
+            id_=1,
+            reference="ATE00001",
+            name="Wirral Package",
+            authority_id=2,
+            funding_programme=funding_programme,
+            bid_status=BidStatus.FUNDED,
+        )
+        scheme.milestones.update_milestone(
+            MilestoneRevision(
+                id_=3,
+                effective=DateRange(datetime(2000, 1, 2), None),
+                milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2000, 1, 2),
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        assert scheme.is_updateable == expected_updateable
+
+    @pytest.mark.parametrize(
+        "funding_programme, expected_updateable",
+        [
+            (FundingProgrammes.ATF4, True),
+            (FundingProgramme("ATF100", False, False), False),
+        ],
+    )
+    def test_is_updateable_when_not_eligible_for_authority_update(
         self, funding_programme: FundingProgramme, expected_updateable: bool
     ) -> None:
         scheme = build_scheme(
@@ -239,3 +270,17 @@ class TestFundingProgrammes:
     )
     def test_is_under_embargo(self, funding_programme: FundingProgramme, expected_is_under_embargo: bool) -> None:
         assert funding_programme.is_under_embargo == expected_is_under_embargo
+
+    @pytest.mark.parametrize(
+        "funding_programme, expected_is_eligible_for_authority_update",
+        [
+            (FundingProgrammes.ATF2, True),
+            (FundingProgrammes.ATF3, True),
+            (FundingProgrammes.ATF4, True),
+            (FundingProgrammes.ATF4E, True),
+        ],
+    )
+    def test_is_eligible_for_authority_update(
+        self, funding_programme: FundingProgramme, expected_is_eligible_for_authority_update: bool
+    ) -> None:
+        assert funding_programme.is_eligible_for_authority_update == expected_is_eligible_for_authority_update

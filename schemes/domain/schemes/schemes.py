@@ -46,7 +46,8 @@ class Scheme:
         is_funded = self.funding.bid_status == BidStatus.FUNDED
         is_active_and_incomplete = self._is_active_and_incomplete(self.milestones.current_milestone)
         is_under_embargo = self._is_under_embargo(self.overview.funding_programme)
-        return is_funded and is_active_and_incomplete and not is_under_embargo
+        is_eligible_for_authority_update = self._is_eligible_for_authority_update(self.overview.funding_programme)
+        return is_funded and is_active_and_incomplete and not is_under_embargo and is_eligible_for_authority_update
 
     @staticmethod
     def _is_active_and_incomplete(milestone: Milestone | None) -> bool:
@@ -55,6 +56,10 @@ class Scheme:
     @staticmethod
     def _is_under_embargo(funding_programme: FundingProgramme | None) -> bool:
         return funding_programme.is_under_embargo if funding_programme else False
+
+    @staticmethod
+    def _is_eligible_for_authority_update(funding_programme: FundingProgramme | None) -> bool:
+        return funding_programme.is_eligible_for_authority_update if funding_programme else True
 
 
 class SchemeRepository:

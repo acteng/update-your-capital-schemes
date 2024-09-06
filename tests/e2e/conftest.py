@@ -1,5 +1,4 @@
 import multiprocessing
-import os
 import socket
 import sys
 from typing import Any, Generator
@@ -83,7 +82,6 @@ def app_client_fixture(live_server: LiveServer, api_key: str) -> Generator[AppCl
 
 @pytest.fixture(name="oidc_server_app", scope="package")
 def oidc_server_app_fixture() -> OidcServerApp:
-    os.environ["AUTHLIB_INSECURE_TRANSPORT"] = "true"
     port = _get_random_port()
     return oidc_server_create_app({"TESTING": True, "SERVER_NAME": f"localhost:{port}"})
 

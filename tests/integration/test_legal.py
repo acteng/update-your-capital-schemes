@@ -24,3 +24,8 @@ class TestLegal:
 
         assert cookies_page.is_visible
         assert cookies_page.title == "Cookies - Update your capital schemes - Active Travel England - GOV.UK"
+
+    def test_security(self, client: FlaskClient) -> None:
+        response = client.get("/.well-known/security.txt")
+
+        assert response.status_code == 200 and response.content_type == "text/plain; charset=utf-8"

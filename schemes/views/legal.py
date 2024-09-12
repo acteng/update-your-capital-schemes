@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, Response, render_template, send_from_directory
 
 from schemes.views.auth.basic import basic_auth
 
@@ -21,3 +21,8 @@ def accessibility() -> str:
 @basic_auth
 def cookies() -> str:
     return render_template("legal/cookies.html")
+
+
+@bp.get("/.well-known/security.txt")
+def security() -> Response:
+    return send_from_directory(directory="views/templates/legal", path="security.txt")

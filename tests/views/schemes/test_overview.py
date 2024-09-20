@@ -113,6 +113,7 @@ class TestSchemeTypeRepr:
         (FundingProgrammes.CRSTS, "CRSTS"),
         (FundingProgrammes.LUF1, "LUF1"),
         (FundingProgrammes.LUF2, "LUF2"),
+        (FundingProgrammes.LUF3, "LUF3"),
     ],
 )
 class TestFundingProgrammeRepr:

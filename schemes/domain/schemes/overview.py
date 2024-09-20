@@ -109,3 +109,4 @@ class FundingProgrammes:
     CRSTS = FundingProgramme("CRSTS", False, False)
     LUF1 = FundingProgramme("LUF1", False, False)
     LUF2 = FundingProgramme("LUF2", False, False)
+    LUF3 = FundingProgramme("LUF3", False, False)

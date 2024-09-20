@@ -81,6 +81,7 @@ class FundingProgrammeRepr(Enum):
     CRSTS = "CRSTS"
     LUF1 = "LUF1"
     LUF2 = "LUF2"
+    LUF3 = "LUF3"
 
     @classmethod
     def from_domain(cls, funding_programme: FundingProgramme) -> FundingProgrammeRepr:
@@ -99,4 +100,5 @@ class FundingProgrammeRepr(Enum):
             FundingProgrammes.CRSTS: FundingProgrammeRepr.CRSTS,
             FundingProgrammes.LUF1: FundingProgrammeRepr.LUF1,
             FundingProgrammes.LUF2: FundingProgrammeRepr.LUF2,
+            FundingProgrammes.LUF3: FundingProgrammeRepr.LUF3,
         }

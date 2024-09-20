@@ -24,6 +24,7 @@ class FundingProgrammeMapper:
         FundingProgrammes.CRSTS: 5,
         FundingProgrammes.LUF1: 6,
         FundingProgrammes.LUF2: 7,
+        FundingProgrammes.LUF3: 8,
     }
 
     def to_id(self, funding_programme: FundingProgramme) -> int:

@@ -23,6 +23,7 @@ resource "google_compute_region_network_endpoint_group" "schemes" {
 resource "google_compute_backend_service" "schemes" {
   name                  = "schemes"
   load_balancing_scheme = "EXTERNAL_MANAGED"
+  security_policy       = google_compute_security_policy.schemes.id
 
   backend {
     group = google_compute_region_network_endpoint_group.schemes.id
@@ -77,4 +78,10 @@ resource "google_compute_global_forwarding_rule" "schemes_http" {
   target                = google_compute_target_http_proxy.schemes_http.id
   port_range            = "80"
   load_balancing_scheme = "EXTERNAL_MANAGED"
+}
+
+# Cloud Armor
+
+resource "google_compute_security_policy" "schemes" {
+  name = "schemes"
 }

@@ -114,6 +114,17 @@ resource "google_compute_security_policy" "schemes" {
   }
 
   rule {
+    description = "Cross-site scripting"
+    action      = "deny(403)"
+    priority    = 1001
+    match {
+      expr {
+        expression = "evaluatePreconfiguredWaf('xss-v33-stable', {'sensitivity': 1})"
+      }
+    }
+  }
+
+  rule {
     description = "default rule"
     action      = "allow"
     priority    = 2147483647

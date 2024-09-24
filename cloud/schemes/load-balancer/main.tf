@@ -125,6 +125,17 @@ resource "google_compute_security_policy" "schemes" {
   }
 
   rule {
+    description = "Local file inclusion"
+    action      = "deny(403)"
+    priority    = 1002
+    match {
+      expr {
+        expression = "evaluatePreconfiguredWaf('lfi-v33-stable', {'sensitivity': 1})"
+      }
+    }
+  }
+
+  rule {
     description = "default rule"
     action      = "allow"
     priority    = 2147483647

@@ -12,6 +12,8 @@ resource "google_cloud_run_v2_service" "schemes" {
   project  = var.project
   location = var.region
 
+  ingress = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
+
   template {
     containers {
       image = "europe-west1-docker.pkg.dev/dft-schemes-common/docker/schemes"

@@ -180,6 +180,17 @@ resource "google_compute_security_policy" "schemes" {
   }
 
   rule {
+    description = "Protocol attack"
+    action      = "deny(403)"
+    priority    = 1007
+    match {
+      expr {
+        expression = "evaluatePreconfiguredWaf('protocolattack-v33-stable', {'sensitivity': 1})"
+      }
+    }
+  }
+
+  rule {
     description = "default rule"
     action      = "allow"
     priority    = 2147483647

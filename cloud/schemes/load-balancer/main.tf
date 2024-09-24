@@ -40,8 +40,9 @@ resource "google_compute_url_map" "schemes" {
 }
 
 resource "google_compute_ssl_policy" "schemes" {
-  name    = "schemes"
-  profile = "RESTRICTED"
+  name            = "schemes"
+  profile         = "RESTRICTED"
+  min_tls_version = "TLS_1_2"
 }
 
 resource "google_compute_target_https_proxy" "schemes_https" {

@@ -28,6 +28,10 @@ resource "google_compute_backend_service" "schemes" {
   backend {
     group = google_compute_region_network_endpoint_group.schemes.id
   }
+
+  log_config {
+    enable = true
+  }
 }
 
 resource "google_compute_url_map" "schemes" {

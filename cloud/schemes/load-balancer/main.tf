@@ -103,6 +103,17 @@ resource "google_compute_security_policy" "schemes" {
   }
 
   rule {
+    description = "SQL injection"
+    action      = "deny(403)"
+    priority    = 1000
+    match {
+      expr {
+        expression = "evaluatePreconfiguredWaf('sqli-v33-stable', {'sensitivity': 1})"
+      }
+    }
+  }
+
+  rule {
     description = "default rule"
     action      = "allow"
     priority    = 2147483647

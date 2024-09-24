@@ -136,6 +136,17 @@ resource "google_compute_security_policy" "schemes" {
   }
 
   rule {
+    description = "Remote file inclusion"
+    action      = "deny(403)"
+    priority    = 1003
+    match {
+      expr {
+        expression = "evaluatePreconfiguredWaf('rfi-v33-stable', {'sensitivity': 1})"
+      }
+    }
+  }
+
+  rule {
     description = "default rule"
     action      = "allow"
     priority    = 2147483647

@@ -89,4 +89,28 @@ resource "google_compute_global_forwarding_rule" "schemes_http" {
 
 resource "google_compute_security_policy" "schemes" {
   name = "schemes"
+
+  rule {
+    description = "Block malicious IPs"
+    action      = "deny(403)"
+    priority    = 0
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["45.159.248.69"]
+      }
+    }
+  }
+
+  rule {
+    description = "default rule"
+    action      = "allow"
+    priority    = 2147483647
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
+      }
+    }
+  }
 }

@@ -147,6 +147,17 @@ resource "google_compute_security_policy" "schemes" {
   }
 
   rule {
+    description = "Remote code execution"
+    action      = "deny(403)"
+    priority    = 1004
+    match {
+      expr {
+        expression = "evaluatePreconfiguredWaf('rce-v33-stable', {'sensitivity': 1})"
+      }
+    }
+  }
+
+  rule {
     description = "default rule"
     action      = "allow"
     priority    = 2147483647

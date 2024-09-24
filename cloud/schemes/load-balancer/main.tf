@@ -158,6 +158,17 @@ resource "google_compute_security_policy" "schemes" {
   }
 
   rule {
+    description = "Method enforcement"
+    action      = "deny(403)"
+    priority    = 1005
+    match {
+      expr {
+        expression = "evaluatePreconfiguredWaf('methodenforcement-v33-stable', {'sensitivity': 1})"
+      }
+    }
+  }
+
+  rule {
     description = "default rule"
     action      = "allow"
     priority    = 2147483647

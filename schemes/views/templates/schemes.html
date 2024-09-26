@@ -1,4 +1,5 @@
 {% extends "service_base.html" %}
+{% from "govuk_frontend_jinja/components/details/macro.html" import govukDetails %}
 {% from "govuk_frontend_jinja/components/notification-banner/macro.html" import govukNotificationBanner %}
 {% from "govuk_frontend_jinja/components/table/macro.html" import govukTable -%}
 {% from "govuk_frontend_jinja/components/tag/macro.html" import govukTag %}
@@ -89,5 +90,14 @@
     {% else %}
         <p class="govuk-body">There are no schemes for your authority to update.</p>
     {% endif %}
+
+    {% set html -%}
+        If any of your scheme details are incorrect then
+        <a class="govuk-link" href="mailto:update-your-capital-schemes@activetravelengland.gov.uk">let us know</a>.
+    {%- endset %}
+    {{ govukDetails({
+        "summaryText": "Report a problem with your schemes",
+        "html": html
+    }) }}
 
 {% endblock %}

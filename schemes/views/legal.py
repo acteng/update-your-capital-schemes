@@ -24,5 +24,6 @@ def cookies() -> str:
 
 
 @bp.get("/.well-known/security.txt")
+@basic_auth
 def security() -> Response:
     return send_from_directory(directory="views/templates/legal", path="security.txt")

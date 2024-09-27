@@ -13,43 +13,43 @@ Welcome to the Update your capital schemes user guide. This guide covers how to 
 
 1. Click the “Start now” button:
 
-    ![Service start page](image1.png)
+    ![Service start page](start.png)
 
 1. Click “Create your GOV.UK One Login” button to create an account: 
 
-    ![Create your GOV.UK One Login](image2.png)
+    ![Create your GOV.UK One Login](create-or-sign-in.png)
 
 1. Provide the email address you want to use for the GOV.UK One Login service to connect to the service. Please use your work email address. 
 
-    ![Enter your email address](image3.png)
+    ![Enter your email address](create-enter-email.png)
 
 1. Check your email for a 6-digit security code. Copy and paste it into the form and click “Continue”.
 
-    ![Check your email](image4.png)
+    ![Check your email](create-check-email.png)
 
 1. Create a password for your GOV.UK One Login account: 
 
-    ![Create your password](image5.png)
+    ![Create your password](create-password.png)
 
 1. Choose how you wish to get two factor authentication security codes. You can either provide a phone number to get codes via text or use an authenticator application / password manager. We recommend using an authenticator application. 
 
-    ![Choose how to get security codes](image6.png)
+    ![Choose how to get security codes](create-security-codes.png)
 
 1. Open the authenticator app on your device and scan the QR code and provide the generated 6-digit code: 
 
-    ![Set up an authenticator app](image7.png)
+    ![Set up an authenticator app](create-qr-code.png)
 
 1. Optionally, if you are using a password manager or web authenticator application you can click the “I cannot scan the QR code” link to show a secret key that you can copy and paste into an authenticator app. This will allow the app to generate the required security code. 
 
-    ![Show secret key](image8.png)
+    ![Show secret key](create-secret-key.png)
 
 1. You have now created your GOV.UK One Login account. Click “Continue” to be redirected back to the service. 
 
-    ![Created your GOV.UK One Login](image9.png)
+    ![Created your GOV.UK One Login](create-success.png)
 
 1. After being redirected to the service you will see a Forbidden page. Please email [update-your-capital-schemes@activetravelengland.gov.uk](mailto:update-your-capital-schemes@activetravelengland.gov.uk) with the email you registered with GOV.UK One Login to be provided access. 
 
-    ![Forbidden page](image10.png)
+    ![Forbidden page](forbidden.png)
 
 ## Sign in to the service 
 
@@ -59,23 +59,23 @@ Welcome to the Update your capital schemes user guide. This guide covers how to 
 
 1. Click the “Start now” button: 
 
-    ![Service start page](image1.png)
+    ![Service start page](start.png)
 
 1. Click the “Sign In” button to sign in with your GOV.UK One Login account: 
 
-    ![Create your GOV.UK One Login](image2.png)
+    ![Create your GOV.UK One Login](create-or-sign-in.png)
 
 1. Enter the email address you registered with GOV.UK One Login: 
 
-    ![Enter your email address](image12.png)
+    ![Enter your email address](sign-in-enter-email.png)
 
 1. Enter your GOV.UK One Login account password: 
 
-    ![Enter your password](image13.png)
+    ![Enter your password](sign-in-password.png)
 
 1. Enter your security code sent to either your phone number or displayed on your registered authenticator app as “GOV.UK One Login”: 
 
-    ![Enter your security code](image14.png)
+    ![Enter your security code](sign-in-security-code.png)
 
 1. If you’ve logged in successfully, you’ll be redirected back to the service and will be able to see your capital schemes. 
 
@@ -87,37 +87,37 @@ The below section outlines how you can use the service to view and update your c
 
     To view a scheme in more detail you can click the scheme reference. 
 
-    ![Your schemes](image15.png)
+    ![Your schemes](schemes.png)
 
 1. After clicking a scheme reference you will visit the scheme page for the selected scheme. This contains more details about the selected scheme separated into separate cards: Overview, Funding, Milestones, Outputs (full page shown below). Changes can be made to spend to date and milestones by clicking the Change links alongside these items. This will take you to forms shown in the following sections. 
    
     If the scheme has not been reviewed in the current quarterly monitoring window a message will appear at the top of the schemes page saying the scheme needs a review. 
 
-    ![Scheme details](image16.png)
+    ![Scheme details](scheme1.png)
 
-    ![Scheme details](image17.png)
+    ![Scheme details](scheme2.png)
 
-    ![Scheme details](image18.png)
+    ![Scheme details](scheme3.png)
 
-    ![Scheme details](image19.png)
+    ![Scheme details](scheme4.png)
  
 1. The change spend to date form allows you to provide updates to the reported spend of ATF funds for a scheme. You can change the value in the form and click confirm to make a change. The form will validate the data you provide to ensure the data is a valid number, is not negative, is equal or less than the schemes funding allocation. At present commas separating thousands are not supported.
 
     Clicking confirm will submit the update and if valid return you to the scheme page. 
 
-    ![Change spend to date](image20.png)
+    ![Change spend to date](change-spend-to-date.png)
  
 1. The change milestones form allows you to make changes to planned and actual milestone dates associated with the scheme. Once you have made changes to milestone dates you can click confirm to update those dates and return to the scheme page. The form validates that the date you have entered is a valid date. At this time, you are unable to remove a milestone date, therefore where a date is present it can only be changed not removed. 
 
-    ![Change milestone dates](image21.png)
+    ![Change milestone dates](change-milestone-dates1.png)
 
-    ![Change milestone dates](image22.png)
+    ![Change milestone dates](change-milestone-dates2.png)
 
 1. To confirm that you have reviewed the data shown on the scheme page and that it is up-to-date you can use the checkbox at the bottom of the scheme page. Select this checkbox and click confirm to update ATE records that the scheme is up-to-date. After clicking confirm you will be returned to the schemes page and shown a success notification. The Needs review tag will disappear from the scheme on the schemes page table. 
 
-    ![Review scheme](image23.png)
+    ![Review scheme](review.png)
 
-    ![Scheme has been reviewed](image24.png)
+    ![Scheme has been reviewed](review-success.png)
 
 ## Get support for the service 
 

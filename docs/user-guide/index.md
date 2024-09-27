@@ -59,7 +59,7 @@ Welcome to the Update your capital schemes user guide. This guide covers how to 
 
 1. Click the “Start now” button: 
 
-    ![Service start page](image11.png)
+    ![Service start page](image1.png)
 
 1. Click the “Sign In” button to sign in with your GOV.UK One Login account: 
 

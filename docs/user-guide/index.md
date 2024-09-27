@@ -93,14 +93,8 @@ The below section outlines how you can use the service to view and update your c
    
     If the scheme has not been reviewed in the current quarterly monitoring window a message will appear at the top of the schemes page saying the scheme needs a review. 
 
-    ![Scheme details](scheme1.png)
+    ![Scheme details](scheme.png)
 
-    ![Scheme details](scheme2.png)
-
-    ![Scheme details](scheme3.png)
-
-    ![Scheme details](scheme4.png)
- 
 1. The change spend to date form allows you to provide updates to the reported spend of ATF funds for a scheme. You can change the value in the form and click confirm to make a change. The form will validate the data you provide to ensure the data is a valid number, is not negative, is equal or less than the schemes funding allocation. At present commas separating thousands are not supported.
 
     Clicking confirm will submit the update and if valid return you to the scheme page. 
@@ -109,9 +103,7 @@ The below section outlines how you can use the service to view and update your c
  
 1. The change milestones form allows you to make changes to planned and actual milestone dates associated with the scheme. Once you have made changes to milestone dates you can click confirm to update those dates and return to the scheme page. The form validates that the date you have entered is a valid date. At this time, you are unable to remove a milestone date, therefore where a date is present it can only be changed not removed. 
 
-    ![Change milestone dates](change-milestone-dates1.png)
-
-    ![Change milestone dates](change-milestone-dates2.png)
+    ![Change milestone dates](change-milestone-dates.png)
 
 1. To confirm that you have reviewed the data shown on the scheme page and that it is up-to-date you can use the checkbox at the bottom of the scheme page. Select this checkbox and click confirm to update ATE records that the scheme is up-to-date. After clicking confirm you will be returned to the schemes page and shown a success notification. The Needs review tag will disappear from the scheme on the schemes page table. 
 

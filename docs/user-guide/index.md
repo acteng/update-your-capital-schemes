@@ -116,17 +116,27 @@ to provide updates until the end of the reporting month.
 Individual schemes that need reviewing will have a “Needs review” tag alongside them. To view or update a scheme you 
 can click the scheme reference.
 
+\pagebreak
+
 ### View a scheme
 
-After clicking a scheme reference you will visit the scheme page for the selected scheme. This contains more details 
-about the selected scheme separated into separate cards: Overview, Funding, Milestones, Outputs (full page shown below).
-Changes can be made to spend to date and milestones by clicking the Change links alongside these items. This will 
-take you to forms shown in the following sections. 
-   
-If the scheme has not been reviewed in the current quarterly monitoring window a message will appear at the top of 
-the schemes page saying the scheme needs a review. 
+After clicking a scheme reference you will see details for the scheme:
 
 ![Scheme details](scheme.png)
+
+If the scheme needs reviewing then a message prompting a review will be shown. 
+
+Scheme details are separated into separate cards:
+
+* Overview
+* Funding
+* Milestones
+* Outputs
+
+Changes can be made to spend to date and milestone dates by clicking “Change” alongside these items. See the 
+following sections for details. 
+
+\pagebreak
 
 ### Change spend to date
 

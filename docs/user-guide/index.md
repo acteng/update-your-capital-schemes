@@ -140,14 +140,13 @@ following sections for details.
 
 ### Change spend to date
 
-The change spend to date form allows you to provide updates to the reported spend of ATF funds for a scheme. You can
-change the value in the form and click confirm to make a change. The form will validate the data you provide to ensure
-the data is a valid number, is not negative, is equal or less than the schemes funding allocation. At present commas
-separating thousands are not supported.
-
-Clicking confirm will submit the update and if valid return you to the scheme page. 
+After clicking “Change” in a scheme's funding card you will be able to update how much has been spent to date:
 
 ![Change spend to date](change-spend-to-date.png)
+
+Enter the new amount and click “Confirm” to submit the change.
+
+\pagebreak
 
 ### Change milestone dates
 

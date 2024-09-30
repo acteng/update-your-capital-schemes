@@ -7,6 +7,8 @@ geometry:
 
 Welcome to the Update your capital schemes user guide. This guide covers how to register an account for the service and sign in. 
 
+\pagebreak
+
 ## Create a GOV.UK One Login account 
 
 1. Go to the service website: [https://update-your-capital-schemes.activetravelengland.gov.uk/](https://update-your-capital-schemes.activetravelengland.gov.uk/) 
@@ -15,41 +17,43 @@ Welcome to the Update your capital schemes user guide. This guide covers how to 
 
     ![Service start page](start.png)
 
-1. Click “Create your GOV.UK One Login” button to create an account: 
+1. \pagebreak Click “Create your GOV.UK One Login” button to create an account: 
 
     ![Create your GOV.UK One Login](create-or-sign-in.png)
 
-1. Provide the email address you want to use for the GOV.UK One Login service to connect to the service. Please use your work email address. 
+1. \pagebreak Provide the email address you want to use for the GOV.UK One Login service to connect to the service. Please use your work email address. 
 
     ![Enter your email address](create-enter-email.png)
 
-1. Check your email for a 6-digit security code. Copy and paste it into the form and click “Continue”.
+1. \pagebreak Check your email for a 6-digit security code. Copy and paste it into the form and click “Continue”.
 
     ![Check your email](create-check-email.png)
 
-1. Create a password for your GOV.UK One Login account: 
+1. \pagebreak Create a password for your GOV.UK One Login account: 
 
     ![Create your password](create-password.png)
 
-1. Choose how you wish to get two factor authentication security codes. You can either provide a phone number to get codes via text or use an authenticator application / password manager. We recommend using an authenticator application. 
+1. \pagebreak Choose how you wish to get two factor authentication security codes. You can either provide a phone number to get codes via text or use an authenticator application / password manager. We recommend using an authenticator application. 
 
     ![Choose how to get security codes](create-security-codes.png)
 
-1. Open the authenticator app on your device and scan the QR code and provide the generated 6-digit code: 
+1. \pagebreak Open the authenticator app on your device and scan the QR code and provide the generated 6-digit code: 
 
     ![Set up an authenticator app](create-qr-code.png)
 
-1. Optionally, if you are using a password manager or web authenticator application you can click the “I cannot scan the QR code” link to show a secret key that you can copy and paste into an authenticator app. This will allow the app to generate the required security code. 
+1. \pagebreak Optionally, if you are using a password manager or web authenticator application you can click the “I cannot scan the QR code” link to show a secret key that you can copy and paste into an authenticator app. This will allow the app to generate the required security code. 
 
     ![Show secret key](create-secret-key.png)
 
-1. You have now created your GOV.UK One Login account. Click “Continue” to be redirected back to the service. 
+1. \pagebreak You have now created your GOV.UK One Login account. Click “Continue” to be redirected back to the service. 
 
     ![Created your GOV.UK One Login](create-success.png)
 
-1. After being redirected to the service you will see a Forbidden page. Please email [update-your-capital-schemes@activetravelengland.gov.uk](mailto:update-your-capital-schemes@activetravelengland.gov.uk) with the email you registered with GOV.UK One Login to be provided access. 
+1. \pagebreak After being redirected to the service you will see a Forbidden page. Please email [update-your-capital-schemes@activetravelengland.gov.uk](mailto:update-your-capital-schemes@activetravelengland.gov.uk) with the email you registered with GOV.UK One Login to be provided access. 
 
     ![Forbidden page](forbidden.png)
+
+\pagebreak
 
 ## Sign in to the service 
 
@@ -61,23 +65,25 @@ Welcome to the Update your capital schemes user guide. This guide covers how to 
 
     ![Service start page](start.png)
 
-1. Click the “Sign In” button to sign in with your GOV.UK One Login account: 
+1. \pagebreak Click the “Sign In” button to sign in with your GOV.UK One Login account: 
 
     ![Create your GOV.UK One Login](create-or-sign-in.png)
 
-1. Enter the email address you registered with GOV.UK One Login: 
+1. \pagebreak Enter the email address you registered with GOV.UK One Login: 
 
     ![Enter your email address](sign-in-enter-email.png)
 
-1. Enter your GOV.UK One Login account password: 
+1. \pagebreak Enter your GOV.UK One Login account password: 
 
     ![Enter your password](sign-in-password.png)
 
-1. Enter your security code sent to either your phone number or displayed on your registered authenticator app as “GOV.UK One Login”: 
+1. \pagebreak Enter your security code sent to either your phone number or displayed on your registered authenticator app as “GOV.UK One Login”: 
 
     ![Enter your security code](sign-in-security-code.png)
 
 1. If you’ve logged in successfully, you’ll be redirected back to the service and will be able to see your capital schemes. 
+
+\pagebreak
 
 ## Use the service to update your capital schemes 
 
@@ -120,6 +126,8 @@ To confirm that you have reviewed the data shown on the scheme page and that it 
 ![Review scheme](review.png)
 
 ![Scheme has been reviewed](review-success.png)
+
+\pagebreak
 
 ## Get support for the service 
 

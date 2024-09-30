@@ -3,16 +3,13 @@ fontfamily: sourcesanspro
 fontfamilyoptions: default
 geometry:
 - margin=20mm
+toc: true
+toc-title: Update your capital schemes
 ---
-
-# Update your capital schemes 
-
-Welcome to the Update your capital schemes user guide. This guide covers how to register an account for the service and
-sign in. 
 
 \pagebreak
 
-## Create a GOV.UK One Login account 
+# Create a GOV.UK One Login account 
 
 1. Go to the service website:
    [https://update-your-capital-schemes.activetravelengland.gov.uk/](https://update-your-capital-schemes.activetravelengland.gov.uk/) 
@@ -64,7 +61,7 @@ sign in.
 
 \pagebreak
 
-## Sign in to the service 
+# Sign in to the service 
 
 1. Create a GOV.UK One Login account if you haven’t already (as described in the previous section) 
 
@@ -99,11 +96,11 @@ sign in.
 
 \pagebreak
 
-## Use the service to update your capital schemes 
+# Use the service to update your capital schemes 
 
 This section outlines how you can use the service to view and update your capital schemes.
 
-### View your schemes
+## View your schemes
 
 Once signed into the service you will see your schemes. This shows all active and incomplete ATF schemes submitted 
 by your authority that you can provide updates on:
@@ -118,7 +115,7 @@ can click the scheme reference.
 
 \pagebreak
 
-### View a scheme
+## View a scheme
 
 After clicking a scheme reference you will see details for the scheme:
 
@@ -138,7 +135,7 @@ following sections for details.
 
 \pagebreak
 
-### Change spend to date
+## Change spend to date
 
 After clicking “Change” in a scheme's funding card you will be able to update how much has been spent to date:
 
@@ -148,7 +145,7 @@ Enter the new amount and click “Confirm” to submit the change.
 
 \pagebreak
 
-### Change milestone dates
+## Change milestone dates
 
 After clicking “Change” in a scheme's milestones card you will be able to update planned and actual dates for each 
 milestone:
@@ -159,7 +156,7 @@ Revise the dates as necessary and click “Confirm” to submit the change.
 
 \pagebreak
 
-### Review a scheme
+## Review a scheme
 
 Once you have confirmed that the details for a scheme are all up-to-date, tick the checkbox and click the “Confirm” 
 button:
@@ -174,7 +171,7 @@ You will then be returned to your schemes and the “Needs review” tag will no
 
 \pagebreak
 
-## Sign out of the service
+# Sign out of the service
 
 1. To sign out of the service click “Sign out” in the header:
 
@@ -186,7 +183,7 @@ You will then be returned to your schemes and the “Needs review” tag will no
 
 \pagebreak
 
-## Get support for the service 
+# Get support for the service 
 
 To request support for the service, email
 [update-your-capital-schemes@activetravelengland.gov.uk](mailto:update-your-capital-schemes@activetravelengland.gov.uk). 

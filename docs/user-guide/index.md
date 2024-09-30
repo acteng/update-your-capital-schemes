@@ -58,7 +58,7 @@ sign in.
 
     ![Created your GOV.UK One Login](create-success.png)
 
-1. \pagebreak You are now logged in and will be able to see your capital schemes:
+1. \pagebreak You are now signed in and will be able to see your capital schemes:
 
     ![Your schemes](schemes.png)
 
@@ -92,7 +92,7 @@ sign in.
 
     ![Enter your security code](sign-in-security-code.png)
 
-1. If you’ve logged in successfully, you’ll be redirected back to the service and will be able to see your capital
+1. If you’ve signed in successfully, you’ll be redirected back to the service and will be able to see your capital
    schemes.
 
 \pagebreak

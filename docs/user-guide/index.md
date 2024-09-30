@@ -161,6 +161,18 @@ review tag will disappear from the scheme on the schemes page table.
 
 \pagebreak
 
+## Sign out of the service
+
+1. To sign out of the service click “Sign out” in the header:
+
+   ![Your schemes](schemes.png)
+
+1. \pagebreak You will then be signed out of the service and GOV.UK One Login:
+
+   ![You have signed out](signed-out.png)
+
+\pagebreak
+
 ## Get support for the service 
 
 To request support for the service, email

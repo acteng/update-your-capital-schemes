@@ -161,12 +161,14 @@ Revise the dates as necessary and click “Confirm” to submit the change.
 
 ### Review a scheme
 
-To confirm that you have reviewed the data shown on the scheme page and that it is up-to-date you can use the checkbox
-at the bottom of the scheme page. Select this checkbox and click confirm to update ATE records that the scheme is
-up-to-date. After clicking confirm you will be returned to the schemes page and shown a success notification. The Needs
-review tag will disappear from the scheme on the schemes page table.
+Once you have confirmed that the details for a scheme are all up-to-date, tick the checkbox and click the “Confirm” 
+button:
 
 ![Review scheme](review.png)
+
+\pagebreak
+
+You will then be returned to your schemes and the “Needs review” tag will no longer be shown:
 
 ![Scheme has been reviewed](review-success.png)
 

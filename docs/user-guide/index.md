@@ -92,8 +92,10 @@ sign in.
 
     ![Enter your security code](sign-in-security-code.png)
 
-1. If you’ve signed in successfully, you’ll be redirected back to the service and will be able to see your capital
-   schemes.
+1. \pagebreak If you’ve signed in successfully, you’ll be redirected back to the service and will be able to see 
+   your capital schemes:
+
+    ![Your schemes](schemes.png)
 
 \pagebreak
 

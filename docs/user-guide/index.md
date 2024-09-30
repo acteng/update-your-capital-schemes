@@ -58,11 +58,9 @@ sign in.
 
     ![Created your GOV.UK One Login](create-success.png)
 
-1. \pagebreak After being redirected to the service you will see a Forbidden page. Please email
-   [update-your-capital-schemes@activetravelengland.gov.uk](mailto:update-your-capital-schemes@activetravelengland.gov.uk)
-   with the email you registered with GOV.UK One Login to be provided access. 
+1. \pagebreak You are now logged in and will be able to see your capital schemes:
 
-    ![Forbidden page](forbidden.png)
+    ![Your schemes](schemes.png)
 
 \pagebreak
 

@@ -109,7 +109,7 @@ by your authority that you can provide updates on:
 ![Your schemes](schemes.png)
 
 If you have schemes that need reviewing then a notification banner will be shown. This will say how long you have 
-to provide updates until the end of the reporting month.
+left to provide updates until the end of the reporting month.
 
 Individual schemes that need reviewing will have a “Needs review” tag alongside them. To view or update a scheme you 
 can click the scheme reference.

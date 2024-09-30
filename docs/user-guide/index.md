@@ -1,4 +1,6 @@
 ---
+fontfamily: sourcesanspro
+fontfamilyoptions: default
 geometry:
 - margin=20mm
 ---

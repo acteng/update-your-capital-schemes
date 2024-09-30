@@ -1,4 +1,5 @@
 ---
+colorlinks: true
 fontfamily: sourcesanspro
 fontfamilyoptions: default
 geometry:

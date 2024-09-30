@@ -7,13 +7,15 @@ geometry:
 
 # Update your capital schemes 
 
-Welcome to the Update your capital schemes user guide. This guide covers how to register an account for the service and sign in. 
+Welcome to the Update your capital schemes user guide. This guide covers how to register an account for the service and
+sign in. 
 
 \pagebreak
 
 ## Create a GOV.UK One Login account 
 
-1. Go to the service website: [https://update-your-capital-schemes.activetravelengland.gov.uk/](https://update-your-capital-schemes.activetravelengland.gov.uk/) 
+1. Go to the service website:
+   [https://update-your-capital-schemes.activetravelengland.gov.uk/](https://update-your-capital-schemes.activetravelengland.gov.uk/) 
 
 1. Click the “Start now” button:
 
@@ -23,7 +25,8 @@ Welcome to the Update your capital schemes user guide. This guide covers how to 
 
     ![Create your GOV.UK One Login](create-or-sign-in.png)
 
-1. \pagebreak Provide the email address you want to use for the GOV.UK One Login service to connect to the service. Please use your work email address. 
+1. \pagebreak Provide the email address you want to use for the GOV.UK One Login service to connect to the service.
+   Please use your work email address. 
 
     ![Enter your email address](create-enter-email.png)
 
@@ -35,7 +38,9 @@ Welcome to the Update your capital schemes user guide. This guide covers how to 
 
     ![Create your password](create-password.png)
 
-1. \pagebreak Choose how you wish to get two factor authentication security codes. You can either provide a phone number to get codes via text or use an authenticator application / password manager. We recommend using an authenticator application. 
+1. \pagebreak Choose how you wish to get two factor authentication security codes. You can either provide a phone number
+   to get codes via text or use an authenticator application / password manager. We recommend using an authenticator
+   application. 
 
     ![Choose how to get security codes](create-security-codes.png)
 
@@ -43,7 +48,9 @@ Welcome to the Update your capital schemes user guide. This guide covers how to 
 
     ![Set up an authenticator app](create-qr-code.png)
 
-1. \pagebreak Optionally, if you are using a password manager or web authenticator application you can click the “I cannot scan the QR code” link to show a secret key that you can copy and paste into an authenticator app. This will allow the app to generate the required security code. 
+1. \pagebreak Optionally, if you are using a password manager or web authenticator application you can click the
+   “I cannot scan the QR code” link to show a secret key that you can copy and paste into an authenticator app. This
+   will allow the app to generate the required security code. 
 
     ![Show secret key](create-secret-key.png)
 
@@ -51,7 +58,9 @@ Welcome to the Update your capital schemes user guide. This guide covers how to 
 
     ![Created your GOV.UK One Login](create-success.png)
 
-1. \pagebreak After being redirected to the service you will see a Forbidden page. Please email [update-your-capital-schemes@activetravelengland.gov.uk](mailto:update-your-capital-schemes@activetravelengland.gov.uk) with the email you registered with GOV.UK One Login to be provided access. 
+1. \pagebreak After being redirected to the service you will see a Forbidden page. Please email
+   [update-your-capital-schemes@activetravelengland.gov.uk](mailto:update-your-capital-schemes@activetravelengland.gov.uk)
+   with the email you registered with GOV.UK One Login to be provided access. 
 
     ![Forbidden page](forbidden.png)
 
@@ -61,7 +70,8 @@ Welcome to the Update your capital schemes user guide. This guide covers how to 
 
 1. Create a GOV.UK One Login account if you haven’t already (as described in the previous section) 
 
-1. Go to the service: [https://update-your-capital-schemes.activetravelengland.gov.uk/](https://update-your-capital-schemes.activetravelengland.gov.uk/) 
+1. Go to the service:
+   [https://update-your-capital-schemes.activetravelengland.gov.uk/](https://update-your-capital-schemes.activetravelengland.gov.uk/) 
 
 1. Click the “Start now” button: 
 
@@ -79,37 +89,53 @@ Welcome to the Update your capital schemes user guide. This guide covers how to 
 
     ![Enter your password](sign-in-password.png)
 
-1. \pagebreak Enter your security code sent to either your phone number or displayed on your registered authenticator app as “GOV.UK One Login”: 
+1. \pagebreak Enter your security code sent to either your phone number or displayed on your registered authenticator
+   app as “GOV.UK One Login”:
 
     ![Enter your security code](sign-in-security-code.png)
 
-1. If you’ve logged in successfully, you’ll be redirected back to the service and will be able to see your capital schemes. 
+1. If you’ve logged in successfully, you’ll be redirected back to the service and will be able to see your capital
+   schemes.
 
 \pagebreak
 
 ## Use the service to update your capital schemes 
 
-The below section outlines how you can use the service to view and update your capital schemes. All data displayed is example data. 
+The below section outlines how you can use the service to view and update your capital schemes. All data displayed is
+example data.
 
 ### View your schemes
 
-After successfully logging in you will view the schemes page. This shows all the active and incomplete ATF schemes in your authority that you can provide updates on. Schemes are displayed in a table with each row representing a single scheme showing the unique reference, funding programme, name and date of the last review. If the scheme was last reviewed prior to the current quarterly monitoring window a Needs review tag will appear. The page may also show a notification banner, this will either display: the number of days left in a quarterly monitoring window if you have outstanding schemes that need a review; or an overdue message if you have schemes that need a review and you are outside of the quarterly monitoring window month (quarterly monitoring window months are January, April, July, October). 
+After successfully logging in you will view the schemes page. This shows all the active and incomplete ATF schemes in
+your authority that you can provide updates on. Schemes are displayed in a table with each row representing a single
+scheme showing the unique reference, funding programme, name and date of the last review. If the scheme was last 
+reviewed prior to the current quarterly monitoring window a Needs review tag will appear. The page may also show a
+notification banner, this will either display: the number of days left in a quarterly monitoring window if you have
+outstanding schemes that need a review; or an overdue message if you have schemes that need a review and you are
+outside of the quarterly monitoring window month (quarterly monitoring window months are January, April, July, October).
 
-To view a scheme in more detail you can click the scheme reference. 
+To view a scheme in more detail you can click the scheme reference.
 
 ![Your schemes](schemes.png)
 
 ### View a scheme
 
-After clicking a scheme reference you will visit the scheme page for the selected scheme. This contains more details about the selected scheme separated into separate cards: Overview, Funding, Milestones, Outputs (full page shown below). Changes can be made to spend to date and milestones by clicking the Change links alongside these items. This will take you to forms shown in the following sections. 
+After clicking a scheme reference you will visit the scheme page for the selected scheme. This contains more details 
+about the selected scheme separated into separate cards: Overview, Funding, Milestones, Outputs (full page shown below).
+Changes can be made to spend to date and milestones by clicking the Change links alongside these items. This will 
+take you to forms shown in the following sections. 
    
-If the scheme has not been reviewed in the current quarterly monitoring window a message will appear at the top of the schemes page saying the scheme needs a review. 
+If the scheme has not been reviewed in the current quarterly monitoring window a message will appear at the top of 
+the schemes page saying the scheme needs a review. 
 
 ![Scheme details](scheme.png)
 
 ### Change spend to date
 
-The change spend to date form allows you to provide updates to the reported spend of ATF funds for a scheme. You can change the value in the form and click confirm to make a change. The form will validate the data you provide to ensure the data is a valid number, is not negative, is equal or less than the schemes funding allocation. At present commas separating thousands are not supported.
+The change spend to date form allows you to provide updates to the reported spend of ATF funds for a scheme. You can
+change the value in the form and click confirm to make a change. The form will validate the data you provide to ensure
+the data is a valid number, is not negative, is equal or less than the schemes funding allocation. At present commas
+separating thousands are not supported.
 
 Clicking confirm will submit the update and if valid return you to the scheme page. 
 
@@ -117,13 +143,19 @@ Clicking confirm will submit the update and if valid return you to the scheme pa
 
 ### Change milestone dates
 
-The change milestones form allows you to make changes to planned and actual milestone dates associated with the scheme. Once you have made changes to milestone dates you can click confirm to update those dates and return to the scheme page. The form validates that the date you have entered is a valid date. At this time, you are unable to remove a milestone date, therefore where a date is present it can only be changed not removed. 
+The change milestones form allows you to make changes to planned and actual milestone dates associated with the scheme.
+Once you have made changes to milestone dates you can click confirm to update those dates and return to the scheme page.
+The form validates that the date you have entered is a valid date. At this time, you are unable to remove a milestone
+date, therefore where a date is present it can only be changed not removed.
 
 ![Change milestone dates](change-milestone-dates.png)
 
 ### Review a scheme
 
-To confirm that you have reviewed the data shown on the scheme page and that it is up-to-date you can use the checkbox at the bottom of the scheme page. Select this checkbox and click confirm to update ATE records that the scheme is up-to-date. After clicking confirm you will be returned to the schemes page and shown a success notification. The Needs review tag will disappear from the scheme on the schemes page table. 
+To confirm that you have reviewed the data shown on the scheme page and that it is up-to-date you can use the checkbox
+at the bottom of the scheme page. Select this checkbox and click confirm to update ATE records that the scheme is
+up-to-date. After clicking confirm you will be returned to the schemes page and shown a success notification. The Needs
+review tag will disappear from the scheme on the schemes page table.
 
 ![Review scheme](review.png)
 
@@ -133,4 +165,5 @@ To confirm that you have reviewed the data shown on the scheme page and that it 
 
 ## Get support for the service 
 
-To request support for the service, email [update-your-capital-schemes@activetravelengland.gov.uk](mailto:update-your-capital-schemes@activetravelengland.gov.uk). 
+To request support for the service, email
+[update-your-capital-schemes@activetravelengland.gov.uk](mailto:update-your-capital-schemes@activetravelengland.gov.uk). 

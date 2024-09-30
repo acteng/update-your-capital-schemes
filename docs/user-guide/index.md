@@ -101,22 +101,20 @@ sign in.
 
 ## Use the service to update your capital schemes 
 
-The below section outlines how you can use the service to view and update your capital schemes. All data displayed is
-example data.
+This section outlines how you can use the service to view and update your capital schemes.
 
 ### View your schemes
 
-After successfully logging in you will view the schemes page. This shows all the active and incomplete ATF schemes in
-your authority that you can provide updates on. Schemes are displayed in a table with each row representing a single
-scheme showing the unique reference, funding programme, name and date of the last review. If the scheme was last 
-reviewed prior to the current quarterly monitoring window a Needs review tag will appear. The page may also show a
-notification banner, this will either display: the number of days left in a quarterly monitoring window if you have
-outstanding schemes that need a review; or an overdue message if you have schemes that need a review and you are
-outside of the quarterly monitoring window month (quarterly monitoring window months are January, April, July, October).
-
-To view a scheme in more detail you can click the scheme reference.
+Once signed into the service you will see your schemes. This shows all active and incomplete ATF schemes submitted 
+by your authority that you can provide updates on:
 
 ![Your schemes](schemes.png)
+
+If you have schemes that need reviewing then a notification banner will be shown. This will say how long you have 
+to provide updates until the end of the reporting month.
+
+Individual schemes that need reviewing will have a “Needs review” tag alongside them. To view or update a scheme you 
+can click the scheme reference.
 
 ### View a scheme
 

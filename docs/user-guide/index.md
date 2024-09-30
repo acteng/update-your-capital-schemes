@@ -75,7 +75,7 @@ sign in.
 
     ![Service start page](start.png)
 
-1. \pagebreak Click the “Sign In” button to sign in with your GOV.UK One Login account: 
+1. \pagebreak Click the “Sign in” button to sign in with your GOV.UK One Login account: 
 
     ![Create your GOV.UK One Login](create-or-sign-in.png)
 

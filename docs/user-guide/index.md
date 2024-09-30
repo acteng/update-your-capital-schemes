@@ -150,12 +150,14 @@ Enter the new amount and click “Confirm” to submit the change.
 
 ### Change milestone dates
 
-The change milestones form allows you to make changes to planned and actual milestone dates associated with the scheme.
-Once you have made changes to milestone dates you can click confirm to update those dates and return to the scheme page.
-The form validates that the date you have entered is a valid date. At this time, you are unable to remove a milestone
-date, therefore where a date is present it can only be changed not removed.
+After clicking “Change” in a scheme's milestones card you will be able to update planned and actual dates for each 
+milestone:
 
 ![Change milestone dates](change-milestone-dates.png)
+
+Revise the dates as necessary and click “Confirm” to submit the change.
+
+\pagebreak
 
 ### Review a scheme
 

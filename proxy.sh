@@ -11,13 +11,13 @@ fi
 ENVIRONMENT=$1
 
 PROJECT=dft-schemes-${ENVIRONMENT}
-DATABASE=schemes
+INSTANCE=schemes
 PRIVATE_KEY_SECRET=database-private-key
 
 INSTANCE_CONNECTION_NAME=$(gcloud sql instances describe \
 	--format="value(connectionName)" \
 	--project ${PROJECT} \
-	${DATABASE})
+	${INSTANCE})
 
 PRIVATE_KEY=$(gcloud secrets versions access latest \
 	--project ${PROJECT} \

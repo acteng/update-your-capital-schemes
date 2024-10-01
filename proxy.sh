@@ -2,16 +2,16 @@
 
 set -e
 
-if [ $# -ne 1 ]
+if [ $# -lt 1 ]
 then
-    echo "Usage: proxy.sh <environment>"
+    echo "Usage: proxy.sh <environment> <instance>"
     exit 1
 fi
 
 ENVIRONMENT=$1
+INSTANCE=${2:-schemes}
 
 PROJECT=dft-schemes-${ENVIRONMENT}
-INSTANCE=schemes
 PRIVATE_KEY_SECRET=database-private-key
 
 INSTANCE_CONNECTION_NAME=$(gcloud sql instances describe \

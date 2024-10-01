@@ -25,6 +25,7 @@ PRIVATE_KEY=$(gcloud secrets versions access latest \
 	| base64 -d)
 
 docker run --rm \
+	--name cloud-sql-proxy \
 	-p 127.0.0.1:5432:5432 \
 	gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.4 \
 	--address 0.0.0.0 \

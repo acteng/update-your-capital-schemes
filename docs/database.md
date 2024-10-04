@@ -24,15 +24,37 @@
 
 To download the latest database backup for storing offline:
 
-```bash
-./cold-backup.sh $ENVIRONMENT
-```
+1. Unlock your Bitwarden vault for the encryption passphrase:
 
-This will create a compressed PostgreSQL custom-format archive `schemes-$ENVIRONMENT.dump.gz`.
+   ```bash
+   bw unlock
+   ```
+
+1. Download the backup:
+
+   ```bash
+   ./cold-backup.sh $ENVIRONMENT
+   ```
+
+This will create an encrypted compressed PostgreSQL custom-format archive `schemes-$ENVIRONMENT.dump.gz.gpg`.
 
 ## Restoring a cold backup
 
 To restore a backup to a local or proxied database:
+
+1. Unlock your Bitwarden vault for the encryption passphrase:
+
+   ```bash
+   bw unlock
+   ```
+
+1. Decrypt the archive:
+
+   ```bash
+   bw get password "Schemes Database Backup Passphrase" \
+       | gpg --batch --decrypt --passphrase-fd 0 --output schemes-$ENVIRONMENT.dump.gz schemes-$ENVIRONMENT.dump.gz.gpg \
+           && rm schemes-$ENVIRONMENT.dump.gz.gpg
+   ```
 
 1. Uncompress the archive:
 

@@ -73,6 +73,12 @@ docker run --rm \
 
 gzip ${ARCHIVE}
 
+# Encrypt archive
+
+bw get password "Schemes Database Backup Passphrase" \
+	| gpg --batch --symmetric --passphrase-fd 0 ${ARCHIVE}.gz \
+		&& rm ${ARCHIVE}.gz
+
 # Stop Cloud SQL Auth proxy
 
 docker stop cloud-sql-proxy

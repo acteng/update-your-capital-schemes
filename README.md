@@ -172,10 +172,10 @@ To run the server as a container using a PostgreSQL database:
    ./proxy.sh $ENVIRONMENT
    ```
 
-1. Obtain the database password for the environment from the database URI:
+1. Obtain the database password for the environment:
 
    ```bash
-   gcloud secrets versions access latest --project dft-schemes-$ENVIRONMENT --secret database-uri
+   gcloud secrets versions access latest --project dft-schemes-$ENVIRONMENT --secret database-password
    ```
 
 1. Connect using PSQL and enter the password when prompted:

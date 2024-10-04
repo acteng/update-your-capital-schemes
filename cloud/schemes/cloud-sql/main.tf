@@ -47,6 +47,20 @@ resource "google_sql_user" "schemes" {
   password = random_password.schemes.result
 }
 
+resource "google_secret_manager_secret" "database_password" {
+  secret_id = "database-password"
+
+  replication {
+    auto {
+    }
+  }
+}
+
+resource "google_secret_manager_secret_version" "database_password_version" {
+  secret      = google_secret_manager_secret.database_password.id
+  secret_data = google_sql_user.schemes.password
+}
+
 resource "google_service_account" "cloud_sql_schemes" {
   account_id = "cloud-sql-schemes"
 }

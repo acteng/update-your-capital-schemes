@@ -28,17 +28,25 @@ To download the latest database backup for storing offline:
 ./cold-backup.sh $ENVIRONMENT
 ```
 
-This will create a PostgreSQL custom-format archive `schemes-$ENVIRONMENT.dump`.
+This will create a compressed PostgreSQL custom-format archive `schemes-$ENVIRONMENT.dump.gz`.
 
 ## Restoring a cold backup
 
 To restore a backup to a local or proxied database:
 
-```bash
-docker run --rm -i \
-	--network=host \
-	-e PGUSER=schemes \
-	-e PGPASSWORD=$PGPASSWORD \
-	postgres:16 \
-	pg_restore -h localhost -d schemes --no-owner < schemes-$ENVIRONMENT.dump
-```
+1. Uncompress the archive:
+
+   ```bash
+   gunzip schemes-$ENVIRONMENT.dump.gz
+   ```
+
+1. Restore the backup:
+
+   ```bash
+   docker run --rm -i \
+       --network=host \
+       -e PGUSER=schemes \
+       -e PGPASSWORD=$PGPASSWORD \
+       postgres:16 \
+       pg_restore -h localhost -d schemes --no-owner < schemes-$ENVIRONMENT.dump
+   ```

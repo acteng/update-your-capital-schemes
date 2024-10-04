@@ -69,6 +69,10 @@ docker run --rm \
 	postgres:16 \
 	sh -c "until pg_isready; do sleep 1; done && pg_dump --format custom --no-acl > /data/${ARCHIVE}"
 
+# Compress archive
+
+gzip ${ARCHIVE}
+
 # Stop Cloud SQL Auth proxy
 
 docker stop cloud-sql-proxy

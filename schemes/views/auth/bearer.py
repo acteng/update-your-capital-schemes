@@ -1,7 +1,7 @@
 from functools import wraps
 from logging import Logger
 from typing import Callable, ParamSpec, TypeVar
-from urllib.parse import urlencode, urlparse
+from urllib.parse import urlencode, urljoin
 
 import inject
 from authlib.integrations.flask_client import OAuth
@@ -64,7 +64,7 @@ def logout(logger: Logger) -> BaseResponse:
     end_session_endpoint = current_app.config["GOVUK_END_SESSION_ENDPOINT"]
     post_logout_redirect_uri = url_for("start.index", _external=True)
     logout_query = urlencode({"id_token_hint": id_token, "post_logout_redirect_uri": post_logout_redirect_uri})
-    logout_url = urlparse(end_session_endpoint)._replace(query=logout_query).geturl()
+    logout_url = urljoin(end_session_endpoint, "?" + logout_query)
     return redirect(logout_url)
 
 

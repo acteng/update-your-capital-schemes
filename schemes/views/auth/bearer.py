@@ -56,9 +56,8 @@ def forbidden() -> Response:
 @bp.get("/logout")
 @inject.autoparams()
 def logout(logger: Logger) -> BaseResponse:
-    id_token = session["id_token"]
+    id_token = session.pop("id_token")
     user = session.pop("user")
-    del session["id_token"]
 
     logger.info("User '%s' signed out", user["email"])
 

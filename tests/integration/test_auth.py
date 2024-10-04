@@ -287,6 +287,17 @@ class TestAuth:
 
             assert "user" not in session and "id_token" not in session
 
+    def test_logout_when_unauthenticated_logs_out_from_oidc(self, client: FlaskClient) -> None:
+        response = client.get("/auth/logout")
+
+        assert response.status_code == 302 and response.location == "https://example.com/logout"
+
+    def test_logout_when_unauthenticated_logs_sign_out(self, client: FlaskClient, caplog: LogCaptureFixture) -> None:
+        with caplog.at_level(logging.INFO):
+            client.get("/auth/logout")
+
+        assert caplog.records[0].levelname == "INFO" and caplog.records[0].message == "User signed out"
+
 
 def given_session_has_authentication_request(client: FlaskClient, state: str, nonce: str) -> None:
     with client.session_transaction() as setup_session:

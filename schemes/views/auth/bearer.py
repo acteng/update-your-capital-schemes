@@ -56,16 +56,22 @@ def forbidden() -> Response:
 @bp.get("/logout")
 @inject.autoparams()
 def logout(logger: Logger) -> BaseResponse:
-    id_token = session.pop("id_token")
-    user = session.pop("user")
+    id_token = session.pop("id_token", None)
+    user = session.pop("user", None)
 
-    logger.info("User '%s' signed out", user["email"])
+    if user:
+        logger.info("User '%s' signed out", user["email"])
+    else:
+        logger.info("User signed out")
 
     end_session_endpoint = current_app.config["GOVUK_END_SESSION_ENDPOINT"]
-    post_logout_redirect_uri = url_for("start.index", _external=True)
-    logout_query = urlencode({"id_token_hint": id_token, "post_logout_redirect_uri": post_logout_redirect_uri})
-    logout_url = urljoin(end_session_endpoint, "?" + logout_query)
-    return redirect(logout_url)
+
+    if id_token:
+        post_logout_redirect_uri = url_for("start.index", _external=True)
+        logout_query = urlencode({"id_token_hint": id_token, "post_logout_redirect_uri": post_logout_redirect_uri})
+        end_session_endpoint = urljoin(end_session_endpoint, "?" + logout_query)
+
+    return redirect(end_session_endpoint)
 
 
 T = TypeVar("T")

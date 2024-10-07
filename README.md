@@ -21,7 +21,7 @@ Digital service for local authorities to provide updates about capital schemes t
 Configure the application's environment variables with the localhost secrets:
 
 ```bash
-bw get notes "Schemes Secrets (Localhost)" > .env
+bw get notes "UYCS Secrets (Localhost)" > .env
 ```
 
 The application can also be configured with the following environment variables:
@@ -245,7 +245,7 @@ For each environment required (dev, test, prod):
 1. This will fail due to missing secrets. Now that the Secret Manager service has been enabled, create the secrets then repeat the previous step:
 
    ```bash
-   bw get notes "Schemes Secrets ($ENVIRONMENT)" | sh
+   bw get notes "UYCS Secrets ($ENVIRONMENT)" | sh
    ```
 
 1. Obtain the Cloud Run service account private key:
@@ -279,7 +279,7 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-
 * Service redirect URLs: https://dev.update-your-capital-schemes.activetravelengland.gov.uk/auth, http://127.0.0.1:5000/auth
 * Service contact email address: mark.hobson@activetravelengland.gov.uk
 * Scopes: openid email
-* Public key: (see "Schemes GOV.UK One Login Public Key (Dev)" in Bitwarden)
+* Public key: (see "UYCS GOV.UK One Login Public Key (Dev)" in Bitwarden)
 * Logout URLs: https://dev.update-your-capital-schemes.activetravelengland.gov.uk/, http://127.0.0.1:5000/
 * Sector identifier URI: https://dev.update-your-capital-schemes.activetravelengland.gov.uk
 
@@ -289,7 +289,7 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-
 * Service redirect URLs: https://test.update-your-capital-schemes.activetravelengland.gov.uk/auth
 * Service contact email address: mark.hobson@activetravelengland.gov.uk
 * Scopes: openid email
-* Public key: (see "Schemes GOV.UK One Login Public Key (Test)" in Bitwarden)
+* Public key: (see "UYCS GOV.UK One Login Public Key (Test)" in Bitwarden)
 * Logout URLs: https://test.update-your-capital-schemes.activetravelengland.gov.uk/
 * Sector identifier URI: https://test.update-your-capital-schemes.activetravelengland.gov.uk
 
@@ -299,7 +299,7 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-
 * Service redirect URLs: https://update-your-capital-schemes.activetravelengland.gov.uk/auth
 * Service contact email address: mark.hobson@activetravelengland.gov.uk
 * Scopes: openid email
-* Public key: (see "Schemes GOV.UK One Login Public Key (Prod)" in Bitwarden)
+* Public key: (see "UYCS GOV.UK One Login Public Key (Prod)" in Bitwarden)
 * Logout URLs: https://update-your-capital-schemes.activetravelengland.gov.uk/
 * Sector identifier URI: https://update-your-capital-schemes.activetravelengland.gov.uk
 

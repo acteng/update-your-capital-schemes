@@ -77,7 +77,7 @@ gzip ${ARCHIVE}
 
 # Encrypt archive
 
-bw get password "Schemes Database Backup Passphrase" \
+bw get password "UYCS Database Backup Passphrase" \
 	| gpg --batch --symmetric --passphrase-fd 0 ${ARCHIVE}.gz \
 		&& rm ${ARCHIVE}.gz
 

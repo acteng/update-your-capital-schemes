@@ -51,7 +51,7 @@ To restore a backup to a local or proxied database:
 1. Decrypt the archive:
 
    ```bash
-   bw get password "Schemes Database Backup Passphrase" \
+   bw get password "UYCS Database Backup Passphrase" \
        | gpg --batch --decrypt --passphrase-fd 0 --output $ARCHIVE.gz $ARCHIVE.gz.gpg \
            && rm $ARCHIVE.gz.gpg
    ```

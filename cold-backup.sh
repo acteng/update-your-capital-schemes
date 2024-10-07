@@ -16,7 +16,6 @@ BACKUP_INSTANCE=schemes
 RESTORE_INSTANCE=${BACKUP_INSTANCE}-backup
 PGDATABASE=schemes
 PGUSER=schemes
-ARCHIVE=${PGDATABASE}-${ENVIRONMENT}.dump
 
 # Create Cloud SQL instance for backup
 
@@ -27,15 +26,18 @@ gcloud sql instances create ${RESTORE_INSTANCE} \
 	--tier db-custom-1-3840 \
 	--edition enterprise
 
-# Obtain latest backup id
+# Obtain latest backup id and timestamp
 
-BACKUP_ID=$(gcloud sql backups list \
+BACKUP=$(gcloud sql backups list \
 	--project ${PROJECT} \
 	--instance ${BACKUP_INSTANCE} \
 	--sort-by "~windowStartTime" \
 	--limit 1 \
-	--format="value(id)"
+	--format="value(id,windowStartTime)"
 )
+BACKUP_ID=$(echo "${BACKUP}" | cut -f1)
+BACKUP_TIMESTAMP=$(echo "${BACKUP}" | cut -f2)
+ARCHIVE=${PGDATABASE}-${ENVIRONMENT}-$(date -d $BACKUP_TIMESTAMP -u +"%Y%m%dT%H%M%SZ").dump
 
 # Restore latest backup to Cloud SQL instance
 

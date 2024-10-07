@@ -36,7 +36,7 @@ To download the latest database backup for storing offline:
    ./cold-backup.sh $ENVIRONMENT
    ```
 
-This will create an encrypted compressed PostgreSQL custom-format archive `schemes-$ENVIRONMENT.dump.gz.gpg`.
+This will create an encrypted compressed PostgreSQL custom-format archive `schemes-$ENVIRONMENT-$BACKUP_TIMESTAMP.dump.gz.gpg`.
 
 ## Restoring a cold backup
 
@@ -52,14 +52,14 @@ To restore a backup to a local or proxied database:
 
    ```bash
    bw get password "Schemes Database Backup Passphrase" \
-       | gpg --batch --decrypt --passphrase-fd 0 --output schemes-$ENVIRONMENT.dump.gz schemes-$ENVIRONMENT.dump.gz.gpg \
-           && rm schemes-$ENVIRONMENT.dump.gz.gpg
+       | gpg --batch --decrypt --passphrase-fd 0 --output $ARCHIVE.gz $ARCHIVE.gz.gpg \
+           && rm $ARCHIVE.gz.gpg
    ```
 
 1. Uncompress the archive:
 
    ```bash
-   gunzip schemes-$ENVIRONMENT.dump.gz
+   gunzip $ARCHIVE.gz
    ```
 
 1. Restore the backup:
@@ -70,5 +70,5 @@ To restore a backup to a local or proxied database:
        -e PGUSER=schemes \
        -e PGPASSWORD=$PGPASSWORD \
        postgres:16 \
-       pg_restore -h localhost -d schemes --no-owner < schemes-$ENVIRONMENT.dump
+       pg_restore -h localhost -d schemes --no-owner < $ARCHIVE
    ```

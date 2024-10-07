@@ -4,8 +4,8 @@ set -e
 
 if [ $# -ne 1 ]
 then
-    echo "Usage: cold-backup.sh <environment>"
-    exit 1
+	echo "Usage: cold-backup.sh <environment>"
+	exit 1
 fi
 
 ENVIRONMENT=$1

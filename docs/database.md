@@ -40,8 +40,7 @@ To restore a backup to a local or proxied database:
 
    ```bash
    bw get password "UYCS Database Backup Passphrase" \
-       | gpg --batch --decrypt --passphrase-fd 0 --output $ARCHIVE.gz $ARCHIVE.gz.gpg \
-           && rm $ARCHIVE.gz.gpg
+       | ( gpg --batch --decrypt --passphrase-fd 0 --output $ARCHIVE.gz $ARCHIVE.gz.gpg && rm $ARCHIVE.gz.gpg )
    ```
 
 1. Uncompress the archive:

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -e -o pipefail
 
 if [ $# -ne 1 ]
 then
@@ -78,8 +78,7 @@ gzip ${ARCHIVE}
 # Encrypt archive
 
 bw get password "UYCS Database Backup Passphrase" \
-	| gpg --batch --symmetric --passphrase-fd 0 ${ARCHIVE}.gz \
-		&& rm ${ARCHIVE}.gz
+	| ( gpg --batch --symmetric --passphrase-fd 0 ${ARCHIVE}.gz && rm ${ARCHIVE}.gz )
 
 # Stop Cloud SQL Auth proxy
 

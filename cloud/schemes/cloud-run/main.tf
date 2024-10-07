@@ -385,7 +385,7 @@ resource "google_monitoring_alert_policy" "schemes_error" {
     condition_matched_log {
       filter = join("", [
         "resource.type=\"cloud_run_revision\" ",
-        "AND severity=ERROR"
+        "AND severity>=ERROR"
       ])
     }
   }

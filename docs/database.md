@@ -24,13 +24,7 @@
 
 To download the latest database backup for storing offline:
 
-1. Unlock your Bitwarden vault for the encryption passphrase:
-
-   ```bash
-   bw unlock
-   ```
-
-1. Download the backup:
+1. Download the backup (you will be prompted to input your BitWarden master password):
 
    ```bash
    ./cold-backup.sh $ENVIRONMENT
@@ -42,13 +36,7 @@ This will create an encrypted compressed PostgreSQL custom-format archive `schem
 
 To restore a backup to a local or proxied database:
 
-1. Unlock your Bitwarden vault for the encryption passphrase:
-
-   ```bash
-   bw unlock
-   ```
-
-1. Decrypt the archive:
+1. Decrypt the archive (you will be prompted to input your BitWarden master password):
 
    ```bash
    bw get password "UYCS Database Backup Passphrase" \

@@ -9,8 +9,9 @@ resource "google_sql_database_instance" "main" {
   database_version = "POSTGRES_16"
 
   settings {
-    tier                  = "db-custom-1-3840"
-    connector_enforcement = "REQUIRED"
+    tier                        = "db-custom-1-3840"
+    connector_enforcement       = "REQUIRED"
+    deletion_protection_enabled = true
 
     backup_configuration {
       enabled                        = var.database_backups

@@ -31,9 +31,9 @@ gcloud sql instances create ${RESTORE_INSTANCE} \
 BACKUP=$(gcloud sql backups list \
 	--project ${PROJECT} \
 	--instance ${BACKUP_INSTANCE} \
-	--sort-by "~windowStartTime" \
+	--sort-by "~enqueuedTime" \
 	--limit 1 \
-	--format="value(id,windowStartTime)"
+	--format="value(id,enqueuedTime)"
 )
 BACKUP_ID=$(echo "${BACKUP}" | cut -f1)
 BACKUP_TIMESTAMP=$(echo "${BACKUP}" | cut -f2)

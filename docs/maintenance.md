@@ -117,6 +117,8 @@ Upgrade each Terraform root module in `cloud`:
 
 ## Upgrading GitHub Actions
 
-Upgrade all workflow actions in `.github/workflows`:
+Upgrade all workflows in `.github/workflows`:
 
 1. Upgrade each action to its latest major version, e.g. for `actions/setup-python` see [actions/setup-python](https://github.com/actions/setup-python/releases)
+
+1. Upgrade [runner images](https://github.com/actions/runner-images) to their latest version

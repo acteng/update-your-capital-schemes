@@ -58,7 +58,6 @@ strict = true
 [[tool.mypy.overrides]]
 module = [
     "authlib.*",
-    "dataclass_wizard.*",
     "flask_session.*",
     "flask_wtf.*",
     "govuk_frontend_wtf.*",

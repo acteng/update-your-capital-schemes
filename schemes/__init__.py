@@ -177,7 +177,7 @@ def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_
 
 
 def _configure_dataclass_wizard() -> None:
-    class GlobalJSONMeta(JSONWizard.Meta):  # type: ignore
+    class GlobalJSONMeta(JSONWizard.Meta):
         key_transform_with_dump = LetterCase.SNAKE
         raise_on_unknown_json_key = True
 

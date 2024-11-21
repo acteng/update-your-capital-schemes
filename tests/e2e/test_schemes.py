@@ -25,7 +25,7 @@ class TestAuthenticated:
                 name="Wirral Package",
                 authority_id=1,
                 funding_programme="ATF3",
-                authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02", source="ATF3 Bid")],
+                authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02", source="ATF3 bid")],
             ),
             build_scheme(
                 id_=2,
@@ -33,7 +33,7 @@ class TestAuthenticated:
                 name="School Streets",
                 authority_id=1,
                 funding_programme="ATF4",
-                authority_reviews=[AuthorityReviewRepr(id=2, review_date="2020-01-03", source="ATF4 Bid")],
+                authority_reviews=[AuthorityReviewRepr(id=2, review_date="2020-01-03", source="ATF4 bid")],
             ),
         )
 
@@ -81,7 +81,7 @@ class TestAuthenticated:
                 reference="ATE00001",
                 name="Wirral Package",
                 authority_id=1,
-                authority_reviews=[AuthorityReviewRepr(id=1, review_date="2023-01-02", source="ATF4 Bid")],
+                authority_reviews=[AuthorityReviewRepr(id=1, review_date="2023-01-02", source="ATF4 bid")],
             ),
         )
 

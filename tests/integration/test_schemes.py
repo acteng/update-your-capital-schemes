@@ -286,7 +286,7 @@ class TestSchemesApi:
                             "effective_date_to": None,
                             "type": "funding allocation",
                             "amount": 100_000,
-                            "source": "ATF4 Bid",
+                            "source": "ATF4 bid",
                         }
                     ],
                 },
@@ -322,7 +322,7 @@ class TestSchemesApi:
                             "milestone": "detailed design completed",
                             "observation_type": "actual",
                             "status_date": "2020-01-01",
-                            "source": "ATF4 Bid",
+                            "source": "ATF4 bid",
                         }
                     ],
                 },
@@ -391,7 +391,7 @@ class TestSchemesApi:
                         {
                             "id": 2,
                             "review_date": "2020-01-01T12:00:00",
-                            "source": "ATF4 Bid",
+                            "source": "ATF4 bid",
                         }
                     ],
                 },

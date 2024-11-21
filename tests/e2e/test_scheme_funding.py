@@ -30,7 +30,7 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Pa
                     effective_date_to=None,
                     type="funding allocation",
                     amount=100_000,
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 FinancialRevisionRepr(
                     id=2,
@@ -38,7 +38,7 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Pa
                     effective_date_to=None,
                     type="spend to date",
                     amount=50_000,
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
             ],
         ),
@@ -72,7 +72,7 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
                     effective_date_to=None,
                     type="funding allocation",
                     amount=100_000,
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 FinancialRevisionRepr(
                     id=2,
@@ -80,7 +80,7 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
                     effective_date_to=None,
                     type="spend to date",
                     amount=50_000,
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
             ],
         ),
@@ -97,7 +97,7 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
             effective_date_to=None,
             type="funding allocation",
             amount=100_000,
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         FinancialRevisionRepr(
             id=2,
@@ -105,7 +105,7 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
             effective_date_to="2020-01-31T13:00:00",
             type="spend to date",
             amount=50_000,
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         FinancialRevisionRepr(
             id=3,
@@ -113,7 +113,7 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
             effective_date_to=None,
             type="spend to date",
             amount=60_000,
-            source="Authority Update",
+            source="authority update",
         ),
     ]
 
@@ -135,7 +135,7 @@ def test_cannot_change_spend_to_date_when_error(app_client: AppClient, oidc_clie
                     effective_date_to=None,
                     type="funding allocation",
                     amount=100_000,
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 FinancialRevisionRepr(
                     id=2,
@@ -143,7 +143,7 @@ def test_cannot_change_spend_to_date_when_error(app_client: AppClient, oidc_clie
                     effective_date_to=None,
                     type="spend to date",
                     amount=50_000,
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
             ],
         ),
@@ -171,7 +171,7 @@ def test_cannot_change_spend_to_date_when_error(app_client: AppClient, oidc_clie
             effective_date_to=None,
             type="funding allocation",
             amount=100_000,
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         FinancialRevisionRepr(
             id=2,
@@ -179,6 +179,6 @@ def test_cannot_change_spend_to_date_when_error(app_client: AppClient, oidc_clie
             effective_date_to=None,
             type="spend to date",
             amount=50_000,
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
     ]

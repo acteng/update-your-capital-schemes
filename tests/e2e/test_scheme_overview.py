@@ -34,10 +34,10 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: P
                     milestone="detailed design completed",
                     observation_type="actual",
                     status_date="2020-01-01",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 )
             ],
-            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02", source="ATF4 Bid")],
+            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02", source="ATF4 bid")],
         ),
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

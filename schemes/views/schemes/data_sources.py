@@ -10,27 +10,27 @@ from schemes.domain.schemes import DataSource
 class DataSourceRepr(Enum):
     PULSE_5 = "Pulse 5"
     PULSE_6 = "Pulse 6"
-    ATF4_BID = "ATF4 Bid"
-    ATF3_BID = "ATF3 Bid"
-    INSPECTORATE_REVIEW = "Inspectorate Review"
-    REGIONAL_MANAGER_REQUEST = "Regional Manager Request"
-    INVESTMENT_TEAM_REQUEST = "Investment Team Request"
-    ATE_PUBLISHED_DATA = "ATE Published Data"
-    CHANGE_CONTROL = "Change Control"
-    ATF4E_BID = "ATF4e Bid"
-    ATF4E_MODERATION = "ATF4e Moderation"
+    ATF4_BID = "ATF4 bid"
+    ATF3_BID = "ATF3 bid"
+    INSPECTORATE_REQUEST = "Inspectorate request"
+    REGIONAL_TEAM_REQUEST = "Regional Team request"
+    INVESTMENT_TEAM_REQUEST = "Investment Team request"
+    ATE_PUBLISHED_DATA = "ATE published data"
+    CHANGE_CONTROL = "change control"
+    ATF4E_BID = "ATF4e bid"
+    ATF4E_MODERATION = "ATF4e moderation"
     PULSE_2023_24_Q2 = "Pulse 2023/24 Q2"
     PULSE_2023_24_Q3 = "Pulse 2023/24 Q3"
     PULSE_2023_24_Q4 = "Pulse 2023/24 Q4"
-    INITIAL_SCHEME_LIST = "Initial Scheme List"
-    AUTHORITY_UPDATE = "Authority Update"
-    UNKNOWN = "Unknown"
-    PULSE_2023_24_Q2_DATA_CLEANSE = "Pulse 2023/24 Q2 Data Cleanse"
-    PULSE_2023_24_Q3_DATA_CLEANSE = "Pulse 2023/24 Q3 Data Cleanse"
-    LUF_SCHEME_LIST = "LUF Scheme List"
-    LUF_QUARTERLY_UPDATE = "LUF Quarterly Update"
-    CRSTS_SCHEME_LIST = "CRSTS Scheme List"
-    CRSTS_QUARTERLY_UPDATE = "CRSTS Quarterly Update"
+    INITIAL_SCHEME_LIST = "initial scheme list"
+    AUTHORITY_UPDATE = "authority update"
+    UNKNOWN = "unknown"
+    PULSE_2023_24_Q2_DATA_CLEANSE = "Pulse 2023/24 Q2 data cleanse"
+    PULSE_2023_24_Q3_DATA_CLEANSE = "Pulse 2023/24 Q3 data cleanse"
+    LUF_SCHEME_LIST = "LUF scheme list"
+    LUF_QUARTERLY_UPDATE = "LUF quarterly update"
+    CRSTS_SCHEME_LIST = "CRSTS scheme list"
+    CRSTS_QUARTERLY_UPDATE = "CRSTS quarterly update"
 
     @classmethod
     def from_domain(cls, data_source: DataSource) -> DataSourceRepr:
@@ -46,8 +46,8 @@ class DataSourceRepr(Enum):
             DataSource.PULSE_6: DataSourceRepr.PULSE_6,
             DataSource.ATF4_BID: DataSourceRepr.ATF4_BID,
             DataSource.ATF3_BID: DataSourceRepr.ATF3_BID,
-            DataSource.INSPECTORATE_REVIEW: DataSourceRepr.INSPECTORATE_REVIEW,
-            DataSource.REGIONAL_MANAGER_REQUEST: DataSourceRepr.REGIONAL_MANAGER_REQUEST,
+            DataSource.INSPECTORATE_REQUEST: DataSourceRepr.INSPECTORATE_REQUEST,
+            DataSource.REGIONAL_TEAM_REQUEST: DataSourceRepr.REGIONAL_TEAM_REQUEST,
             DataSource.INVESTMENT_TEAM_REQUEST: DataSourceRepr.INVESTMENT_TEAM_REQUEST,
             DataSource.ATE_PUBLISHED_DATA: DataSourceRepr.ATE_PUBLISHED_DATA,
             DataSource.CHANGE_CONTROL: DataSourceRepr.CHANGE_CONTROL,

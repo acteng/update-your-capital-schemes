@@ -19,7 +19,7 @@ def test_scheme(app_client: AppClient, oidc_client: OidcClient, page: Page) -> N
             reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
-            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2023-01-02", source="ATF4 Bid")],
+            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2023-01-02", source="ATF4 bid")],
         ),
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

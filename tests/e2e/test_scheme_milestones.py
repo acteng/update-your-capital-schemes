@@ -31,7 +31,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     milestone="feasibility design completed",
                     observation_type="actual",
                     status_date="2020-11-30",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=2,
@@ -40,7 +40,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     milestone="preliminary design completed",
                     observation_type="actual",
                     status_date="2022-06-30",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=3,
@@ -49,7 +49,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     milestone="detailed design completed",
                     observation_type="actual",
                     status_date="2022-06-30",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=4,
@@ -58,7 +58,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     milestone="construction started",
                     observation_type="planned",
                     status_date="2023-06-05",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=5,
@@ -67,7 +67,7 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     milestone="construction completed",
                     observation_type="planned",
                     status_date="2023-08-31",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
             ],
         ),
@@ -104,7 +104,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     milestone="feasibility design completed",
                     observation_type="actual",
                     status_date="2020-11-30",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=2,
@@ -113,7 +113,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     milestone="preliminary design completed",
                     observation_type="actual",
                     status_date="2022-06-30",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=3,
@@ -122,7 +122,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     milestone="detailed design completed",
                     observation_type="actual",
                     status_date="2022-06-30",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=4,
@@ -131,7 +131,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     milestone="construction started",
                     observation_type="planned",
                     status_date="2023-06-05",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=5,
@@ -140,7 +140,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
                     milestone="construction completed",
                     observation_type="planned",
                     status_date="2023-08-31",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
             ],
         ),
@@ -168,7 +168,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
             milestone="feasibility design completed",
             observation_type="actual",
             status_date="2020-11-30",
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         MilestoneRevisionRepr(
             id=2,
@@ -177,7 +177,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
             milestone="preliminary design completed",
             observation_type="actual",
             status_date="2022-06-30",
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         MilestoneRevisionRepr(
             id=3,
@@ -186,7 +186,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
             milestone="detailed design completed",
             observation_type="actual",
             status_date="2022-06-30",
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         MilestoneRevisionRepr(
             id=4,
@@ -195,7 +195,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
             milestone="construction started",
             observation_type="planned",
             status_date="2023-06-05",
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         MilestoneRevisionRepr(
             id=5,
@@ -204,7 +204,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
             milestone="construction completed",
             observation_type="planned",
             status_date="2023-08-31",
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         MilestoneRevisionRepr(
             id=6,
@@ -213,7 +213,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
             milestone="construction started",
             observation_type="actual",
             status_date="2023-07-05",
-            source="Authority Update",
+            source="authority update",
         ),
         MilestoneRevisionRepr(
             id=7,
@@ -222,7 +222,7 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
             milestone="construction completed",
             observation_type="planned",
             status_date="2023-09-30",
-            source="Authority Update",
+            source="authority update",
         ),
     ]
 
@@ -245,7 +245,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
                     milestone="feasibility design completed",
                     observation_type="actual",
                     status_date="2020-11-30",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=2,
@@ -254,7 +254,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
                     milestone="preliminary design completed",
                     observation_type="actual",
                     status_date="2022-06-30",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=3,
@@ -263,7 +263,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
                     milestone="detailed design completed",
                     observation_type="actual",
                     status_date="2022-06-30",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=4,
@@ -272,7 +272,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
                     milestone="construction started",
                     observation_type="planned",
                     status_date="2023-06-05",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
                 MilestoneRevisionRepr(
                     id=5,
@@ -281,7 +281,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
                     milestone="construction completed",
                     observation_type="planned",
                     status_date="2023-08-31",
-                    source="ATF4 Bid",
+                    source="ATF4 bid",
                 ),
             ],
         ),
@@ -315,7 +315,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
             milestone="feasibility design completed",
             observation_type="actual",
             status_date="2020-11-30",
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         MilestoneRevisionRepr(
             id=2,
@@ -324,7 +324,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
             milestone="preliminary design completed",
             observation_type="actual",
             status_date="2022-06-30",
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         MilestoneRevisionRepr(
             id=3,
@@ -333,7 +333,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
             milestone="detailed design completed",
             observation_type="actual",
             status_date="2022-06-30",
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         MilestoneRevisionRepr(
             id=4,
@@ -342,7 +342,7 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
             milestone="construction started",
             observation_type="planned",
             status_date="2023-06-05",
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
         MilestoneRevisionRepr(
             id=5,
@@ -351,6 +351,6 @@ def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client:
             milestone="construction completed",
             observation_type="planned",
             status_date="2023-08-31",
-            source="ATF4 Bid",
+            source="ATF4 bid",
         ),
     ]

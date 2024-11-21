@@ -19,7 +19,7 @@ def test_scheme_review(app_client: AppClient, oidc_client: OidcClient, page: Pag
             reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
-            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 Bid")],
+            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid")],
         ),
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
@@ -29,8 +29,8 @@ def test_scheme_review(app_client: AppClient, oidc_client: OidcClient, page: Pag
     assert schemes_page.success_notification.heading == "Wirral Package has been reviewed"
     assert schemes_page.schemes["ATE00001"].last_reviewed == "24 Apr 2023"
     assert app_client.get_scheme(id_=1).authority_reviews == [
-        AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 Bid"),
-        AuthorityReviewRepr(id=2, review_date="2023-04-24T13:00:00", source="Authority Update"),
+        AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid"),
+        AuthorityReviewRepr(id=2, review_date="2023-04-24T13:00:00", source="authority update"),
     ]
 
 
@@ -45,7 +45,7 @@ def test_scheme_cannot_review_when_error(app_client: AppClient, oidc_client: Oid
             reference="ATE00001",
             name="Wirral Package",
             authority_id=1,
-            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 Bid")],
+            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid")],
         ),
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
@@ -60,5 +60,5 @@ def test_scheme_cannot_review_when_error(app_client: AppClient, oidc_client: Oid
         and not scheme_page.review.form.up_to_date.value
     )
     assert app_client.get_scheme(id_=1).authority_reviews == [
-        AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 Bid"),
+        AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid"),
     ]

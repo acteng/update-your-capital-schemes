@@ -356,7 +356,7 @@ class TestSchemesApi:
                             "id": 2,
                             "effective_date_from": "2020-01-01T12:00:00",
                             "effective_date_to": None,
-                            "type": "Improvements to make an existing walking/cycle route safer",
+                            "type": "improvements to make an existing walking/cycle route safer",
                             "measure": "miles",
                             "value": "10",
                             "observation_type": "actual",

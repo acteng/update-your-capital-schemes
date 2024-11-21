@@ -26,7 +26,7 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
                     type="New segregated cycling facility",
                     measure="miles",
                     value="3.000000",
-                    observation_type="Planned",
+                    observation_type="planned",
                 ),
                 OutputRevisionRepr(
                     id=2,
@@ -35,7 +35,7 @@ def test_scheme_outputs(app_client: AppClient, oidc_client: OidcClient, page: Pa
                     type="Improvements to make an existing walking/cycle route safer",
                     measure="number of junctions",
                     value="2.600000",
-                    observation_type="Planned",
+                    observation_type="planned",
                 ),
             ],
         ),

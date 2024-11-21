@@ -32,7 +32,7 @@ def test_scheme_overview(app_client: AppClient, oidc_client: OidcClient, page: P
                     effective_date_from="2020-01-01",
                     effective_date_to=None,
                     milestone="detailed design completed",
-                    observation_type="Actual",
+                    observation_type="actual",
                     status_date="2020-01-01",
                     source="ATF4 Bid",
                 )

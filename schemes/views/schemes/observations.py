@@ -8,8 +8,8 @@ from schemes.domain.schemes import ObservationType
 
 @unique
 class ObservationTypeRepr(Enum):
-    PLANNED = "Planned"
-    ACTUAL = "Actual"
+    PLANNED = "planned"
+    ACTUAL = "actual"
 
     @classmethod
     def from_domain(cls, observation_type: ObservationType) -> ObservationTypeRepr:

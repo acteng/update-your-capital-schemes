@@ -7,8 +7,8 @@ from schemes.views.schemes.observations import ObservationTypeRepr
 @pytest.mark.parametrize(
     "observation_type, observation_type_repr",
     [
-        (ObservationType.PLANNED, "Planned"),
-        (ObservationType.ACTUAL, "Actual"),
+        (ObservationType.PLANNED, "planned"),
+        (ObservationType.ACTUAL, "actual"),
     ],
 )
 class TestObservationTypeRepr:

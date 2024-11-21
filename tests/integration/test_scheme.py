@@ -264,7 +264,7 @@ class TestSchemeApi:
                 "effective_date_from": "2020-01-01T12:00:00",
                 "effective_date_to": None,
                 "milestone": "detailed design completed",
-                "observation_type": "Actual",
+                "observation_type": "actual",
                 "status_date": "2020-01-01",
                 "source": "ATF4 Bid",
             }
@@ -294,7 +294,7 @@ class TestSchemeApi:
                 "type": "Improvements to make an existing walking/cycle route safer",
                 "measure": "miles",
                 "value": "10",
-                "observation_type": "Actual",
+                "observation_type": "actual",
             }
         ]
 

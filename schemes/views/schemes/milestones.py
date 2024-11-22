@@ -33,16 +33,16 @@ class SchemeMilestonesContext:
     milestones: list[SchemeMilestoneRowContext]
 
     @classmethod
-    def from_domain(cls, milestones: SchemeMilestones) -> SchemeMilestonesContext:
+    def from_domain(cls, scheme: Scheme) -> SchemeMilestonesContext:
         return cls(
             milestones=[
                 SchemeMilestoneRowContext(
                     milestone=MilestoneContext.from_domain(milestone),
-                    planned=milestones.get_current_status_date(milestone, ObservationType.PLANNED),
-                    actual=milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
+                    planned=scheme.milestones.get_current_status_date(milestone, ObservationType.PLANNED),
+                    actual=scheme.milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
                 )
                 for milestone in sorted(
-                    milestones.milestones_eligible_for_authority_update, key=lambda milestone: milestone.stage_order
+                    scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.stage_order
                 )
             ]
         )

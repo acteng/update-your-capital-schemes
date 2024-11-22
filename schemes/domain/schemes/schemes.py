@@ -3,7 +3,7 @@ from __future__ import annotations
 from schemes.domain.schemes.funding import BidStatus, SchemeFunding
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
-from schemes.domain.schemes.overview import FundingProgramme, SchemeOverview
+from schemes.domain.schemes.overview import FundingProgramme, SchemeOverview, SchemeType
 from schemes.domain.schemes.reviews import SchemeReviews
 
 
@@ -64,6 +64,17 @@ class Scheme:
     @staticmethod
     def _is_eligible_for_authority_update(funding_programme: FundingProgramme | None) -> bool:
         return funding_programme.is_eligible_for_authority_update if funding_programme else True
+
+    @property
+    def milestones_eligible_for_authority_update(self) -> set[Milestone]:
+        milestones = {
+            Milestone.FEASIBILITY_DESIGN_COMPLETED,
+            Milestone.PRELIMINARY_DESIGN_COMPLETED,
+            Milestone.DETAILED_DESIGN_COMPLETED,
+        }
+        if self.overview.type == SchemeType.CONSTRUCTION:
+            milestones = milestones | {Milestone.CONSTRUCTION_STARTED, Milestone.CONSTRUCTION_COMPLETED}
+        return milestones
 
 
 class SchemeRepository:

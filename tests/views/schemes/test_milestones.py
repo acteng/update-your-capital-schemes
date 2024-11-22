@@ -11,6 +11,7 @@ from schemes.domain.schemes import (
     MilestoneRevision,
     ObservationType,
     SchemeMilestones,
+    SchemeType,
 )
 from schemes.views.schemes.data_sources import DataSourceRepr
 from schemes.views.schemes.milestones import (
@@ -27,10 +28,21 @@ from tests.builders import build_scheme
 
 
 class TestSchemeMilestonesContext:
-    def test_from_domain_sets_milestones(self) -> None:
-        milestones = SchemeMilestones()
+    def test_from_domain_sets_development_milestones(self) -> None:
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.DEVELOPMENT)
 
-        context = SchemeMilestonesContext.from_domain(milestones)
+        context = SchemeMilestonesContext.from_domain(scheme)
+
+        assert [row.milestone for row in context.milestones] == [
+            MilestoneContext(name="Feasibility design completed"),
+            MilestoneContext(name="Preliminary design completed"),
+            MilestoneContext(name="Detailed design completed"),
+        ]
+
+    def test_from_domain_sets_construction_milestones(self) -> None:
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+
+        context = SchemeMilestonesContext.from_domain(scheme)
 
         assert [row.milestone for row in context.milestones] == [
             MilestoneContext(name="Feasibility design completed"),
@@ -51,8 +63,8 @@ class TestSchemeMilestonesContext:
         ],
     )
     def test_from_domain_sets_current_milestone_dates(self, milestone: Milestone, expected_milestone_name: str) -> None:
-        milestones = SchemeMilestones()
-        milestones.update_milestones(
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
@@ -87,7 +99,7 @@ class TestSchemeMilestonesContext:
             ),
         )
 
-        context = SchemeMilestonesContext.from_domain(milestones)
+        context = SchemeMilestonesContext.from_domain(scheme)
 
         assert (
             SchemeMilestoneRowContext(
@@ -109,9 +121,9 @@ class TestSchemeMilestonesContext:
         ],
     )
     def test_from_domain_sets_milestone_dates_when_no_revisions(self, expected_milestone_name: str) -> None:
-        milestones = SchemeMilestones()
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
 
-        context = SchemeMilestonesContext.from_domain(milestones)
+        context = SchemeMilestonesContext.from_domain(scheme)
 
         assert (
             SchemeMilestoneRowContext(

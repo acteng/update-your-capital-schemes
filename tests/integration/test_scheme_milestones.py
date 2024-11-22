@@ -12,6 +12,7 @@ from schemes.domain.schemes import (
     MilestoneRevision,
     ObservationType,
     SchemeRepository,
+    SchemeType,
 )
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
@@ -47,8 +48,74 @@ class TestSchemeMilestones:
             {"milestone": "Construction completed", "planned": "", "actual": ""},
         ]
 
-    def test_scheme_shows_milestones(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+    def test_scheme_shows_development_milestones(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = build_scheme(
+            id_=1, reference="ATE00001", name="Wirral Package", authority_id=1, type_=SchemeType.DEVELOPMENT
+        )
+        scheme.milestones.update_milestones(
+            MilestoneRevision(
+                1,
+                DateRange(datetime(2020, 1, 1), None),
+                Milestone.FEASIBILITY_DESIGN_COMPLETED,
+                ObservationType.PLANNED,
+                date(2020, 2, 1),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                2,
+                DateRange(datetime(2020, 1, 1), None),
+                Milestone.FEASIBILITY_DESIGN_COMPLETED,
+                ObservationType.ACTUAL,
+                date(2020, 2, 2),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                3,
+                DateRange(datetime(2020, 1, 1), None),
+                Milestone.PRELIMINARY_DESIGN_COMPLETED,
+                ObservationType.PLANNED,
+                date(2020, 3, 1),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                4,
+                DateRange(datetime(2020, 1, 1), None),
+                Milestone.PRELIMINARY_DESIGN_COMPLETED,
+                ObservationType.ACTUAL,
+                date(2020, 3, 2),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                5,
+                DateRange(datetime(2020, 1, 1), None),
+                Milestone.DETAILED_DESIGN_COMPLETED,
+                ObservationType.PLANNED,
+                date(2020, 4, 1),
+                DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                6,
+                DateRange(datetime(2020, 1, 1), None),
+                Milestone.DETAILED_DESIGN_COMPLETED,
+                ObservationType.ACTUAL,
+                date(2020, 4, 2),
+                DataSource.ATF4_BID,
+            ),
+        )
+        schemes.add(scheme)
+
+        scheme_page = SchemePage.open(client, id_=1)
+
+        assert scheme_page.milestones.milestones.to_dicts() == [
+            {"milestone": "Feasibility design completed", "planned": "1 Feb 2020", "actual": "2 Feb 2020"},
+            {"milestone": "Preliminary design completed", "planned": "1 Mar 2020", "actual": "2 Mar 2020"},
+            {"milestone": "Detailed design completed", "planned": "1 Apr 2020", "actual": "2 Apr 2020"},
+        ]
+
+    def test_scheme_shows_construction_milestones(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        scheme = build_scheme(
+            id_=1, reference="ATE00001", name="Wirral Package", authority_id=1, type_=SchemeType.CONSTRUCTION
+        )
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 1,

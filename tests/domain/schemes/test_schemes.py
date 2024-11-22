@@ -17,6 +17,7 @@ from schemes.domain.schemes import (
     SchemeOutputs,
     SchemeOverview,
     SchemeReviews,
+    SchemeType,
 )
 from tests.builders import build_scheme
 
@@ -244,6 +245,30 @@ class TestScheme:
         scheme = build_scheme(id_=1, reference="ATE00001", bid_status=BidStatus.FUNDED, overview_revisions=[])
 
         assert scheme.is_updateable is True
+
+    def test_milestones_eligible_for_authority_update_when_development(self) -> None:
+        scheme = build_scheme(
+            id_=1, reference="ATE00001", name="Wirral Package", authority_id=2, type_=SchemeType.DEVELOPMENT
+        )
+
+        assert scheme.milestones_eligible_for_authority_update == {
+            Milestone.FEASIBILITY_DESIGN_COMPLETED,
+            Milestone.PRELIMINARY_DESIGN_COMPLETED,
+            Milestone.DETAILED_DESIGN_COMPLETED,
+        }
+
+    def test_milestones_eligible_for_authority_update_when_construction(self) -> None:
+        scheme = build_scheme(
+            id_=1, reference="ATE00001", name="Wirral Package", authority_id=2, type_=SchemeType.CONSTRUCTION
+        )
+
+        assert scheme.milestones_eligible_for_authority_update == {
+            Milestone.FEASIBILITY_DESIGN_COMPLETED,
+            Milestone.PRELIMINARY_DESIGN_COMPLETED,
+            Milestone.DETAILED_DESIGN_COMPLETED,
+            Milestone.CONSTRUCTION_STARTED,
+            Milestone.CONSTRUCTION_COMPLETED,
+        }
 
 
 class TestFundingProgrammes:

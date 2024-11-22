@@ -13,16 +13,6 @@ class SchemeMilestones:
         self._milestone_revisions: list[MilestoneRevision] = []
 
     @property
-    def milestones_eligible_for_authority_update(self) -> set[Milestone]:
-        return {
-            Milestone.FEASIBILITY_DESIGN_COMPLETED,
-            Milestone.PRELIMINARY_DESIGN_COMPLETED,
-            Milestone.DETAILED_DESIGN_COMPLETED,
-            Milestone.CONSTRUCTION_STARTED,
-            Milestone.CONSTRUCTION_COMPLETED,
-        }
-
-    @property
     def milestone_revisions(self) -> list[MilestoneRevision]:
         return list(self._milestone_revisions)
 

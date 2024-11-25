@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from enum import IntEnum, auto
+from enum import Enum, auto
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
@@ -74,7 +74,7 @@ class SchemeMilestones:
             for revision in self.current_milestone_revisions
             if revision.observation_type == ObservationType.ACTUAL
         ]
-        return sorted(actual_milestones)[-1] if actual_milestones else None
+        return sorted(actual_milestones, key=lambda milestone: milestone.stage_order)[-1] if actual_milestones else None
 
     def get_current_status_date(self, milestone: Milestone, observation_type: ObservationType) -> date | None:
         current_milestone_revision = self._current_milestone_revision(milestone, observation_type)
@@ -127,26 +127,28 @@ class MilestoneRevision:
         self._effective = DateRange(self.effective.date_from, effective_date_to)
 
 
-class Milestone(IntEnum):
-    PUBLIC_CONSULTATION_COMPLETED = (auto(), True, False)
-    FEASIBILITY_DESIGN_STARTED = (auto(), True, False)
-    FEASIBILITY_DESIGN_COMPLETED = (auto(), True, False)
-    PRELIMINARY_DESIGN_COMPLETED = (auto(), True, False)
-    OUTLINE_DESIGN_COMPLETED = (auto(), True, False)
-    DETAILED_DESIGN_COMPLETED = (auto(), True, False)
-    CONSTRUCTION_STARTED = (auto(), True, False)
-    CONSTRUCTION_COMPLETED = (auto(), True, False)
-    FUNDING_COMPLETED = (auto(), True, True)
-    NOT_PROGRESSED = (auto(), False, False)
-    SUPERSEDED = (auto(), False, False)
-    REMOVED = (auto(), False, False)
+class Milestone(Enum):
+    PUBLIC_CONSULTATION_COMPLETED = (auto(), 0, True, False)
+    FEASIBILITY_DESIGN_STARTED = (auto(), 1, True, False)
+    FEASIBILITY_DESIGN_COMPLETED = (auto(), 2, True, False)
+    PRELIMINARY_DESIGN_COMPLETED = (auto(), 3, True, False)
+    OUTLINE_DESIGN_COMPLETED = (auto(), 4, True, False)
+    DETAILED_DESIGN_COMPLETED = (auto(), 5, True, False)
+    CONSTRUCTION_STARTED = (auto(), 6, True, False)
+    CONSTRUCTION_COMPLETED = (auto(), 7, True, False)
+    FUNDING_COMPLETED = (auto(), 8, True, True)
+    NOT_PROGRESSED = (auto(), 9, False, False)
+    SUPERSEDED = (auto(), 10, False, False)
+    REMOVED = (auto(), 11, False, False)
 
+    stage_order: int
     is_active: bool
     is_complete: bool
 
-    def __new__(cls, value: int, is_active: bool, is_complete: bool) -> Milestone:
-        obj = int.__new__(cls, value)
+    def __new__(cls, value: int, stage_order: int, is_active: bool, is_complete: bool) -> Milestone:
+        obj = object.__new__(cls)
         obj._value_ = value
+        obj.stage_order = stage_order
         obj.is_active = is_active
         obj.is_complete = is_complete
         return obj

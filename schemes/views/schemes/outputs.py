@@ -33,8 +33,7 @@ class SchemeOutputsContext:
                     planned=cls._get_value(group, ObservationType.PLANNED),
                 )
                 for (type_, measure), group in groupby(
-                    sorted(output_revisions, key=SchemeOutputsContext._by_type_and_measure),
-                    cls._by_type_and_measure,
+                    sorted(output_revisions, key=cls._by_type_and_measure), cls._by_type_and_measure
                 )
             ]
         )

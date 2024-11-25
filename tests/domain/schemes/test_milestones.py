@@ -300,6 +300,26 @@ class TestMilestoneRevision:
 
 class TestMilestone:
     @pytest.mark.parametrize(
+        "milestone, expected_stage_order",
+        [
+            (Milestone.PUBLIC_CONSULTATION_COMPLETED, 0),
+            (Milestone.FEASIBILITY_DESIGN_STARTED, 1),
+            (Milestone.FEASIBILITY_DESIGN_COMPLETED, 2),
+            (Milestone.PRELIMINARY_DESIGN_COMPLETED, 3),
+            (Milestone.OUTLINE_DESIGN_COMPLETED, 4),
+            (Milestone.DETAILED_DESIGN_COMPLETED, 5),
+            (Milestone.CONSTRUCTION_STARTED, 6),
+            (Milestone.CONSTRUCTION_COMPLETED, 7),
+            (Milestone.FUNDING_COMPLETED, 8),
+            (Milestone.NOT_PROGRESSED, 9),
+            (Milestone.SUPERSEDED, 10),
+            (Milestone.REMOVED, 11),
+        ],
+    )
+    def test_stage_order(self, milestone: Milestone, expected_stage_order: int) -> None:
+        assert milestone.stage_order == expected_stage_order
+
+    @pytest.mark.parametrize(
         "milestone, expected_is_active",
         [
             (Milestone.PUBLIC_CONSULTATION_COMPLETED, True),

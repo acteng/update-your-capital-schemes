@@ -19,6 +19,17 @@ class TestSchemeMilestones:
 
         assert milestones.milestone_revisions == []
 
+    def test_milestones_eligible_for_authority_update(self) -> None:
+        milestones = SchemeMilestones()
+
+        assert milestones.milestones_eligible_for_authority_update == {
+            Milestone.FEASIBILITY_DESIGN_COMPLETED,
+            Milestone.PRELIMINARY_DESIGN_COMPLETED,
+            Milestone.DETAILED_DESIGN_COMPLETED,
+            Milestone.CONSTRUCTION_STARTED,
+            Milestone.CONSTRUCTION_COMPLETED,
+        }
+
     def test_get_milestone_revisions_is_copy(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestone(

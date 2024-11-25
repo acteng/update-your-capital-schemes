@@ -41,13 +41,9 @@ class SchemeMilestonesContext:
                     planned=milestones.get_current_status_date(milestone, ObservationType.PLANNED),
                     actual=milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
                 )
-                for milestone in [
-                    Milestone.FEASIBILITY_DESIGN_COMPLETED,
-                    Milestone.PRELIMINARY_DESIGN_COMPLETED,
-                    Milestone.DETAILED_DESIGN_COMPLETED,
-                    Milestone.CONSTRUCTION_STARTED,
-                    Milestone.CONSTRUCTION_COMPLETED,
-                ]
+                for milestone in sorted(
+                    milestones.milestones_eligible_for_authority_update, key=lambda milestone: milestone.stage_order
+                )
             ]
         )
 

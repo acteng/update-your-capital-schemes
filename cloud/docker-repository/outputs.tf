@@ -1,3 +1,8 @@
+output "project" {
+  description = "GCP project"
+  value       = google_artifact_registry_repository.main.project
+}
+
 output "url" {
   description = "Docker repository URL"
   value = join("", [

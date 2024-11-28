@@ -138,7 +138,7 @@ data "google_project" "main" {
 }
 
 resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
-  project = "dft-schemes-common"
+  project = var.docker_repository_project
   role    = "roles/artifactregistry.reader"
   member  = "serviceAccount:service-${data.google_project.main.number}@serverless-robot-prod.iam.gserviceaccount.com"
 

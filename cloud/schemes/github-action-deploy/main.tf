@@ -23,7 +23,7 @@ resource "google_service_account_iam_member" "service_account_user" {
 }
 
 resource "google_project_iam_member" "artifact_registry_reader" {
-  project = "dft-schemes-common"
+  project = var.docker_repository_project
   role    = "roles/artifactregistry.reader"
   member  = "serviceAccount:${google_service_account.main.email}"
 }

@@ -12,3 +12,8 @@ variable "cloud_run_service_name" {
   description = "Cloud Run service name to load balance"
   type        = string
 }
+
+variable "security_policy_id" {
+  description = "Security policy ID"
+  type        = string
+}

@@ -108,11 +108,21 @@ module "cloud_run" {
   ]
 }
 
+module "web_application_firewall" {
+  source = "./web-application-firewall"
+}
+
 module "load_balancer" {
   source                 = "./load-balancer"
   region                 = local.location
   domain                 = local.config[local.env].domain
   cloud_run_service_name = module.cloud_run.name
+  security_policy_id     = module.web_application_firewall.security_policy_id
+}
+
+moved {
+  from = module.load_balancer.google_compute_security_policy.schemes
+  to   = module.web_application_firewall.google_compute_security_policy.schemes
 }
 
 module "github_action_deploy" {

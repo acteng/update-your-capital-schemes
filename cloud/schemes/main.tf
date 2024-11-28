@@ -43,6 +43,14 @@ locals {
   }
 }
 
+data "terraform_remote_state" "docker_repository" {
+  backend = "gcs"
+  config = {
+    bucket = "dft-schemes-common-tf-backend"
+    prefix = "docker-repository"
+  }
+}
+
 data "terraform_remote_state" "schemes_database" {
   backend = "gcs"
   config = {
@@ -77,6 +85,7 @@ module "cloud_run" {
   source                                   = "./cloud-run"
   project                                  = local.project
   region                                   = local.location
+  docker_repository_url                    = data.terraform_remote_state.docker_repository.outputs.url
   env                                      = local.env
   database_connection_name                 = module.cloud_sql.connection_name
   database_name                            = module.cloud_sql.name

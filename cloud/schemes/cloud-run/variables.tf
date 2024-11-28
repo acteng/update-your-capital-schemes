@@ -8,6 +8,11 @@ variable "region" {
   type        = string
 }
 
+variable "docker_repository_url" {
+  description = "Docker repository URL"
+  type        = string
+}
+
 variable "env" {
   description = "App environment"
   type        = string

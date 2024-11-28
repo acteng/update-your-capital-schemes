@@ -45,11 +45,11 @@
             <form method="post" action="{{ url_for('schemes.milestones', scheme_id=id) }}" aria-label="Change milestone dates">
                 {{ form.csrf_token }}
 
-                {{ milestone("Feasibility design completed", form.feasibility_design_completed_planned, form.feasibility_design_completed_actual) }}
-                {{ milestone("Preliminary design completed", form.preliminary_design_completed_planned, form.preliminary_design_completed_actual) }}
-                {{ milestone("Detailed design completed", form.detailed_design_completed_planned, form.detailed_design_completed_actual) }}
-                {{ milestone("Construction started", form.construction_started_planned, form.construction_started_actual) }}
-                {{ milestone("Construction completed", form.construction_completed_planned, form.construction_completed_actual) }}
+                {{ milestone("Feasibility design completed", form.feasibility_design_completed.planned, form.feasibility_design_completed.actual) }}
+                {{ milestone("Preliminary design completed", form.preliminary_design_completed.planned, form.preliminary_design_completed.actual) }}
+                {{ milestone("Detailed design completed", form.detailed_design_completed.planned, form.detailed_design_completed.actual) }}
+                {{ milestone("Construction started", form.construction_started.planned, form.construction_started.actual) }}
+                {{ milestone("Construction completed", form.construction_completed.planned, form.construction_completed.actual) }}
 
                 <div class="govuk-button-group">
                     {{ govukButton({

@@ -4,7 +4,7 @@ locals {
 }
 
 resource "google_storage_bucket" "main" {
-  name     = "dft-schemes-common-tf-backend"
+  name     = "${local.project}-tf-backend"
   project  = local.project
   location = local.location
 

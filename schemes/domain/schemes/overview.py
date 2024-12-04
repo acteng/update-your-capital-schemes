@@ -110,3 +110,4 @@ class FundingProgrammes:
     LUF1 = FundingProgramme("LUF1", False, False)
     LUF2 = FundingProgramme("LUF2", False, False)
     LUF3 = FundingProgramme("LUF3", False, False)
+    MRN = FundingProgramme("MRN", False, False)

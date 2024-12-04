@@ -27,6 +27,7 @@ class TestSchemeTypeMapper:
         (FundingProgrammes.LUF1, 6),
         (FundingProgrammes.LUF2, 7),
         (FundingProgrammes.LUF3, 8),
+        (FundingProgrammes.MRN, 9),
     ],
 )
 class TestFundingProgrammeMapper:

@@ -258,6 +258,7 @@ class TestFundingProgrammes:
             (FundingProgrammes.LUF1, "LUF1"),
             (FundingProgrammes.LUF2, "LUF2"),
             (FundingProgrammes.LUF3, "LUF3"),
+            (FundingProgrammes.MRN, "MRN"),
         ],
     )
     def test_code(self, funding_programme: FundingProgramme, expected_code: str) -> None:
@@ -274,6 +275,7 @@ class TestFundingProgrammes:
             (FundingProgrammes.LUF1, False),
             (FundingProgrammes.LUF2, False),
             (FundingProgrammes.LUF3, False),
+            (FundingProgrammes.MRN, False),
         ],
     )
     def test_is_under_embargo(self, funding_programme: FundingProgramme, expected_is_under_embargo: bool) -> None:
@@ -290,6 +292,7 @@ class TestFundingProgrammes:
             (FundingProgrammes.LUF1, False),
             (FundingProgrammes.LUF2, False),
             (FundingProgrammes.LUF3, False),
+            (FundingProgrammes.MRN, False),
         ],
     )
     def test_is_eligible_for_authority_update(

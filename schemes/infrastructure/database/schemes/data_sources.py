@@ -27,6 +27,8 @@ class DataSourceMapper:
         DataSource.LUF_QUARTERLY_UPDATE: 21,
         DataSource.CRSTS_SCHEME_LIST: 22,
         DataSource.CRSTS_QUARTERLY_UPDATE: 23,
+        DataSource.MRN_SCHEME_LIST: 24,
+        DataSource.MRN_QUARTERLY_UPDATE: 25,
     }
 
     def to_id(self, data_source: DataSource) -> int:

@@ -26,3 +26,5 @@ class DataSource(Enum):
     LUF_QUARTERLY_UPDATE = auto()
     CRSTS_SCHEME_LIST = auto()
     CRSTS_QUARTERLY_UPDATE = auto()
+    MRN_SCHEME_LIST = auto()
+    MRN_QUARTERLY_UPDATE = auto()

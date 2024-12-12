@@ -120,11 +120,6 @@ module "load_balancer" {
   security_policy_id     = module.web_application_firewall.security_policy_id
 }
 
-moved {
-  from = module.load_balancer.google_compute_security_policy.schemes
-  to   = module.web_application_firewall.google_compute_security_policy.schemes
-}
-
 module "github_action_deploy" {
   source                       = "./github-action-deploy"
   project                      = local.project

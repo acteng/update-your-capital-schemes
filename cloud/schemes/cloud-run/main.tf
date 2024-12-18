@@ -16,7 +16,7 @@ resource "google_cloud_run_v2_service" "schemes" {
 
   template {
     containers {
-      image = "${var.docker_repository_url}/schemes"
+      image = "${var.docker_repository_url}/schemes:latest"
       env {
         name  = "FLASK_ENV"
         value = var.env

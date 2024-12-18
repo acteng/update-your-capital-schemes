@@ -57,9 +57,14 @@ resource "google_secret_manager_secret" "database_password" {
   }
 }
 
-resource "google_secret_manager_secret_version" "database_password_version" {
+resource "google_secret_manager_secret_version" "database_password" {
   secret      = google_secret_manager_secret.database_password.id
   secret_data = google_sql_user.schemes.password
+}
+
+moved {
+  from = google_secret_manager_secret_version.database_password_version
+  to   = google_secret_manager_secret_version.database_password
 }
 
 resource "google_service_account" "cloud_sql_schemes" {

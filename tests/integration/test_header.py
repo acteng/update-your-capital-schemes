@@ -12,7 +12,7 @@ class TestHeaderWhenUnauthenticated:
     def test_home_shows_website(self, client: FlaskClient) -> None:
         start_page = StartPage.open(client)
 
-        assert start_page.header.home_url == "https://www.gov.uk/government/organisations/active-travel-england"
+        assert start_page.header.home_url == "https://www.activetravelengland.gov.uk"
 
 
 class TestHeaderWhenAuthenticated:
@@ -30,7 +30,7 @@ class TestHeaderWhenAuthenticated:
     def test_home_shows_website(self, client: FlaskClient) -> None:
         schemes_page = SchemesPage.open(client)
 
-        assert schemes_page.header.home_url == "https://www.gov.uk/government/organisations/active-travel-england"
+        assert schemes_page.header.home_url == "https://www.activetravelengland.gov.uk"
 
     def test_profile_shows_profile(self, client: FlaskClient) -> None:
         schemes_page = SchemesPage.open(client)

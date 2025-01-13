@@ -1,5 +1,6 @@
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
 {% from "govuk_frontend_jinja/components/checkboxes/macro.html" import govukCheckboxes %}
+{% from "govuk_frontend_jinja/components/details/macro.html" import govukDetails %}
 
 <section>
     <h2 class="govuk-heading-m">
@@ -28,6 +29,17 @@
 
         {{ govukButton({
             "text": "Confirm"
+        }) }}
+
+        {% set html -%}
+            We only allow spend to date and milestone dates to be updated through this service.
+            If any other details are incorrect then
+            <a class="govuk-link" href="mailto:update-your-capital-schemes@activetravelengland.gov.uk">let us know</a>
+            before confirming that this scheme is up-to-date.
+        {%- endset %}
+        {{ govukDetails({
+            "summaryText": "Why can I not change some scheme details?",
+            "html": html
         }) }}
     </form>
 </section>

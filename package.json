@@ -25,8 +25,8 @@
     "govuk-one-login-service-header": "govuk-one-login/service-header#a823f1a5ddc2879945f7d4f2cce889d100d3441c"
   },
   "devDependencies": {
-    "sass": "^1.69.0",
-    "terser": "^5.26.0"
+    "sass": "~1.69.0",
+    "terser": "~5.26.0"
   },
   "engines": {
     "node": "20",

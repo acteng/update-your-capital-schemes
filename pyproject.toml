@@ -33,7 +33,7 @@ dev = [
     "responses~=0.25.0,!=0.25.5",
     "types-beautifulsoup4~=4.12.0",
     "types-requests~=2.32.0.0",
-    "types-wtforms~=3.1.0.20240205"
+    "types-wtforms~=3.2.1.20241221"
 ]
 
 [build-system]

@@ -18,7 +18,7 @@ pip install --force-reinstall -e .[dev]
 
 To upgrade packages to their latest minor or major version:
 
-1. Bump the package version in `pyproject.toml` keeping the patch version zero, e.g. `~=1.2.0` to `~=1.3.0`
+1. Bump the package version in [pyproject.toml](../pyproject.toml) keeping the patch version zero, e.g. `~=1.2.0` to `~=1.3.0`
 
 1. Install the upgraded packages:
 
@@ -83,7 +83,7 @@ npm upgrade
 This dependency uses a [GitHub URL](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#github-urls) as
 [it hasn't been released yet](https://github.com/govuk-one-login/service-header/issues/46). To upgrade:
 
-1. Update the commit hash for the dependency `govuk-one-login-service-header` in `package.json` to the
+1. Update the commit hash for the dependency `govuk-one-login-service-header` in [package.json](../package.json) to the
    [latest commit](https://github.com/govuk-one-login/service-header/commits/main/)
 
 1. Install the updated package:
@@ -94,7 +94,8 @@ This dependency uses a [GitHub URL](https://docs.npmjs.com/cli/v10/configuring-n
 
 1. Copy the contents of
    [the service header Nunjucks template](https://raw.githubusercontent.com/govuk-one-login/service-header/main/src/nunjucks/template.njk)
-   to `schemes/views/templates/ate_service_header/macro.html`, replacing the contents of the Jinja macro:
+   to [schemes/views/templates/ate_service_header/macro.html](../schemes/views/templates/ate_service_header/macro.html),
+   replacing the contents of the Jinja macro:
 
    ```
    {% macro ateServiceHeader(params) %}
@@ -149,7 +150,7 @@ To update Terraform the [latest minor version](https://developer.hashicorp.com/t
 
 ## Upgrading Terraform providers
 
-Upgrade each Terraform root module in `cloud`:
+Upgrade each Terraform root module in [cloud](../cloud):
 
 1. Upgrade the providers in `versions.tf` to the latest minor or major version keeping the patch version zero,
    e.g. `~> 1.2.0` to `~> 1.3.0`
@@ -162,7 +163,7 @@ Upgrade each Terraform root module in `cloud`:
 
 ## Upgrading GitHub Actions
 
-Upgrade all workflows in `.github/workflows`:
+Upgrade all workflows in [.github/workflows](../.github/workflows):
 
 1. Upgrade each action to its latest major version, e.g. for `actions/setup-python` see [actions/setup-python](https://github.com/actions/setup-python/releases)
 

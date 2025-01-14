@@ -34,6 +34,36 @@ After upgrading Playwright to a new minor version, reinstall the browsers and th
 playwright install --with-deps chromium
 ```
 
+## Upgrading Node
+
+To upgrade Node:
+
+1. Update Node to the [latest LTS version](https://nodejs.org/en/download) in [package.json](../package.json):
+
+   ```json
+   "engines": {
+     "node": "<version>",
+     ...
+   }
+   ```
+
+1. Update the [lock file](../package-lock.json):
+
+   ```bash
+   npm install --package-lock-only
+   ```
+
+1. Update the Node version in the [CI workflow](../.github/workflows/ci.yml):
+
+   ```yml
+   - name: Setup Node
+     uses: actions/setup-node@v4
+     with:
+       node-version: <version>
+   ```
+
+1. Update the Node version in the [README](../README.md) prerequisites
+
 ## Upgrading Node packages
 
 To list Node packages that need upgrading:

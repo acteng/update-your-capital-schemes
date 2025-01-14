@@ -132,6 +132,21 @@ This dependency uses a [GitHub URL](https://docs.npmjs.com/cli/v10/configuring-n
           </div>
    ```
 
+## Upgrading Terraform
+
+To update Terraform the [latest minor version](https://developer.hashicorp.com/terraform/install#release-information):
+
+1. For each Terraform root module in [cloud](../cloud), upgrade the required version in `versions.tf` keeping the patch version zero:
+
+   ```hcl
+   terraform {
+     required_version = "~> <version>"
+     ...
+   }
+   ```
+
+1. Update the Terraform version in the [README](../README.md) prerequisites
+
 ## Upgrading Terraform providers
 
 Upgrade each Terraform root module in `cloud`:

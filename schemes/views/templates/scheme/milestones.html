@@ -45,11 +45,9 @@
             <form method="post" action="{{ url_for('schemes.milestones', scheme_id=id) }}" aria-label="Change milestone dates">
                 {{ form.csrf_token }}
 
-                {{ milestone(form.feasibility_design_completed) }}
-                {{ milestone(form.preliminary_design_completed) }}
-                {{ milestone(form.detailed_design_completed) }}
-                {{ milestone(form.construction_started) }}
-                {{ milestone(form.construction_completed) }}
+                {% for field in form if not field == form.csrf_token %}
+                    {{ milestone(field) }}
+                {% endfor %}
 
                 <div class="govuk-button-group">
                     {{ govukButton({

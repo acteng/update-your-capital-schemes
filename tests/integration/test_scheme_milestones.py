@@ -241,21 +241,21 @@ class TestSchemeMilestones:
 
         assert (
             change_milestone_dates_page.form.feasibility_design_completed_planned.name
-            == "feasibility_design_completed_planned"
+            == "feasibility_design_completed-planned"
             and change_milestone_dates_page.form.feasibility_design_completed_actual.name
-            == "feasibility_design_completed_actual"
+            == "feasibility_design_completed-actual"
             and change_milestone_dates_page.form.preliminary_design_completed_planned.name
-            == "preliminary_design_completed_planned"
+            == "preliminary_design_completed-planned"
             and change_milestone_dates_page.form.preliminary_design_completed_actual.name
-            == "preliminary_design_completed_actual"
+            == "preliminary_design_completed-actual"
             and change_milestone_dates_page.form.detailed_design_completed_planned.name
-            == "detailed_design_completed_planned"
+            == "detailed_design_completed-planned"
             and change_milestone_dates_page.form.detailed_design_completed_actual.name
-            == "detailed_design_completed_actual"
-            and change_milestone_dates_page.form.construction_started_planned.name == "construction_started_planned"
-            and change_milestone_dates_page.form.construction_started_actual.name == "construction_started_actual"
-            and change_milestone_dates_page.form.construction_completed_planned.name == "construction_completed_planned"
-            and change_milestone_dates_page.form.construction_completed_actual.name == "construction_completed_actual"
+            == "detailed_design_completed-actual"
+            and change_milestone_dates_page.form.construction_started_planned.name == "construction_started-planned"
+            and change_milestone_dates_page.form.construction_started_actual.name == "construction_started-actual"
+            and change_milestone_dates_page.form.construction_completed_planned.name == "construction_completed-planned"
+            and change_milestone_dates_page.form.construction_completed_actual.name == "construction_completed-actual"
         )
 
     def test_milestones_form_shows_date(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -343,7 +343,7 @@ class TestSchemeMilestones:
         schemes.add(scheme)
 
         client.post(
-            "/schemes/1/milestones", data={"csrf_token": csrf_token, "construction_started_actual": ["3", "1", "2020"]}
+            "/schemes/1/milestones", data={"csrf_token": csrf_token, "construction_started-actual": ["3", "1", "2020"]}
         )
 
         actual_scheme = schemes.get(1)
@@ -387,7 +387,7 @@ class TestSchemeMilestones:
             client.post(
                 "/schemes/1/milestones",
                 data=self.empty_change_milestone_dates_form()
-                | {"csrf_token": csrf_token, "construction_started_actual": ["x", "x", "x"]},
+                | {"csrf_token": csrf_token, "construction_started-actual": ["x", "x", "x"]},
             )
         )
 
@@ -487,14 +487,14 @@ class TestSchemeMilestones:
     def empty_change_milestone_dates_form(self) -> dict[str, list[str]]:
         empty_date = ["", "", ""]
         return {
-            "feasibility_design_completed_planned": empty_date,
-            "feasibility_design_completed_actual": empty_date,
-            "preliminary_design_completed_planned": empty_date,
-            "preliminary_design_completed_actual": empty_date,
-            "detailed_design_completed_planned": empty_date,
-            "detailed_design_completed_actual": empty_date,
-            "construction_started_planned": empty_date,
-            "construction_started_actual": empty_date,
-            "construction_completed_planned": empty_date,
-            "construction_completed_actual": empty_date,
+            "feasibility_design_completed-planned": empty_date,
+            "feasibility_design_completed-actual": empty_date,
+            "preliminary_design_completed-planned": empty_date,
+            "preliminary_design_completed-actual": empty_date,
+            "detailed_design_completed-planned": empty_date,
+            "detailed_design_completed-actual": empty_date,
+            "construction_started-planned": empty_date,
+            "construction_started-actual": empty_date,
+            "construction_completed-planned": empty_date,
+            "construction_completed-actual": empty_date,
         }

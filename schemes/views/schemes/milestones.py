@@ -178,11 +178,17 @@ class ConstructionCompletedDatesForm(MilestoneDatesForm):
 
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
-    feasibility_design_completed = FormField(FeasibilityDesignCompletedDatesForm, separator=".")
-    preliminary_design_completed = FormField(PreliminaryDesignCompletedDatesForm, separator=".")
-    detailed_design_completed = FormField(DetailedDesignCompletedDatesForm, separator=".")
-    construction_started = FormField(ConstructionStartedDatesForm, separator=".")
-    construction_completed = FormField(ConstructionCompletedDatesForm, separator=".")
+    feasibility_design_completed = FormField(
+        FeasibilityDesignCompletedDatesForm, label="Feasibility design completed", separator="."
+    )
+    preliminary_design_completed = FormField(
+        PreliminaryDesignCompletedDatesForm, label="Preliminary design completed", separator="."
+    )
+    detailed_design_completed = FormField(
+        DetailedDesignCompletedDatesForm, label="Detailed design completed", separator="."
+    )
+    construction_started = FormField(ConstructionStartedDatesForm, label="Construction started", separator=".")
+    construction_completed = FormField(ConstructionCompletedDatesForm, label="Construction completed", separator=".")
 
     @classmethod
     def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:

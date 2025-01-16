@@ -166,23 +166,23 @@ class TestChangeMilestoneDatesContext:
         assert (
             context.id == 1
             and context.name == "Wirral Package"
-            and context.form.construction_started_planned.data == date(2020, 1, 2)
+            and context.form.construction_started.planned.data == date(2020, 1, 2)
         )
 
 
 @pytest.mark.usefixtures("app")
 class TestChangeMilestoneDatesForm:
     field_names = [
-        "feasibility_design_completed_planned",
-        "feasibility_design_completed_actual",
-        "preliminary_design_completed_planned",
-        "preliminary_design_completed_actual",
-        "detailed_design_completed_planned",
-        "detailed_design_completed_actual",
-        "construction_started_planned",
-        "construction_started_actual",
-        "construction_completed_planned",
-        "construction_completed_actual",
+        "feasibility_design_completed.planned",
+        "feasibility_design_completed.actual",
+        "preliminary_design_completed.planned",
+        "preliminary_design_completed.actual",
+        "detailed_design_completed.planned",
+        "detailed_design_completed.actual",
+        "construction_started.planned",
+        "construction_started.actual",
+        "construction_completed.planned",
+        "construction_completed.actual",
     ]
     milestones_observation_types = [
         (Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED),
@@ -222,7 +222,8 @@ class TestChangeMilestoneDatesForm:
 
         form = ChangeMilestoneDatesForm.from_domain(milestones)
 
-        assert form[field_name].data == date(2020, 2, 1)
+        (field_name1, field_name2) = field_name.split(".")
+        assert form[field_name1][field_name2].data == date(2020, 2, 1)
 
     def test_from_domain_when_minimal(self) -> None:
         milestones = SchemeMilestones()
@@ -230,16 +231,16 @@ class TestChangeMilestoneDatesForm:
         form = ChangeMilestoneDatesForm.from_domain(milestones)
 
         assert (
-            form.feasibility_design_completed_planned.data is None
-            and form.feasibility_design_completed_actual.data is None
-            and form.preliminary_design_completed_planned.data is None
-            and form.preliminary_design_completed_actual.data is None
-            and form.detailed_design_completed_planned.data is None
-            and form.detailed_design_completed_actual.data is None
-            and form.construction_started_planned.data is None
-            and form.construction_started_actual.data is None
-            and form.construction_completed_planned.data is None
-            and form.construction_completed_actual.data is None
+            form.feasibility_design_completed.planned.data is None
+            and form.feasibility_design_completed.actual.data is None
+            and form.preliminary_design_completed.planned.data is None
+            and form.preliminary_design_completed.actual.data is None
+            and form.detailed_design_completed.planned.data is None
+            and form.detailed_design_completed.actual.data is None
+            and form.construction_started.planned.data is None
+            and form.construction_started.actual.data is None
+            and form.construction_completed.planned.data is None
+            and form.construction_completed.actual.data is None
         )
 
     @pytest.mark.parametrize("field_name, milestone_observation_type", zip(field_names, milestones_observation_types))
@@ -393,12 +394,15 @@ class TestChangeMilestoneDatesForm:
     def test_date_with_initial_value_is_required(
         self, field_name: str, expected_error: str, date_: tuple[str, str, str]
     ) -> None:
-        form = ChangeMilestoneDatesForm(data={field_name: date(2020, 1, 2)})
-        form.process(formdata=MultiDict([(field_name, date_[0]), (field_name, date_[1]), (field_name, date_[2])]))
+        (field_name1, field_name2) = field_name.split(".")
+        form = ChangeMilestoneDatesForm(
+            data={field_name1: {field_name2: date(2020, 1, 2)}},
+            formdata=MultiDict([(field_name, date_[0]), (field_name, date_[1]), (field_name, date_[2])]),
+        )
 
         form.validate()
 
-        assert expected_error in form.errors[field_name]
+        assert expected_error in form.errors[field_name1][field_name2]
 
     @pytest.mark.parametrize(
         "field_name, expected_error",
@@ -438,7 +442,8 @@ class TestChangeMilestoneDatesForm:
 
         form.validate()
 
-        assert expected_error in form.errors[field_name]
+        (field_name1, field_name2) = field_name.split(".")
+        assert expected_error in form.errors[field_name1][field_name2]
 
 
 class TestMilestoneRevisionRepr:

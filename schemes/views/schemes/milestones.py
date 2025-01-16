@@ -6,7 +6,8 @@ from enum import Enum, unique
 from typing import Any
 
 from flask_wtf import FlaskForm
-from wtforms.form import BaseForm
+from wtforms import FormField
+from wtforms.form import BaseForm, Form
 from wtforms.utils import unset_value
 
 from schemes.dicts import inverse_dict
@@ -112,81 +113,89 @@ class MilestoneDateField(CustomMessageDateField):
             MultivalueInputRequired(message=self._required_message)(form, self)
 
 
-class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
-    feasibility_design_completed_planned = MilestoneDateField(
+class MilestoneDatesForm(Form):
+    planned: MilestoneDateField
+    actual: MilestoneDateField
+
+
+class FeasibilityDesignCompletedDatesForm(MilestoneDatesForm):
+    planned = MilestoneDateField(
         required_message="Enter a feasibility design completed planned date",
         invalid_message="Feasibility design completed planned date must be a real date",
     )
-    feasibility_design_completed_actual = MilestoneDateField(
+    actual = MilestoneDateField(
         required_message="Enter a feasibility design completed actual date",
         invalid_message="Feasibility design completed actual date must be a real date",
     )
-    preliminary_design_completed_planned = MilestoneDateField(
+
+
+class PreliminaryDesignCompletedDatesForm(MilestoneDatesForm):
+    planned = MilestoneDateField(
         required_message="Enter a preliminary design completed planned date",
         invalid_message="Preliminary design completed planned date must be a real date",
     )
-    preliminary_design_completed_actual = MilestoneDateField(
+    actual = MilestoneDateField(
         required_message="Enter a preliminary design completed actual date",
         invalid_message="Preliminary design completed actual date must be a real date",
     )
-    detailed_design_completed_planned = MilestoneDateField(
+
+
+class DetailedDesignCompletedDatesForm(MilestoneDatesForm):
+    planned = MilestoneDateField(
         required_message="Enter a detailed design completed planned date",
         invalid_message="Detailed design completed planned date must be a real date",
     )
-    detailed_design_completed_actual = MilestoneDateField(
+    actual = MilestoneDateField(
         required_message="Enter a detailed design completed actual date",
         invalid_message="Detailed design completed actual date must be a real date",
     )
-    construction_started_planned = MilestoneDateField(
+
+
+class ConstructionStartedDatesForm(MilestoneDatesForm):
+    planned = MilestoneDateField(
         required_message="Enter a construction started planned date",
         invalid_message="Construction started planned date must be a real date",
     )
-    construction_started_actual = MilestoneDateField(
+    actual = MilestoneDateField(
         required_message="Enter a construction started actual date",
         invalid_message="Construction started actual date must be a real date",
     )
-    construction_completed_planned = MilestoneDateField(
+
+
+class ConstructionCompletedDatesForm(MilestoneDatesForm):
+    planned = MilestoneDateField(
         required_message="Enter a construction completed planned date",
         invalid_message="Construction completed planned date must be a real date",
     )
-    construction_completed_actual = MilestoneDateField(
+    actual = MilestoneDateField(
         required_message="Enter a construction completed actual date",
         invalid_message="Construction completed actual date must be a real date",
     )
 
+
+class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
+    feasibility_design_completed = FormField(FeasibilityDesignCompletedDatesForm)
+    preliminary_design_completed = FormField(PreliminaryDesignCompletedDatesForm)
+    detailed_design_completed = FormField(DetailedDesignCompletedDatesForm)
+    construction_started = FormField(ConstructionStartedDatesForm)
+    construction_completed = FormField(ConstructionCompletedDatesForm)
+
     @classmethod
     def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:
+        def get_milestone_data(milestone: Milestone) -> dict[str, date | None]:
+            return {
+                "planned": milestones.get_current_status_date(milestone, ObservationType.PLANNED),
+                "actual": milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
+            }
+
         return cls(
-            feasibility_design_completed_planned=milestones.get_current_status_date(
-                Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED
-            ),
-            feasibility_design_completed_actual=milestones.get_current_status_date(
-                Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL
-            ),
-            preliminary_design_completed_planned=milestones.get_current_status_date(
-                Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED
-            ),
-            preliminary_design_completed_actual=milestones.get_current_status_date(
-                Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL
-            ),
-            detailed_design_completed_planned=milestones.get_current_status_date(
-                Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED
-            ),
-            detailed_design_completed_actual=milestones.get_current_status_date(
-                Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL
-            ),
-            construction_started_planned=milestones.get_current_status_date(
-                Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED
-            ),
-            construction_started_actual=milestones.get_current_status_date(
-                Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL
-            ),
-            construction_completed_planned=milestones.get_current_status_date(
-                Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED
-            ),
-            construction_completed_actual=milestones.get_current_status_date(
-                Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL
-            ),
+            data={
+                "feasibility_design_completed": get_milestone_data(Milestone.FEASIBILITY_DESIGN_COMPLETED),
+                "preliminary_design_completed": get_milestone_data(Milestone.PRELIMINARY_DESIGN_COMPLETED),
+                "detailed_design_completed": get_milestone_data(Milestone.DETAILED_DESIGN_COMPLETED),
+                "construction_started": get_milestone_data(Milestone.CONSTRUCTION_STARTED),
+                "construction_completed": get_milestone_data(Milestone.CONSTRUCTION_COMPLETED),
+            }
         )
 
     def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
@@ -197,28 +206,28 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
                 milestones.update_milestone_date(now, milestone, ObservationType.ACTUAL, actual)
 
         update_milestone(
-            self.feasibility_design_completed_planned.data,
-            self.feasibility_design_completed_actual.data,
+            self.feasibility_design_completed.planned.data,
+            self.feasibility_design_completed.actual.data,
             Milestone.FEASIBILITY_DESIGN_COMPLETED,
         )
         update_milestone(
-            self.preliminary_design_completed_planned.data,
-            self.preliminary_design_completed_actual.data,
+            self.preliminary_design_completed.planned.data,
+            self.preliminary_design_completed.actual.data,
             Milestone.PRELIMINARY_DESIGN_COMPLETED,
         )
         update_milestone(
-            self.detailed_design_completed_planned.data,
-            self.detailed_design_completed_actual.data,
+            self.detailed_design_completed.planned.data,
+            self.detailed_design_completed.actual.data,
             Milestone.DETAILED_DESIGN_COMPLETED,
         )
         update_milestone(
-            self.construction_started_planned.data,
-            self.construction_started_actual.data,
+            self.construction_started.planned.data,
+            self.construction_started.actual.data,
             Milestone.CONSTRUCTION_STARTED,
         )
         update_milestone(
-            self.construction_completed_planned.data,
-            self.construction_completed_actual.data,
+            self.construction_completed.planned.data,
+            self.construction_completed.actual.data,
             Milestone.CONSTRUCTION_COMPLETED,
         )
 

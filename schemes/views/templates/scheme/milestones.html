@@ -45,11 +45,11 @@
             <form method="post" action="{{ url_for('schemes.milestones', scheme_id=id) }}" aria-label="Change milestone dates">
                 {{ form.csrf_token }}
 
-                {{ milestone("Feasibility design completed", form.feasibility_design_completed_planned, form.feasibility_design_completed_actual) }}
-                {{ milestone("Preliminary design completed", form.preliminary_design_completed_planned, form.preliminary_design_completed_actual) }}
-                {{ milestone("Detailed design completed", form.detailed_design_completed_planned, form.detailed_design_completed_actual) }}
-                {{ milestone("Construction started", form.construction_started_planned, form.construction_started_actual) }}
-                {{ milestone("Construction completed", form.construction_completed_planned, form.construction_completed_actual) }}
+                {{ milestone("Feasibility design completed", form.feasibility_design_completed) }}
+                {{ milestone("Preliminary design completed", form.preliminary_design_completed) }}
+                {{ milestone("Detailed design completed", form.detailed_design_completed) }}
+                {{ milestone("Construction started", form.construction_started) }}
+                {{ milestone("Construction completed", form.construction_completed) }}
 
                 <div class="govuk-button-group">
                     {{ govukButton({
@@ -63,14 +63,14 @@
     </div>
 {% endblock %}
 
-{% macro milestone(name, planned_field, actual_field) -%}
+{% macro milestone(name, field) -%}
     <h2 class="govuk-heading-m">{{ name }}</h2>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             {% set legendHtml %}
                 <span class="govuk-visually-hidden">{{ name }}</span> Planned date
             {% endset %}
-            {{ planned_field(params={
+            {{ field.planned(params={
                 "fieldset": {
                     "describedBy": "date-hint",
                     "legend": {
@@ -83,7 +83,7 @@
             {% set legendHtml %}
                 <span class="govuk-visually-hidden">{{ name }}</span> Actual date
             {% endset %}
-            {{ actual_field(params={
+            {{ field.actual(params={
                 "fieldset": {
                     "describedBy": "date-hint",
                     "legend": {

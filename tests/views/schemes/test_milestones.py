@@ -184,21 +184,22 @@ class TestChangeMilestoneDatesForm:
         "construction_completed_planned",
         "construction_completed_actual",
     ]
-    field_names_milestones_observation_types = [
-        ("feasibility_design_completed_planned", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED),
-        ("feasibility_design_completed_actual", Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL),
-        ("preliminary_design_completed_planned", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED),
-        ("preliminary_design_completed_actual", Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL),
-        ("detailed_design_completed_planned", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED),
-        ("detailed_design_completed_actual", Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL),
-        ("construction_started_planned", Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
-        ("construction_started_actual", Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
-        ("construction_completed_planned", Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
-        ("construction_completed_actual", Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL),
+    milestones_observation_types = [
+        (Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.PLANNED),
+        (Milestone.FEASIBILITY_DESIGN_COMPLETED, ObservationType.ACTUAL),
+        (Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.PLANNED),
+        (Milestone.PRELIMINARY_DESIGN_COMPLETED, ObservationType.ACTUAL),
+        (Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.PLANNED),
+        (Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL),
+        (Milestone.CONSTRUCTION_STARTED, ObservationType.PLANNED),
+        (Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL),
+        (Milestone.CONSTRUCTION_COMPLETED, ObservationType.PLANNED),
+        (Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL),
     ]
 
-    @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
-    def test_from_domain(self, milestone: Milestone, observation_type: ObservationType, field_name: str) -> None:
+    @pytest.mark.parametrize("field_name, milestone_observation_type", zip(field_names, milestones_observation_types))
+    def test_from_domain(self, milestone_observation_type: tuple[Milestone, ObservationType], field_name: str) -> None:
+        (milestone, observation_type) = milestone_observation_type
         milestones = SchemeMilestones()
         milestones.update_milestones(
             MilestoneRevision(
@@ -241,8 +242,11 @@ class TestChangeMilestoneDatesForm:
             and form.construction_completed_actual.data is None
         )
 
-    @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
-    def test_update_domain(self, field_name: str, milestone: Milestone, observation_type: ObservationType) -> None:
+    @pytest.mark.parametrize("field_name, milestone_observation_type", zip(field_names, milestones_observation_types))
+    def test_update_domain(
+        self, field_name: str, milestone_observation_type: tuple[Milestone, ObservationType]
+    ) -> None:
+        (milestone, observation_type) = milestone_observation_type
         form = ChangeMilestoneDatesForm(
             formdata=MultiDict([(field_name, "3"), (field_name, "1"), (field_name, "2020")])
         )
@@ -272,10 +276,11 @@ class TestChangeMilestoneDatesForm:
             and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
         )
 
-    @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
+    @pytest.mark.parametrize("field_name, milestone_observation_type", zip(field_names, milestones_observation_types))
     def test_update_domain_preserves_dates_with_empty_date(
-        self, field_name: str, milestone: Milestone, observation_type: ObservationType
+        self, field_name: str, milestone_observation_type: tuple[Milestone, ObservationType]
     ) -> None:
+        (milestone, observation_type) = milestone_observation_type
         form = ChangeMilestoneDatesForm(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
         milestones = SchemeMilestones()
         milestones.update_milestones(
@@ -302,10 +307,11 @@ class TestChangeMilestoneDatesForm:
             and milestone_revision1.source == DataSource.ATF4_BID
         )
 
-    @pytest.mark.parametrize("field_name, milestone, observation_type", field_names_milestones_observation_types)
+    @pytest.mark.parametrize("field_name, milestone_observation_type", zip(field_names, milestones_observation_types))
     def test_update_domain_ignores_unchanged_dates(
-        self, field_name: str, milestone: Milestone, observation_type: ObservationType
+        self, field_name: str, milestone_observation_type: tuple[Milestone, ObservationType]
     ) -> None:
+        (milestone, observation_type) = milestone_observation_type
         form = ChangeMilestoneDatesForm(
             formdata=MultiDict([(field_name, "2"), (field_name, "1"), (field_name, "2020")])
         )

@@ -153,11 +153,26 @@ class MilestoneDatesForm(Form):
 
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
-    feasibility_design_completed = FormField(MilestoneDatesForm.create_class(Milestone.FEASIBILITY_DESIGN_COMPLETED))
-    preliminary_design_completed = FormField(MilestoneDatesForm.create_class(Milestone.PRELIMINARY_DESIGN_COMPLETED))
-    detailed_design_completed = FormField(MilestoneDatesForm.create_class(Milestone.DETAILED_DESIGN_COMPLETED))
-    construction_started = FormField(MilestoneDatesForm.create_class(Milestone.CONSTRUCTION_STARTED))
-    construction_completed = FormField(MilestoneDatesForm.create_class(Milestone.CONSTRUCTION_COMPLETED))
+    feasibility_design_completed = FormField(
+        MilestoneDatesForm.create_class(Milestone.FEASIBILITY_DESIGN_COMPLETED),
+        label=MilestoneContext.from_domain(Milestone.FEASIBILITY_DESIGN_COMPLETED).name,
+    )
+    preliminary_design_completed = FormField(
+        MilestoneDatesForm.create_class(Milestone.PRELIMINARY_DESIGN_COMPLETED),
+        label=MilestoneContext.from_domain(Milestone.PRELIMINARY_DESIGN_COMPLETED).name,
+    )
+    detailed_design_completed = FormField(
+        MilestoneDatesForm.create_class(Milestone.DETAILED_DESIGN_COMPLETED),
+        label=MilestoneContext.from_domain(Milestone.DETAILED_DESIGN_COMPLETED).name,
+    )
+    construction_started = FormField(
+        MilestoneDatesForm.create_class(Milestone.CONSTRUCTION_STARTED),
+        label=MilestoneContext.from_domain(Milestone.CONSTRUCTION_STARTED).name,
+    )
+    construction_completed = FormField(
+        MilestoneDatesForm.create_class(Milestone.CONSTRUCTION_COMPLETED),
+        label=MilestoneContext.from_domain(Milestone.CONSTRUCTION_COMPLETED).name,
+    )
 
     @classmethod
     def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:

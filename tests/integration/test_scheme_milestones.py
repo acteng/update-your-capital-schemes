@@ -258,6 +258,13 @@ class TestSchemeMilestones:
             and change_milestone_dates_page.form.construction_completed_actual.name == "construction_completed-actual"
         )
 
+    def test_milestones_form_shows_milestone_heading(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+
+        assert change_milestone_dates_page.form.construction_started_heading == "Construction started"
+
     def test_milestones_form_shows_date(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
         scheme.milestones.update_milestones(

@@ -352,6 +352,17 @@ class TestChangeMilestoneDatesForm:
         "construction_completed-actual",
     ]
 
+    def test_labels(self) -> None:
+        form = ChangeMilestoneDatesForm()
+
+        assert (
+            form.feasibility_design_completed.label.text == "Feasibility design completed"
+            and form.preliminary_design_completed.label.text == "Preliminary design completed"
+            and form.detailed_design_completed.label.text == "Detailed design completed"
+            and form.construction_started.label.text == "Construction started"
+            and form.construction_completed.label.text == "Construction completed"
+        )
+
     def test_from_domain(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(

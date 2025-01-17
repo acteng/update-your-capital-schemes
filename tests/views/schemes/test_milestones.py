@@ -209,6 +209,19 @@ class TestChangeMilestoneDatesForm:
         (Milestone.CONSTRUCTION_COMPLETED, ObservationType.ACTUAL),
     ]
 
+    def test_field_labels(self) -> None:
+        milestones = SchemeMilestones()
+
+        form = ChangeMilestoneDatesForm.from_domain(milestones)
+
+        assert (
+            form.feasibility_design_completed.label.text == "Feasibility design completed"
+            and form.preliminary_design_completed.label.text == "Preliminary design completed"
+            and form.detailed_design_completed.label.text == "Detailed design completed"
+            and form.construction_started.label.text == "Construction started"
+            and form.construction_completed.label.text == "Construction completed"
+        )
+
     @pytest.mark.parametrize("field_name, milestone_observation_type", zip(field_names, milestones_observation_types))
     def test_from_domain(self, milestone_observation_type: tuple[Milestone, ObservationType], field_name: str) -> None:
         (milestone, observation_type) = milestone_observation_type

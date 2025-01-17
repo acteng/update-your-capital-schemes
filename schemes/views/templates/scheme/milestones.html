@@ -45,11 +45,11 @@
             <form method="post" action="{{ url_for('schemes.milestones', scheme_id=id) }}" aria-label="Change milestone dates">
                 {{ form.csrf_token }}
 
-                {{ milestone("Feasibility design completed", form.feasibility_design_completed) }}
-                {{ milestone("Preliminary design completed", form.preliminary_design_completed) }}
-                {{ milestone("Detailed design completed", form.detailed_design_completed) }}
-                {{ milestone("Construction started", form.construction_started) }}
-                {{ milestone("Construction completed", form.construction_completed) }}
+                {{ milestone(form.feasibility_design_completed) }}
+                {{ milestone(form.preliminary_design_completed) }}
+                {{ milestone(form.detailed_design_completed) }}
+                {{ milestone(form.construction_started) }}
+                {{ milestone(form.construction_completed) }}
 
                 <div class="govuk-button-group">
                     {{ govukButton({
@@ -63,12 +63,12 @@
     </div>
 {% endblock %}
 
-{% macro milestone(name, field) -%}
-    <h2 class="govuk-heading-m">{{ name }}</h2>
+{% macro milestone(field) -%}
+    <h2 class="govuk-heading-m">{{ field.label.text }}</h2>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             {% set legendHtml %}
-                <span class="govuk-visually-hidden">{{ name }}</span> Planned date
+                <span class="govuk-visually-hidden">{{ field.label.text }}</span> Planned date
             {% endset %}
             {{ field.planned(params={
                 "fieldset": {
@@ -81,7 +81,7 @@
         </div>
         <div class="govuk-grid-column-one-half">
             {% set legendHtml %}
-                <span class="govuk-visually-hidden">{{ name }}</span> Actual date
+                <span class="govuk-visually-hidden">{{ field.label.text }}</span> Actual date
             {% endset %}
             {{ field.actual(params={
                 "fieldset": {

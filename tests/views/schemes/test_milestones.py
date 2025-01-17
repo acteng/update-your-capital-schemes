@@ -362,18 +362,21 @@ class TestChangeMilestoneDatesForm:
 
     @pytest.mark.parametrize(
         "field_name, expected_error",
-        [
-            ("feasibility_design_completed_planned", "Enter a feasibility design completed planned date"),
-            ("feasibility_design_completed_actual", "Enter a feasibility design completed actual date"),
-            ("preliminary_design_completed_planned", "Enter a preliminary design completed planned date"),
-            ("preliminary_design_completed_actual", "Enter a preliminary design completed actual date"),
-            ("detailed_design_completed_planned", "Enter a detailed design completed planned date"),
-            ("detailed_design_completed_actual", "Enter a detailed design completed actual date"),
-            ("construction_started_planned", "Enter a construction started planned date"),
-            ("construction_started_actual", "Enter a construction started actual date"),
-            ("construction_completed_planned", "Enter a construction completed planned date"),
-            ("construction_completed_actual", "Enter a construction completed actual date"),
-        ],
+        zip(
+            field_names,
+            [
+                "Enter a feasibility design completed planned date",
+                "Enter a feasibility design completed actual date",
+                "Enter a preliminary design completed planned date",
+                "Enter a preliminary design completed actual date",
+                "Enter a detailed design completed planned date",
+                "Enter a detailed design completed actual date",
+                "Enter a construction started planned date",
+                "Enter a construction started actual date",
+                "Enter a construction completed planned date",
+                "Enter a construction completed actual date",
+            ],
+        ),
     )
     @pytest.mark.parametrize(
         "date_",
@@ -399,18 +402,21 @@ class TestChangeMilestoneDatesForm:
 
     @pytest.mark.parametrize(
         "field_name, expected_error",
-        [
-            ("feasibility_design_completed_planned", "Feasibility design completed planned date must be a real date"),
-            ("feasibility_design_completed_actual", "Feasibility design completed actual date must be a real date"),
-            ("preliminary_design_completed_planned", "Preliminary design completed planned date must be a real date"),
-            ("preliminary_design_completed_actual", "Preliminary design completed actual date must be a real date"),
-            ("detailed_design_completed_planned", "Detailed design completed planned date must be a real date"),
-            ("detailed_design_completed_actual", "Detailed design completed actual date must be a real date"),
-            ("construction_started_planned", "Construction started planned date must be a real date"),
-            ("construction_started_actual", "Construction started actual date must be a real date"),
-            ("construction_completed_planned", "Construction completed planned date must be a real date"),
-            ("construction_completed_actual", "Construction completed actual date must be a real date"),
-        ],
+        zip(
+            field_names,
+            [
+                "Feasibility design completed planned date must be a real date",
+                "Feasibility design completed actual date must be a real date",
+                "Preliminary design completed planned date must be a real date",
+                "Preliminary design completed actual date must be a real date",
+                "Detailed design completed planned date must be a real date",
+                "Detailed design completed actual date must be a real date",
+                "Construction started planned date must be a real date",
+                "Construction started actual date must be a real date",
+                "Construction completed planned date must be a real date",
+                "Construction completed actual date must be a real date",
+            ],
+        ),
     )
     @pytest.mark.parametrize(
         "date_",

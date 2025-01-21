@@ -3,6 +3,7 @@ from datetime import date, datetime
 import pytest
 from flask_wtf.csrf import generate_csrf
 from werkzeug.datastructures import MultiDict
+from wtforms import FormField
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
@@ -352,9 +353,46 @@ class TestChangeMilestoneDatesForm:
         "construction_completed-actual",
     ]
 
-    def test_labels(self) -> None:
-        form = ChangeMilestoneDatesForm()
+    def test_create_class_sets_development_fields(self) -> None:
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.DEVELOPMENT)
 
+        form_class = ChangeMilestoneDatesForm.create_class(scheme)
+
+        form = form_class()
+        fields = (field for field in form if field.name != "csrf_token")
+        assert [field.name for field in fields] == [
+            "feasibility_design_completed",
+            "preliminary_design_completed",
+            "detailed_design_completed",
+        ]
+        assert all(
+            isinstance(field, FormField) and issubclass(field.form_class, MilestoneDatesForm) for field in fields
+        )
+
+    def test_create_class_sets_construction_fields(self) -> None:
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+
+        form_class = ChangeMilestoneDatesForm.create_class(scheme)
+
+        form = form_class()
+        fields = (field for field in form if field.name != "csrf_token")
+        assert [field.name for field in fields] == [
+            "feasibility_design_completed",
+            "preliminary_design_completed",
+            "detailed_design_completed",
+            "construction_started",
+            "construction_completed",
+        ]
+        assert all(
+            isinstance(field, FormField) and issubclass(field.form_class, MilestoneDatesForm) for field in fields
+        )
+
+    def test_create_class_sets_labels(self) -> None:
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+
+        form_class = ChangeMilestoneDatesForm.create_class(scheme)
+
+        form = form_class()
         assert (
             form.feasibility_design_completed.label.text == "Feasibility design completed"
             and form.preliminary_design_completed.label.text == "Preliminary design completed"
@@ -363,9 +401,46 @@ class TestChangeMilestoneDatesForm:
             and form.construction_completed.label.text == "Construction completed"
         )
 
-    def test_from_domain(self) -> None:
-        milestones = SchemeMilestones()
-        milestones.update_milestones(
+    def test_from_domain_when_development_scheme(self) -> None:
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.DEVELOPMENT)
+        scheme.milestones.update_milestones(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.PRELIMINARY_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 2),
+                source=DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                id_=3,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 3),
+                source=DataSource.ATF4_BID,
+            ),
+        )
+
+        form = ChangeMilestoneDatesForm.from_domain(scheme)
+
+        assert (
+            form.feasibility_design_completed.actual.data == date(2020, 1, 1)
+            and form.preliminary_design_completed.actual.data == date(2020, 1, 2)
+            and form.detailed_design_completed.actual.data == date(2020, 1, 3)
+        )
+
+    def test_from_domain_when_construction_scheme(self) -> None:
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
@@ -408,7 +483,7 @@ class TestChangeMilestoneDatesForm:
             ),
         )
 
-        form = ChangeMilestoneDatesForm.from_domain(milestones)
+        form = ChangeMilestoneDatesForm.from_domain(scheme)
 
         assert (
             form.feasibility_design_completed.actual.data == date(2020, 1, 1)
@@ -418,23 +493,45 @@ class TestChangeMilestoneDatesForm:
             and form.construction_completed.actual.data == date(2020, 1, 5)
         )
 
-    def test_update_domain(self) -> None:
-        form = ChangeMilestoneDatesForm(
+    def test_update_domain_when_development_scheme(self) -> None:
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.DEVELOPMENT)
+        form_class = ChangeMilestoneDatesForm.create_class(scheme)
+        form = form_class(
+            feasibility_design_completed={"actual": datetime(2020, 1, 1)},
+            preliminary_design_completed={"actual": datetime(2020, 1, 2)},
+            detailed_design_completed={"actual": datetime(2020, 1, 3)},
+        )
+
+        form.update_domain(scheme, now=datetime(2020, 2, 1, 13))
+
+        assert all(
+            milestone_revision.effective.date_from == datetime(2020, 2, 1, 13)
+            for milestone_revision in scheme.milestones.milestone_revisions
+        )
+        assert [milestone_revision.status_date for milestone_revision in scheme.milestones.milestone_revisions] == [
+            datetime(2020, 1, 1),
+            datetime(2020, 1, 2),
+            datetime(2020, 1, 3),
+        ]
+
+    def test_update_domain_when_construction_scheme(self) -> None:
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        form_class = ChangeMilestoneDatesForm.create_class(scheme)
+        form = form_class(
             feasibility_design_completed={"actual": datetime(2020, 1, 1)},
             preliminary_design_completed={"actual": datetime(2020, 1, 2)},
             detailed_design_completed={"actual": datetime(2020, 1, 3)},
             construction_started={"actual": datetime(2020, 1, 4)},
             construction_completed={"actual": datetime(2020, 1, 5)},
         )
-        milestones = SchemeMilestones()
 
-        form.update_domain(milestones, now=datetime(2020, 2, 1, 13))
+        form.update_domain(scheme, now=datetime(2020, 2, 1, 13))
 
         assert all(
             milestone_revision.effective.date_from == datetime(2020, 2, 1, 13)
-            for milestone_revision in milestones.milestone_revisions
+            for milestone_revision in scheme.milestones.milestone_revisions
         )
-        assert [milestone_revision.status_date for milestone_revision in milestones.milestone_revisions] == [
+        assert [milestone_revision.status_date for milestone_revision in scheme.milestones.milestone_revisions] == [
             datetime(2020, 1, 1),
             datetime(2020, 1, 2),
             datetime(2020, 1, 3),
@@ -442,9 +539,24 @@ class TestChangeMilestoneDatesForm:
             datetime(2020, 1, 5),
         ]
 
+    def test_cannot_update_domain_with_construction_milestones_when_development_scheme(self) -> None:
+        construction_scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        form_class = ChangeMilestoneDatesForm.create_class(construction_scheme)
+        form = form_class(
+            construction_started={"actual": datetime(2020, 1, 4)},
+            construction_completed={"actual": datetime(2020, 1, 5)},
+        )
+        development_scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.DEVELOPMENT)
+
+        form.update_domain(development_scheme, now=datetime(2020, 2, 1, 13))
+
+        assert not development_scheme.milestones.milestone_revisions
+
     @pytest.mark.parametrize("field_name", field_names)
     def test_no_errors_when_valid(self, field_name: str) -> None:
-        form = ChangeMilestoneDatesForm(
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        form_class = ChangeMilestoneDatesForm.create_class(scheme)
+        form = form_class(
             formdata=MultiDict(
                 [("csrf_token", generate_csrf()), (field_name, "2"), (field_name, "1"), (field_name, "2020")]
             )
@@ -456,7 +568,9 @@ class TestChangeMilestoneDatesForm:
 
     @pytest.mark.parametrize("field_name", field_names)
     def test_date_without_initial_value_is_optional(self, field_name: str) -> None:
-        form = ChangeMilestoneDatesForm(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        form_class = ChangeMilestoneDatesForm.create_class(scheme)
+        form = form_class(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
 
         form.validate()
 
@@ -496,7 +610,9 @@ class TestChangeMilestoneDatesForm:
         self, field_name: str, expected_error: str, date_: tuple[str, str, str]
     ) -> None:
         (field_name1, field_name2) = field_name.split("-")
-        form = ChangeMilestoneDatesForm(
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        form_class = ChangeMilestoneDatesForm.create_class(scheme)
+        form = form_class(
             data={field_name1: {field_name2: date(2020, 1, 2)}},
             formdata=MultiDict([(field_name, date_[0]), (field_name, date_[1]), (field_name, date_[2])]),
         )
@@ -537,9 +653,9 @@ class TestChangeMilestoneDatesForm:
         ],
     )
     def test_date_is_a_date(self, field_name: str, expected_error: str, date_: tuple[str, str, str]) -> None:
-        form = ChangeMilestoneDatesForm(
-            formdata=MultiDict([(field_name, date_[0]), (field_name, date_[1]), (field_name, date_[2])])
-        )
+        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        form_class = ChangeMilestoneDatesForm.create_class(scheme)
+        form = form_class(formdata=MultiDict([(field_name, date_[0]), (field_name, date_[1]), (field_name, date_[2])]))
 
         form.validate()
 

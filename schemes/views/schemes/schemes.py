@@ -356,12 +356,12 @@ def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, s
     if user.authority_id != scheme.overview.authority_id:
         abort(403)
 
-    form = ChangeMilestoneDatesForm.from_domain(scheme.milestones)
+    form = ChangeMilestoneDatesForm.from_domain(scheme)
 
     if not form.validate():
         return milestones_form(scheme_id)
 
-    form.update_domain(scheme.milestones, clock.now)
+    form.update_domain(scheme, clock.now)
     schemes.update(scheme)
 
     return redirect(url_for("schemes.get", scheme_id=scheme_id))

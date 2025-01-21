@@ -445,13 +445,15 @@ class ChangeMilestoneDatesFormComponent:
         self.preliminary_design_completed_actual = DateComponent(
             one(form.select("fieldset:has(legend:-soup-contains('Preliminary design completed Actual date'))"))
         )
+        self.detailed_design_completed_heading = one(
+            form.select("h2:-soup-contains('Detailed design completed')")
+        ).string
         self.detailed_design_completed_planned = DateComponent(
             one(form.select("fieldset:has(legend:-soup-contains('Detailed design completed Planned date'))"))
         )
         self.detailed_design_completed_actual = DateComponent(
             one(form.select("fieldset:has(legend:-soup-contains('Detailed design completed Actual date'))"))
         )
-        self.construction_started_heading = one(form.select("h2:-soup-contains('Construction started')")).string
         self.construction_started_planned = DateComponent(
             one(form.select("fieldset:has(legend:-soup-contains('Construction started Planned date'))"))
         )

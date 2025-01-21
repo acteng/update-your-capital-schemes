@@ -235,7 +235,11 @@ class TestSchemeMilestones:
         assert change_milestone_dates_page.heading and change_milestone_dates_page.heading.caption == "Wirral Package"
 
     def test_milestones_form_shows_fields(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(
+            build_scheme(
+                id_=1, reference="ATE00001", name="Wirral Package", authority_id=1, type_=SchemeType.CONSTRUCTION
+            )
+        )
 
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
@@ -263,7 +267,7 @@ class TestSchemeMilestones:
 
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
-        assert change_milestone_dates_page.form.construction_started_heading == "Construction started"
+        assert change_milestone_dates_page.form.detailed_design_completed_heading == "Detailed design completed"
 
     def test_milestones_form_shows_date(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
@@ -271,7 +275,7 @@ class TestSchemeMilestones:
             MilestoneRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1, 12), None),
-                milestone=Milestone.CONSTRUCTION_STARTED,
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
                 source=DataSource.ATF4_BID,
@@ -281,7 +285,7 @@ class TestSchemeMilestones:
 
         change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
 
-        assert change_milestone_dates_page.form.construction_started_actual.value == "2 1 2020"
+        assert change_milestone_dates_page.form.detailed_design_completed_actual.value == "2 1 2020"
 
     def test_milestones_form_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
@@ -332,16 +336,17 @@ class TestSchemeMilestones:
 
         assert not_found_page.is_visible and not_found_page.is_not_found
 
+    @pytest.mark.parametrize("scheme_type", [SchemeType.DEVELOPMENT, SchemeType.CONSTRUCTION])
     def test_milestones_updates_milestones(
-        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str, scheme_type: SchemeType
     ) -> None:
         clock.now = datetime(2020, 2, 1, 13)
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1, type_=scheme_type)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1, 12), None),
-                milestone=Milestone.CONSTRUCTION_STARTED,
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
                 source=DataSource.ATF4_BID,
@@ -350,7 +355,8 @@ class TestSchemeMilestones:
         schemes.add(scheme)
 
         client.post(
-            "/schemes/1/milestones", data={"csrf_token": csrf_token, "construction_started-actual": ["3", "1", "2020"]}
+            "/schemes/1/milestones",
+            data={"csrf_token": csrf_token, "detailed_design_completed-actual": ["3", "1", "2020"]},
         )
 
         actual_scheme = schemes.get(1)
@@ -361,7 +367,7 @@ class TestSchemeMilestones:
         assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 2, 1, 13)
         assert (
             milestone_revision2.effective == DateRange(datetime(2020, 2, 1, 13), None)
-            and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
+            and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision2.observation_type == ObservationType.ACTUAL
             and milestone_revision2.status_date == date(2020, 1, 3)
             and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
@@ -382,7 +388,7 @@ class TestSchemeMilestones:
             MilestoneRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1, 12), None),
-                milestone=Milestone.CONSTRUCTION_STARTED,
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
                 source=DataSource.ATF4_BID,
@@ -394,7 +400,7 @@ class TestSchemeMilestones:
             client.post(
                 "/schemes/1/milestones",
                 data=self.empty_change_milestone_dates_form()
-                | {"csrf_token": csrf_token, "construction_started-actual": ["x", "x", "x"]},
+                | {"csrf_token": csrf_token, "detailed_design_completed-actual": ["x", "x", "x"]},
             )
         )
 
@@ -403,13 +409,13 @@ class TestSchemeMilestones:
             == "Error: Change milestone dates - Update your capital schemes - Active Travel England - GOV.UK"
         )
         assert change_milestone_dates_page.errors and list(change_milestone_dates_page.errors) == [
-            "Construction started actual date must be a real date"
+            "Detailed design completed actual date must be a real date"
         ]
         assert (
-            change_milestone_dates_page.form.construction_started_actual.is_errored
-            and change_milestone_dates_page.form.construction_started_actual.error
-            == "Error: Construction started actual date must be a real date"
-            and change_milestone_dates_page.form.construction_started_actual.value == "x x x"
+            change_milestone_dates_page.form.detailed_design_completed_actual.is_errored
+            and change_milestone_dates_page.form.detailed_design_completed_actual.error
+            == "Error: Detailed design completed actual date must be a real date"
+            and change_milestone_dates_page.form.detailed_design_completed_actual.value == "x x x"
         )
         actual_scheme = schemes.get(1)
         assert actual_scheme
@@ -418,7 +424,7 @@ class TestSchemeMilestones:
         assert (
             milestone_revision1.id == 1
             and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
-            and milestone_revision1.milestone == Milestone.CONSTRUCTION_STARTED
+            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.ACTUAL
             and milestone_revision1.status_date == date(2020, 1, 2)
             and milestone_revision1.source == DataSource.ATF4_BID

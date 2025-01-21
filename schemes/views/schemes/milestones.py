@@ -90,9 +90,7 @@ class ChangeMilestoneDatesContext:
         name = scheme.overview.name
         assert name is not None
 
-        return ChangeMilestoneDatesContext(
-            id=scheme.id, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme.milestones)
-        )
+        return ChangeMilestoneDatesContext(id=scheme.id, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme))
 
 
 class MilestoneDateField(CustomMessageDateField):
@@ -153,49 +151,50 @@ class MilestoneDatesForm(Form):
 
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
-    feasibility_design_completed = FormField(
-        MilestoneDatesForm.create_class(Milestone.FEASIBILITY_DESIGN_COMPLETED),
-        label=MilestoneContext.from_domain(Milestone.FEASIBILITY_DESIGN_COMPLETED).name,
-    )
-    preliminary_design_completed = FormField(
-        MilestoneDatesForm.create_class(Milestone.PRELIMINARY_DESIGN_COMPLETED),
-        label=MilestoneContext.from_domain(Milestone.PRELIMINARY_DESIGN_COMPLETED).name,
-    )
-    detailed_design_completed = FormField(
-        MilestoneDatesForm.create_class(Milestone.DETAILED_DESIGN_COMPLETED),
-        label=MilestoneContext.from_domain(Milestone.DETAILED_DESIGN_COMPLETED).name,
-    )
-    construction_started = FormField(
-        MilestoneDatesForm.create_class(Milestone.CONSTRUCTION_STARTED),
-        label=MilestoneContext.from_domain(Milestone.CONSTRUCTION_STARTED).name,
-    )
-    construction_completed = FormField(
-        MilestoneDatesForm.create_class(Milestone.CONSTRUCTION_COMPLETED),
-        label=MilestoneContext.from_domain(Milestone.CONSTRUCTION_COMPLETED).name,
-    )
+    feasibility_design_completed: FormField[MilestoneDatesForm]
+    preliminary_design_completed: FormField[MilestoneDatesForm]
+    detailed_design_completed: FormField[MilestoneDatesForm]
+    construction_started: FormField[MilestoneDatesForm]
+    construction_completed: FormField[MilestoneDatesForm]
+
+    @staticmethod
+    def create_class(scheme: Scheme) -> type[ChangeMilestoneDatesForm]:
+        class DynamicChangeMilestoneDatesForm(ChangeMilestoneDatesForm):
+            pass
+
+        for milestone in sorted(
+            scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.stage_order
+        ):
+            field = FormField(
+                form_class=MilestoneDatesForm.create_class(milestone),
+                label=MilestoneContext.from_domain(milestone).name,
+                name=ChangeMilestoneDatesForm._to_field_name(milestone),
+            )
+            setattr(DynamicChangeMilestoneDatesForm, field.name, field)
+
+        return DynamicChangeMilestoneDatesForm
 
     @classmethod
-    def from_domain(cls, milestones: SchemeMilestones) -> ChangeMilestoneDatesForm:
-        return cls(
-            feasibility_design_completed=MilestoneDatesForm.from_domain(
-                milestones, Milestone.FEASIBILITY_DESIGN_COMPLETED
-            ).data,
-            preliminary_design_completed=MilestoneDatesForm.from_domain(
-                milestones, Milestone.PRELIMINARY_DESIGN_COMPLETED
-            ).data,
-            detailed_design_completed=MilestoneDatesForm.from_domain(
-                milestones, Milestone.DETAILED_DESIGN_COMPLETED
-            ).data,
-            construction_started=MilestoneDatesForm.from_domain(milestones, Milestone.CONSTRUCTION_STARTED).data,
-            construction_completed=MilestoneDatesForm.from_domain(milestones, Milestone.CONSTRUCTION_COMPLETED).data,
+    def from_domain(cls, scheme: Scheme) -> ChangeMilestoneDatesForm:
+        form_class = cls.create_class(scheme)
+
+        return form_class(
+            data={
+                cls._to_field_name(milestone): MilestoneDatesForm.from_domain(scheme.milestones, milestone).data
+                for milestone in scheme.milestones_eligible_for_authority_update
+            }
         )
 
-    def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
-        self.feasibility_design_completed.form.update_domain(milestones, now, Milestone.FEASIBILITY_DESIGN_COMPLETED)
-        self.preliminary_design_completed.form.update_domain(milestones, now, Milestone.PRELIMINARY_DESIGN_COMPLETED)
-        self.detailed_design_completed.form.update_domain(milestones, now, Milestone.DETAILED_DESIGN_COMPLETED)
-        self.construction_started.form.update_domain(milestones, now, Milestone.CONSTRUCTION_STARTED)
-        self.construction_completed.form.update_domain(milestones, now, Milestone.CONSTRUCTION_COMPLETED)
+    def update_domain(self, scheme: Scheme, now: datetime) -> None:
+        for milestone in sorted(
+            scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.stage_order
+        ):
+            field_name = self._to_field_name(milestone)
+            self[field_name].form.update_domain(scheme.milestones, now, milestone)
+
+    @staticmethod
+    def _to_field_name(milestone: Milestone) -> str:
+        return milestone.name.lower()
 
 
 @dataclass(frozen=True)

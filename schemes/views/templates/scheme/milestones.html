@@ -45,11 +45,37 @@
             <form method="post" action="{{ url_for('schemes.milestones', scheme_id=id) }}" aria-label="Change milestone dates">
                 {{ form.csrf_token }}
 
-                {{ milestone(form.feasibility_design_completed) }}
-                {{ milestone(form.preliminary_design_completed) }}
-                {{ milestone(form.detailed_design_completed) }}
-                {{ milestone(form.construction_started) }}
-                {{ milestone(form.construction_completed) }}
+                {% for field in form if not field == form.csrf_token %}
+                    <h2 class="govuk-heading-m">{{ field.label.text }}</h2>
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-one-half">
+                            {% set legendHtml %}
+                                <span class="govuk-visually-hidden">{{ field.label.text }}</span> Planned date
+                            {% endset %}
+                            {{ field.planned(params={
+                                "fieldset": {
+                                    "describedBy": "date-hint",
+                                    "legend": {
+                                        "html": legendHtml
+                                    }
+                                }
+                            }) }}
+                        </div>
+                        <div class="govuk-grid-column-one-half">
+                            {% set legendHtml %}
+                                <span class="govuk-visually-hidden">{{ field.label.text }}</span> Actual date
+                            {% endset %}
+                            {{ field.actual(params={
+                                "fieldset": {
+                                    "describedBy": "date-hint",
+                                    "legend": {
+                                        "html": legendHtml
+                                    }
+                                }
+                            }) }}
+                        </div>
+                    </div>
+                {% endfor %}
 
                 <div class="govuk-button-group">
                     {{ govukButton({
@@ -62,35 +88,3 @@
         </div>
     </div>
 {% endblock %}
-
-{% macro milestone(field) -%}
-    <h2 class="govuk-heading-m">{{ field.label.text }}</h2>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-            {% set legendHtml %}
-                <span class="govuk-visually-hidden">{{ field.label.text }}</span> Planned date
-            {% endset %}
-            {{ field.planned(params={
-                "fieldset": {
-                    "describedBy": "date-hint",
-                    "legend": {
-                        "html": legendHtml
-                    }
-                }
-            }) }}
-        </div>
-        <div class="govuk-grid-column-one-half">
-            {% set legendHtml %}
-                <span class="govuk-visually-hidden">{{ field.label.text }}</span> Actual date
-            {% endset %}
-            {{ field.actual(params={
-                "fieldset": {
-                    "describedBy": "date-hint",
-                    "legend": {
-                        "html": legendHtml
-                    }
-                }
-            }) }}
-        </div>
-    </div>
-{%- endmacro %}

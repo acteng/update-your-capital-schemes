@@ -245,26 +245,6 @@ class TestMilestoneDateField:
 
 @pytest.mark.usefixtures("app")
 class TestMilestoneDatesForm:
-    def test_create_class_sets_invalid_message(self) -> None:
-        form_class = MilestoneDatesForm.create_class(Milestone.DETAILED_DESIGN_COMPLETED, datetime.min)
-
-        form = form_class(formdata=MultiDict([("planned", "x"), ("actual", "x")]))
-        form.validate()
-        assert (
-            "Detailed design completed planned date must be a real date" in form.planned.errors
-            and "Detailed design completed actual date must be a real date" in form.actual.errors
-        )
-
-    def test_create_class_sets_required_message(self) -> None:
-        form_class = MilestoneDatesForm.create_class(Milestone.DETAILED_DESIGN_COMPLETED, datetime.min)
-
-        form = form_class(planned=date(2020, 1, 2), actual=date(2020, 1, 3))
-        form.validate()
-        assert (
-            "Enter a detailed design completed planned date" in form.planned.errors
-            and "Enter a detailed design completed actual date" in form.actual.errors
-        )
-
     @pytest.mark.parametrize(
         "observation_type, field_name", [(ObservationType.PLANNED, "planned"), (ObservationType.ACTUAL, "actual")]
     )

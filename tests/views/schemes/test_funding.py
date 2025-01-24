@@ -180,7 +180,7 @@ class TestChangeSpendToDateForm:
 
         assert funding.financial_revisions[0].amount == 0
 
-    def test_no_errors_when_valid(self) -> None:
+    def test_validate_when_valid(self) -> None:
         form = ChangeSpendToDateForm(
             max_amount=110_000, formdata=MultiDict([("csrf_token", generate_csrf()), ("amount", "50000")])
         )
@@ -189,42 +189,42 @@ class TestChangeSpendToDateForm:
 
         assert not form.errors
 
-    def test_amount_is_required(self) -> None:
+    def test_validate_amount_is_required(self) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "")]))
 
         form.validate()
 
         assert "Enter spend to date" in form.errors["amount"]
 
-    def test_amount_is_an_integer(self) -> None:
+    def test_validate_amount_is_an_integer(self) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "x")]))
 
         form.validate()
 
         assert "Spend to date must be a number" in form.errors["amount"]
 
-    def test_amount_can_be_zero(self) -> None:
+    def test_validate_amount_can_be_zero(self) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "0")]))
 
         form.validate()
 
         assert "amount" not in form.errors
 
-    def test_amount_cannot_be_negative(self) -> None:
+    def test_validate_amount_cannot_be_negative(self) -> None:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "-100")]))
 
         form.validate()
 
         assert "Spend to date must be £0 or more" in form.errors["amount"]
 
-    def test_amount_can_be_adjusted_funding_allocation(self) -> None:
+    def test_validate_amount_can_be_adjusted_funding_allocation(self) -> None:
         form = ChangeSpendToDateForm(max_amount=110_000, formdata=MultiDict([("amount", "110000")]))
 
         form.validate()
 
         assert "amount" not in form.errors
 
-    def test_amount_cannot_exceed_adjusted_funding_allocation(self) -> None:
+    def test_validate_amount_cannot_exceed_adjusted_funding_allocation(self) -> None:
         form = ChangeSpendToDateForm(max_amount=110_000, formdata=MultiDict([("amount", "120000")]))
 
         form.validate()

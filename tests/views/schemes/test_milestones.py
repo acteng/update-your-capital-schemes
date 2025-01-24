@@ -206,14 +206,14 @@ class TestMilestoneDateField:
             ("2", "", ""),
         ],
     )
-    def test_date_is_a_date(self, date_: tuple[str, str, str]) -> None:
+    def test_validate_is_valid_date(self, date_: tuple[str, str, str]) -> None:
         form = self.FakeForm(formdata=MultiDict([("field", date_[0]), ("field", date_[1]), ("field", date_[2])]))
 
         form.validate()
 
         assert "Not a valid date value." in form.errors["field"]
 
-    def test_date_without_initial_value_is_optional(self) -> None:
+    def test_validate_without_initial_value_is_optional(self) -> None:
         form = self.FakeForm(formdata=MultiDict([("field", ""), ("field", ""), ("field", "")]))
 
         form.validate()
@@ -232,7 +232,7 @@ class TestMilestoneDateField:
             ("", "", ""),
         ],
     )
-    def test_date_with_initial_value_is_required(self, date_: tuple[str, str, str]) -> None:
+    def test_validate_with_initial_value_is_required(self, date_: tuple[str, str, str]) -> None:
         form = self.FakeForm(
             data={"field": date(2020, 1, 2)},
             formdata=MultiDict([("field", date_[0]), ("field", date_[1]), ("field", date_[2])]),
@@ -415,7 +415,7 @@ class TestMilestoneDatesForm:
             (Milestone.CONSTRUCTION_COMPLETED, "actual", "Construction completed actual date must be a real date"),
         ],
     )
-    def test_date_is_a_date(self, milestone: Milestone, field_name: str, expected_error: str) -> None:
+    def test_validate_is_valid_date(self, milestone: Milestone, field_name: str, expected_error: str) -> None:
         form_class = MilestoneDatesForm.create_class(milestone, datetime.min)
         form = form_class(formdata=MultiDict([(field_name, "x"), (field_name, "x"), (field_name, "x")]))
 
@@ -438,7 +438,7 @@ class TestMilestoneDatesForm:
             (Milestone.CONSTRUCTION_COMPLETED, "actual", "Enter a construction completed actual date"),
         ],
     )
-    def test_date_with_initial_value_is_required(
+    def test_validate_with_initial_value_is_required(
         self, milestone: Milestone, field_name: str, expected_error: str
     ) -> None:
         form_class = MilestoneDatesForm.create_class(milestone, datetime.min)
@@ -467,9 +467,7 @@ class TestMilestoneDatesForm:
             (Milestone.CONSTRUCTION_COMPLETED, "Construction completed actual date must not be in the future"),
         ],
     )
-    def test_cannot_set_actual_date_to_be_in_the_future(
-        self, milestone: Milestone, expected_error_message: str
-    ) -> None:
+    def test_validate_actual_date_is_not_in_the_future(self, milestone: Milestone, expected_error_message: str) -> None:
         form_class = MilestoneDatesForm.create_class(milestone, datetime(2020, 2, 1))
         form = form_class(formdata=MultiDict([("actual", "1"), ("actual", "3"), ("actual", "2020")]))
 
@@ -693,7 +691,7 @@ class TestChangeMilestoneDatesForm:
         assert not development_scheme.milestones.milestone_revisions
 
     @pytest.mark.parametrize("field_name", field_names)
-    def test_no_errors_when_valid(self, field_name: str) -> None:
+    def test_validate_when_valid(self, field_name: str) -> None:
         scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
         form_class = ChangeMilestoneDatesForm.create_class(scheme, datetime(2020, 2, 1))
         form = form_class(

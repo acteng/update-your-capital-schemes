@@ -19,6 +19,7 @@ from schemes.domain.schemes import (
     Scheme,
     SchemeMilestones,
 )
+from schemes.views import forms
 from schemes.views.forms import (
     CustomMessageDateField,
     MultivalueInputRequired,
@@ -86,11 +87,13 @@ class ChangeMilestoneDatesContext:
     form: ChangeMilestoneDatesForm
 
     @classmethod
-    def from_domain(cls, scheme: Scheme) -> ChangeMilestoneDatesContext:
+    def from_domain(cls, scheme: Scheme, now: datetime) -> ChangeMilestoneDatesContext:
         name = scheme.overview.name
         assert name is not None
 
-        return ChangeMilestoneDatesContext(id=scheme.id, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme))
+        return ChangeMilestoneDatesContext(
+            id=scheme.id, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme, now)
+        )
 
 
 class MilestoneDateField(CustomMessageDateField):
@@ -116,7 +119,7 @@ class MilestoneDatesForm(Form):
     actual: MilestoneDateField
 
     @staticmethod
-    def create_class(milestone: Milestone) -> type[MilestoneDatesForm]:
+    def create_class(milestone: Milestone, now: datetime) -> type[MilestoneDatesForm]:
         milestone_name = MilestoneContext.from_domain(milestone).name or ""
 
         class DynamicMilestoneDatesForm(MilestoneDatesForm):
@@ -125,6 +128,9 @@ class MilestoneDatesForm(Form):
                 required_message=f"Enter a {milestone_name.lower()} planned date",
             )
             actual = MilestoneDateField(
+                validators=[
+                    forms.DateRange(max=now.date(), message=f"{milestone_name} actual date must not be in the future")
+                ],
                 invalid_message=f"{milestone_name} actual date must be a real date",
                 required_message=f"Enter a {milestone_name.lower()} actual date",
             )
@@ -132,8 +138,8 @@ class MilestoneDatesForm(Form):
         return DynamicMilestoneDatesForm
 
     @classmethod
-    def from_domain(cls, milestones: SchemeMilestones, milestone: Milestone) -> MilestoneDatesForm:
-        form_class = MilestoneDatesForm.create_class(milestone)
+    def from_domain(cls, milestones: SchemeMilestones, milestone: Milestone, now: datetime) -> MilestoneDatesForm:
+        form_class = MilestoneDatesForm.create_class(milestone, now)
 
         return form_class(
             planned=milestones.get_current_status_date(milestone, ObservationType.PLANNED),
@@ -158,7 +164,7 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
     construction_completed: FormField[MilestoneDatesForm]
 
     @staticmethod
-    def create_class(scheme: Scheme) -> type[ChangeMilestoneDatesForm]:
+    def create_class(scheme: Scheme, now: datetime) -> type[ChangeMilestoneDatesForm]:
         class DynamicChangeMilestoneDatesForm(ChangeMilestoneDatesForm):
             pass
 
@@ -166,7 +172,7 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
             scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.stage_order
         ):
             field = FormField(
-                form_class=MilestoneDatesForm.create_class(milestone),
+                form_class=MilestoneDatesForm.create_class(milestone, now),
                 label=MilestoneContext.from_domain(milestone).name,
                 name=ChangeMilestoneDatesForm._to_field_name(milestone),
             )
@@ -175,12 +181,12 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
         return DynamicChangeMilestoneDatesForm
 
     @classmethod
-    def from_domain(cls, scheme: Scheme) -> ChangeMilestoneDatesForm:
-        form_class = cls.create_class(scheme)
+    def from_domain(cls, scheme: Scheme, now: datetime) -> ChangeMilestoneDatesForm:
+        form_class = cls.create_class(scheme, now)
 
         return form_class(
             data={
-                cls._to_field_name(milestone): MilestoneDatesForm.from_domain(scheme.milestones, milestone).data
+                cls._to_field_name(milestone): MilestoneDatesForm.from_domain(scheme.milestones, milestone, now).data
                 for milestone in scheme.milestones_eligible_for_authority_update
             }
         )

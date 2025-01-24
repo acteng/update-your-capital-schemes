@@ -6,11 +6,12 @@ import pytest
 from werkzeug.datastructures import MultiDict
 from wtforms import BooleanField
 from wtforms.form import Form
-from wtforms.validators import StopValidation
+from wtforms.validators import StopValidation, ValidationError
 
 from schemes.views.forms import (
     CustomMessageDateField,
     CustomMessageIntegerField,
+    DateRange,
     FieldsetGovCheckboxInput,
     MultivalueInputRequired,
     MultivalueOptional,
@@ -248,6 +249,35 @@ class TestMultivalueInputRequired:
 
         with pytest.raises(StopValidation, match="Enter a field"):
             multivalue_input_required(form, form.field)
+
+
+class TestDateRange:
+    def test_continue_when_no_value(self, form: FakeForm) -> None:
+        date_range = DateRange(max=date(2000, 1, 31), message="Date must not be after {max}")
+        form.date_field.data = None
+
+        date_range(form, form.date_field)
+
+        assert not form.field.errors
+
+    @pytest.mark.parametrize(
+        "data", [pytest.param(date(2000, 1, 30), id="before max"), pytest.param(date(2000, 1, 31), id="at max")]
+    )
+    def test_continue_when_value_within_range(self, form: FakeForm, data: date) -> None:
+        date_range = DateRange(max=date(2000, 1, 31), message="Date must not be after {max}")
+        form.date_field.data = data
+
+        date_range(form, form.date_field)
+
+        assert not form.field.errors
+
+    @pytest.mark.parametrize("data", [pytest.param(date(2000, 2, 1), id="after max")])
+    def test_invalid_when_value_outside_range(self, form: FakeForm, data: date) -> None:
+        date_range = DateRange(max=date(2000, 1, 31), message="Date must not be after {max}")
+        form.date_field.data = data
+
+        with pytest.raises(ValidationError, match="Date must not be after 2000-01-31"):
+            date_range(form, form.date_field)
 
 
 class FakeForm(Form):

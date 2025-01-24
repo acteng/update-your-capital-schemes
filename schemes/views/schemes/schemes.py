@@ -323,8 +323,8 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
 
 @bp.get("<int:scheme_id>/milestones")
 @bearer_auth
-@inject.autoparams("users", "schemes")
-def milestones_form(scheme_id: int, users: UserRepository, schemes: SchemeRepository) -> str:
+@inject.autoparams("clock", "users", "schemes")
+def milestones_form(scheme_id: int, clock: Clock, users: UserRepository, schemes: SchemeRepository) -> str:
     user_info = session["user"]
     user = users.get_by_email(user_info["email"])
     assert user
@@ -336,7 +336,7 @@ def milestones_form(scheme_id: int, users: UserRepository, schemes: SchemeReposi
     if user.authority_id != scheme.overview.authority_id:
         abort(403)
 
-    context = ChangeMilestoneDatesContext.from_domain(scheme)
+    context = ChangeMilestoneDatesContext.from_domain(scheme, clock.now)
     context.form.validate_on_submit()
     return render_template("scheme/milestones.html", **as_shallow_dict(context))
 
@@ -356,12 +356,13 @@ def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, s
     if user.authority_id != scheme.overview.authority_id:
         abort(403)
 
-    form = ChangeMilestoneDatesForm.from_domain(scheme)
+    now = clock.now
+    form = ChangeMilestoneDatesForm.from_domain(scheme, now)
 
     if not form.validate():
         return milestones_form(scheme_id)
 
-    form.update_domain(scheme, clock.now)
+    form.update_domain(scheme, now)
     schemes.update(scheme)
 
     return redirect(url_for("schemes.get", scheme_id=scheme_id))

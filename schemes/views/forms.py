@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Callable
 
 from govuk_frontend_wtf.wtforms_widgets import GovCheckboxInput, GovDateInput
 from wtforms import DateField, Field
 from wtforms.fields.numeric import IntegerField
 from wtforms.form import BaseForm
-from wtforms.validators import InputRequired, Optional, StopValidation
+from wtforms.validators import InputRequired, Optional, StopValidation, ValidationError
 
 
 class CustomMessageIntegerField(IntegerField):
@@ -154,3 +154,15 @@ class MultivalueInputRequired(InputRequired):
 
         field.errors = []
         raise StopValidation(message)
+
+
+class DateRange:
+    def __init__(self, max: date, message: str):
+        self._max = max
+        self._message = message
+
+    def __call__(self, form: BaseForm, field: Field) -> None:
+        data = field.data
+
+        if data is not None and data > self._max:
+            raise ValidationError(self._message.format(max=self._max))

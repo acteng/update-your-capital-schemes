@@ -430,6 +430,24 @@ class TestSchemeMilestones:
             and milestone_revision1.source == DataSource.ATF4_BID
         )
 
+    def test_cannot_milestones_when_future_actual_date(
+        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+    ) -> None:
+        clock.now = datetime(2020, 2, 1)
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+
+        change_milestone_dates_page = ChangeMilestoneDatesPage(
+            client.post(
+                "/schemes/1/milestones",
+                data=self.empty_change_milestone_dates_form()
+                | {"csrf_token": csrf_token, "detailed_design_completed-actual": ["1", "3", "2020"]},
+            )
+        )
+
+        assert change_milestone_dates_page.errors and list(change_milestone_dates_page.errors) == [
+            "Detailed design completed actual date must not be in the future"
+        ]
+
     def test_cannot_milestones_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
 

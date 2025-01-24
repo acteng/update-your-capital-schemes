@@ -414,6 +414,55 @@ class TestMilestoneDatesForm:
 
         assert expected_error in form.errors[field_name]
 
+    @pytest.mark.parametrize("field_name", ["planned", "actual"])
+    def test_date_without_initial_value_is_optional(self, field_name: str) -> None:
+        form_class = MilestoneDatesForm.create_class(Milestone.DETAILED_DESIGN_COMPLETED, datetime.min)
+        form = form_class(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
+
+        form.validate()
+
+        assert field_name not in form.errors
+
+    @pytest.mark.parametrize(
+        "milestone, field_name, expected_error",
+        [
+            (Milestone.FEASIBILITY_DESIGN_COMPLETED, "planned", "Enter a feasibility design completed planned date"),
+            (Milestone.FEASIBILITY_DESIGN_COMPLETED, "actual", "Enter a feasibility design completed actual date"),
+            (Milestone.PRELIMINARY_DESIGN_COMPLETED, "planned", "Enter a preliminary design completed planned date"),
+            (Milestone.PRELIMINARY_DESIGN_COMPLETED, "actual", "Enter a preliminary design completed actual date"),
+            (Milestone.DETAILED_DESIGN_COMPLETED, "planned", "Enter a detailed design completed planned date"),
+            (Milestone.DETAILED_DESIGN_COMPLETED, "actual", "Enter a detailed design completed actual date"),
+            (Milestone.CONSTRUCTION_STARTED, "planned", "Enter a construction started planned date"),
+            (Milestone.CONSTRUCTION_STARTED, "actual", "Enter a construction started actual date"),
+            (Milestone.CONSTRUCTION_COMPLETED, "planned", "Enter a construction completed planned date"),
+            (Milestone.CONSTRUCTION_COMPLETED, "actual", "Enter a construction completed actual date"),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "date_",
+        [
+            ("", "1", "2020"),
+            ("2", "", "2020"),
+            ("2", "1", ""),
+            ("", "", "2020"),
+            ("", "1", ""),
+            ("2", "", ""),
+            ("", "", ""),
+        ],
+    )
+    def test_date_with_initial_value_is_required(
+        self, milestone: Milestone, field_name: str, expected_error: str, date_: tuple[str, str, str]
+    ) -> None:
+        form_class = MilestoneDatesForm.create_class(milestone, datetime.min)
+        form = form_class(
+            data={field_name: date(2020, 1, 2)},
+            formdata=MultiDict([(field_name, date_[0]), (field_name, date_[1]), (field_name, date_[2])]),
+        )
+
+        form.validate()
+
+        assert expected_error in form.errors[field_name]
+
     @pytest.mark.parametrize(
         "milestone, expected_error_message",
         [
@@ -668,61 +717,6 @@ class TestChangeMilestoneDatesForm:
         form.validate()
 
         assert not form.errors
-
-    @pytest.mark.parametrize("field_name", field_names)
-    def test_date_without_initial_value_is_optional(self, field_name: str) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
-        form_class = ChangeMilestoneDatesForm.create_class(scheme, datetime.min)
-        form = form_class(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
-
-        form.validate()
-
-        assert field_name not in form.errors
-
-    @pytest.mark.parametrize(
-        "field_name, expected_error",
-        zip(
-            field_names,
-            [
-                "Enter a feasibility design completed planned date",
-                "Enter a feasibility design completed actual date",
-                "Enter a preliminary design completed planned date",
-                "Enter a preliminary design completed actual date",
-                "Enter a detailed design completed planned date",
-                "Enter a detailed design completed actual date",
-                "Enter a construction started planned date",
-                "Enter a construction started actual date",
-                "Enter a construction completed planned date",
-                "Enter a construction completed actual date",
-            ],
-        ),
-    )
-    @pytest.mark.parametrize(
-        "date_",
-        [
-            ("", "1", "2020"),
-            ("2", "", "2020"),
-            ("2", "1", ""),
-            ("", "", "2020"),
-            ("", "1", ""),
-            ("2", "", ""),
-            ("", "", ""),
-        ],
-    )
-    def test_date_with_initial_value_is_required(
-        self, field_name: str, expected_error: str, date_: tuple[str, str, str]
-    ) -> None:
-        (field_name1, field_name2) = field_name.split("-")
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
-        form_class = ChangeMilestoneDatesForm.create_class(scheme, datetime.min)
-        form = form_class(
-            data={field_name1: {field_name2: date(2020, 1, 2)}},
-            formdata=MultiDict([(field_name, date_[0]), (field_name, date_[1]), (field_name, date_[2])]),
-        )
-
-        form.validate()
-
-        assert expected_error in form.errors[field_name1][field_name2]
 
 
 class TestMilestoneRevisionRepr:

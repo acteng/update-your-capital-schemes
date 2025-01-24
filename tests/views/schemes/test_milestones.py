@@ -3,7 +3,7 @@ from datetime import date, datetime
 import pytest
 from flask_wtf.csrf import generate_csrf
 from werkzeug.datastructures import MultiDict
-from wtforms import FormField, ValidationError
+from wtforms import Form, FormField, ValidationError
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
@@ -19,6 +19,7 @@ from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,
     ChangeMilestoneDatesForm,
     MilestoneContext,
+    MilestoneDateField,
     MilestoneDatesForm,
     MilestoneRepr,
     MilestoneRevisionRepr,
@@ -186,6 +187,31 @@ class TestChangeMilestoneDatesContext:
             context.form.construction_started.actual.validators[0](
                 context.form, context.form.construction_started.actual
             )
+
+
+class TestMilestoneDateField:
+    @pytest.mark.parametrize(
+        "date_",
+        [
+            ("x", "x", "x"),
+            ("99", "1", "2020"),
+            ("", "1", "2020"),
+            ("2", "", "2020"),
+            ("2", "1", ""),
+            ("", "", "2020"),
+            ("", "1", ""),
+            ("2", "", ""),
+        ],
+    )
+    def test_date_is_a_date(self, date_: tuple[str, str, str]) -> None:
+        class FakeForm(Form):
+            field = MilestoneDateField(required_message="")
+
+        form = FakeForm(formdata=MultiDict([("field", date_[0]), ("field", date_[1]), ("field", date_[2])]))
+
+        form.validate()
+
+        assert "Not a valid date value." in form.errors["field"]
 
 
 @pytest.mark.usefixtures("app")
@@ -380,24 +406,9 @@ class TestMilestoneDatesForm:
             (Milestone.CONSTRUCTION_COMPLETED, "actual", "Construction completed actual date must be a real date"),
         ],
     )
-    @pytest.mark.parametrize(
-        "date_",
-        [
-            ("x", "x", "x"),
-            ("99", "1", "2020"),
-            ("", "1", "2020"),
-            ("2", "", "2020"),
-            ("2", "1", ""),
-            ("", "", "2020"),
-            ("", "1", ""),
-            ("2", "", ""),
-        ],
-    )
-    def test_date_is_a_date(
-        self, milestone: Milestone, field_name: str, expected_error: str, date_: tuple[str, str, str]
-    ) -> None:
+    def test_date_is_a_date(self, milestone: Milestone, field_name: str, expected_error: str) -> None:
         form_class = MilestoneDatesForm.create_class(milestone, datetime.min)
-        form = form_class(formdata=MultiDict([(field_name, date_[0]), (field_name, date_[1]), (field_name, date_[2])]))
+        form = form_class(formdata=MultiDict([(field_name, "x"), (field_name, "x"), (field_name, "x")]))
 
         form.validate()
 

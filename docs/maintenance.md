@@ -146,6 +146,15 @@ To update Terraform the [latest minor version](https://developer.hashicorp.com/t
    }
    ```
 
+1. Update the Terraform version in the [CI workflow](.github/workflows/ci.yml):
+
+   ```yaml
+   - name: Setup Terraform
+     uses: hashicorp/setup-terraform@v3
+     with:
+       terraform_version: '~<version>'
+   ```
+
 1. Update the Terraform version in the [README](../README.md) prerequisites
 
 ## Upgrading Terraform providers

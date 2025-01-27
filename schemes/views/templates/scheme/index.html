@@ -1,9 +1,9 @@
 {% extends "service_base.html" %}
 {% from "govuk_frontend_jinja/components/back-link/macro.html" import govukBackLink %}
 {% from "govuk_frontend_jinja/components/error-summary/macro.html" import govukErrorSummary %}
+{% from "govuk_frontend_jinja/components/inset-text/macro.html" import govukInsetText %}
 {% from "govuk_frontend_jinja/components/notification-banner/macro.html" import govukNotificationBanner %}
 {% from "govuk_frontend_jinja/components/tag/macro.html" import govukTag %}
-{% from "govuk_frontend_jinja/components/inset-text/macro.html" import govukInsetText %}
 
 {% block pageTitle -%}
     {% if review.form.errors %}Error: {% endif %}{{ name }} - {{ super() }}

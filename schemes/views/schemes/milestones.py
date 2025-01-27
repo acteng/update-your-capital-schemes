@@ -8,7 +8,6 @@ from typing import Any
 from flask_wtf import FlaskForm
 from wtforms import FormField
 from wtforms.form import BaseForm, Form
-from wtforms.utils import unset_value
 
 from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
@@ -100,15 +99,9 @@ class MilestoneDateField(CustomMessageDateField):
     def __init__(self, required_message: str, **kwargs: Any):
         super().__init__(widget=RemoveLeadingZerosGovDateInput(), format="%d %m %Y", **kwargs)
         self._required_message = required_message
-        self._initial_value = unset_value
-
-    def process_data(self, value: Any) -> None:
-        super().process_data(value)
-        if self._initial_value is unset_value:
-            self._initial_value = value
 
     def pre_validate(self, form: BaseForm) -> None:
-        if self._initial_value is unset_value or self._initial_value is None:
+        if self.object_data is None:
             MultivalueOptional()(form, self)
         else:
             MultivalueInputRequired(message=self._required_message)(form, self)

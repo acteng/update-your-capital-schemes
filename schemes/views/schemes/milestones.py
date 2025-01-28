@@ -125,14 +125,14 @@ class MilestoneDatesForm(Form):
         class DynamicMilestoneDatesForm(MilestoneDatesForm):
             planned = MilestoneDateField(
                 invalid_message=f"{milestone_name} planned date must be a real date",
-                required_message=f"Enter a {milestone_name.lower()} planned date",
+                required_message=f"{milestone_name} planned date cannot be removed",
             )
             actual = MilestoneDateField(
                 validators=[
                     forms.DateRange(max=now.date(), message=f"{milestone_name} actual date must not be in the future")
                 ],
                 invalid_message=f"{milestone_name} actual date must be a real date",
-                required_message=f"Enter a {milestone_name.lower()} actual date",
+                required_message=f"{milestone_name} actual date cannot be removed",
             )
 
         return DynamicMilestoneDatesForm

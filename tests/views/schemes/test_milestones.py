@@ -426,16 +426,36 @@ class TestMilestoneDatesForm:
     @pytest.mark.parametrize(
         "milestone, field_name, expected_error",
         [
-            (Milestone.FEASIBILITY_DESIGN_COMPLETED, "planned", "Enter a feasibility design completed planned date"),
-            (Milestone.FEASIBILITY_DESIGN_COMPLETED, "actual", "Enter a feasibility design completed actual date"),
-            (Milestone.PRELIMINARY_DESIGN_COMPLETED, "planned", "Enter a preliminary design completed planned date"),
-            (Milestone.PRELIMINARY_DESIGN_COMPLETED, "actual", "Enter a preliminary design completed actual date"),
-            (Milestone.DETAILED_DESIGN_COMPLETED, "planned", "Enter a detailed design completed planned date"),
-            (Milestone.DETAILED_DESIGN_COMPLETED, "actual", "Enter a detailed design completed actual date"),
-            (Milestone.CONSTRUCTION_STARTED, "planned", "Enter a construction started planned date"),
-            (Milestone.CONSTRUCTION_STARTED, "actual", "Enter a construction started actual date"),
-            (Milestone.CONSTRUCTION_COMPLETED, "planned", "Enter a construction completed planned date"),
-            (Milestone.CONSTRUCTION_COMPLETED, "actual", "Enter a construction completed actual date"),
+            (
+                Milestone.FEASIBILITY_DESIGN_COMPLETED,
+                "planned",
+                "Feasibility design completed planned date cannot be removed",
+            ),
+            (
+                Milestone.FEASIBILITY_DESIGN_COMPLETED,
+                "actual",
+                "Feasibility design completed actual date cannot be removed",
+            ),
+            (
+                Milestone.PRELIMINARY_DESIGN_COMPLETED,
+                "planned",
+                "Preliminary design completed planned date cannot be removed",
+            ),
+            (
+                Milestone.PRELIMINARY_DESIGN_COMPLETED,
+                "actual",
+                "Preliminary design completed actual date cannot be removed",
+            ),
+            (
+                Milestone.DETAILED_DESIGN_COMPLETED,
+                "planned",
+                "Detailed design completed planned date cannot be removed",
+            ),
+            (Milestone.DETAILED_DESIGN_COMPLETED, "actual", "Detailed design completed actual date cannot be removed"),
+            (Milestone.CONSTRUCTION_STARTED, "planned", "Construction started planned date cannot be removed"),
+            (Milestone.CONSTRUCTION_STARTED, "actual", "Construction started actual date cannot be removed"),
+            (Milestone.CONSTRUCTION_COMPLETED, "planned", "Construction completed planned date cannot be removed"),
+            (Milestone.CONSTRUCTION_COMPLETED, "actual", "Construction completed actual date cannot be removed"),
         ],
     )
     def test_validate_with_initial_value_is_required(

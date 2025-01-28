@@ -107,7 +107,7 @@ class TestSchemeFunding:
 
         assert (
             change_spend_to_date_page.title
-            == "Change spend to date - Update your capital schemes - Active Travel England - GOV.UK"
+            == "How much has been spent to date? - Update your capital schemes - Active Travel England - GOV.UK"
         )
 
     def test_spend_to_date_form_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
@@ -122,7 +122,7 @@ class TestSchemeFunding:
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-        assert change_spend_to_date_page.heading and change_spend_to_date_page.heading.caption == "Wirral Package"
+        assert change_spend_to_date_page.form.heading.caption == "Wirral Package"
 
     def test_spend_to_date_form_shows_funding_summary(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
@@ -139,7 +139,7 @@ class TestSchemeFunding:
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-        assert change_spend_to_date_page.funding_summary == "This scheme has £100,000 of funding allocation."
+        assert change_spend_to_date_page.form.funding_summary == "This scheme has £100,000 of funding allocation"
 
     def test_spend_to_date_form_shows_minimal_funding_summary(
         self, schemes: SchemeRepository, client: FlaskClient
@@ -148,7 +148,7 @@ class TestSchemeFunding:
 
         change_spend_to_date_page = ChangeSpendToDatePage.open(client, id_=1)
 
-        assert change_spend_to_date_page.funding_summary == "This scheme has no funding allocation."
+        assert change_spend_to_date_page.form.funding_summary == "This scheme has no funding allocation"
 
     def test_spend_to_date_form_shows_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
@@ -317,7 +317,7 @@ class TestSchemeFunding:
 
         assert (
             change_spend_to_date_page.title
-            == "Error: Change spend to date - Update your capital schemes - Active Travel England - GOV.UK"
+            == "Error: How much has been spent to date? - Update your capital schemes - Active Travel England - GOV.UK"
         )
         assert change_spend_to_date_page.errors and list(change_spend_to_date_page.errors) == ["Enter spend to date"]
         assert (

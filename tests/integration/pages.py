@@ -377,16 +377,12 @@ class ChangeSpendToDatePage(PageObject):
         self.errors = ErrorSummaryComponent(alert) if alert else None
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
         heading_tag = self._soup.select_one("main h1")
-        self.heading = HeadingComponent(heading_tag) if heading_tag else None
-        self.is_visible = self.heading.text == "Change spend to date" if self.heading else False
+        heading = HeadingComponent(heading_tag) if heading_tag else None
+        self.is_visible = heading.text == "How much has been spent to date?" if heading else False
 
     @property
     def back_url(self) -> str:
         return str(one(self._soup.select("a.govuk-back-link"))["href"])
-
-    @property
-    def funding_summary(self) -> str:
-        return (one(self._soup.select("main h1 ~ p")).string or "").strip()
 
     @property
     def form(self) -> ChangeSpendToDateFormComponent:
@@ -469,6 +465,8 @@ class ChangeSpendToDateFormComponent:
     def __init__(self, form: Tag):
         self._form = form
         self.confirm_url = form["action"]
+        self.heading = HeadingComponent(one(self._form.select("h1")))
+        self.funding_summary = (one(self._form.select(".govuk-hint")).string or "").strip()
         self.amount = TextComponent(one(form.select("input[name='amount']")))
         self.cancel_url = one(self._form.select("a"))["href"]
 

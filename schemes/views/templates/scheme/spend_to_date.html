@@ -6,7 +6,7 @@
 {% from "govuk_frontend_jinja/components/notification-banner/macro.html" import govukNotificationBanner %}
 
 {% block pageTitle -%}
-    {% if form.errors %}Error: {% endif %}Change spend to date - {{ super() }}
+    {% if form.errors %}Error: {% endif %}How much has been spent to date? - {{ super() }}
 {%- endblock %}
 
 {% block beforeContent %}
@@ -31,25 +31,28 @@
                 {% endif %}
             {% endwith %}
 
-            <h1 class="govuk-heading-l">
-                <span class="govuk-caption-l">{{ name }}</span>
-                <span>Change spend to date</span>
-            </h1>
-
-            <p class="govuk-body">
-                This scheme has {% if funding_allocation -%}
-                    {{ funding_allocation | pounds }} of
-                {%- else -%}
-                    no
-                {%- endif %} funding allocation.
-            </p>
-
-            <form method="post" action="{{ url_for('schemes.spend_to_date', scheme_id=id) }}" novalidate aria-label="Change spend to date">
+            <form method="post" action="{{ url_for('schemes.spend_to_date', scheme_id=id) }}" novalidate aria-label="How much has been spent to date?">
                 {{ form.csrf_token }}
 
+                {% set labelHtml %}
+                    <span class="govuk-caption-l">{{ name }}</span>
+                    <span>How much has been spent to date?</span>
+                {% endset %}
+                {% set hint %}
+                    This scheme has {% if funding_allocation -%}
+                        {{ funding_allocation | pounds }} of
+                    {%- else -%}
+                        no
+                    {%- endif %} funding allocation
+                {% endset %}
                 {{ form.amount(params={
                     "label": {
-                        "text": "How much has been spent to date?"
+                        "classes": "govuk-label--l",
+                        "html": labelHtml,
+                        "isPageHeading": true
+                    },
+                    "hint": {
+                        "text": hint
                     },
                     "prefix": {
                         "text": "£"

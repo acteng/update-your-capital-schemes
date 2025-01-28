@@ -156,7 +156,7 @@ def test_cannot_change_spend_to_date_when_error(app_client: AppClient, oidc_clie
 
     assert (
         change_spend_to_date_page.title
-        == "Error: Change spend to date - Update your capital schemes - Active Travel England - GOV.UK"
+        == "Error: How much has been spent to date? - Update your capital schemes - Active Travel England - GOV.UK"
     )
     assert list(change_spend_to_date_page.errors) == ["Enter spend to date"]
     assert (

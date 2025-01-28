@@ -2,6 +2,7 @@
 {% from "govuk_frontend_jinja/components/back-link/macro.html" import govukBackLink %}
 {% from "govuk_frontend_jinja/components/button/macro.html" import govukButton %}
 {% from "govuk_frontend_jinja/components/date-input/macro.html" import govukDateInput %}
+{% from "govuk_frontend_jinja/components/details/macro.html" import govukDetails %}
 {% from "govuk_frontend_jinja/components/error-summary/macro.html" import govukErrorSummary %}
 {% from "govuk_frontend_jinja/components/notification-banner/macro.html" import govukNotificationBanner %}
 
@@ -38,9 +39,17 @@
             <p class="govuk-body">
                 When is each milestone planned to be completed, and when was it actually completed?
             </p>
-            <div id="date-hint" class="govuk-hint govuk-!-margin-bottom-6">
+            <div id="date-hint" class="govuk-hint govuk-!-margin-bottom-4">
                 For example, 27 3 2007
             </div>
+            {% set html %}
+                Milestone dates cannot be removed by this service. If any dates are incorrect then
+                <a class="govuk-link" href="mailto:update-your-capital-schemes@activetravelengland.gov.uk">let us know</a>.
+            {% endset %}
+            {{ govukDetails({
+                "summaryText": "Remove a milestone date",
+                "html": html
+            }) }}
 
             <form method="post" action="{{ url_for('schemes.milestones', scheme_id=id) }}" aria-label="Change milestone dates">
                 {{ form.csrf_token }}

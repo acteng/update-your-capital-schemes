@@ -13,16 +13,25 @@ class PageObject:
     def __init__(self, response: TestResponse):
         self._response = response
         self._soup = BeautifulSoup(response.text, "html.parser")
-        self.title = one(self._soup.select("head > title")).text
+
+    @property
+    def title(self) -> str:
+        return one(self._soup.select("head > title")).text
 
 
 class StartPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
-        self.header = HeaderComponent(one(self._soup.select("header")))
         heading = self._soup.select_one("main h1")
         self.is_visible = heading.string == "Update your capital schemes" if heading else False
-        self.footer = FooterComponent(one(self._soup.select("footer")))
+
+    @property
+    def header(self) -> HeaderComponent:
+        return HeaderComponent(one(self._soup.select("header")))
+
+    @property
+    def footer(self) -> FooterComponent:
+        return FooterComponent(one(self._soup.select("footer")))
 
     @classmethod
     def open(cls, client: FlaskClient) -> StartPage:
@@ -103,7 +112,6 @@ class NotFoundPage(PageObject):
 class SchemesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
-        self.header = ServiceHeaderComponent(one(self._soup.select("header")))
         self.success_notification = NotificationBannerComponent.for_success(self._soup)
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
         heading_tag = self._soup.select_one("main h1")
@@ -115,6 +123,10 @@ class SchemesPage(PageObject):
         self.is_no_schemes_message_visible = (
             paragraph.string == "There are no schemes for your authority to update." if paragraph else False
         )
+
+    @property
+    def header(self) -> ServiceHeaderComponent:
+        return ServiceHeaderComponent(one(self._soup.select("header")))
 
     @classmethod
     def open(cls, client: FlaskClient) -> SchemesPage:
@@ -180,7 +192,6 @@ class TagComponent:
 class SchemePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
-        self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
@@ -194,13 +205,30 @@ class SchemePage(PageObject):
             if inset_text
             else False
         )
-        self.overview = SchemeOverviewComponent(one(self._soup.select("main h2:-soup-contains('Overview')")))
-        self.funding = SchemeFundingComponent(one(self._soup.select("main h2:-soup-contains('Funding')")))
-        self.milestones = SchemeMilestonesComponent(one(self._soup.select("main h2:-soup-contains('Milestones')")))
-        self.outputs = SchemeOutputsComponent(one(self._soup.select("main h2:-soup-contains('Outputs')")))
-        self.review = SchemeReviewComponent(
-            one(self._soup.select("main h2:-soup-contains('Is this scheme up-to-date?')"))
-        )
+
+    @property
+    def back_url(self) -> str:
+        return str(one(self._soup.select("a.govuk-back-link"))["href"])
+
+    @property
+    def overview(self) -> SchemeOverviewComponent:
+        return SchemeOverviewComponent(one(self._soup.select("main h2:-soup-contains('Overview')")))
+
+    @property
+    def funding(self) -> SchemeFundingComponent:
+        return SchemeFundingComponent(one(self._soup.select("main h2:-soup-contains('Funding')")))
+
+    @property
+    def milestones(self) -> SchemeMilestonesComponent:
+        return SchemeMilestonesComponent(one(self._soup.select("main h2:-soup-contains('Milestones')")))
+
+    @property
+    def outputs(self) -> SchemeOutputsComponent:
+        return SchemeOutputsComponent(one(self._soup.select("main h2:-soup-contains('Outputs')")))
+
+    @property
+    def review(self) -> SchemeReviewComponent:
+        return SchemeReviewComponent(one(self._soup.select("main h2:-soup-contains('Is this scheme up-to-date?')")))
 
     @classmethod
     def open(cls, client: FlaskClient, id_: int) -> SchemePage:
@@ -345,15 +373,24 @@ class SchemeReviewFormComponent:
 class ChangeSpendToDatePage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
-        self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
         heading_tag = self._soup.select_one("main h1")
         self.heading = HeadingComponent(heading_tag) if heading_tag else None
         self.is_visible = self.heading.text == "Change spend to date" if self.heading else False
-        self.funding_summary = (one(self._soup.select("main h1 ~ p")).string or "").strip()
-        self.form = ChangeSpendToDateFormComponent(one(self._soup.select("form")))
+
+    @property
+    def back_url(self) -> str:
+        return str(one(self._soup.select("a.govuk-back-link"))["href"])
+
+    @property
+    def funding_summary(self) -> str:
+        return (one(self._soup.select("main h1 ~ p")).string or "").strip()
+
+    @property
+    def form(self) -> ChangeSpendToDateFormComponent:
+        return ChangeSpendToDateFormComponent(one(self._soup.select("form")))
 
     @classmethod
     def open(cls, client: FlaskClient, id_: int) -> ChangeSpendToDatePage:
@@ -374,14 +411,20 @@ class ChangeSpendToDatePage(PageObject):
 class ChangeMilestoneDatesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
-        self.back_url = one(self._soup.select("a.govuk-back-link"))["href"]
         alert = self._soup.select_one(".govuk-error-summary div[role='alert']")
         self.errors = ErrorSummaryComponent(alert) if alert else None
         self.important_notification = NotificationBannerComponent.for_important(self._soup)
         heading_tag = self._soup.select_one("main h1")
         self.heading = HeadingComponent(heading_tag) if heading_tag else None
         self.is_visible = self.heading.text == "Change milestone dates" if self.heading else False
-        self.form = ChangeMilestoneDatesFormComponent(one(self._soup.select("form")))
+
+    @property
+    def back_url(self) -> str:
+        return str(one(self._soup.select("a.govuk-back-link"))["href"])
+
+    @property
+    def form(self) -> ChangeMilestoneDatesFormComponent:
+        return ChangeMilestoneDatesFormComponent(one(self._soup.select("form")))
 
     @classmethod
     def open(cls, client: FlaskClient, id_: int) -> ChangeMilestoneDatesPage:

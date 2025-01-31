@@ -4,9 +4,13 @@ services:
     build: .
     env_file: .env
     environment:
-      FLASK_SQLALCHEMY_DATABASE_URI: "postgresql+pg8000://schemes:password@database/schemes"
+      FLASK_SQLALCHEMY_DATABASE_URI: "postgresql+pg8000://schemes:password@localhost/schemes"
+      FLASK_GOVUK_SERVER_METADATA_URL: http://localhost:3000/.well-known/openid-configuration
+      FLASK_GOVUK_TOKEN_ENDPOINT: http://localhost:3000/token
+      FLASK_GOVUK_END_SESSION_ENDPOINT: http://localhost:3000/logout
     ports:
       - "5000:5000"
+    network_mode: host
     depends_on:
       database:
         condition: service_healthy
@@ -21,3 +25,24 @@ services:
     healthcheck:
       test: pg_isready -U $$POSTGRES_USER
       interval: 5s
+
+  oidc_server:
+    image: ghcr.io/govuk-one-login/simulator
+    environment:
+      CLIENT_ID: ACQWA69dKqUjccEMgMVKu0jX0q4
+      PUBLIC_KEY: |
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApnxLCm8k5DJYbC3UsJ91
+        0NXVzi7Rx+Qame5ibrmxbdABSxpnpkiwC0qcDAoSgnZUfoEQftGzIzO8W1qMXHoC
+        hrrV5Ik+2fmHYZsni9dtdc3MF/sGlXlkI69sIymneggG49FxYPXr4lQMpVNkH33p
+        ScSUta3Anf3VeEHXWa2lmGnVbH2lEDQ/VqpNIe7XMu/yGJualb7BxhDKX/tb64OQ
+        fO7SYyaPTuyKPAXfxbB2CQIuN3Q8vB+dX45Sq0Zc8FtRi6xZ2zOJ8EE2rEV6H6l1
+        4u0Boup5dbsp9/kpyPXKTISWD7ZvhoPzFhEiQ8Encm1uzwjFpbjYmXxmN+TUJuMW
+        PwIDAQAB
+        -----END PUBLIC KEY-----
+      REDIRECT_URLS: http://127.0.0.1:5000/auth
+      EMAIL: mark.hobson@activetravelengland.gov.uk
+      POST_LOGOUT_REDIRECT_URLS: http://127.0.0.1:5000/
+    ports:
+      - "3000:3000"
+    network_mode: host

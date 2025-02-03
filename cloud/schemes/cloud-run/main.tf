@@ -81,19 +81,19 @@ resource "google_cloud_run_v2_service" "schemes" {
           }
         }
       }
-      volume_mounts {
-        name       = "cloudsql"
-        mount_path = "/cloudsql"
+      ports {
+        container_port = 8080
       }
     }
-    volumes {
-      name = "cloudsql"
-      cloud_sql_instance {
-        instances = [
-          var.database_connection_name,
-          var.capital_schemes_database_connection_name,
-        ]
-      }
+    containers {
+      name  = "database-cloud-sql-proxy"
+      image = "gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.4"
+      args = [
+        "--address=0.0.0.0",
+        "--port=5432",
+        var.database_connection_name,
+        var.capital_schemes_database_connection_name
+      ]
     }
     scaling {
       min_instance_count = var.keep_idle ? 1 : 0
@@ -196,11 +196,8 @@ resource "google_secret_manager_secret_version" "database_uri" {
     var.database_username,
     ":",
     var.database_password,
-    "@/",
+    "@127.0.0.1:5432/",
     var.database_name,
-    "?unix_sock=/cloudsql/",
-    var.database_connection_name,
-    "/.s.PGSQL.5432"
   ])
 }
 
@@ -234,11 +231,8 @@ resource "google_secret_manager_secret_version" "capital_schemes_database_uri" {
     var.capital_schemes_database_username,
     ":",
     var.capital_schemes_database_password,
-    "@/",
+    "@127.0.0.1:5433/",
     var.capital_schemes_database_name,
-    "?unix_sock=/cloudsql/",
-    var.capital_schemes_database_connection_name,
-    "/.s.PGSQL.5432"
   ])
 }
 

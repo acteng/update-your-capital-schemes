@@ -135,9 +135,9 @@ This dependency uses a [GitHub URL](https://docs.npmjs.com/cli/v10/configuring-n
 
 ## Upgrading Terraform
 
-To update Terraform the [latest minor version](https://developer.hashicorp.com/terraform/install#release-information):
+To upgrade Terraform the [latest minor version](https://developer.hashicorp.com/terraform/install#release-information):
 
-1. For each Terraform root module in [cloud](../cloud), upgrade the required version in `versions.tf` keeping the patch version zero:
+1. For each Terraform root module in [cloud](../cloud), update the required version in `versions.tf` keeping the patch version zero:
 
    ```hcl
    terraform {
@@ -159,9 +159,9 @@ To update Terraform the [latest minor version](https://developer.hashicorp.com/t
 
 ## Upgrading Terraform providers
 
-Upgrade each Terraform root module in [cloud](../cloud):
+To upgrade each Terraform root module in [cloud](../cloud):
 
-1. Upgrade the providers in `versions.tf` to the latest minor or major version keeping the patch version zero,
+1. Update the providers in `versions.tf` to the latest minor or major version keeping the patch version zero,
    e.g. `~> 1.2.0` to `~> 1.3.0`
 
 1. Install the upgraded providers:
@@ -172,11 +172,11 @@ Upgrade each Terraform root module in [cloud](../cloud):
 
 ## Upgrading GitHub Actions
 
-Upgrade all workflows in [.github/workflows](../.github/workflows):
+To upgrade all workflows in [.github/workflows](../.github/workflows):
 
-1. Upgrade each action to its latest major version, e.g. for `actions/setup-python` see [actions/setup-python](https://github.com/actions/setup-python/releases)
+1. Update each action to its latest major version, e.g. for `actions/setup-python` see [actions/setup-python](https://github.com/actions/setup-python/releases)
 
-1. Upgrade [runner images](https://github.com/actions/runner-images) to their latest version
+1. Update [runner images](https://github.com/actions/runner-images) to their latest version
 
 ## Upgrading Cloud SQL Auth Proxy
 

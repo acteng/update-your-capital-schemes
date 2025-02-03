@@ -177,3 +177,26 @@ Upgrade all workflows in [.github/workflows](../.github/workflows):
 1. Upgrade each action to its latest major version, e.g. for `actions/setup-python` see [actions/setup-python](https://github.com/actions/setup-python/releases)
 
 1. Upgrade [runner images](https://github.com/actions/runner-images) to their latest version
+
+## Upgrading Cloud SQL Auth Proxy
+
+To upgrade [Cloud SQL Auth Proxy](https://cloud.google.com/sql/docs/postgres/connect-auth-proxy) to the
+[latest version](https://github.com/GoogleCloudPlatform/cloud-sql-proxy/releases):
+
+1. Update the version in the [cloud-run](../cloud/schemes/cloud-run/main.tf) Terraform module:
+
+   ```hcl
+   containers {
+     image = "gcr.io/cloud-sql-connectors/cloud-sql-proxy:<version>"
+     ...
+   }
+   ```
+
+1. Update the version in the [proxy.sh](../proxy.sh) script:
+
+   ```bash
+   docker run --rm \
+       ...
+       gcr.io/cloud-sql-connectors/cloud-sql-proxy:<version> \
+       ...
+   ```

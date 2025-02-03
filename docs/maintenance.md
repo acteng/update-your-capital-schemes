@@ -47,6 +47,15 @@ To upgrade Node:
    }
    ```
 
+1. Align npm to the [version supplied with Node](https://nodejs.org/en/about/previous-releases) in [package.json](../package.json):
+
+   ```json
+   "engines": {
+     ...
+     "npm": "<version>"
+   }
+   ```
+
 1. Update the [lock file](../package-lock.json):
 
    ```bash

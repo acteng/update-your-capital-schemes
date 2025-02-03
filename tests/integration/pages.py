@@ -16,7 +16,7 @@ class PageObject:
 
     @property
     def title(self) -> str:
-        return one(self._soup.select("head > title")).text
+        return one(self._soup.select("head > title")).get_text()
 
 
 class StartPage(PageObject):
@@ -251,7 +251,7 @@ class InsetTextComponent:
         self.inset_text = inset_text
 
     def text(self) -> str:
-        return self.inset_text.text.strip()
+        return self.inset_text.get_text().strip()
 
     def has_text(self, pattern: Pattern[str]) -> bool:
         return pattern.match(self.text()) is not None
@@ -260,7 +260,7 @@ class InsetTextComponent:
 class SummaryCardComponent:
     def __init__(self, title: Tag):
         card = title.find_parent("div", class_="govuk-summary-card")
-        assert card
+        assert isinstance(card, Tag)
         self._card = card
 
     def _get_definition(self, term_text: str) -> list[Tag]:
@@ -288,10 +288,10 @@ class SchemeFundingComponent(SummaryCardComponent):
 class SchemeMilestonesComponent:
     def __init__(self, title: Tag):
         title_wrapper = title.find_parent("div", class_="govuk-summary-card__title-wrapper")
-        assert title_wrapper
+        assert isinstance(title_wrapper, Tag)
         self.change_milestones_url = one(title_wrapper.select("a:-soup-contains('Change')"))["href"]
         card = title_wrapper.find_parent("div", class_="govuk-summary-card")
-        assert card
+        assert isinstance(card, Tag)
         self.milestones = SchemeMilestonesTableComponent(one(card.select("table")))
 
 
@@ -320,7 +320,7 @@ class SchemeMilestoneRowComponent:
 class SchemeOutputsComponent:
     def __init__(self, title: Tag):
         card = title.find_parent("div", class_="govuk-summary-card")
-        assert card
+        assert isinstance(card, Tag)
         table = card.select_one("table")
         self.outputs = SchemeOutputsTableComponent(table) if table else None
         paragraph = card.select_one("p")
@@ -358,7 +358,7 @@ class SchemeOutputRowComponent:
 class SchemeReviewComponent:
     def __init__(self, heading: Tag):
         section = heading.find_parent("section")
-        assert section
+        assert isinstance(section, Tag)
         self.last_reviewed = (one(section.select("section > p")).string or "").strip()
         self.form = SchemeReviewFormComponent(one(section.select("form")))
 
@@ -529,7 +529,7 @@ class TextComponent:
         self.value = input_.get("value")
         self.is_errored = "govuk-input--error" in input_.get_attribute_list("class")
         form_group = input_.find_parent("div", class_="govuk-form-group")
-        assert form_group
+        assert isinstance(form_group, Tag)
         error_message = form_group.select_one(".govuk-error-message")
         self.error = error_message.text.strip() if error_message else None
 
@@ -539,7 +539,7 @@ class CheckboxComponent:
         self.name = input_["name"]
         self.value = input_.has_attr("checked")
         form_group = input_.find_parent("div", class_="govuk-form-group")
-        assert form_group
+        assert isinstance(form_group, Tag)
         self.is_errored = "govuk-form-group--error" in form_group.get_attribute_list("class")
         error_message = form_group.select_one(".govuk-error-message")
         self.error = error_message.text.strip() if error_message else None

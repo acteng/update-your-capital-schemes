@@ -23,6 +23,7 @@
 
 1. Apply Terraform infrastructure changes to Test:
    ```bash
+   git checkout <version>
    cd cloud/schemes
    terraform workspace select test
    terraform apply
@@ -36,6 +37,7 @@
 
 1. Apply Terraform infrastructure changes to Prod:
    ```bash
+   git checkout <version>
    cd cloud/schemes
    terraform workspace select prod
    terraform apply

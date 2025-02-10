@@ -13,11 +13,11 @@ ENVIRONMENT=$1
 PROJECT=dft-schemes-${ENVIRONMENT}
 REGION=europe-west1
 BACKUP_INSTANCE=schemes
-RESTORE_INSTANCE=${BACKUP_INSTANCE}-backup
+RESTORE_INSTANCE=${BACKUP_INSTANCE}-restore
 PGDATABASE=schemes
 PGUSER=schemes
 
-# Create Cloud SQL instance for backup
+# Create Cloud SQL instance for restore
 
 gcloud sql instances create ${RESTORE_INSTANCE} \
 	--project ${PROJECT} \
@@ -84,7 +84,7 @@ bw get password "UYCS Database Backup Passphrase" \
 
 docker stop cloud-sql-proxy
 
-# Delete Cloud SQL instance for backup
+# Delete restore instance
 
 gcloud sql instances delete \
 	--project ${PROJECT} \

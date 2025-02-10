@@ -26,7 +26,7 @@ gcloud sql instances create ${RESTORE_INSTANCE} \
 	--tier db-custom-1-3840 \
 	--edition enterprise
 
-# Obtain latest backup id and timestamp
+# Obtain latest backup details
 
 BACKUP=$(gcloud sql backups list \
 	--project ${PROJECT} \
@@ -39,7 +39,7 @@ BACKUP_ID=$(echo "${BACKUP}" | cut -f1)
 BACKUP_TIMESTAMP=$(echo "${BACKUP}" | cut -f2)
 ARCHIVE=${PGDATABASE}-${ENVIRONMENT}-$(date -d $BACKUP_TIMESTAMP -u +"%Y%m%dT%H%M%SZ").dump
 
-# Restore latest backup to Cloud SQL instance
+# Restore latest backup to restore instance
 
 gcloud sql backups restore "${BACKUP_ID}" \
 	--project ${PROJECT} \
@@ -47,7 +47,7 @@ gcloud sql backups restore "${BACKUP_ID}" \
 	--restore-instance ${RESTORE_INSTANCE} \
 	--quiet
 
-# Start Cloud SQL Auth proxy
+# Start proxy to restore instance
 
 ./proxy.sh ${ENVIRONMENT} ${RESTORE_INSTANCE} &
 
@@ -80,7 +80,7 @@ gzip ${ARCHIVE}
 bw get password "UYCS Database Backup Passphrase" \
 	| ( gpg --batch --symmetric --passphrase-fd 0 ${ARCHIVE}.gz && rm ${ARCHIVE}.gz )
 
-# Stop Cloud SQL Auth proxy
+# Stop proxy to restore instance
 
 docker stop cloud-sql-proxy
 

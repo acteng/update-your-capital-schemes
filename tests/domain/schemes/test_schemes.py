@@ -297,7 +297,7 @@ class TestFundingProgrammes:
             (FundingProgrammes.ATF3, False),
             (FundingProgrammes.ATF4, False),
             (FundingProgrammes.ATF4E, False),
-            (FundingProgrammes.ATF5, True),
+            (FundingProgrammes.ATF5, False),
             (FundingProgrammes.CRSTS, False),
             (FundingProgrammes.LUF1, False),
             (FundingProgrammes.LUF2, False),

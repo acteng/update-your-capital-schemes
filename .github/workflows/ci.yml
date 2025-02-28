@@ -28,7 +28,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: '~1.10.0'
+          terraform_version: '~1.11.0'
 
       - name: Create virtual environment
         run: python3 -m venv --upgrade-deps .venv

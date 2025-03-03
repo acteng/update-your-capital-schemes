@@ -126,12 +126,6 @@ To run the server as a container using a PostgreSQL database:
 
 ## Running formatters and linters
 
-1. Install the dependencies:
-
-   ```bash
-   pip install -e .[dev]
-   ```
-
 1. Run the formatters:
 
    ```bash
@@ -145,12 +139,6 @@ To run the server as a container using a PostgreSQL database:
    ```
    
 ## Running tests
-
-1. Install the dependencies:
-
-   ```bash
-   pip install -e .[dev]
-   ```
 
 1. Install the browsers and their dependencies:
 

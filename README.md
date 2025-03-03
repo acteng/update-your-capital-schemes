@@ -46,15 +46,15 @@ The application can also be configured with the following environment variables:
 
 1. Create a virtual environment:
 
-    ```bash
-    python3.13 -m venv --prompt . --upgrade-deps .venv
-    ```
+   ```bash
+   python3.13 -m venv --prompt . --upgrade-deps .venv
+   ```
 
 1. Activate the virtual environment:
 
-    ```bash
-    source .venv/bin/activate
-    ```
+   ```bash
+   source .venv/bin/activate
+   ```
 
 1. Build the web assets:
 
@@ -64,15 +64,15 @@ The application can also be configured with the following environment variables:
 
 1. Install the dependencies:
 
-    ```bash
-    pip install -e .[dev]
-    ```
+   ```bash
+   pip install -e .[dev]
+   ```
 
 1. Run the server:
 
-    ```bash
-    make run
-    ```
+   ```bash
+   make run
+   ```
 
 1. Open http://127.0.0.1:5000
 
@@ -128,9 +128,9 @@ To run the server as a container using a PostgreSQL database:
 
 1. Install the dependencies:
 
-    ```bash
-    pip install -e .[dev]
-    ```
+   ```bash
+   pip install -e .[dev]
+   ```
 
 1. Run the formatters:
 
@@ -148,9 +148,9 @@ To run the server as a container using a PostgreSQL database:
 
 1. Install the dependencies:
 
-    ```bash
-    pip install -e .[dev]
-    ```
+   ```bash
+   pip install -e .[dev]
+   ```
 
 1. Install the browsers and their dependencies:
 

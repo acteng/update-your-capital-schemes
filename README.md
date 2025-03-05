@@ -168,11 +168,19 @@ To run the server as a container using a PostgreSQL database:
    terraform init
    ```
 
+1. Fetch the previous Terraform state from Bitwarden, if any:
+
+   ```bash
+   bw get notes "UYCS tf-backend State" > terraform.tfstate
+   ```
+
 1. Apply the changes:
 
    ```bash
    terraform apply
    ```
+
+1. Store the new Terraform state in Bitwarden as "UYCS tf-backend State"
 
 ### Provision the Docker repository
 

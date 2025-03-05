@@ -126,10 +126,8 @@ resource "google_cloud_run_v2_service_iam_binding" "schemes_run_invoker" {
   project  = var.project
   location = var.region
 
-  role = "roles/run.invoker"
-  members = [
-    "allUsers"
-  ]
+  role    = "roles/run.invoker"
+  members = ["allUsers"]
 }
 
 data "google_project" "main" {

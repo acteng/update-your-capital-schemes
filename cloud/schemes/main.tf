@@ -76,9 +76,7 @@ module "cloud_sql" {
   region           = local.location
   database_backups = local.config[local.env].database_backups
 
-  depends_on = [
-    google_project_service.secret_manager
-  ]
+  depends_on = [google_project_service.secret_manager]
 }
 
 module "cloud_run" {

@@ -1,16 +1,16 @@
-name: 'Deploy'
+name: Deploy
 run-name: 'Deploy ${{ inputs.tag }} to ${{ inputs.environment }}'
 
 on:
   workflow_call:
     inputs:
       environment:
-        description: 'Environment'
+        description: Environment
         type: string
         required: true
 
       tag:
-        description: 'Docker image tag'
+        description: Docker image tag
         type: string
         required: true
 
@@ -21,15 +21,15 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment'
+        description: Environment
         type: environment
         required: true
 
       tag:
-        description: 'Docker image tag'
+        description: Docker image tag
         type: string
         required: true
-        default: 'latest'
+        default: latest
 
 jobs:
 

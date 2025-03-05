@@ -1,3 +1,8 @@
+output "url" {
+  description = "Load balancer URL"
+  value       = module.load_balancer.url
+}
+
 output "ip_address" {
   description = "Load balancer IP address"
   value       = module.load_balancer.ip_address

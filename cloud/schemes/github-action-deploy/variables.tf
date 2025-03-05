@@ -1,5 +1,5 @@
 variable "project" {
-  description = "GCP Project"
+  description = "GCP project"
   type        = string
 }
 
@@ -9,6 +9,6 @@ variable "docker_repository_project" {
 }
 
 variable "cloud_run_service_account_id" {
-  description = "Cloud Run Service Account ID"
+  description = "Cloud Run service account ID"
   type        = string
 }

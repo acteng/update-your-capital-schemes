@@ -4,6 +4,6 @@ output "name" {
 }
 
 output "service_account_id" {
-  description = "Cloud Run Service Account ID"
+  description = "Cloud Run service account ID"
   value       = google_service_account.cloud_run_schemes.id
 }

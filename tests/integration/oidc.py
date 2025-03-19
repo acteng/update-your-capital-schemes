@@ -46,7 +46,7 @@ class StubOidcServer:
     ) -> str:
         access_token = "stub_access_token"
         subject = "stub_subject"
-        now = time()
+        now = int(time())
 
         header = {
             "kid": self._key_id,
@@ -57,7 +57,7 @@ class StubOidcServer:
             "iss": issuer or self._url,
             "sub": subject,
             "aud": audience or self._client_id,
-            "exp": expiration_time or int(now + 60),
+            "exp": expiration_time or now + 60,
             "iat": issued_at or now,
             "nonce": nonce,
         }

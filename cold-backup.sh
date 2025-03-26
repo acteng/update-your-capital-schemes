@@ -24,7 +24,9 @@ gcloud sql instances create ${RESTORE_INSTANCE} \
 	--region ${REGION} \
 	--database-version POSTGRES_16 \
 	--tier db-custom-1-3840 \
-	--edition enterprise
+	--edition enterprise \
+	--connector-enforcement REQUIRED \
+	--ssl-mode TRUSTED_CLIENT_CERTIFICATE_REQUIRED
 
 # Obtain latest backup details
 

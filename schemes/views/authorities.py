@@ -28,17 +28,17 @@ def add(authorities: AuthorityRepository, logger: Logger) -> Response:
     return Response(status=201)
 
 
-@bp.post("<int:authority_id>/users")
+@bp.post("<authority_abbreviation>/users")
 @api_key_auth
 @inject.autoparams("users", "logger")
-def add_users(users: UserRepository, logger: Logger, authority_id: int) -> Response:
+def add_users(users: UserRepository, logger: Logger, authority_abbreviation: str) -> Response:
     try:
         users_repr = fromlist(UserRepr, request.get_json())
     except UnknownJSONKey as error:
         logger.error(error)
         return Response(status=400)
 
-    users.add(*[user_repr.to_domain(authority_id) for user_repr in users_repr])
+    users.add(*[user_repr.to_domain(authority_abbreviation) for user_repr in users_repr])
     return Response(status=201)
 
 
@@ -52,8 +52,8 @@ def clear(authorities: AuthorityRepository) -> Response:
 
 @dataclass(frozen=True)
 class AuthorityRepr:
-    id: int
+    abbreviation: str
     name: str
 
     def to_domain(self) -> Authority:
-        return Authority(id_=self.id, name=self.name)
+        return Authority(abbreviation=self.abbreviation, name=self.name)

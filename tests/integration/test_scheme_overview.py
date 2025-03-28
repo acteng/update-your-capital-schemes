@@ -23,8 +23,8 @@ from tests.integration.pages import SchemePage
 class TestSchemeOverview:
     @pytest.fixture(name="auth", autouse=True)
     def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
-        users.add(User(email="boardman@example.com", authority_id=1))
+        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        users.add(User(email="boardman@example.com", authority_abbreviation="LIV"))
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
@@ -34,7 +34,7 @@ class TestSchemeOverview:
                 id_=1,
                 reference="ATE00001",
                 name="Wirral Package",
-                authority_id=1,
+                authority_abbreviation="LIV",
                 type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             )
@@ -54,7 +54,7 @@ class TestSchemeOverview:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=1,
+            authority_abbreviation="LIV",
             type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )

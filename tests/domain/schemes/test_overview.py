@@ -22,7 +22,7 @@ class TestSchemeOverview:
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 name="Wirral Package",
-                authority_id=2,
+                authority_abbreviation="LIV",
                 type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             )
@@ -38,7 +38,7 @@ class TestSchemeOverview:
             id_=1,
             effective=DateRange(datetime(2020, 1, 1), None),
             name="Wirral Package",
-            authority_id=2,
+            authority_abbreviation="LIV",
             type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
@@ -53,7 +53,7 @@ class TestSchemeOverview:
             id_=1,
             effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
             name="Wirral Package",
-            authority_id=1,
+            authority_abbreviation="LIV",
             type_=SchemeType.DEVELOPMENT,
             funding_programme=FundingProgrammes.ATF3,
         )
@@ -61,7 +61,7 @@ class TestSchemeOverview:
             id_=2,
             effective=DateRange(datetime(2020, 2, 1), None),
             name="School Streets",
-            authority_id=2,
+            authority_abbreviation="WYO",
             type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
@@ -77,7 +77,7 @@ class TestSchemeOverview:
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 name="Wirral Package",
-                authority_id=1,
+                authority_abbreviation="LIV",
                 type_=SchemeType.DEVELOPMENT,
                 funding_programme=FundingProgrammes.ATF3,
             ),
@@ -85,7 +85,7 @@ class TestSchemeOverview:
                 id_=2,
                 effective=DateRange(datetime(2020, 2, 1), None),
                 name="School Streets",
-                authority_id=2,
+                authority_abbreviation="WYO",
                 type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             ),
@@ -98,14 +98,14 @@ class TestSchemeOverview:
 
         assert overview.name is None
 
-    def test_get_authority_id(self) -> None:
+    def test_get_authority_abbreviation(self) -> None:
         overview = SchemeOverview()
         overview.update_overviews(
             OverviewRevision(
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 name="Wirral Package",
-                authority_id=1,
+                authority_abbreviation="LIV",
                 type_=SchemeType.DEVELOPMENT,
                 funding_programme=FundingProgrammes.ATF3,
             ),
@@ -113,18 +113,18 @@ class TestSchemeOverview:
                 id_=2,
                 effective=DateRange(datetime(2020, 2, 1), None),
                 name="School Streets",
-                authority_id=2,
+                authority_abbreviation="WYO",
                 type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             ),
         )
 
-        assert overview.authority_id == 2
+        assert overview.authority_abbreviation == "WYO"
 
-    def test_get_authority_id_when_no_revisions(self) -> None:
+    def test_get_authority_abbreviation_when_no_revisions(self) -> None:
         overview = SchemeOverview()
 
-        assert overview.authority_id is None
+        assert overview.authority_abbreviation is None
 
     def test_get_type(self) -> None:
         overview = SchemeOverview()
@@ -133,7 +133,7 @@ class TestSchemeOverview:
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 name="Wirral Package",
-                authority_id=1,
+                authority_abbreviation="LIV",
                 type_=SchemeType.DEVELOPMENT,
                 funding_programme=FundingProgrammes.ATF3,
             ),
@@ -141,7 +141,7 @@ class TestSchemeOverview:
                 id_=2,
                 effective=DateRange(datetime(2020, 2, 1), None),
                 name="Wirral Package",
-                authority_id=2,
+                authority_abbreviation="WYO",
                 type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             ),
@@ -161,7 +161,7 @@ class TestSchemeOverview:
                 id_=1,
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 name="Wirral Package",
-                authority_id=1,
+                authority_abbreviation="LIV",
                 type_=SchemeType.DEVELOPMENT,
                 funding_programme=FundingProgrammes.ATF3,
             ),
@@ -169,7 +169,7 @@ class TestSchemeOverview:
                 id_=2,
                 effective=DateRange(datetime(2020, 2, 1), None),
                 name="Wirral Package",
-                authority_id=2,
+                authority_abbreviation="WYO",
                 type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             ),
@@ -189,7 +189,7 @@ class TestOverviewRevision:
             id_=1,
             effective=DateRange(datetime(2020, 1, 1), None),
             name="Wirral Package",
-            authority_id=2,
+            authority_abbreviation="LIV",
             type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
@@ -198,7 +198,7 @@ class TestOverviewRevision:
             overview_revision.id == 1
             and overview_revision.effective == DateRange(datetime(2020, 1, 1), None)
             and overview_revision.name == "Wirral Package"
-            and overview_revision.authority_id == 2
+            and overview_revision.authority_abbreviation == "LIV"
             and overview_revision.type == SchemeType.CONSTRUCTION
             and overview_revision.funding_programme == FundingProgrammes.ATF4
         )

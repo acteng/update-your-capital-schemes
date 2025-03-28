@@ -17,7 +17,7 @@ from schemes.domain.schemes import (
 @dataclass(frozen=True)
 class OverviewRevisionRepr:
     name: str
-    authority_id: int
+    authority_abbreviation: str
     type: SchemeTypeRepr
     funding_programme: FundingProgrammeRepr
     effective_date_from: str
@@ -33,7 +33,7 @@ class OverviewRevisionRepr:
                 overview_revision.effective.date_to.isoformat() if overview_revision.effective.date_to else None
             ),
             name=overview_revision.name,
-            authority_id=overview_revision.authority_id,
+            authority_abbreviation=overview_revision.authority_abbreviation,
             type=SchemeTypeRepr.from_domain(overview_revision.type),
             funding_programme=FundingProgrammeRepr.from_domain(overview_revision.funding_programme),
         )
@@ -46,7 +46,7 @@ class OverviewRevisionRepr:
                 date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
             ),
             name=self.name,
-            authority_id=self.authority_id,
+            authority_abbreviation=self.authority_abbreviation,
             type_=self.type.to_domain(),
             funding_programme=self.funding_programme.to_domain(),
         )

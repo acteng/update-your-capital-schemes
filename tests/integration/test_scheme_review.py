@@ -19,20 +19,20 @@ from tests.integration.pages import SchemePage, SchemesPage
 class TestSchemeReview:
     @pytest.fixture(name="auth", autouse=True)
     def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
-        users.add(User(email="boardman@example.com", authority_id=1))
+        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        users.add(User(email="boardman@example.com", authority_abbreviation="LIV"))
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
     def test_scheme_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = SchemePage.open(client, id_=1)
 
         assert scheme_page.review.form.confirm_url == "/schemes/1"
 
     def test_scheme_shows_last_reviewed(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
         )
@@ -45,7 +45,7 @@ class TestSchemeReview:
     def test_scheme_shows_last_reviewed_when_no_authority_reviews(
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = SchemePage.open(client, id_=1)
 
@@ -55,7 +55,7 @@ class TestSchemeReview:
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
         clock.now = datetime(2023, 4, 24, 12)
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
@@ -74,7 +74,7 @@ class TestSchemeReview:
         )
 
     def test_review_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         schemes_page = SchemesPage(
             client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}, follow_redirects=True)
@@ -85,7 +85,7 @@ class TestSchemeReview:
     def test_review_shows_success_notification(
         self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         schemes_page = SchemesPage(
             client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}, follow_redirects=True)
@@ -98,7 +98,7 @@ class TestSchemeReview:
         assert not schemes_page.important_notification
 
     def test_cannot_review_when_error(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
         )
@@ -126,7 +126,7 @@ class TestSchemeReview:
         )
 
     def test_cannot_review_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = SchemePage(client.post("/schemes/1", data={}, follow_redirects=True))
 
@@ -138,7 +138,7 @@ class TestSchemeReview:
         )
 
     def test_cannot_review_when_incorrect_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = SchemePage(client.post("/schemes/1", data={"csrf_token": "x"}, follow_redirects=True))
 
@@ -152,8 +152,10 @@ class TestSchemeReview:
     def test_cannot_review_when_different_authority(
         self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
     ) -> None:
-        authorities.add(Authority(id_=2, name="West Yorkshire Combined Authority"))
-        schemes.add(build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_id=2))
+        authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
+        schemes.add(
+            build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
+        )
 
         response = client.post("/schemes/2", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
@@ -178,7 +180,11 @@ class TestSchemeReview:
     ) -> None:
         schemes.add(
             build_scheme(
-                id_=1, reference="ATE00001", name="Wirral Package", authority_id=1, bid_status=BidStatus.SUBMITTED
+                id_=1,
+                reference="ATE00001",
+                name="Wirral Package",
+                authority_abbreviation="LIV",
+                bid_status=BidStatus.SUBMITTED,
             )
         )
 

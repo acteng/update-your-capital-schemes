@@ -27,9 +27,9 @@ class SchemeOverview:
         return current_overview_revision.name if current_overview_revision else None
 
     @property
-    def authority_id(self) -> int | None:
+    def authority_abbreviation(self) -> str | None:
         current_overview_revision = self._current_overview_revision()
-        return current_overview_revision.authority_id if current_overview_revision else None
+        return current_overview_revision.authority_abbreviation if current_overview_revision else None
 
     @property
     def type(self) -> SchemeType | None:
@@ -52,14 +52,14 @@ class OverviewRevision:
         id_: int | None,
         effective: DateRange,
         name: str,
-        authority_id: int,
+        authority_abbreviation: str,
         type_: SchemeType,
         funding_programme: FundingProgramme,
     ):
         self._id = id_
         self._effective = effective
         self._name = name
-        self._authority_id = authority_id
+        self._authority_abbreviation = authority_abbreviation
         self._type = type_
         self._funding_programme = funding_programme
 
@@ -76,8 +76,8 @@ class OverviewRevision:
         return self._name
 
     @property
-    def authority_id(self) -> int:
-        return self._authority_id
+    def authority_abbreviation(self) -> str:
+        return self._authority_abbreviation
 
     @property
     def type(self) -> SchemeType:

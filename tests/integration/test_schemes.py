@@ -33,8 +33,8 @@ from tests.integration.pages import SchemesPage
 class TestSchemes:
     @pytest.fixture(name="auth", autouse=True)
     def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
-        users.add(User(email="boardman@example.com", authority_id=1))
+        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        users.add(User(email="boardman@example.com", authority_abbreviation="LIV"))
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
@@ -60,7 +60,7 @@ class TestSchemes:
         expected_notification_banner: str,
     ) -> None:
         clock.now = now
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -77,7 +77,7 @@ class TestSchemes:
         self, client: FlaskClient, clock: Clock, schemes: SchemeRepository
     ) -> None:
         clock.now = datetime(2020, 3, 1)
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -94,12 +94,16 @@ class TestSchemes:
 
     def test_schemes_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1),
-            build_scheme(id_=2, reference="ATE00002", name="School Streets", authority_id=1),
+            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"),
+            build_scheme(id_=2, reference="ATE00002", name="School Streets", authority_abbreviation="LIV"),
             build_scheme(
-                id_=3, reference="ATE00003", name="Runcorn Busway", authority_id=1, bid_status=BidStatus.SUBMITTED
+                id_=3,
+                reference="ATE00003",
+                name="Runcorn Busway",
+                authority_abbreviation="LIV",
+                bid_status=BidStatus.SUBMITTED,
             ),
-            build_scheme(id_=4, reference="ATE00004", name="Hospital Fields Road", authority_id=2),
+            build_scheme(id_=4, reference="ATE00004", name="Hospital Fields Road", authority_abbreviation="WYO"),
             build_scheme(id_=5, reference="ATE00005", overview_revisions=[]),
         )
 
@@ -115,7 +119,7 @@ class TestSchemes:
                 id_=1,
                 reference="ATE00001",
                 name="Wirral Package",
-                authority_id=1,
+                authority_abbreviation="LIV",
                 funding_programme=FundingProgrammes.ATF3,
             )
         )
@@ -135,7 +139,11 @@ class TestSchemes:
 
     def test_schemes_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(
-            id_=1, reference="ATE00001", name="Wirral Package", authority_id=1, funding_programme=FundingProgrammes.ATF3
+            id_=1,
+            reference="ATE00001",
+            name="Wirral Package",
+            authority_abbreviation="LIV",
+            funding_programme=FundingProgrammes.ATF3,
         )
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
@@ -159,7 +167,7 @@ class TestSchemes:
         self, clock: Clock, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
         clock.now = datetime(2023, 4, 24)
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2023, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -171,7 +179,7 @@ class TestSchemes:
         assert [row.needs_review for row in schemes_page.schemes] == [True]
 
     def test_scheme_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         schemes_page = SchemesPage.open(client)
 
@@ -217,7 +225,7 @@ class TestSchemesApi:
                             "effective_date_from": "2020-01-01T12:00:00",
                             "effective_date_to": None,
                             "name": "Wirral Package",
-                            "authority_id": 1,
+                            "authority_abbreviation": "LIV",
                             "type": "construction",
                             "funding_programme": "ATF4",
                         }
@@ -235,7 +243,7 @@ class TestSchemesApi:
             overview_revision1.id == 2
             and overview_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and overview_revision1.name == "Wirral Package"
-            and overview_revision1.authority_id == 1
+            and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.type == SchemeType.CONSTRUCTION
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
         )

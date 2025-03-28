@@ -20,7 +20,7 @@ def test_build_scheme_with_minimal_overview_fields() -> None:
         scheme.id == 1
         and scheme.reference == "ATE00001"
         and scheme.overview.name == "Wirral Package"
-        and scheme.overview.authority_id == 0
+        and scheme.overview.authority_abbreviation == ""
         and scheme.overview.type == SchemeType.CONSTRUCTION
         and scheme.overview.funding_programme == FundingProgrammes.ATF2
     )
@@ -31,7 +31,7 @@ def test_build_scheme_with_overview_fields() -> None:
         id_=1,
         reference="ATE00001",
         name="Wirral Package",
-        authority_id=2,
+        authority_abbreviation="LIV",
         type_=SchemeType.DEVELOPMENT,
         funding_programme=FundingProgrammes.ATF4,
     )
@@ -40,7 +40,7 @@ def test_build_scheme_with_overview_fields() -> None:
         scheme.id == 1
         and scheme.reference == "ATE00001"
         and scheme.overview.name == "Wirral Package"
-        and scheme.overview.authority_id == 2
+        and scheme.overview.authority_abbreviation == "LIV"
         and scheme.overview.type == SchemeType.DEVELOPMENT
         and scheme.overview.funding_programme == FundingProgrammes.ATF4
     )
@@ -55,7 +55,7 @@ def test_build_scheme_with_overview_revision() -> None:
                 id_=2,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 name="Wirral Package",
-                authority_id=2,
+                authority_abbreviation="LIV",
                 type_=SchemeType.DEVELOPMENT,
                 funding_programme=FundingProgrammes.ATF4,
             )
@@ -66,7 +66,7 @@ def test_build_scheme_with_overview_revision() -> None:
         scheme.id == 1
         and scheme.reference == "ATE00001"
         and scheme.overview.name == "Wirral Package"
-        and scheme.overview.authority_id == 2
+        and scheme.overview.authority_abbreviation == "LIV"
         and scheme.overview.type == SchemeType.DEVELOPMENT
         and scheme.overview.funding_programme == FundingProgrammes.ATF4
     )
@@ -93,7 +93,7 @@ def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=2,
+            authority_abbreviation="LIV",
             type_=SchemeType.DEVELOPMENT,
             funding_programme=FundingProgrammes.ATF4,
             overview_revisions=[
@@ -101,7 +101,7 @@ def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
                     id_=2,
                     effective=DateRange(datetime(2020, 1, 1), None),
                     name="Wirral Package",
-                    authority_id=2,
+                    authority_abbreviation="LIV",
                     type_=SchemeType.DEVELOPMENT,
                     funding_programme=FundingProgrammes.ATF4,
                 )

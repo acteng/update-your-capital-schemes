@@ -87,7 +87,7 @@ class SchemeRepository:
     def get(self, id_: int) -> Scheme | None:
         raise NotImplementedError()
 
-    def get_by_authority(self, authority_id: int) -> list[Scheme]:
+    def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         raise NotImplementedError()
 
     def update(self, scheme: Scheme) -> None:

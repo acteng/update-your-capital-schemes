@@ -75,7 +75,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             row = result.one_or_none()
             return self._capital_scheme_to_domain(row) if row else None
 
-    def get_by_authority(self, authority_id: int) -> list[Scheme]:
+    def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         with self._session_maker() as session:
             result = session.scalars(
                 select(CapitalSchemeEntity)
@@ -85,7 +85,7 @@ class DatabaseSchemeRepository(SchemeRepository):
                         CapitalSchemeOverviewEntity.effective_date_to.is_(None)
                     )
                 )
-                .where(CapitalSchemeOverviewEntity.bid_submitting_authority_id == authority_id)
+                .where(CapitalSchemeOverviewEntity.bid_submitting_authority_id == authority_abbreviation)
                 .order_by(CapitalSchemeEntity.capital_scheme_id)
             )
             return [self._capital_scheme_to_domain(row) for row in result]
@@ -156,7 +156,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             effective_date_from=overview_revision.effective.date_from,
             effective_date_to=overview_revision.effective.date_to,
             scheme_name=overview_revision.name,
-            bid_submitting_authority_id=overview_revision.authority_id,
+            bid_submitting_authority_id=overview_revision.authority_abbreviation,
             scheme_type_id=self._scheme_type_mapper.to_id(overview_revision.type),
             funding_programme_id=self._funding_programme_mapper.to_id(overview_revision.funding_programme),
         )
@@ -168,7 +168,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             id_=capital_scheme_overview.capital_scheme_overview_id,
             effective=DateRange(capital_scheme_overview.effective_date_from, capital_scheme_overview.effective_date_to),
             name=capital_scheme_overview.scheme_name,
-            authority_id=capital_scheme_overview.bid_submitting_authority_id,
+            authority_abbreviation=capital_scheme_overview.bid_submitting_authority_id,
             type_=self._scheme_type_mapper.to_domain(capital_scheme_overview.scheme_type_id),
             funding_programme=self._funding_programme_mapper.to_domain(capital_scheme_overview.funding_programme_id),
         )

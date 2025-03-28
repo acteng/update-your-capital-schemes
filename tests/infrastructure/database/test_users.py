@@ -22,32 +22,35 @@ class TestDatabaseUserRepository:
 
     @pytest.fixture(name="authority", autouse=True)
     def authority_fixture(self, authorities: DatabaseAuthorityRepository) -> None:
-        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
+        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
 
     def test_add_users(self, users: DatabaseUserRepository, session_maker: sessionmaker[Session]) -> None:
-        users.add(User(email="boardman@example.com", authority_id=1), User(email="obree@example.com", authority_id=1))
+        users.add(
+            User(email="boardman@example.com", authority_abbreviation="LIV"),
+            User(email="obree@example.com", authority_abbreviation="LIV"),
+        )
 
         row1: UserEntity
         row2: UserEntity
         with session_maker() as session:
             row1, row2 = session.scalars(select(UserEntity).order_by(UserEntity.user_id))
-        assert row1.email == "boardman@example.com" and row1.authority_id == 1
-        assert row2.email == "obree@example.com" and row2.authority_id == 1
+        assert row1.email == "boardman@example.com" and row1.authority_abbreviation == "LIV"
+        assert row2.email == "obree@example.com" and row2.authority_abbreviation == "LIV"
 
     def test_get_user_by_email(self, users: DatabaseUserRepository, session_maker: sessionmaker[Session]) -> None:
         with session_maker() as session:
-            session.add(UserEntity(email="boardman@example.com", authority_id=1))
+            session.add(UserEntity(email="boardman@example.com", authority_abbreviation="LIV"))
             session.commit()
 
         user = users.get_by_email("boardman@example.com")
 
-        assert user and user.email == "boardman@example.com" and user.authority_id == 1
+        assert user and user.email == "boardman@example.com" and user.authority_abbreviation == "LIV"
 
     def test_get_user_by_email_who_does_not_exist(
         self, users: DatabaseUserRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
-            session.add(UserEntity(email="boardman@example.com", authority_id=1))
+            session.add(UserEntity(email="boardman@example.com", authority_abbreviation="LIV"))
             session.commit()
 
         assert users.get_by_email("obree@example.com") is None
@@ -56,8 +59,8 @@ class TestDatabaseUserRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    UserEntity(email="boardman@example.com", authority_id=1),
-                    UserEntity(email="obree@example.com", authority_id=1),
+                    UserEntity(email="boardman@example.com", authority_abbreviation="LIV"),
+                    UserEntity(email="obree@example.com", authority_abbreviation="LIV"),
                 ]
             )
             session.commit()

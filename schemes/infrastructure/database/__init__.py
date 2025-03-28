@@ -17,6 +17,7 @@ class AuthorityEntity(Base):
 
     authority_id: Mapped[int] = mapped_column(primary_key=True)
     authority_full_name: Mapped[str] = mapped_column(unique=True)
+    authority_abbreviation: Mapped[str] = mapped_column(unique=True)
 
 
 class UserEntity(Base):
@@ -24,8 +25,9 @@ class UserEntity(Base):
 
     user_id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(length=256), unique=True)
-    authority_id = mapped_column(
-        ForeignKey("authority.authority.authority_id", name="user_authority_id_fkey"), nullable=False
+    authority_abbreviation = mapped_column(
+        ForeignKey("authority.authority.authority_abbreviation", name="user_authority_abbreviation_fkey"),
+        nullable=False,
     )
 
 

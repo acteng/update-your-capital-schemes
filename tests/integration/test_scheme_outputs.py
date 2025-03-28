@@ -20,13 +20,13 @@ from tests.integration.pages import SchemePage
 class TestSchemeOutputs:
     @pytest.fixture(name="auth", autouse=True)
     def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(id_=1, name="Liverpool City Region Combined Authority"))
-        users.add(User(email="boardman@example.com", authority_id=1))
+        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        users.add(User(email="boardman@example.com", authority_abbreviation="LIV"))
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
     def test_scheme_shows_minimal_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -45,7 +45,7 @@ class TestSchemeOutputs:
         assert outputs[0].planned == ""
 
     def test_scheme_shows_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -81,7 +81,7 @@ class TestSchemeOutputs:
         ]
 
     def test_scheme_shows_zero_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -100,7 +100,7 @@ class TestSchemeOutputs:
         assert outputs[0].planned == "0"
 
     def test_scheme_shows_message_when_no_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = SchemePage.open(client, id_=1)
 

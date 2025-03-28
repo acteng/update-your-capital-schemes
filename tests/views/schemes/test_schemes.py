@@ -62,10 +62,10 @@ from tests.builders import build_scheme
 
 class TestSchemesContext:
     def test_from_domain(self) -> None:
-        authority = Authority(id_=1, name="Liverpool City Region Combined Authority")
+        authority = Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority")
         schemes = [
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1),
-            build_scheme(id_=2, reference="ATE00002", name="School Streets", authority_id=1),
+            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"),
+            build_scheme(id_=2, reference="ATE00002", name="School Streets", authority_abbreviation="LIV"),
         ]
 
         context = SchemesContext.from_domain(datetime.min, dummy_reporting_window(), authority, schemes)
@@ -78,8 +78,8 @@ class TestSchemesContext:
 
     def test_from_domain_sets_reporting_window_days_left(self) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
-        authority = Authority(id_=1, name="")
-        scheme = build_scheme(id_=1, reference="", name="", authority_id=1)
+        authority = Authority(abbreviation="LIV", name="")
+        scheme = build_scheme(id_=1, reference="", name="", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
@@ -90,8 +90,8 @@ class TestSchemesContext:
 
     def test_from_domain_does_not_set_reporting_window_days_left_when_up_to_date(self) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
-        authority = Authority(id_=1, name="")
-        scheme = build_scheme(id_=1, reference="", name="", authority_id=1)
+        authority = Authority(abbreviation="LIV", name="")
+        scheme = build_scheme(id_=1, reference="", name="", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 4, 1), source=DataSource.ATF4_BID)
         )
@@ -103,14 +103,16 @@ class TestSchemesContext:
     def test_from_domain_does_not_set_reporting_window_days_left_when_no_schemes(self) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
 
-        context = SchemesContext.from_domain(datetime(2020, 4, 24, 12), reporting_window, Authority(id_=0, name=""), [])
+        context = SchemesContext.from_domain(
+            datetime(2020, 4, 24, 12), reporting_window, Authority(abbreviation="", name=""), []
+        )
 
         assert context.reporting_window_days_left is None
 
     def test_from_domain_sets_scheme_needs_review(self) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
-        authority = Authority(id_=1, name="")
-        scheme = build_scheme(id_=1, reference="", name="", authority_id=1)
+        authority = Authority(abbreviation="LIV", name="")
+        scheme = build_scheme(id_=1, reference="", name="", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
@@ -170,8 +172,8 @@ class TestSchemeRowContext:
 @pytest.mark.usefixtures("app")
 class TestSchemeContext:
     def test_from_domain(self) -> None:
-        authority = Authority(id_=2, name="Liverpool City Region Combined Authority")
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
+        authority = Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority")
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
 
         context = SchemeContext.from_domain(dummy_reporting_window(), authority, scheme)
 
@@ -193,8 +195,8 @@ class TestSchemeContext:
     )
     def test_from_domain_sets_needs_review(self, review_date: datetime, expected_needs_review: bool) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 5, 1)))
-        authority = Authority(id_=2, name="")
-        scheme = build_scheme(id_=1, reference="", name="", authority_id=2)
+        authority = Authority(abbreviation="LIV", name="")
+        scheme = build_scheme(id_=1, reference="", name="", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
         )
@@ -204,8 +206,8 @@ class TestSchemeContext:
         assert context.needs_review == expected_needs_review
 
     def test_from_domain_sets_funding(self) -> None:
-        authority = Authority(id_=2, name="")
-        scheme = build_scheme(id_=1, reference="", name="", authority_id=2)
+        authority = Authority(abbreviation="LIV", name="")
+        scheme = build_scheme(id_=1, reference="", name="", authority_abbreviation="LIV")
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=1,
@@ -221,8 +223,8 @@ class TestSchemeContext:
         assert context.funding.funding_allocation == 100_000
 
     def test_from_domain_sets_milestones(self) -> None:
-        authority = Authority(id_=2, name="")
-        scheme = build_scheme(id_=1, reference="", name="", authority_id=2)
+        authority = Authority(abbreviation="LIV", name="")
+        scheme = build_scheme(id_=1, reference="", name="", authority_abbreviation="LIV")
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
@@ -239,8 +241,8 @@ class TestSchemeContext:
         assert context.milestones.milestones[0].planned == date(2020, 2, 1)
 
     def test_from_domain_sets_outputs(self) -> None:
-        authority = Authority(id_=2, name="")
-        scheme = build_scheme(id_=1, reference="", name="", authority_id=2)
+        authority = Authority(abbreviation="LIV", name="")
+        scheme = build_scheme(id_=1, reference="", name="", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -263,8 +265,8 @@ class TestSchemeContext:
         assert context.outputs.outputs[0].planned == Decimal(20)
 
     def test_from_domain_sets_review(self) -> None:
-        authority = Authority(id_=2, name="")
-        scheme = build_scheme(id_=1, reference="", name="", authority_id=2)
+        authority = Authority(abbreviation="LIV", name="")
+        scheme = build_scheme(id_=1, reference="", name="", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
         )
@@ -379,7 +381,7 @@ class TestSchemeRepr:
                     id_=1,
                     effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13)),
                     name="Wirral Package",
-                    authority_id=1,
+                    authority_abbreviation="LIV",
                     type_=SchemeType.DEVELOPMENT,
                     funding_programme=FundingProgrammes.ATF3,
                 ),
@@ -387,7 +389,7 @@ class TestSchemeRepr:
                     id_=2,
                     effective=DateRange(datetime(2020, 2, 1, 13), None),
                     name="School Streets",
-                    authority_id=2,
+                    authority_abbreviation="WYO",
                     type_=SchemeType.CONSTRUCTION,
                     funding_programme=FundingProgrammes.ATF4,
                 ),
@@ -402,7 +404,7 @@ class TestSchemeRepr:
                 effective_date_from="2020-01-01T12:00:00",
                 effective_date_to="2020-02-01T13:00:00",
                 name="Wirral Package",
-                authority_id=1,
+                authority_abbreviation="LIV",
                 type=SchemeTypeRepr.DEVELOPMENT,
                 funding_programme=FundingProgrammeRepr.ATF3,
             ),
@@ -411,7 +413,7 @@ class TestSchemeRepr:
                 effective_date_from="2020-02-01T13:00:00",
                 effective_date_to=None,
                 name="School Streets",
-                authority_id=2,
+                authority_abbreviation="WYO",
                 type=SchemeTypeRepr.CONSTRUCTION,
                 funding_programme=FundingProgrammeRepr.ATF4,
             ),
@@ -614,7 +616,7 @@ class TestSchemeRepr:
                     effective_date_from="2020-01-01T12:00:00",
                     effective_date_to="2020-02-01T13:00:00",
                     name="Wirral Package",
-                    authority_id=1,
+                    authority_abbreviation="LIV",
                     type=SchemeTypeRepr.DEVELOPMENT,
                     funding_programme=FundingProgrammeRepr.ATF3,
                 ),
@@ -623,7 +625,7 @@ class TestSchemeRepr:
                     effective_date_from="2020-02-01T13:00:00",
                     effective_date_to=None,
                     name="School Streets",
-                    authority_id=2,
+                    authority_abbreviation="WYO",
                     type=SchemeTypeRepr.CONSTRUCTION,
                     funding_programme=FundingProgrammeRepr.ATF4,
                 ),
@@ -639,7 +641,7 @@ class TestSchemeRepr:
             overview_revision1.id == 1
             and overview_revision1.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13))
             and overview_revision1.name == "Wirral Package"
-            and overview_revision1.authority_id == 1
+            and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.type == SchemeType.DEVELOPMENT
             and overview_revision1.funding_programme == FundingProgrammes.ATF3
         )
@@ -647,7 +649,7 @@ class TestSchemeRepr:
             overview_revision2.id == 2
             and overview_revision2.effective == DateRange(datetime(2020, 2, 1, 13), None)
             and overview_revision2.name == "School Streets"
-            and overview_revision2.authority_id == 2
+            and overview_revision2.authority_abbreviation == "WYO"
             and overview_revision2.type == SchemeType.CONSTRUCTION
             and overview_revision2.funding_programme == FundingProgrammes.ATF4
         )

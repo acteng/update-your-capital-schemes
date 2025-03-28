@@ -1,6 +1,6 @@
 import inject
 from sqlalchemy import delete, select
-from sqlalchemy.orm import Session, selectinload, sessionmaker
+from sqlalchemy.orm import Session, joinedload, selectinload, sessionmaker
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
@@ -14,6 +14,7 @@ from schemes.domain.schemes import (
     SchemeRepository,
 )
 from schemes.infrastructure.database import (
+    AuthorityEntity,
     CapitalSchemeAuthorityReviewEntity,
     CapitalSchemeBidStatusEntity,
     CapitalSchemeEntity,
@@ -69,7 +70,18 @@ class DatabaseSchemeRepository(SchemeRepository):
         with self._session_maker() as session:
             result = session.scalars(
                 select(CapitalSchemeEntity)
-                .options(selectinload("*"))
+                .options(
+                    selectinload(CapitalSchemeEntity.capital_scheme_overviews),
+                    joinedload(
+                        CapitalSchemeEntity.capital_scheme_overviews,
+                        CapitalSchemeOverviewEntity.bid_submitting_authority,
+                    ),
+                    selectinload(CapitalSchemeEntity.capital_scheme_bid_statuses),
+                    selectinload(CapitalSchemeEntity.capital_scheme_financials),
+                    selectinload(CapitalSchemeEntity.capital_scheme_milestones),
+                    selectinload(CapitalSchemeEntity.capital_scheme_interventions),
+                    selectinload(CapitalSchemeEntity.capital_scheme_authority_reviews),
+                )
                 .where(CapitalSchemeEntity.capital_scheme_id == id_)
             )
             row = result.one_or_none()
@@ -79,13 +91,28 @@ class DatabaseSchemeRepository(SchemeRepository):
         with self._session_maker() as session:
             result = session.scalars(
                 select(CapitalSchemeEntity)
-                .options(selectinload("*"))
+                .options(
+                    selectinload(CapitalSchemeEntity.capital_scheme_overviews),
+                    joinedload(
+                        CapitalSchemeEntity.capital_scheme_overviews,
+                        CapitalSchemeOverviewEntity.bid_submitting_authority,
+                    ),
+                    selectinload(CapitalSchemeEntity.capital_scheme_bid_statuses),
+                    selectinload(CapitalSchemeEntity.capital_scheme_financials),
+                    selectinload(CapitalSchemeEntity.capital_scheme_milestones),
+                    selectinload(CapitalSchemeEntity.capital_scheme_interventions),
+                    selectinload(CapitalSchemeEntity.capital_scheme_authority_reviews),
+                )
                 .join(
                     CapitalSchemeEntity.capital_scheme_overviews.and_(
                         CapitalSchemeOverviewEntity.effective_date_to.is_(None)
                     )
                 )
-                .where(CapitalSchemeOverviewEntity.bid_submitting_authority_id == authority_abbreviation)
+                .join(
+                    CapitalSchemeOverviewEntity.bid_submitting_authority.and_(
+                        AuthorityEntity.authority_abbreviation == authority_abbreviation
+                    )
+                )
                 .order_by(CapitalSchemeEntity.capital_scheme_id)
             )
             return [self._capital_scheme_to_domain(row) for row in result]
@@ -168,7 +195,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             id_=capital_scheme_overview.capital_scheme_overview_id,
             effective=DateRange(capital_scheme_overview.effective_date_from, capital_scheme_overview.effective_date_to),
             name=capital_scheme_overview.scheme_name,
-            authority_abbreviation=capital_scheme_overview.bid_submitting_authority_id,
+            authority_abbreviation=capital_scheme_overview.bid_submitting_authority.authority_abbreviation,
             type_=self._scheme_type_mapper.to_domain(capital_scheme_overview.scheme_type_id),
             funding_programme=self._funding_programme_mapper.to_domain(capital_scheme_overview.funding_programme_id),
         )

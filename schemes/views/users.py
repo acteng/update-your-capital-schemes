@@ -21,5 +21,5 @@ def clear(users: UserRepository) -> Response:
 class UserRepr:
     email: str
 
-    def to_domain(self, authority_id: int) -> User:
-        return User(email=self.email, authority_id=authority_id)
+    def to_domain(self, authority_abbreviation: str) -> User:
+        return User(email=self.email, authority_abbreviation=authority_abbreviation)

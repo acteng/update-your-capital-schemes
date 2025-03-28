@@ -7,17 +7,17 @@ from schemes.domain.users import User, UserRepository
 
 class MemoryAuthorityRepository(AuthorityRepository):
     def __init__(self) -> None:
-        self._authorities: dict[int, Authority] = {}
+        self._authorities: dict[str, Authority] = {}
 
     def add(self, *authorities: Authority) -> None:
         for authority in authorities:
-            self._authorities[authority.id] = authority
+            self._authorities[authority.abbreviation] = authority
 
     def clear(self) -> None:
         self._authorities.clear()
 
-    def get(self, id_: int) -> Authority | None:
-        return self._authorities.get(id_)
+    def get(self, abbreviation: str) -> Authority | None:
+        return self._authorities.get(abbreviation)
 
 
 class MemoryUserRepository(UserRepository):
@@ -48,9 +48,13 @@ class MemorySchemeRepository(SchemeRepository):
     def get(self, id_: int) -> Scheme | None:
         return deepcopy(self._schemes.get(id_))
 
-    def get_by_authority(self, authority_id: int) -> list[Scheme]:
+    def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         return sorted(
-            [deepcopy(scheme) for scheme in self._schemes.values() if scheme.overview.authority_id == authority_id],
+            [
+                deepcopy(scheme)
+                for scheme in self._schemes.values()
+                if scheme.overview.authority_abbreviation == authority_abbreviation
+            ],
             key=lambda scheme: scheme.id,
         )
 

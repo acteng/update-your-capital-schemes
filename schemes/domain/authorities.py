@@ -1,11 +1,11 @@
 class Authority:
-    def __init__(self, id_: int, name: str):
-        self._id = id_
+    def __init__(self, abbreviation: str, name: str):
+        self._abbreviation = abbreviation
         self._name = name
 
     @property
-    def id(self) -> int:
-        return self._id
+    def abbreviation(self) -> str:
+        return self._abbreviation
 
     @property
     def name(self) -> str:
@@ -19,5 +19,5 @@ class AuthorityRepository:
     def clear(self) -> None:
         raise NotImplementedError()
 
-    def get(self, id_: int) -> Authority | None:
+    def get(self, abbreviation: str) -> Authority | None:
         raise NotImplementedError()

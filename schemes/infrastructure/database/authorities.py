@@ -1,5 +1,5 @@
 import inject
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from schemes.domain.authorities import Authority, AuthorityRepository
@@ -14,7 +14,7 @@ class DatabaseAuthorityRepository(AuthorityRepository):
     def add(self, *authorities: Authority) -> None:
         with self._session_maker() as session:
             session.add_all(
-                AuthorityEntity(authority_id=authority.id, authority_full_name=authority.name)
+                AuthorityEntity(authority_abbreviation=authority.abbreviation, authority_full_name=authority.name)
                 for authority in authorities
             )
             session.commit()
@@ -24,7 +24,10 @@ class DatabaseAuthorityRepository(AuthorityRepository):
             session.execute(delete(AuthorityEntity))
             session.commit()
 
-    def get(self, id_: int) -> Authority | None:
+    def get(self, abbreviation: str) -> Authority | None:
         with self._session_maker() as session:
-            row = session.get(AuthorityEntity, id_)
-            return Authority(id_=row.authority_id, name=row.authority_full_name) if row else None
+            result = session.scalars(
+                select(AuthorityEntity).where(AuthorityEntity.authority_abbreviation == abbreviation)
+            )
+            row = result.one_or_none()
+            return Authority(abbreviation=row.authority_abbreviation, name=row.authority_full_name) if row else None

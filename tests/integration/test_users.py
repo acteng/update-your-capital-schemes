@@ -12,7 +12,7 @@ class TestUsersApi:
         return dict(config) | {"API_KEY": "boardman"}
 
     def test_clear_users(self, users: UserRepository, client: FlaskClient) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_abbreviation="LIV"))
 
         response = client.delete("/users", headers={"Authorization": "API-Key boardman"})
 
@@ -20,7 +20,7 @@ class TestUsersApi:
         assert not users.get_by_email("boardman@example.com")
 
     def test_cannot_clear_users_when_no_credentials(self, users: UserRepository, client: FlaskClient) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_abbreviation="LIV"))
 
         response = client.delete("/users")
 
@@ -28,7 +28,7 @@ class TestUsersApi:
         assert users.get_by_email("boardman@example.com")
 
     def test_cannot_clear_users_when_incorrect_credentials(self, users: UserRepository, client: FlaskClient) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_abbreviation="LIV"))
 
         response = client.delete("/users", headers={"Authorization": "API-Key obree"})
 
@@ -38,7 +38,7 @@ class TestUsersApi:
 
 class TestUsersApiWhenDisabled:
     def test_cannot_clear_users(self, users: UserRepository, client: FlaskClient) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_abbreviation="LIV"))
 
         response = client.delete("/users", headers={"Authorization": "API-Key boardman"})
 

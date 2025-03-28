@@ -90,9 +90,9 @@ def index(
     assert user
     now = clock.now
     reporting_window = reporting_window_service.get_by_date(now)
-    authority = authorities.get(user.authority_id)
+    authority = authorities.get(user.authority_abbreviation)
     assert authority
-    authority_schemes = [scheme for scheme in schemes.get_by_authority(authority.id) if scheme.is_updateable]
+    authority_schemes = [scheme for scheme in schemes.get_by_authority(authority.abbreviation) if scheme.is_updateable]
 
     context = SchemesContext.from_domain(now, reporting_window, authority, authority_schemes)
     return render_template("schemes.html", **as_shallow_dict(context))
@@ -163,14 +163,14 @@ def get_html(
     assert user
     now = clock.now
     reporting_window = reporting_window_service.get_by_date(now)
-    authority = authorities.get(user.authority_id)
+    authority = authorities.get(user.authority_abbreviation)
     assert authority
     scheme = schemes.get(scheme_id)
 
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.overview.authority_id:
+    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
         abort(403)
 
     context = SchemeContext.from_domain(reporting_window, authority, scheme)
@@ -287,7 +287,7 @@ def spend_to_date_form(scheme_id: int, users: UserRepository, schemes: SchemeRep
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.overview.authority_id:
+    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
         abort(403)
 
     context = ChangeSpendToDateContext.from_domain(scheme)
@@ -307,7 +307,7 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.overview.authority_id:
+    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
         abort(403)
 
     form = ChangeSpendToDateForm.from_domain(scheme.funding)
@@ -333,7 +333,7 @@ def milestones_form(scheme_id: int, clock: Clock, users: UserRepository, schemes
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.overview.authority_id:
+    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
         abort(403)
 
     context = ChangeMilestoneDatesContext.from_domain(scheme, clock.now)
@@ -353,7 +353,7 @@ def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, s
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.overview.authority_id:
+    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
         abort(403)
 
     now = clock.now
@@ -380,7 +380,7 @@ def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, schem
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_id != scheme.overview.authority_id:
+    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
         abort(403)
 
     form = SchemeReviewForm()

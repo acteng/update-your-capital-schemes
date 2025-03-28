@@ -15,14 +15,14 @@ from tests.e2e.pages import SchemePage
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
-    app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
-    app_client.add_users(1, UserRepr(email="boardman@example.com"))
+    app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=1,
+            authority_abbreviation="LIV",
             milestone_revisions=[
                 MilestoneRevisionRepr(
                     id=1,
@@ -88,14 +88,14 @@ def test_scheme_milestones(app_client: AppClient, oidc_client: OidcClient, page:
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
     app_client.set_clock("2023-08-01T13:00:00")
-    app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
-    app_client.add_users(1, UserRepr(email="boardman@example.com"))
+    app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=1,
+            authority_abbreviation="LIV",
             milestone_revisions=[
                 MilestoneRevisionRepr(
                     id=1,
@@ -229,14 +229,14 @@ def test_change_milestones(app_client: AppClient, oidc_client: OidcClient, page:
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_cannot_change_milestones_when_error(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
-    app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
-    app_client.add_users(1, UserRepr(email="boardman@example.com"))
+    app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=1,
+            authority_abbreviation="LIV",
             milestone_revisions=[
                 MilestoneRevisionRepr(
                     id=1,

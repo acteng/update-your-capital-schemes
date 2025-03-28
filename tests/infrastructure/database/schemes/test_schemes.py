@@ -52,8 +52,8 @@ class TestDatabaseSchemeRepository:
     @pytest.fixture(name="authority", autouse=True)
     def authority_fixture(self, authorities: DatabaseAuthorityRepository) -> None:
         authorities.add(
-            Authority(id_=1, name="Liverpool City Region Combined Authority"),
-            Authority(id_=2, name="West Yorkshire Combined Authority"),
+            Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"),
+            Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"),
         )
 
     def test_add_schemes(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
@@ -79,7 +79,7 @@ class TestDatabaseSchemeRepository:
                     id_=2,
                     effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                     name="Wirral Package",
-                    authority_id=1,
+                    authority_abbreviation="LIV",
                     type_=SchemeType.DEVELOPMENT,
                     funding_programme=FundingProgrammes.ATF3,
                 ),
@@ -87,7 +87,7 @@ class TestDatabaseSchemeRepository:
                     id_=3,
                     effective=DateRange(datetime(2020, 2, 1), None),
                     name="School Streets",
-                    authority_id=2,
+                    authority_abbreviation="WYO",
                     type_=SchemeType.CONSTRUCTION,
                     funding_programme=FundingProgrammes.ATF4,
                 ),
@@ -394,7 +394,7 @@ class TestDatabaseSchemeRepository:
             overview_revision1.id == 2
             and overview_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
             and overview_revision1.name == "Wirral Package"
-            and overview_revision1.authority_id == 1
+            and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.type == SchemeType.DEVELOPMENT
             and overview_revision1.funding_programme == FundingProgrammes.ATF3
         )
@@ -402,7 +402,7 @@ class TestDatabaseSchemeRepository:
             overview_revision2.id == 3
             and overview_revision2.effective == DateRange(datetime(2020, 2, 1), None)
             and overview_revision2.name == "School Streets"
-            and overview_revision2.authority_id == 2
+            and overview_revision2.authority_abbreviation == "WYO"
             and overview_revision2.type == SchemeType.CONSTRUCTION
             and overview_revision2.funding_programme == FundingProgrammes.ATF4
         )
@@ -697,7 +697,7 @@ class TestDatabaseSchemeRepository:
 
         scheme1: Scheme
         scheme2: Scheme
-        scheme1, scheme2 = schemes.get_by_authority(1)
+        scheme1, scheme2 = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1 and scheme1.reference == "ATE00001"
         assert scheme2.id == 2 and scheme2.reference == "ATE00002"
@@ -745,7 +745,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
 
         scheme1: Scheme
-        (scheme1,) = schemes.get_by_authority(1)
+        (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         overview_revision1: OverviewRevision
@@ -755,7 +755,7 @@ class TestDatabaseSchemeRepository:
             overview_revision1.id == 3
             and overview_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
             and overview_revision1.name == "Wirral Package"
-            and overview_revision1.authority_id == 1
+            and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.type == SchemeType.DEVELOPMENT
             and overview_revision1.funding_programme == FundingProgrammes.ATF3
         )
@@ -763,7 +763,7 @@ class TestDatabaseSchemeRepository:
             overview_revision2.id == 4
             and overview_revision2.effective == DateRange(datetime(2020, 2, 1), None)
             and overview_revision2.name == "School Streets"
-            and overview_revision2.authority_id == 1
+            and overview_revision2.authority_abbreviation == "LIV"
             and overview_revision2.type == SchemeType.CONSTRUCTION
             and overview_revision2.funding_programme == FundingProgrammes.ATF4
         )
@@ -822,7 +822,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
 
         scheme1: Scheme
-        (scheme1,) = schemes.get_by_authority(1)
+        (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         bid_status_revision1: BidStatusRevision
@@ -899,7 +899,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
 
         scheme1: Scheme
-        (scheme1,) = schemes.get_by_authority(1)
+        (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         financial_revision1: FinancialRevision
@@ -983,7 +983,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
 
         scheme1: Scheme
-        (scheme1,) = schemes.get_by_authority(1)
+        (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         milestone_revision1: MilestoneRevision
@@ -1066,7 +1066,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
 
         scheme1: Scheme
-        (scheme1,) = schemes.get_by_authority(1)
+        (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         output_revision1: OutputRevision
@@ -1138,7 +1138,7 @@ class TestDatabaseSchemeRepository:
             session.commit()
 
         scheme1: Scheme
-        (scheme1,) = schemes.get_by_authority(1)
+        (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         authority_review1: AuthorityReview

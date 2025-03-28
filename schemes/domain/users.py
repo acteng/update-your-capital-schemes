@@ -1,15 +1,15 @@
 class User:
-    def __init__(self, email: str, authority_id: int):
+    def __init__(self, email: str, authority_abbreviation: str):
         self._email = email
-        self._authority_id = authority_id
+        self._authority_abbreviation = authority_abbreviation
 
     @property
     def email(self) -> str:
         return self._email
 
     @property
-    def authority_id(self) -> int:
-        return self._authority_id
+    def authority_abbreviation(self) -> str:
+        return self._authority_abbreviation
 
 
 class UserRepository:

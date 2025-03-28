@@ -13,6 +13,19 @@ from schemes.domain.schemes import (
 from tests.builders import build_scheme
 
 
+def test_build_scheme_with_minimal_overview_fields() -> None:
+    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
+
+    assert (
+        scheme.id == 1
+        and scheme.reference == "ATE00001"
+        and scheme.overview.name == "Wirral Package"
+        and scheme.overview.authority_id == 2
+        and scheme.overview.type == SchemeType.CONSTRUCTION
+        and scheme.overview.funding_programme == FundingProgrammes.ATF2
+    )
+
+
 def test_build_scheme_with_overview_fields() -> None:
     scheme = build_scheme(
         id_=1,
@@ -94,6 +107,18 @@ def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
                 )
             ],
         )
+
+
+def test_build_scheme_with_minimal_bid_status_fields() -> None:
+    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
+
+    assert (
+        scheme.id == 1
+        and scheme.reference == "ATE00001"
+        and scheme.overview.name == "Wirral Package"
+        and scheme.overview.authority_id == 2
+        and scheme.funding.bid_status == BidStatus.FUNDED
+    )
 
 
 def test_build_scheme_with_bid_status_fields() -> None:

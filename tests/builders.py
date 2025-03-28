@@ -33,13 +33,13 @@ def build_scheme(
 
     if overview_revisions is not None:
         overview_revisions = overview_revisions
-    elif name is not None and authority_id is not None:
+    elif name is not None:
         overview_revisions = [
             OverviewRevision(
                 id_=None,
                 effective=DateRange(datetime.min, None),
                 name=name,
-                authority_id=authority_id,
+                authority_id=authority_id or 0,
                 type_=type_ or SchemeType.CONSTRUCTION,
                 funding_programme=funding_programme or FundingProgrammes.ATF2,
             )

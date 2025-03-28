@@ -29,27 +29,27 @@ class TestScheme:
         assert scheme.id == 1 and scheme.reference == "ATE00001"
 
     def test_get_overview(self) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
 
         assert isinstance(scheme.overview, SchemeOverview)
 
     def test_get_funding(self) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
 
         assert isinstance(scheme.funding, SchemeFunding)
 
     def test_get_milestones(self) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
 
         assert isinstance(scheme.milestones, SchemeMilestones)
 
     def test_get_outputs(self) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
 
         assert isinstance(scheme.outputs, SchemeOutputs)
 
     def test_get_reviews(self) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
 
         assert isinstance(scheme.reviews, SchemeReviews)
 
@@ -68,7 +68,6 @@ class TestScheme:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=2,
             funding_programme=FundingProgrammes.ATF4,
             bid_status=bid_status,
         )
@@ -98,7 +97,6 @@ class TestScheme:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=2,
             funding_programme=FundingProgrammes.ATF4,
             bid_status=BidStatus.FUNDED,
         )
@@ -129,7 +127,6 @@ class TestScheme:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=2,
             funding_programme=funding_programme,
             bid_status=BidStatus.FUNDED,
         )
@@ -160,7 +157,6 @@ class TestScheme:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=2,
             funding_programme=funding_programme,
             bid_status=BidStatus.FUNDED,
         )
@@ -182,7 +178,6 @@ class TestScheme:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=2,
             funding_programme=FundingProgrammes.ATF4,
             bid_status_revisions=[],
         )
@@ -204,7 +199,6 @@ class TestScheme:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=2,
             funding_programme=FundingProgrammes.ATF4,
             bid_status=BidStatus.FUNDED,
         )
@@ -216,7 +210,6 @@ class TestScheme:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=2,
             funding_programme=FundingProgrammes.ATF4,
             bid_status=BidStatus.FUNDED,
         )
@@ -247,9 +240,7 @@ class TestScheme:
         assert scheme.is_updateable is True
 
     def test_milestones_eligible_for_authority_update_when_development(self) -> None:
-        scheme = build_scheme(
-            id_=1, reference="ATE00001", name="Wirral Package", authority_id=2, type_=SchemeType.DEVELOPMENT
-        )
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", type_=SchemeType.DEVELOPMENT)
 
         assert scheme.milestones_eligible_for_authority_update == {
             Milestone.FEASIBILITY_DESIGN_COMPLETED,
@@ -258,9 +249,7 @@ class TestScheme:
         }
 
     def test_milestones_eligible_for_authority_update_when_construction(self) -> None:
-        scheme = build_scheme(
-            id_=1, reference="ATE00001", name="Wirral Package", authority_id=2, type_=SchemeType.CONSTRUCTION
-        )
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", type_=SchemeType.CONSTRUCTION)
 
         assert scheme.milestones_eligible_for_authority_update == {
             Milestone.FEASIBILITY_DESIGN_COMPLETED,

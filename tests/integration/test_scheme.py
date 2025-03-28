@@ -195,7 +195,6 @@ class TestSchemeApi:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=1,
             bid_status_revisions=[
                 BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1, 12), None), status=BidStatus.FUNDED)
             ],
@@ -215,7 +214,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financial(
             FinancialRevision(
                 id_=2,
@@ -242,7 +241,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_milestone_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=2,
@@ -271,7 +270,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_output_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
         scheme.outputs.update_output(
             OutputRevision(
                 id_=2,
@@ -299,7 +298,7 @@ class TestSchemeApi:
         ]
 
     def test_get_scheme_authority_reviews(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1, 12), source=DataSource.ATF4_BID)
         )
@@ -317,14 +316,14 @@ class TestSchemeApi:
         ]
 
     def test_cannot_get_scheme_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json"})
 
         assert response.status_code == 401
 
     def test_cannot_get_scheme_when_incorrect_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key obree"})
 
@@ -333,7 +332,7 @@ class TestSchemeApi:
 
 class TestSchemeApiWhenDisabled:
     def test_cannot_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
         response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
 

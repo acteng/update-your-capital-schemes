@@ -32,7 +32,7 @@ from tests.builders import build_scheme
 
 class TestSchemeMilestonesContext:
     def test_from_domain_sets_development_milestones(self) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.DEVELOPMENT)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.DEVELOPMENT)
 
         context = SchemeMilestonesContext.from_domain(scheme)
 
@@ -43,7 +43,7 @@ class TestSchemeMilestonesContext:
         ]
 
     def test_from_domain_sets_construction_milestones(self) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.CONSTRUCTION)
 
         context = SchemeMilestonesContext.from_domain(scheme)
 
@@ -66,7 +66,7 @@ class TestSchemeMilestonesContext:
         ],
     )
     def test_from_domain_sets_current_milestone_dates(self, milestone: Milestone, expected_milestone_name: str) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.CONSTRUCTION)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
@@ -124,7 +124,7 @@ class TestSchemeMilestonesContext:
         ],
     )
     def test_from_domain_sets_milestone_dates_when_no_revisions(self, expected_milestone_name: str) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.CONSTRUCTION)
 
         context = SchemeMilestonesContext.from_domain(scheme)
 
@@ -164,7 +164,7 @@ class TestMilestoneContext:
 @pytest.mark.usefixtures("app")
 class TestChangeMilestoneDatesContext:
     def test_from_domain(self) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=1,
@@ -512,7 +512,7 @@ class TestChangeMilestoneDatesForm:
     ]
 
     def test_create_class_sets_development_fields(self) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.DEVELOPMENT)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.DEVELOPMENT)
 
         form_class = ChangeMilestoneDatesForm.create_class(scheme, datetime.min)
 
@@ -528,7 +528,7 @@ class TestChangeMilestoneDatesForm:
         )
 
     def test_create_class_sets_construction_fields(self) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.CONSTRUCTION)
 
         form_class = ChangeMilestoneDatesForm.create_class(scheme, datetime.min)
 
@@ -546,7 +546,7 @@ class TestChangeMilestoneDatesForm:
         )
 
     def test_create_class_sets_labels(self) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.CONSTRUCTION)
 
         form_class = ChangeMilestoneDatesForm.create_class(scheme, datetime.min)
 
@@ -560,7 +560,7 @@ class TestChangeMilestoneDatesForm:
         )
 
     def test_from_domain_when_development_scheme(self) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.DEVELOPMENT)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.DEVELOPMENT)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
@@ -597,7 +597,7 @@ class TestChangeMilestoneDatesForm:
         )
 
     def test_from_domain_when_construction_scheme(self) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.CONSTRUCTION)
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
@@ -652,7 +652,7 @@ class TestChangeMilestoneDatesForm:
         )
 
     def test_update_domain_when_development_scheme(self) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.DEVELOPMENT)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.DEVELOPMENT)
         form_class = ChangeMilestoneDatesForm.create_class(scheme, datetime(2020, 2, 1, 13))
         form = form_class(
             feasibility_design_completed={"actual": datetime(2020, 1, 1)},
@@ -673,7 +673,7 @@ class TestChangeMilestoneDatesForm:
         ]
 
     def test_update_domain_when_construction_scheme(self) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.CONSTRUCTION)
         form_class = ChangeMilestoneDatesForm.create_class(scheme, datetime(2020, 2, 1, 13))
         form = form_class(
             feasibility_design_completed={"actual": datetime(2020, 1, 1)},
@@ -698,13 +698,13 @@ class TestChangeMilestoneDatesForm:
         ]
 
     def test_cannot_update_domain_with_construction_milestones_when_development_scheme(self) -> None:
-        construction_scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        construction_scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.CONSTRUCTION)
         form_class = ChangeMilestoneDatesForm.create_class(construction_scheme, datetime(2020, 2, 1, 13))
         form = form_class(
             construction_started={"actual": datetime(2020, 1, 4)},
             construction_completed={"actual": datetime(2020, 1, 5)},
         )
-        development_scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.DEVELOPMENT)
+        development_scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.DEVELOPMENT)
 
         form.update_domain(development_scheme, datetime(2020, 2, 1, 13))
 
@@ -712,7 +712,7 @@ class TestChangeMilestoneDatesForm:
 
     @pytest.mark.parametrize("field_name", field_names)
     def test_validate_when_valid(self, field_name: str) -> None:
-        scheme = build_scheme(id_=0, reference="", name="", authority_id=0, type_=SchemeType.CONSTRUCTION)
+        scheme = build_scheme(id_=0, reference="", name="", type_=SchemeType.CONSTRUCTION)
         form_class = ChangeMilestoneDatesForm.create_class(scheme, datetime(2020, 2, 1))
         form = form_class(
             formdata=MultiDict(

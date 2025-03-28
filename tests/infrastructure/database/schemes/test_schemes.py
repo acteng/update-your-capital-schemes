@@ -57,9 +57,9 @@ class TestDatabaseSchemeRepository:
         )
 
     def test_add_schemes(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
-        scheme1 = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme1 = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
 
-        schemes.add(scheme1, build_scheme(id_=2, reference="ATE00002", name="School Streets", authority_id=1))
+        schemes.add(scheme1, build_scheme(id_=2, reference="ATE00002", name="School Streets"))
 
         row1: CapitalSchemeEntity
         row2: CapitalSchemeEntity
@@ -131,7 +131,6 @@ class TestDatabaseSchemeRepository:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=1,
             bid_status_revisions=[
                 BidStatusRevision(
                     id_=2, effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)), status=BidStatus.SUBMITTED
@@ -166,7 +165,7 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_financial_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=2,
@@ -214,7 +213,7 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_milestone_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=2,
@@ -266,7 +265,7 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_output_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=3,
@@ -316,7 +315,7 @@ class TestDatabaseSchemeRepository:
     def test_add_schemes_authority_reviews(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1)
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
         scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
             AuthorityReview(id_=3, review_date=datetime(2020, 2, 1), source=DataSource.PULSE_6),

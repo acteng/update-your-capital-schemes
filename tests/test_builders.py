@@ -14,13 +14,13 @@ from tests.builders import build_scheme
 
 
 def test_build_scheme_with_minimal_overview_fields() -> None:
-    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
+    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
 
     assert (
         scheme.id == 1
         and scheme.reference == "ATE00001"
         and scheme.overview.name == "Wirral Package"
-        and scheme.overview.authority_id == 2
+        and scheme.overview.authority_id == 0
         and scheme.overview.type == SchemeType.CONSTRUCTION
         and scheme.overview.funding_programme == FundingProgrammes.ATF2
     )
@@ -110,27 +110,23 @@ def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
 
 
 def test_build_scheme_with_minimal_bid_status_fields() -> None:
-    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2)
+    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
 
     assert (
         scheme.id == 1
         and scheme.reference == "ATE00001"
         and scheme.overview.name == "Wirral Package"
-        and scheme.overview.authority_id == 2
         and scheme.funding.bid_status == BidStatus.FUNDED
     )
 
 
 def test_build_scheme_with_bid_status_fields() -> None:
-    scheme = build_scheme(
-        id_=1, reference="ATE00001", name="Wirral Package", authority_id=2, bid_status=BidStatus.SUBMITTED
-    )
+    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", bid_status=BidStatus.SUBMITTED)
 
     assert (
         scheme.id == 1
         and scheme.reference == "ATE00001"
         and scheme.overview.name == "Wirral Package"
-        and scheme.overview.authority_id == 2
         and scheme.funding.bid_status == BidStatus.SUBMITTED
     )
 
@@ -140,7 +136,6 @@ def test_build_scheme_with_bid_status_revision() -> None:
         id_=1,
         reference="ATE00001",
         name="Wirral Package",
-        authority_id=2,
         bid_status_revisions=[
             BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED)
         ],
@@ -150,19 +145,17 @@ def test_build_scheme_with_bid_status_revision() -> None:
         scheme.id == 1
         and scheme.reference == "ATE00001"
         and scheme.overview.name == "Wirral Package"
-        and scheme.overview.authority_id == 2
         and scheme.funding.bid_status == BidStatus.SUBMITTED
     )
 
 
 def test_build_scheme_with_no_bid_status_revisions() -> None:
-    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=2, bid_status_revisions=[])
+    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", bid_status_revisions=[])
 
     assert (
         scheme.id == 1
         and scheme.reference == "ATE00001"
         and scheme.overview.name == "Wirral Package"
-        and scheme.overview.authority_id == 2
         and scheme.funding.bid_status_revisions == []
     )
 
@@ -173,7 +166,6 @@ def test_cannot_build_scheme_with_bid_status_fields_and_revision() -> None:
             id_=1,
             reference="ATE00001",
             name="Wirral Package",
-            authority_id=2,
             bid_status=BidStatus.SUBMITTED,
             bid_status_revisions=[
                 BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED)

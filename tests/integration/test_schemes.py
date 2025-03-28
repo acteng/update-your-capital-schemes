@@ -436,7 +436,7 @@ class TestSchemesApi:
         assert not schemes.get(1)
 
     def test_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 
@@ -444,7 +444,7 @@ class TestSchemesApi:
         assert not schemes.get(1)
 
     def test_cannot_clear_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
         response = client.delete("/schemes")
 
@@ -454,7 +454,7 @@ class TestSchemesApi:
     def test_cannot_clear_schemes_when_incorrect_credentials(
         self, schemes: SchemeRepository, client: FlaskClient
     ) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key obree"})
 
@@ -472,7 +472,7 @@ class TestSchemesApiWhenDisabled:
         assert not schemes.get(1)
 
     def test_cannot_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_id=1))
+        schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 

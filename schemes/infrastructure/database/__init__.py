@@ -61,6 +61,7 @@ class CapitalSchemeOverviewEntity(Base):
         ForeignKey("authority.authority.authority_id", name="capital_scheme_overview_bid_submitting_authority_id_fkey"),
         nullable=False,
     )
+    bid_submitting_authority: Mapped[AuthorityEntity] = relationship()
     scheme_type_id: Mapped[int]
     funding_programme_id: Mapped[int]
     effective_date_from: Mapped[datetime]

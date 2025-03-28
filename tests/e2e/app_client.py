@@ -23,10 +23,10 @@ class AppClient:
         response = self._session.post(f"{self._url}/authorities", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
-    def add_users(self, authority_id: int, *users: UserRepr) -> None:
+    def add_users(self, authority_abbreviation: str, *users: UserRepr) -> None:
         json = [asdict(user) for user in users]
         response = self._session.post(
-            f"{self._url}/authorities/{authority_id}/users", json=json, timeout=self.DEFAULT_TIMEOUT
+            f"{self._url}/authorities/{authority_abbreviation}/users", json=json, timeout=self.DEFAULT_TIMEOUT
         )
         response.raise_for_status()
 
@@ -58,7 +58,7 @@ class AppClient:
 
 @dataclass(frozen=True)
 class AuthorityRepr:
-    id: int
+    abbreviation: str
     name: str
 
 
@@ -84,7 +84,7 @@ class OverviewRevisionRepr:
     effective_date_from: str
     effective_date_to: str | None
     name: str
-    authority_id: int
+    authority_abbreviation: str
     type: str
     funding_programme: str
     id: int | None = None

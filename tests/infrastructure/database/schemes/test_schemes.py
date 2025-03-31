@@ -713,22 +713,32 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_overview_id=3,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
-                        effective_date_to=None,
+                        effective_date_to=datetime(2020, 2, 1),
                         scheme_name="Wirral Package",
                         bid_submitting_authority_id=1,
                         scheme_type_id=1,
                         funding_programme_id=2,
                     ),
-                    CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=4,
-                        capital_scheme_id=2,
+                        capital_scheme_id=1,
                         effective_date_from=datetime(2020, 2, 1),
                         effective_date_to=None,
                         scheme_name="School Streets",
-                        bid_submitting_authority_id=2,
+                        bid_submitting_authority_id=1,
                         scheme_type_id=2,
                         funding_programme_id=3,
+                    ),
+                    CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
+                    CapitalSchemeOverviewEntity(
+                        capital_scheme_overview_id=5,
+                        capital_scheme_id=2,
+                        effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=None,
+                        scheme_name="Hospital Fields Road",
+                        bid_submitting_authority_id=2,
+                        scheme_type_id=2,
+                        funding_programme_id=4,
                     ),
                 ]
             )
@@ -739,14 +749,23 @@ class TestDatabaseSchemeRepository:
 
         assert scheme1.id == 1
         overview_revision1: OverviewRevision
-        (overview_revision1,) = scheme1.overview.overview_revisions
+        overview_revision2: OverviewRevision
+        overview_revision1, overview_revision2 = scheme1.overview.overview_revisions
         assert (
             overview_revision1.id == 3
-            and overview_revision1.effective == DateRange(datetime(2020, 1, 1), None)
+            and overview_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
             and overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_id == 1
             and overview_revision1.type == SchemeType.DEVELOPMENT
             and overview_revision1.funding_programme == FundingProgrammes.ATF3
+        )
+        assert (
+            overview_revision2.id == 4
+            and overview_revision2.effective == DateRange(datetime(2020, 2, 1), None)
+            and overview_revision2.name == "School Streets"
+            and overview_revision2.authority_id == 1
+            and overview_revision2.type == SchemeType.CONSTRUCTION
+            and overview_revision2.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_get_all_schemes_bid_status_revisions_by_authority(
@@ -770,6 +789,13 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_bid_status_id=5,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
+                        effective_date_to=datetime(2020, 2, 1),
+                        bid_status_id=1,
+                    ),
+                    CapitalSchemeBidStatusEntity(
+                        capital_scheme_bid_status_id=6,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 2, 1),
                         effective_date_to=None,
                         bid_status_id=2,
                     ),
@@ -785,11 +811,11 @@ class TestDatabaseSchemeRepository:
                         funding_programme_id=3,
                     ),
                     CapitalSchemeBidStatusEntity(
-                        capital_scheme_bid_status_id=6,
+                        capital_scheme_bid_status_id=7,
                         capital_scheme_id=2,
-                        effective_date_from=datetime(2020, 2, 1),
+                        effective_date_from=datetime(2020, 3, 1),
                         effective_date_to=None,
-                        bid_status_id=2,
+                        bid_status_id=3,
                     ),
                 ]
             )
@@ -800,11 +826,17 @@ class TestDatabaseSchemeRepository:
 
         assert scheme1.id == 1
         bid_status_revision1: BidStatusRevision
-        (bid_status_revision1,) = scheme1.funding.bid_status_revisions
+        bid_status_revision2: BidStatusRevision
+        bid_status_revision1, bid_status_revision2 = scheme1.funding.bid_status_revisions
         assert (
             bid_status_revision1.id == 5
-            and bid_status_revision1.effective == DateRange(datetime(2020, 1, 1), None)
-            and bid_status_revision1.status == BidStatus.FUNDED
+            and bid_status_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
+            and bid_status_revision1.status == BidStatus.SUBMITTED
+        )
+        assert (
+            bid_status_revision2.id == 6
+            and bid_status_revision2.effective == DateRange(datetime(2020, 2, 1), None)
+            and bid_status_revision2.status == BidStatus.FUNDED
         )
 
     def test_get_all_schemes_financial_revisions_by_authority(
@@ -828,9 +860,18 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_financial_id=5,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
-                        effective_date_to=None,
+                        effective_date_to=datetime(2020, 2, 1),
                         financial_type_id=3,
                         amount=100_000,
+                        data_source_id=3,
+                    ),
+                    CapitalSchemeFinancialEntity(
+                        capital_scheme_financial_id=6,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 2, 1),
+                        effective_date_to=None,
+                        financial_type_id=3,
+                        amount=200_000,
                         data_source_id=3,
                     ),
                     CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
@@ -845,13 +886,13 @@ class TestDatabaseSchemeRepository:
                         funding_programme_id=3,
                     ),
                     CapitalSchemeFinancialEntity(
-                        capital_scheme_financial_id=6,
+                        capital_scheme_financial_id=7,
                         capital_scheme_id=2,
-                        effective_date_from=datetime(2020, 2, 1),
+                        effective_date_from=datetime(2020, 3, 1),
                         effective_date_to=None,
-                        financial_type_id=3,
-                        amount=200_000,
-                        data_source_id=3,
+                        financial_type_id=4,
+                        amount=300_000,
+                        data_source_id=4,
                     ),
                 ]
             )
@@ -862,13 +903,21 @@ class TestDatabaseSchemeRepository:
 
         assert scheme1.id == 1
         financial_revision1: FinancialRevision
-        (financial_revision1,) = scheme1.funding.financial_revisions
+        financial_revision2: FinancialRevision
+        financial_revision1, financial_revision2 = scheme1.funding.financial_revisions
         assert (
             financial_revision1.id == 5
-            and financial_revision1.effective == DateRange(datetime(2020, 1, 1), None)
+            and financial_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
             and financial_revision1.source == DataSource.ATF4_BID
+        )
+        assert (
+            financial_revision2.id == 6
+            and financial_revision2.effective == DateRange(datetime(2020, 2, 1), None)
+            and financial_revision2.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision2.amount == 200_000
+            and financial_revision2.source == DataSource.ATF4_BID
         )
 
     def test_get_all_schemes_milestone_revisions_by_authority(
@@ -892,10 +941,20 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_milestone_id=7,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
-                        effective_date_to=None,
+                        effective_date_to=datetime(2020, 2, 1),
                         milestone_id=6,
                         observation_type_id=1,
                         status_date=date(2020, 2, 1),
+                        data_source_id=3,
+                    ),
+                    CapitalSchemeMilestoneEntity(
+                        capital_scheme_milestone_id=8,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 2, 1),
+                        effective_date_to=None,
+                        milestone_id=6,
+                        observation_type_id=1,
+                        status_date=date(2020, 3, 1),
                         data_source_id=3,
                     ),
                     CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
@@ -910,14 +969,14 @@ class TestDatabaseSchemeRepository:
                         funding_programme_id=3,
                     ),
                     CapitalSchemeMilestoneEntity(
-                        capital_scheme_milestone_id=8,
+                        capital_scheme_milestone_id=9,
                         capital_scheme_id=2,
-                        effective_date_from=datetime(2020, 2, 1),
+                        effective_date_from=datetime(2020, 3, 1),
                         effective_date_to=None,
-                        milestone_id=6,
-                        observation_type_id=1,
-                        status_date=date(2020, 3, 1),
-                        data_source_id=3,
+                        milestone_id=7,
+                        observation_type_id=2,
+                        status_date=date(2020, 4, 1),
+                        data_source_id=4,
                     ),
                 ]
             )
@@ -928,14 +987,23 @@ class TestDatabaseSchemeRepository:
 
         assert scheme1.id == 1
         milestone_revision1: MilestoneRevision
-        (milestone_revision1,) = scheme1.milestones.milestone_revisions
+        milestone_revision2: MilestoneRevision
+        milestone_revision1, milestone_revision2 = scheme1.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 7
-            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1), None)
+            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
             and milestone_revision1.source == DataSource.ATF4_BID
+        )
+        assert (
+            milestone_revision2.id == 8
+            and milestone_revision2.effective == DateRange(datetime(2020, 2, 1), None)
+            and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision2.observation_type == ObservationType.PLANNED
+            and milestone_revision2.status_date == date(2020, 3, 1)
+            and milestone_revision2.source == DataSource.ATF4_BID
         )
 
     def test_get_all_schemes_output_revisions_by_authority(
@@ -959,9 +1027,18 @@ class TestDatabaseSchemeRepository:
                         capital_scheme_intervention_id=7,
                         capital_scheme_id=1,
                         effective_date_from=datetime(2020, 1, 1),
-                        effective_date_to=None,
+                        effective_date_to=datetime(2020, 2, 1),
                         intervention_type_measure_id=4,
                         intervention_value=Decimal(10),
+                        observation_type_id=1,
+                    ),
+                    CapitalSchemeInterventionEntity(
+                        capital_scheme_intervention_id=8,
+                        capital_scheme_id=1,
+                        effective_date_from=datetime(2020, 2, 1),
+                        effective_date_to=None,
+                        intervention_type_measure_id=4,
+                        intervention_value=Decimal(20),
                         observation_type_id=1,
                     ),
                     CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
@@ -976,13 +1053,13 @@ class TestDatabaseSchemeRepository:
                         funding_programme_id=3,
                     ),
                     CapitalSchemeInterventionEntity(
-                        capital_scheme_intervention_id=8,
+                        capital_scheme_intervention_id=9,
                         capital_scheme_id=2,
-                        effective_date_from=datetime(2020, 2, 1),
+                        effective_date_from=datetime(2020, 3, 1),
                         effective_date_to=None,
-                        intervention_type_measure_id=4,
-                        intervention_value=Decimal(20),
-                        observation_type_id=1,
+                        intervention_type_measure_id=5,
+                        intervention_value=Decimal(30),
+                        observation_type_id=2,
                     ),
                 ]
             )
@@ -993,13 +1070,21 @@ class TestDatabaseSchemeRepository:
 
         assert scheme1.id == 1
         output_revision1: OutputRevision
-        (output_revision1,) = scheme1.outputs.output_revisions
+        output_revision2: OutputRevision
+        output_revision1, output_revision2 = scheme1.outputs.output_revisions
         assert (
             output_revision1.id == 7
-            and output_revision1.effective == DateRange(datetime(2020, 1, 1), None)
+            and output_revision1.effective == DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1))
             and output_revision1.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision1.value == Decimal(10)
             and output_revision1.observation_type == ObservationType.PLANNED
+        )
+        assert (
+            output_revision2.id == 8
+            and output_revision2.effective == DateRange(datetime(2020, 2, 1), None)
+            and output_revision2.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            and output_revision2.value == Decimal(20)
+            and output_revision2.observation_type == ObservationType.PLANNED
         )
 
     def test_get_all_schemes_authority_reviews_by_authority(
@@ -1025,6 +1110,12 @@ class TestDatabaseSchemeRepository:
                         review_date=datetime(2020, 1, 1),
                         data_source_id=3,
                     ),
+                    CapitalSchemeAuthorityReviewEntity(
+                        capital_scheme_authority_review_id=6,
+                        capital_scheme_id=1,
+                        review_date=datetime(2020, 2, 1),
+                        data_source_id=3,
+                    ),
                     CapitalSchemeEntity(capital_scheme_id=2, scheme_reference="ATE00002"),
                     CapitalSchemeOverviewEntity(
                         capital_scheme_overview_id=4,
@@ -1037,9 +1128,9 @@ class TestDatabaseSchemeRepository:
                         funding_programme_id=3,
                     ),
                     CapitalSchemeAuthorityReviewEntity(
-                        capital_scheme_authority_review_id=6,
+                        capital_scheme_authority_review_id=7,
                         capital_scheme_id=2,
-                        review_date=datetime(2020, 2, 1),
+                        review_date=datetime(2020, 3, 1),
                         data_source_id=2,
                     ),
                 ]
@@ -1051,11 +1142,16 @@ class TestDatabaseSchemeRepository:
 
         assert scheme1.id == 1
         authority_review1: AuthorityReview
-        (authority_review1,) = scheme1.reviews.authority_reviews
+        authority_review1, authority_review2 = scheme1.reviews.authority_reviews
         assert (
             authority_review1.id == 5
             and authority_review1.review_date == datetime(2020, 1, 1)
             and authority_review1.source == DataSource.ATF4_BID
+        )
+        assert (
+            authority_review2.id == 6
+            and authority_review2.review_date == datetime(2020, 2, 1)
+            and authority_review2.source == DataSource.ATF4_BID
         )
 
     def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:

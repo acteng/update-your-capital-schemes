@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import inject
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, joinedload, selectinload, sessionmaker
@@ -51,8 +53,10 @@ class DatabaseSchemeRepository(SchemeRepository):
         self._output_type_measure_mapper = OutputTypeMeasureMapper()
 
     def add(self, *schemes: Scheme) -> None:
+        authority_mapper = _AuthorityMapper()
         with self._session_maker() as session:
-            session.add_all(self._capital_scheme_from_domain(scheme) for scheme in schemes)
+            authority_mapper.execute(session, self._get_authority_abbreviations(list(schemes)))
+            session.add_all(self._capital_scheme_from_domain(scheme, authority_mapper) for scheme in schemes)
             session.commit()
 
     def clear(self) -> None:
@@ -118,16 +122,18 @@ class DatabaseSchemeRepository(SchemeRepository):
             return [self._capital_scheme_to_domain(row) for row in result]
 
     def update(self, scheme: Scheme) -> None:
+        authority_mapper = _AuthorityMapper()
         with self._session_maker() as session:
-            session.merge(self._capital_scheme_from_domain(scheme))
+            authority_mapper.execute(session, self._get_authority_abbreviations([scheme]))
+            session.merge(self._capital_scheme_from_domain(scheme, authority_mapper))
             session.commit()
 
-    def _capital_scheme_from_domain(self, scheme: Scheme) -> CapitalSchemeEntity:
+    def _capital_scheme_from_domain(self, scheme: Scheme, authority_mapper: _AuthorityMapper) -> CapitalSchemeEntity:
         return CapitalSchemeEntity(
             capital_scheme_id=scheme.id,
             scheme_reference=scheme.reference,
             capital_scheme_overviews=[
-                self._capital_scheme_overview_from_domain(overview_revision)
+                self._capital_scheme_overview_from_domain(overview_revision, authority_mapper)
                 for overview_revision in scheme.overview.overview_revisions
             ],
             capital_scheme_bid_statuses=[
@@ -177,13 +183,15 @@ class DatabaseSchemeRepository(SchemeRepository):
 
         return scheme
 
-    def _capital_scheme_overview_from_domain(self, overview_revision: OverviewRevision) -> CapitalSchemeOverviewEntity:
+    def _capital_scheme_overview_from_domain(
+        self, overview_revision: OverviewRevision, authority_mapper: _AuthorityMapper
+    ) -> CapitalSchemeOverviewEntity:
         return CapitalSchemeOverviewEntity(
             capital_scheme_overview_id=overview_revision.id,
             effective_date_from=overview_revision.effective.date_from,
             effective_date_to=overview_revision.effective.date_to,
             scheme_name=overview_revision.name,
-            bid_submitting_authority_id=overview_revision.authority_abbreviation,
+            bid_submitting_authority_id=authority_mapper.to_id(overview_revision.authority_abbreviation),
             scheme_type_id=self._scheme_type_mapper.to_id(overview_revision.type),
             funding_programme_id=self._funding_programme_mapper.to_id(overview_revision.funding_programme),
         )
@@ -317,3 +325,27 @@ class DatabaseSchemeRepository(SchemeRepository):
             review_date=capital_scheme_authority_review.review_date,
             source=self._data_source_mapper.to_domain(capital_scheme_authority_review.data_source_id),
         )
+
+    @staticmethod
+    def _get_authority_abbreviations(schemes: list[Scheme]) -> list[str]:
+        return [
+            overview_revision.authority_abbreviation
+            for scheme in schemes
+            for overview_revision in scheme.overview.overview_revisions
+        ]
+
+
+class _AuthorityMapper:
+    def __init__(self) -> None:
+        self._authorities: dict[str, int] = {}
+
+    def execute(self, session: Session, abbreviations: list[str]) -> None:
+        rows = session.execute(
+            select(AuthorityEntity.authority_id, AuthorityEntity.authority_abbreviation).where(
+                AuthorityEntity.authority_abbreviation.in_(abbreviations)
+            )
+        )
+        self._authorities = {row.authority_abbreviation: row.authority_id for row in rows}
+
+    def to_id(self, abbreviation: str) -> int:
+        return self._authorities[abbreviation]

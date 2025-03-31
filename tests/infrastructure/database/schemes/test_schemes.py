@@ -699,8 +699,8 @@ class TestDatabaseSchemeRepository:
         scheme2: Scheme
         scheme1, scheme2 = schemes.get_by_authority(1)
 
-        assert scheme1.id == 1
-        assert scheme2.id == 2
+        assert scheme1.id == 1 and scheme1.reference == "ATE00001"
+        assert scheme2.id == 2 and scheme2.reference == "ATE00002"
 
     def test_get_all_schemes_overview_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]

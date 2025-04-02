@@ -22,7 +22,7 @@ class TestOverviewRevisionRepr:
             id_=1,
             effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13)),
             name="Wirral Package",
-            authority_id=2,
+            authority_abbreviation="LIV",
             type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
@@ -34,7 +34,7 @@ class TestOverviewRevisionRepr:
             effective_date_from="2020-01-01T12:00:00",
             effective_date_to="2020-02-01T13:00:00",
             name="Wirral Package",
-            authority_id=2,
+            authority_abbreviation="LIV",
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
         )
@@ -44,7 +44,7 @@ class TestOverviewRevisionRepr:
             id_=1,
             effective=DateRange(datetime(2020, 1, 1), None),
             name="Wirral Package",
-            authority_id=2,
+            authority_abbreviation="LIV",
             type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
@@ -59,7 +59,7 @@ class TestOverviewRevisionRepr:
             effective_date_from="2020-01-01T12:00:00",
             effective_date_to="2020-02-01T13:00:00",
             name="Wirral Package",
-            authority_id=2,
+            authority_abbreviation="LIV",
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
         )
@@ -70,7 +70,7 @@ class TestOverviewRevisionRepr:
             overview_revision.id == 1
             and overview_revision.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13))
             and overview_revision.name == "Wirral Package"
-            and overview_revision.authority_id == 2
+            and overview_revision.authority_abbreviation == "LIV"
             and overview_revision.type == SchemeType.CONSTRUCTION
             and overview_revision.funding_programme == FundingProgrammes.ATF4
         )
@@ -81,7 +81,7 @@ class TestOverviewRevisionRepr:
             effective_date_from="2020-01-01T12:00:00",
             effective_date_to=None,
             name="Wirral Package",
-            authority_id=2,
+            authority_abbreviation="LIV",
             type=SchemeTypeRepr.CONSTRUCTION,
             funding_programme=FundingProgrammeRepr.ATF4,
         )

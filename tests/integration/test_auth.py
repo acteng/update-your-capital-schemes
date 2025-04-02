@@ -79,7 +79,7 @@ class TestAuth:
 
     @responses.activate
     def test_callback_logs_in(self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_abbreviation="LIV"))
         id_token = oidc_server.given_token_endpoint_returns_id_token(nonce="456")
         oidc_server.given_userinfo_endpoint_returns_claims(email="boardman@example.com")
         given_session_has_authentication_request(client, state="123", nonce="456")
@@ -93,7 +93,7 @@ class TestAuth:
     def test_callback_logs_successful_sign_in(
         self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient, caplog: LogCaptureFixture
     ) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_abbreviation="LIV"))
         oidc_server.given_token_endpoint_returns_id_token(nonce="456")
         oidc_server.given_userinfo_endpoint_returns_claims(email="boardman@example.com")
         given_session_has_authentication_request(client, state="123", nonce="456")
@@ -110,7 +110,7 @@ class TestAuth:
     def test_callback_redirects_to_schemes(
         self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
     ) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_abbreviation="LIV"))
         oidc_server.given_token_endpoint_returns_id_token(nonce="456")
         oidc_server.given_userinfo_endpoint_returns_claims(email="boardman@example.com")
         given_session_has_authentication_request(client, state="123", nonce="456")
@@ -221,7 +221,7 @@ class TestAuth:
     def test_callback_when_unauthorized_logs_unauthorized_sign_in(
         self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient, caplog: LogCaptureFixture
     ) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_abbreviation="LIV"))
         oidc_server.given_token_endpoint_returns_id_token(nonce="456")
         oidc_server.given_userinfo_endpoint_returns_claims(email="obree@example.com")
         given_session_has_authentication_request(client, state="123", nonce="456")
@@ -237,7 +237,7 @@ class TestAuth:
     def test_callback_when_unauthorized_redirects_to_forbidden(
         self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
     ) -> None:
-        users.add(User("boardman@example.com", authority_id=1))
+        users.add(User("boardman@example.com", authority_abbreviation="LIV"))
         oidc_server.given_token_endpoint_returns_id_token(nonce="456")
         oidc_server.given_userinfo_endpoint_returns_claims(email="obree@example.com")
         given_session_has_authentication_request(client, state="123", nonce="456")

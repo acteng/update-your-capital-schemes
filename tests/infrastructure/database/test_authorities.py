@@ -17,8 +17,8 @@ class TestDatabaseAuthorityRepository:
         self, authorities: DatabaseAuthorityRepository, session_maker: sessionmaker[Session]
     ) -> None:
         authorities.add(
-            Authority(id_=1, name="Liverpool City Region Combined Authority"),
-            Authority(id_=2, name="West Yorkshire Combined Authority"),
+            Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"),
+            Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"),
         )
 
         row1: AuthorityEntity
@@ -32,21 +32,33 @@ class TestDatabaseAuthorityRepository:
         self, authorities: DatabaseAuthorityRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
-            session.add(AuthorityEntity(authority_id=1, authority_full_name="Liverpool City Region Combined Authority"))
+            session.add(
+                AuthorityEntity(
+                    authority_abbreviation="LIV", authority_full_name="Liverpool City Region Combined Authority"
+                )
+            )
             session.commit()
 
-        authority = authorities.get(1)
+        authority = authorities.get("LIV")
 
-        assert authority and authority.id == 1 and authority.name == "Liverpool City Region Combined Authority"
+        assert (
+            authority
+            and authority.abbreviation == "LIV"
+            and authority.name == "Liverpool City Region Combined Authority"
+        )
 
     def test_get_authority_that_does_not_exist(
         self, authorities: DatabaseAuthorityRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
-            session.add(AuthorityEntity(authority_id=1, authority_full_name="Liverpool City Region Combined Authority"))
+            session.add(
+                AuthorityEntity(
+                    authority_abbreviation="LIV", authority_full_name="Liverpool City Region Combined Authority"
+                )
+            )
             session.commit()
 
-        assert authorities.get(2) is None
+        assert authorities.get("WYO") is None
 
     def test_clear_all_authorities(
         self, authorities: DatabaseAuthorityRepository, session_maker: sessionmaker[Session]
@@ -54,8 +66,12 @@ class TestDatabaseAuthorityRepository:
         with session_maker() as session:
             session.add_all(
                 [
-                    AuthorityEntity(authority_id=1, authority_full_name="Liverpool City Region Combined Authority"),
-                    AuthorityEntity(authority_id=2, authority_full_name="West Yorkshire Combined Authority"),
+                    AuthorityEntity(
+                        authority_abbreviation="LIV", authority_full_name="Liverpool City Region Combined Authority"
+                    ),
+                    AuthorityEntity(
+                        authority_abbreviation="WYO", authority_full_name="West Yorkshire Combined Authority"
+                    ),
                 ]
             )
             session.commit()

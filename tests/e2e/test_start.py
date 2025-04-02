@@ -27,8 +27,8 @@ class TestUnauthenticated:
 class TestAuthenticated:
     def test_start_shows_schemes(self, oidc_client: OidcClient, app_client: AppClient, page: Page) -> None:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
-        app_client.add_authorities(AuthorityRepr(id=1, name="Liverpool City Region Combined Authority"))
-        app_client.add_users(1, UserRepr(email="boardman@example.com"))
+        app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         start_page = StartPage.open(page)
         start_page.start()
 

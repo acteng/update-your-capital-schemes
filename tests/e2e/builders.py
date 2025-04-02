@@ -13,7 +13,7 @@ def build_scheme(
     id_: int,
     reference: str,
     name: str,
-    authority_id: int,
+    authority_abbreviation: str,
     type_: str = "construction",
     funding_programme: str = "ATF2",
     bid_status: str = "funded",
@@ -31,7 +31,7 @@ def build_scheme(
                 effective_date_from="1970-01-01",
                 effective_date_to=None,
                 name=name,
-                authority_id=authority_id,
+                authority_abbreviation=authority_abbreviation,
                 type=type_,
                 funding_programme=funding_programme,
             )

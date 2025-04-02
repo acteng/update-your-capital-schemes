@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import inject
 from sqlalchemy import delete, select
-from sqlalchemy.orm import Session, selectinload, sessionmaker
+from sqlalchemy.orm import Session, joinedload, selectinload, sessionmaker
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
@@ -14,6 +16,7 @@ from schemes.domain.schemes import (
     SchemeRepository,
 )
 from schemes.infrastructure.database import (
+    AuthorityEntity,
     CapitalSchemeAuthorityReviewEntity,
     CapitalSchemeBidStatusEntity,
     CapitalSchemeEntity,
@@ -50,8 +53,10 @@ class DatabaseSchemeRepository(SchemeRepository):
         self._output_type_measure_mapper = OutputTypeMeasureMapper()
 
     def add(self, *schemes: Scheme) -> None:
+        authority_mapper = _AuthorityMapper()
         with self._session_maker() as session:
-            session.add_all(self._capital_scheme_from_domain(scheme) for scheme in schemes)
+            authority_mapper.execute(session, self._get_authority_abbreviations(list(schemes)))
+            session.add_all(self._capital_scheme_from_domain(scheme, authority_mapper) for scheme in schemes)
             session.commit()
 
     def clear(self) -> None:
@@ -69,38 +74,66 @@ class DatabaseSchemeRepository(SchemeRepository):
         with self._session_maker() as session:
             result = session.scalars(
                 select(CapitalSchemeEntity)
-                .options(selectinload("*"))
+                .options(
+                    selectinload(CapitalSchemeEntity.capital_scheme_overviews),
+                    joinedload(
+                        CapitalSchemeEntity.capital_scheme_overviews,
+                        CapitalSchemeOverviewEntity.bid_submitting_authority,
+                    ),
+                    selectinload(CapitalSchemeEntity.capital_scheme_bid_statuses),
+                    selectinload(CapitalSchemeEntity.capital_scheme_financials),
+                    selectinload(CapitalSchemeEntity.capital_scheme_milestones),
+                    selectinload(CapitalSchemeEntity.capital_scheme_interventions),
+                    selectinload(CapitalSchemeEntity.capital_scheme_authority_reviews),
+                )
                 .where(CapitalSchemeEntity.capital_scheme_id == id_)
             )
             row = result.one_or_none()
             return self._capital_scheme_to_domain(row) if row else None
 
-    def get_by_authority(self, authority_id: int) -> list[Scheme]:
+    def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         with self._session_maker() as session:
             result = session.scalars(
                 select(CapitalSchemeEntity)
-                .options(selectinload("*"))
+                .options(
+                    selectinload(CapitalSchemeEntity.capital_scheme_overviews),
+                    joinedload(
+                        CapitalSchemeEntity.capital_scheme_overviews,
+                        CapitalSchemeOverviewEntity.bid_submitting_authority,
+                    ),
+                    selectinload(CapitalSchemeEntity.capital_scheme_bid_statuses),
+                    selectinload(CapitalSchemeEntity.capital_scheme_financials),
+                    selectinload(CapitalSchemeEntity.capital_scheme_milestones),
+                    selectinload(CapitalSchemeEntity.capital_scheme_interventions),
+                    selectinload(CapitalSchemeEntity.capital_scheme_authority_reviews),
+                )
                 .join(
                     CapitalSchemeEntity.capital_scheme_overviews.and_(
                         CapitalSchemeOverviewEntity.effective_date_to.is_(None)
                     )
                 )
-                .where(CapitalSchemeOverviewEntity.bid_submitting_authority_id == authority_id)
+                .join(
+                    CapitalSchemeOverviewEntity.bid_submitting_authority.and_(
+                        AuthorityEntity.authority_abbreviation == authority_abbreviation
+                    )
+                )
                 .order_by(CapitalSchemeEntity.capital_scheme_id)
             )
             return [self._capital_scheme_to_domain(row) for row in result]
 
     def update(self, scheme: Scheme) -> None:
+        authority_mapper = _AuthorityMapper()
         with self._session_maker() as session:
-            session.merge(self._capital_scheme_from_domain(scheme))
+            authority_mapper.execute(session, self._get_authority_abbreviations([scheme]))
+            session.merge(self._capital_scheme_from_domain(scheme, authority_mapper))
             session.commit()
 
-    def _capital_scheme_from_domain(self, scheme: Scheme) -> CapitalSchemeEntity:
+    def _capital_scheme_from_domain(self, scheme: Scheme, authority_mapper: _AuthorityMapper) -> CapitalSchemeEntity:
         return CapitalSchemeEntity(
             capital_scheme_id=scheme.id,
             scheme_reference=scheme.reference,
             capital_scheme_overviews=[
-                self._capital_scheme_overview_from_domain(overview_revision)
+                self._capital_scheme_overview_from_domain(overview_revision, authority_mapper)
                 for overview_revision in scheme.overview.overview_revisions
             ],
             capital_scheme_bid_statuses=[
@@ -150,13 +183,15 @@ class DatabaseSchemeRepository(SchemeRepository):
 
         return scheme
 
-    def _capital_scheme_overview_from_domain(self, overview_revision: OverviewRevision) -> CapitalSchemeOverviewEntity:
+    def _capital_scheme_overview_from_domain(
+        self, overview_revision: OverviewRevision, authority_mapper: _AuthorityMapper
+    ) -> CapitalSchemeOverviewEntity:
         return CapitalSchemeOverviewEntity(
             capital_scheme_overview_id=overview_revision.id,
             effective_date_from=overview_revision.effective.date_from,
             effective_date_to=overview_revision.effective.date_to,
             scheme_name=overview_revision.name,
-            bid_submitting_authority_id=overview_revision.authority_id,
+            bid_submitting_authority_id=authority_mapper.to_id(overview_revision.authority_abbreviation),
             scheme_type_id=self._scheme_type_mapper.to_id(overview_revision.type),
             funding_programme_id=self._funding_programme_mapper.to_id(overview_revision.funding_programme),
         )
@@ -168,7 +203,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             id_=capital_scheme_overview.capital_scheme_overview_id,
             effective=DateRange(capital_scheme_overview.effective_date_from, capital_scheme_overview.effective_date_to),
             name=capital_scheme_overview.scheme_name,
-            authority_id=capital_scheme_overview.bid_submitting_authority_id,
+            authority_abbreviation=capital_scheme_overview.bid_submitting_authority.authority_abbreviation,
             type_=self._scheme_type_mapper.to_domain(capital_scheme_overview.scheme_type_id),
             funding_programme=self._funding_programme_mapper.to_domain(capital_scheme_overview.funding_programme_id),
         )
@@ -290,3 +325,27 @@ class DatabaseSchemeRepository(SchemeRepository):
             review_date=capital_scheme_authority_review.review_date,
             source=self._data_source_mapper.to_domain(capital_scheme_authority_review.data_source_id),
         )
+
+    @staticmethod
+    def _get_authority_abbreviations(schemes: list[Scheme]) -> list[str]:
+        return [
+            overview_revision.authority_abbreviation
+            for scheme in schemes
+            for overview_revision in scheme.overview.overview_revisions
+        ]
+
+
+class _AuthorityMapper:
+    def __init__(self) -> None:
+        self._authorities: dict[str, int] = {}
+
+    def execute(self, session: Session, abbreviations: list[str]) -> None:
+        rows = session.execute(
+            select(AuthorityEntity.authority_id, AuthorityEntity.authority_abbreviation).where(
+                AuthorityEntity.authority_abbreviation.in_(abbreviations)
+            )
+        )
+        self._authorities = {row.authority_abbreviation: row.authority_id for row in rows}
+
+    def to_id(self, abbreviation: str) -> int:
+        return self._authorities[abbreviation]

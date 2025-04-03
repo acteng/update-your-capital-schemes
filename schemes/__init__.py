@@ -42,6 +42,7 @@ from schemes.domain.reporting_window import (
 )
 from schemes.domain.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
+from schemes.infrastructure.api import ApiAuthorityRepository
 from schemes.infrastructure.clock import Clock, FakeClock, SystemClock
 from schemes.infrastructure.database import (
     AuthorityEntity,
@@ -123,7 +124,10 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
         binder.bind_to_constructor(Engine, _create_engine)
         binder.bind_to_constructor((Engine, CapitalSchemeEntity), _create_capital_schemes_engine)
         binder.bind_to_constructor(sessionmaker[Session], _create_session_maker)
-        binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
+        binder.bind_to_constructor(
+            AuthorityRepository,
+            _create_api_authority_repository if "ATE_URL" in app.config else DatabaseAuthorityRepository,
+        )
         binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
         binder.bind_to_constructor(SchemeRepository, DatabaseSchemeRepository)
 
@@ -168,6 +172,11 @@ def _create_session_maker(engine: Engine, capital_schemes_engine: Engine) -> ses
             UserEntity: engine,
         }
     )
+
+
+@inject.autoparams()
+def _create_api_authority_repository(config: Config) -> ApiAuthorityRepository:
+    return ApiAuthorityRepository(config["ATE_URL"])
 
 
 def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_record: ConnectionPoolEntry) -> None:
@@ -246,6 +255,7 @@ def _configure_govuk_frontend(app: Flask) -> None:
 
 def _configure_oidc(app: Flask) -> None:
     oauth = OAuth(app)
+
     oauth.register(
         name="govuk",
         client_id=app.config["GOVUK_CLIENT_ID"],
@@ -256,6 +266,15 @@ def _configure_oidc(app: Flask) -> None:
             "token_endpoint_auth_method": PrivateKeyJWT(app.config["GOVUK_TOKEN_ENDPOINT"]),
         },
     )
+
+    if "ATE_URL" in app.config:
+        oauth.register(
+            name="ate",
+            client_id=app.config["ATE_CLIENT_ID"],
+            client_secret=app.config["ATE_CLIENT_SECRET"],
+            server_metadata_url=app.config["ATE_SERVER_METADATA_URL"],
+            access_token_params={"audience": app.config["ATE_AUDIENCE"]},
+        )
 
 
 def _migrate_database() -> None:

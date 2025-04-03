@@ -16,6 +16,7 @@ from flask_wtf.csrf import generate_csrf
 from inject import Binder
 
 from schemes import bindings, create_app, destroy_app
+from schemes.annotations import Migrated
 from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
@@ -93,7 +94,9 @@ def schemes_fixture(app: Flask) -> Generator[SchemeRepository, None, None]:
 def _test_bindings(app: Flask) -> Callable[[Binder], None]:
     def _bindings(binder: Binder) -> None:
         binder.install(bindings(app))
-        binder.bind(AuthorityRepository, MemoryAuthorityRepository())
+        authority_repository = MemoryAuthorityRepository()
+        binder.bind(AuthorityRepository, authority_repository)
+        binder.bind((AuthorityRepository, Migrated), authority_repository)
         binder.bind(UserRepository, MemoryUserRepository())
         binder.bind(SchemeRepository, MemorySchemeRepository())
 

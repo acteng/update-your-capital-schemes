@@ -26,6 +26,11 @@ class Config:
     GOVUK_END_SESSION_ENDPOINT = "https://oidc.integration.account.gov.uk/logout"
     GOVUK_CLIENT_ID = "ACQWA69dKqUjccEMgMVKu0jX0q4"
 
+    # ATE API
+    ATE_CLIENT_ID = "dDppdgxOYh5TZzAfiVQG3O5kEUOrKbUK"
+    ATE_SERVER_METADATA_URL = "https://ate-api-dev.uk.auth0.com/.well-known/openid-configuration"
+    ATE_AUDIENCE = "https://dev.api.activetravelengland.gov.uk"
+
 
 class LocalConfig(Config):
     name = "local"

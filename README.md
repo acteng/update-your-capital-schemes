@@ -41,6 +41,11 @@ The application can also be configured with the following environment variables:
 | FLASK_GOVUK_TOKEN_ENDPOINT         | OIDC token endpoint                                                                         |
 | FLASK_GOVUK_PROFILE_URL            | OIDC profile URL                                                                            |
 | FLASK_GOVUK_END_SESSION_ENDPOINT   | OIDC end session endpoint                                                                   |
+| FLASK_ATE_URL                      | ATE API URL (unset to disable)                                                              |
+| FLASK_ATE_CLIENT_ID                | ATE API client id                                                                           |
+| FLASK_ATE_CLIENT_SECRET            | ATE API client secret                                                                       |
+| FLASK_ATE_SERVER_METADATA_URL      | ATE API authorisation server discovery endpoint                                             |
+| FLASK_ATE_AUDIENCE                 | ATE API resource server identifier                                                          |
 
 ## Running locally
 

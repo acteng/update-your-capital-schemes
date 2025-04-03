@@ -22,6 +22,7 @@ from flask import (
 )
 from werkzeug import Response as BaseResponse
 
+from schemes.annotations import Migrated
 from schemes.dicts import as_shallow_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
@@ -77,7 +78,13 @@ def add_schemes(schemes: SchemeRepository, logger: Logger) -> Response:
 
 @bp.get("")
 @bearer_auth
-@inject.autoparams()
+@inject.params(
+    clock=Clock,
+    users=UserRepository,
+    reporting_window_service=ReportingWindowService,
+    authorities=(AuthorityRepository, Migrated),
+    schemes=SchemeRepository,
+)
 def index(
     clock: Clock,
     users: UserRepository,
@@ -149,7 +156,13 @@ def get(scheme_id: int) -> Response:
 
 
 @bearer_auth
-@inject.autoparams("clock", "reporting_window_service", "users", "authorities", "schemes")
+@inject.params(
+    clock=Clock,
+    reporting_window_service=ReportingWindowService,
+    users=UserRepository,
+    authorities=(AuthorityRepository, Migrated),
+    schemes=SchemeRepository,
+)
 def get_html(
     scheme_id: int,
     clock: Clock,

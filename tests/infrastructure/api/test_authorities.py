@@ -3,7 +3,7 @@ import responses
 from authlib.integrations.flask_client import FlaskIntegration, FlaskOAuth2App
 from responses.matchers import header_matcher
 
-from schemes.infrastructure.api import ApiAuthorityRepository
+from schemes.infrastructure.api.authorities import ApiAuthorityRepository
 
 
 class TestApiAuthorityRepository:

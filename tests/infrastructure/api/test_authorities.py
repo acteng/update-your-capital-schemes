@@ -1,6 +1,7 @@
 import pytest
 import responses
-from authlib.integrations.flask_client import FlaskIntegration, FlaskOAuth2App
+from authlib.integrations.base_client import BaseApp, FrameworkIntegration, OAuth2Mixin
+from authlib.integrations.requests_client import OAuth2Session
 from responses.matchers import header_matcher
 
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository
@@ -18,8 +19,8 @@ class TestApiAuthorityRepository:
 
     @pytest.fixture(name="authorities")
     def authorities_fixture(self, authorization_server: StubAuthorizationServer) -> ApiAuthorityRepository:
-        remote_app = FlaskOAuth2App(
-            FlaskIntegration("ate"),
+        remote_app = _StubRemoteApp(
+            FrameworkIntegration("dummy"),
             client_id="stub_client_id",
             client_secret="stub_client_secret",
             access_token_url=authorization_server.token_endpoint,
@@ -47,3 +48,7 @@ class TestApiAuthorityRepository:
             and authority.abbreviation == "LIV"
             and authority.name == "Liverpool City Region Combined Authority"
         )
+
+
+class _StubRemoteApp(OAuth2Mixin, BaseApp):  # type: ignore
+    client_cls = OAuth2Session

@@ -8,7 +8,7 @@ from authlib.integrations.base_client import BaseApp, FrameworkIntegration, OAut
 from authlib.integrations.requests_client import OAuth2Session
 from responses.matchers import header_matcher
 
-from schemes.infrastructure.api.authorities import ApiAuthorityRepository
+from schemes.infrastructure.api.authorities import ApiAuthorityRepository, RemoteApp
 from tests.infrastructure.api.oauth import StubAuthorizationServer
 
 
@@ -29,11 +29,11 @@ class TestApiAuthorityRepository:
             resource_server_identifier=resource_server_identifier,
         )
 
-    @pytest.fixture(name="authorities")
-    def authorities_fixture(
+    @pytest.fixture(name="remote_app")
+    def remote_app_fixture(
         self, authorization_server: StubAuthorizationServer, client: _Client, resource_server_identifier: str
-    ) -> ApiAuthorityRepository:
-        remote_app = _StubRemoteApp(
+    ) -> RemoteApp:
+        return _StubRemoteApp(
             FrameworkIntegration("dummy"),
             client_id=client.client_id,
             client_secret=client.client_secret,
@@ -42,6 +42,9 @@ class TestApiAuthorityRepository:
             api_base_url="https://api.example",
             client_kwargs={"token_endpoint_auth_method": "client_secret_post"},
         )
+
+    @pytest.fixture(name="authorities")
+    def authorities_fixture(self, remote_app: RemoteApp) -> ApiAuthorityRepository:
         return ApiAuthorityRepository(remote_app)
 
     @responses.activate

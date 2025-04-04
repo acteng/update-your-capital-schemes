@@ -1,8 +1,5 @@
-from authlib.integrations.base_client import BaseApp, OAuth2Mixin
-
 from schemes.domain.authorities import Authority, AuthorityRepository
-
-type RemoteApp = BaseApp | OAuth2Mixin
+from schemes.infrastructure.api.oauth import RemoteApp
 
 
 class ApiAuthorityRepository(AuthorityRepository):

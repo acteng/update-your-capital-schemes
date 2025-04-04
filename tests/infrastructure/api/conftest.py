@@ -4,7 +4,7 @@ import pytest
 from authlib.integrations.base_client import BaseApp, FrameworkIntegration, OAuth2Mixin
 from authlib.integrations.requests_client import OAuth2Session
 
-from schemes.infrastructure.api.authorities import RemoteApp
+from schemes.infrastructure.api.oauth import RemoteApp
 from tests.infrastructure.api.oauth import StubAuthorizationServer
 
 

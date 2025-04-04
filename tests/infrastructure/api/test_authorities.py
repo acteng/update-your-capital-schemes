@@ -17,24 +17,28 @@ class TestApiAuthorityRepository:
     def client_fixture(self) -> _Client:
         return _Client(client_id="stub_client_id", client_secret="stub_client_secret")
 
+    @pytest.fixture(name="resource_server_identifier")
+    def resource_server_identifier_fixture(self) -> str:
+        return "https://api.example"
+
     @pytest.fixture(name="authorization_server")
-    def authorization_server_fixture(self, client: _Client) -> StubAuthorizationServer:
+    def authorization_server_fixture(self, client: _Client, resource_server_identifier: str) -> StubAuthorizationServer:
         return StubAuthorizationServer(
             client_id=client.client_id,
             client_secret=client.client_secret,
-            resource_server_identifier="https://api.example",
+            resource_server_identifier=resource_server_identifier,
         )
 
     @pytest.fixture(name="authorities")
     def authorities_fixture(
-        self, authorization_server: StubAuthorizationServer, client: _Client
+        self, authorization_server: StubAuthorizationServer, client: _Client, resource_server_identifier: str
     ) -> ApiAuthorityRepository:
         remote_app = _StubRemoteApp(
             FrameworkIntegration("dummy"),
             client_id=client.client_id,
             client_secret=client.client_secret,
             access_token_url=authorization_server.token_endpoint,
-            access_token_params={"audience": "https://api.example"},
+            access_token_params={"audience": resource_server_identifier},
             api_base_url="https://api.example",
             client_kwargs={"token_endpoint_auth_method": "client_secret_post"},
         )

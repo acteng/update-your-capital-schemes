@@ -2,8 +2,7 @@ import pytest
 import responses
 from responses.matchers import header_matcher
 
-from schemes.infrastructure.api import RemoteApp
-from schemes.infrastructure.api.authorities import ApiAuthorityRepository
+from schemes.infrastructure.api import ApiAuthorityRepository, RemoteApp
 from tests.infrastructure.api.oauth import StubAuthorizationServer
 
 

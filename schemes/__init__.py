@@ -175,8 +175,9 @@ def _create_session_maker(engine: Engine, capital_schemes_engine: Engine) -> ses
 
 
 @inject.autoparams()
-def _create_api_authority_repository(config: Config) -> ApiAuthorityRepository:
-    return ApiAuthorityRepository(config["ATE_URL"])
+def _create_api_authority_repository(app: Flask) -> ApiAuthorityRepository:
+    oauth = app.extensions["authlib.integrations.flask_client"]
+    return ApiAuthorityRepository(oauth.ate)
 
 
 def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_record: ConnectionPoolEntry) -> None:
@@ -274,6 +275,7 @@ def _configure_oidc(app: Flask) -> None:
             client_secret=app.config["ATE_CLIENT_SECRET"],
             server_metadata_url=app.config["ATE_SERVER_METADATA_URL"],
             access_token_params={"audience": app.config["ATE_AUDIENCE"]},
+            api_base_url=app.config["ATE_URL"],
         )
 
 

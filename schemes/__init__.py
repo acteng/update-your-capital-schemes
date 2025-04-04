@@ -276,6 +276,7 @@ def _configure_oidc(app: Flask) -> None:
             server_metadata_url=app.config["ATE_SERVER_METADATA_URL"],
             access_token_params={"audience": app.config["ATE_AUDIENCE"]},
             api_base_url=app.config["ATE_URL"],
+            client_kwargs={"token_endpoint_auth_method": "client_secret_post"},
         )
 
 

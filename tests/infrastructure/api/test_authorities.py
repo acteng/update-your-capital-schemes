@@ -1,11 +1,5 @@
-from __future__ import annotations
-
-from dataclasses import dataclass
-
 import pytest
 import responses
-from authlib.integrations.base_client import BaseApp, FrameworkIntegration, OAuth2Mixin
-from authlib.integrations.requests_client import OAuth2Session
 from responses.matchers import header_matcher
 
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository, RemoteApp
@@ -13,44 +7,6 @@ from tests.infrastructure.api.oauth import StubAuthorizationServer
 
 
 class TestApiAuthorityRepository:
-    @pytest.fixture(name="client")
-    def client_fixture(self) -> _Client:
-        return _Client(client_id="stub_client_id", client_secret="stub_client_secret")
-
-    @pytest.fixture(name="resource_server_identifier")
-    def resource_server_identifier_fixture(self) -> str:
-        return "https://api.example"
-
-    @pytest.fixture(name="authorization_server")
-    def authorization_server_fixture(self, client: _Client, resource_server_identifier: str) -> StubAuthorizationServer:
-        return StubAuthorizationServer(
-            client_id=client.client_id,
-            client_secret=client.client_secret,
-            resource_server_identifier=resource_server_identifier,
-        )
-
-    @pytest.fixture(name="api_base_url")
-    def api_base_url_fixture(self) -> str:
-        return "https://api.example"
-
-    @pytest.fixture(name="remote_app")
-    def remote_app_fixture(
-        self,
-        authorization_server: StubAuthorizationServer,
-        client: _Client,
-        resource_server_identifier: str,
-        api_base_url: str,
-    ) -> RemoteApp:
-        return _StubRemoteApp(
-            FrameworkIntegration("dummy"),
-            client_id=client.client_id,
-            client_secret=client.client_secret,
-            access_token_url=authorization_server.token_endpoint,
-            access_token_params={"audience": resource_server_identifier},
-            api_base_url=api_base_url,
-            client_kwargs={"token_endpoint_auth_method": "client_secret_post"},
-        )
-
     @pytest.fixture(name="authorities")
     def authorities_fixture(self, remote_app: RemoteApp) -> ApiAuthorityRepository:
         return ApiAuthorityRepository(remote_app)
@@ -73,13 +29,3 @@ class TestApiAuthorityRepository:
             and authority.abbreviation == "LIV"
             and authority.name == "Liverpool City Region Combined Authority"
         )
-
-
-@dataclass
-class _Client:
-    client_id: str
-    client_secret: str
-
-
-class _StubRemoteApp(OAuth2Mixin, BaseApp):  # type: ignore
-    client_cls = OAuth2Session

@@ -29,9 +29,17 @@ class TestApiAuthorityRepository:
             resource_server_identifier=resource_server_identifier,
         )
 
+    @pytest.fixture(name="api_base_url")
+    def api_base_url_fixture(self) -> str:
+        return "https://api.example"
+
     @pytest.fixture(name="remote_app")
     def remote_app_fixture(
-        self, authorization_server: StubAuthorizationServer, client: _Client, resource_server_identifier: str
+        self,
+        authorization_server: StubAuthorizationServer,
+        client: _Client,
+        resource_server_identifier: str,
+        api_base_url: str,
     ) -> RemoteApp:
         return _StubRemoteApp(
             FrameworkIntegration("dummy"),
@@ -39,7 +47,7 @@ class TestApiAuthorityRepository:
             client_secret=client.client_secret,
             access_token_url=authorization_server.token_endpoint,
             access_token_params={"audience": resource_server_identifier},
-            api_base_url="https://api.example",
+            api_base_url=api_base_url,
             client_kwargs={"token_endpoint_auth_method": "client_secret_post"},
         )
 
@@ -49,11 +57,11 @@ class TestApiAuthorityRepository:
 
     @responses.activate
     def test_get_authority(
-        self, authorization_server: StubAuthorizationServer, authorities: ApiAuthorityRepository
+        self, authorization_server: StubAuthorizationServer, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
         authorization_server.given_token_endpoint_returns_access_token("dummy_jwt")
         responses.get(
-            "https://api.example/authorities/LIV",
+            f"{api_base_url}/authorities/LIV",
             match=[header_matcher({"Authorization": "Bearer dummy_jwt"})],
             json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority"},
         )

@@ -1,6 +1,8 @@
 import pytest
 from playwright.sync_api import Page
 
+from tests.e2e.api_client import ApiClient
+from tests.e2e.api_client import AuthorityRepr as ApiAuthorityRepr
 from tests.e2e.app_client import (
     AppClient,
     AuthorityRepr,
@@ -14,8 +16,11 @@ from tests.e2e.pages import SchemePage
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
+def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+    api_client.add_authorities(
+        ApiAuthorityRepr(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
+    )
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(
@@ -55,9 +60,14 @@ def test_scheme_funding(app_client: AppClient, oidc_client: OidcClient, page: Pa
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
+def test_change_spend_to_date(
+    app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+) -> None:
     app_client.set_clock("2020-01-31T13:00:00")
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+    api_client.add_authorities(
+        ApiAuthorityRepr(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
+    )
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(
@@ -119,8 +129,13 @@ def test_change_spend_to_date(app_client: AppClient, oidc_client: OidcClient, pa
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_cannot_change_spend_to_date_when_error(app_client: AppClient, oidc_client: OidcClient, page: Page) -> None:
+def test_cannot_change_spend_to_date_when_error(
+    app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+) -> None:
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+    api_client.add_authorities(
+        ApiAuthorityRepr(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
+    )
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(

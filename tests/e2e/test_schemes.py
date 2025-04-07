@@ -1,6 +1,8 @@
 import pytest
 from playwright.sync_api import Page
 
+from tests.e2e.api_client import ApiClient
+from tests.e2e.api_client import AuthorityRepr as ApiAuthorityRepr
 from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, UserRepr
 from tests.e2e.builders import build_scheme
 from tests.e2e.oidc_server.users import StubUser
@@ -14,9 +16,12 @@ class TestAuthenticated:
     def oidc_user(self, oidc_client: OidcClient) -> None:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    def test_schemes(self, app_client: AppClient, page: Page) -> None:
+    def test_schemes(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        api_client.add_authorities(
+            ApiAuthorityRepr(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
+        )
         app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
             build_scheme(
@@ -62,8 +67,11 @@ class TestAuthenticated:
 
         assert forbidden_page.is_visible
 
-    def test_scheme_shows_scheme(self, app_client: AppClient, page: Page) -> None:
+    def test_scheme_shows_scheme(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        api_client.add_authorities(
+            ApiAuthorityRepr(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
+        )
         app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
@@ -73,9 +81,14 @@ class TestAuthenticated:
 
         assert scheme_page.heading.text == "Wirral Package"
 
-    def test_schemes_shows_update_schemes_notification(self, app_client: AppClient, page: Page) -> None:
+    def test_schemes_shows_update_schemes_notification(
+        self, app_client: AppClient, api_client: ApiClient, page: Page
+    ) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        api_client.add_authorities(
+            ApiAuthorityRepr(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
+        )
         app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
             build_scheme(

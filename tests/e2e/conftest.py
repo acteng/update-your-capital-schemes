@@ -1,6 +1,7 @@
 import multiprocessing
 import socket
 import sys
+from dataclasses import dataclass
 from typing import Any, Generator
 
 import pytest
@@ -18,11 +19,20 @@ from pytest import FixtureRequest
 from pytest_flask.live_server import LiveServer
 
 from schemes import create_app, destroy_app
+from tests.e2e.api_client import ApiClient
+from tests.e2e.api_server.app import create_app as api_server_create_app
 from tests.e2e.app_client import AppClient
+from tests.e2e.oauth_server.app import create_app as authorization_server_create_app
 from tests.e2e.oidc_server.app import OidcServerApp
 from tests.e2e.oidc_server.app import create_app as oidc_server_create_app
 from tests.e2e.oidc_server.clients import StubClient
 from tests.e2e.oidc_server.web_client import OidcClient
+
+
+@dataclass
+class _Client:
+    client_id: str
+    client_secret: str
 
 
 @pytest.fixture(name="configure_live_server", scope="package", autouse=True)
@@ -36,26 +46,43 @@ def api_key_fixture() -> str:
     return "api-key"
 
 
-@pytest.fixture(name="app", scope="package")
-def app_fixture(api_key: str, oidc_server: LiveServer) -> Generator[Flask, Any, Any]:
+@pytest.fixture(name="app", scope="package", params=[False, True], ids=["database", "api"])
+def app_fixture(
+    request: FixtureRequest,
+    api_key: str,
+    oidc_server: LiveServer,
+    api_server: LiveServer,
+    authorization_server: LiveServer,
+    resource_server_identifier: str,
+    app_oauth_client: _Client,
+) -> Generator[Flask, Any, Any]:
     port = _get_random_port()
     client_id = "app"
     private_key, public_key = _generate_key_pair()
 
-    app = create_app(
-        {
-            "TESTING": True,
-            "SECRET_KEY": b"secret_key",
-            "SERVER_NAME": f"localhost:{port}",
-            "LIVESERVER_PORT": port,
-            "API_KEY": api_key,
-            "GOVUK_CLIENT_ID": client_id,
-            "GOVUK_CLIENT_SECRET": private_key.decode(),
-            "GOVUK_SERVER_METADATA_URL": oidc_server.app.url_for("openid_configuration", _external=True),
-            "GOVUK_TOKEN_ENDPOINT": oidc_server.app.url_for("token", _external=True),
-            "GOVUK_END_SESSION_ENDPOINT": oidc_server.app.url_for("logout", _external=True),
+    config = {
+        "TESTING": True,
+        "SECRET_KEY": b"secret_key",
+        "SERVER_NAME": f"localhost:{port}",
+        "LIVESERVER_PORT": port,
+        "API_KEY": api_key,
+        "GOVUK_CLIENT_ID": client_id,
+        "GOVUK_CLIENT_SECRET": private_key.decode(),
+        "GOVUK_SERVER_METADATA_URL": oidc_server.app.url_for("openid_configuration", _external=True),
+        "GOVUK_TOKEN_ENDPOINT": oidc_server.app.url_for("token", _external=True),
+        "GOVUK_END_SESSION_ENDPOINT": oidc_server.app.url_for("logout", _external=True),
+    }
+
+    if request.param:
+        config |= {
+            "ATE_URL": _get_url(api_server),
+            "ATE_CLIENT_ID": app_oauth_client.client_id,
+            "ATE_CLIENT_SECRET": app_oauth_client.client_secret,
+            "ATE_SERVER_METADATA_URL": authorization_server.app.url_for("openid_configuration", _external=True),
+            "ATE_AUDIENCE": resource_server_identifier,
         }
-    )
+
+    app = create_app(config)
 
     app_oidc_client = StubClient(
         client_id=client_id,
@@ -99,6 +126,66 @@ def oidc_client_fixture(oidc_server: LiveServer) -> Generator[OidcClient, Any, A
     client = OidcClient(_get_url(oidc_server))
     yield client
     client.clear_users()
+
+
+@pytest.fixture(name="api_server_app", scope="package")
+def api_server_app_fixture(authorization_server: LiveServer, resource_server_identifier: str) -> Flask:
+    port = _get_random_port()
+    return api_server_create_app(
+        {
+            "TESTING": True,
+            "SERVER_NAME": f"localhost:{port}",
+            "OIDC_SERVER_METADATA_URL": authorization_server.app.url_for("openid_configuration", _external=True),
+            "RESOURCE_SERVER_IDENTIFIER": resource_server_identifier,
+        }
+    )
+
+
+@pytest.fixture(name="api_server", scope="package")
+def api_server_fixture(api_server_app: Flask, request: FixtureRequest) -> LiveServer:
+    server = LiveServer(api_server_app, "localhost", _get_port(api_server_app), 5, True)
+    server.start()
+    request.addfinalizer(server.stop)
+    return server
+
+
+@pytest.fixture(name="api_client")
+def api_client_fixture(api_server: LiveServer) -> Generator[ApiClient]:
+    client = ApiClient(_get_url(api_server))
+    yield client
+    client.clear_authorities()
+
+
+@pytest.fixture(name="resource_server_identifier", scope="package")
+def resource_server_identifier_fixture() -> str:
+    return "https://api.example"
+
+
+@pytest.fixture(name="app_oauth_client", scope="package")
+def app_oauth_client_fixture() -> _Client:
+    return _Client(client_id="stub_client_id", client_secret="stub_client_secret")
+
+
+@pytest.fixture(name="authorization_server_app", scope="package")
+def authorization_server_app_fixture(app_oauth_client: _Client, resource_server_identifier: str) -> Flask:
+    port = _get_random_port()
+    return authorization_server_create_app(
+        {
+            "TESTING": True,
+            "SERVER_NAME": f"localhost:{port}",
+            "CLIENT_ID": app_oauth_client.client_id,
+            "CLIENT_SECRET": app_oauth_client.client_secret,
+            "RESOURCE_SERVER_IDENTIFIER": resource_server_identifier,
+        }
+    )
+
+
+@pytest.fixture(name="authorization_server", scope="package")
+def authorization_server_fixture(authorization_server_app: Flask, request: FixtureRequest) -> LiveServer:
+    server = LiveServer(authorization_server_app, "localhost", _get_port(authorization_server_app), 5, True)
+    server.start()
+    request.addfinalizer(server.stop)
+    return server
 
 
 @pytest.fixture(name="browser_context_args", scope="package")

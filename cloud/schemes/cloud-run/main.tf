@@ -81,6 +81,30 @@ resource "google_cloud_run_v2_service" "schemes" {
           }
         }
       }
+      dynamic "env" {
+        for_each = var.ate_api ? [1] : []
+        content {
+          name = "FLASK_ATE_URL"
+          value_source {
+            secret_key_ref {
+              secret  = data.google_secret_manager_secret.ate_url[0].secret_id
+              version = "latest"
+            }
+          }
+        }
+      }
+      dynamic "env" {
+        for_each = var.ate_api ? [1] : []
+        content {
+          name = "FLASK_ATE_CLIENT_SECRET"
+          value_source {
+            secret_key_ref {
+              secret  = data.google_secret_manager_secret.ate_client_secret[0].secret_id
+              version = "latest"
+            }
+          }
+        }
+      }
       ports {
         container_port = 8080
       }
@@ -117,7 +141,11 @@ resource "google_cloud_run_v2_service" "schemes" {
     # basic auth password
     google_secret_manager_secret_iam_member.cloud_run_schemes_basic_auth_password,
     # govuk client secret
-    google_secret_manager_secret_iam_member.cloud_run_schemes_govuk_client_secret
+    google_secret_manager_secret_iam_member.cloud_run_schemes_govuk_client_secret,
+    # ATE URL
+    google_secret_manager_secret_iam_member.cloud_run_schemes_ate_url,
+    # ATE client secret
+    google_secret_manager_secret_iam_member.cloud_run_schemes_ate_client_secret
   ]
 }
 
@@ -281,6 +309,38 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_govuk_clie
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
   role      = "roles/secretmanager.secretAccessor"
   secret_id = data.google_secret_manager_secret.govuk_client_secret.id
+}
+
+# ATE URL
+
+data "google_secret_manager_secret" "ate_url" {
+  count = var.ate_api ? 1 : 0
+
+  secret_id = "ate-url"
+}
+
+resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_ate_url" {
+  count = var.ate_api ? 1 : 0
+
+  member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
+  role      = "roles/secretmanager.secretAccessor"
+  secret_id = data.google_secret_manager_secret.ate_url[0].id
+}
+
+# ATE client secret
+
+data "google_secret_manager_secret" "ate_client_secret" {
+  count = var.ate_api ? 1 : 0
+
+  secret_id = "ate-client-secret"
+}
+
+resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_ate_client_secret" {
+  count = var.ate_api ? 1 : 0
+
+  member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
+  role      = "roles/secretmanager.secretAccessor"
+  secret_id = data.google_secret_manager_secret.ate_client_secret[0].id
 }
 
 # monitoring

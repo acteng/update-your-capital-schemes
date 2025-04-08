@@ -78,6 +78,11 @@ variable "basic_auth" {
   type        = bool
 }
 
+variable "ate_api" {
+  description = "Whether to enable the ATE API"
+  type        = bool
+}
+
 variable "monitoring" {
   description = "Whether to enable monitoring"
   type        = bool

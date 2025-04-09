@@ -52,6 +52,11 @@ class TestConfig(GoogleConfig):
     # GOV.UK One Login
     GOVUK_CLIENT_ID = "0OJC1ThcrcGoFtEmxxiFXedQsqn"
 
+    # ATE API
+    ATE_CLIENT_ID = "ztrG3zRot21yuGbF473wJIwlBulod2ZB"
+    ATE_SERVER_METADATA_URL = "https://ate-api-test.uk.auth0.com/.well-known/openid-configuration"
+    ATE_AUDIENCE = "https://test.api.activetravelengland.gov.uk"
+
 
 class ProdConfig(GoogleConfig):
     # GOV.UK One Login
@@ -60,3 +65,8 @@ class ProdConfig(GoogleConfig):
     GOVUK_PROFILE_URL = "https://home.account.gov.uk/"
     GOVUK_END_SESSION_ENDPOINT = "https://oidc.account.gov.uk/logout"
     GOVUK_CLIENT_ID = "S1hl5G31dSsMYqPaOuiRVOLhBX0"
+
+    # ATE API
+    ATE_CLIENT_ID = "7NycUJoSOH8bgyN6M93xxqR5lNHihNcZ"
+    ATE_SERVER_METADATA_URL = "https://ate-api-prod.uk.auth0.com/.well-known/openid-configuration"
+    ATE_AUDIENCE = "https://api.activetravelengland.gov.uk"

@@ -143,7 +143,7 @@ class TestAuth:
         oauth.govuk.server_metadata["issuer"] = "https://stub.example/"
         given_session_has_authentication_request(client, state="123", nonce="456")
 
-        with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "iss"'):
+        with pytest.raises(InvalidClaimError, match="invalid_claim: Invalid claim 'iss'"):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
     @responses.activate
@@ -153,7 +153,7 @@ class TestAuth:
         oidc_server.given_token_endpoint_returns_id_token(audience="another_client_id", nonce="456")
         given_session_has_authentication_request(client, state="123", nonce="456")
 
-        with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "aud"'):
+        with pytest.raises(InvalidClaimError, match="invalid_claim: Invalid claim 'aud'"):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
     @responses.activate
@@ -163,7 +163,7 @@ class TestAuth:
         oidc_server.given_token_endpoint_returns_id_token(nonce="789")
         given_session_has_authentication_request(client, state="123", nonce="456")
 
-        with pytest.raises(InvalidClaimError, match='invalid_claim: Invalid claim "nonce"'):
+        with pytest.raises(InvalidClaimError, match="invalid_claim: Invalid claim 'nonce'"):
             client.get("/auth", query_string={"code": "x", "state": "123"})
 
     @responses.activate

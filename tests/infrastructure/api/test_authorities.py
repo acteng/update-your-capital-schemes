@@ -3,6 +3,7 @@ import responses
 from responses.matchers import header_matcher
 
 from schemes.infrastructure.api import ApiAuthorityRepository, RemoteApp
+from schemes.infrastructure.api.authorities import AuthorityRepr
 from tests.infrastructure.api.oauth import StubAuthorizationServer
 
 
@@ -42,3 +43,12 @@ class TestApiAuthorityRepository:
         )
 
         assert authorities.get("WYO") is None
+
+
+class TestAuthorityRepr:
+    def test_to_domain(self) -> None:
+        authority_repr = AuthorityRepr(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+
+        authority = authority_repr.to_domain()
+
+        assert authority.abbreviation == "LIV" and authority.name == "Liverpool City Region Combined Authority"

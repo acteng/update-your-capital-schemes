@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+from dataclass_wizard import fromdict
 from requests import Response
 
 from schemes.domain.authorities import Authority, AuthorityRepository
@@ -16,5 +19,14 @@ class ApiAuthorityRepository(AuthorityRepository):
             return None
 
         response.raise_for_status()
-        body = response.json()
-        return Authority(abbreviation=body["abbreviation"], name=body["fullName"])
+        authority_repr = fromdict(AuthorityRepr, response.json())
+        return authority_repr.to_domain()
+
+
+@dataclass(frozen=True)
+class AuthorityRepr:
+    abbreviation: str
+    full_name: str
+
+    def to_domain(self) -> Authority:
+        return Authority(abbreviation=self.abbreviation, name=self.full_name)

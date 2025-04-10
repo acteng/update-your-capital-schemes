@@ -168,7 +168,7 @@ def resource_server_fixture() -> _ResourceServer:
 
 @pytest.fixture(name="app_oauth_client", scope="package")
 def app_oauth_client_fixture() -> _Client:
-    return _Client(client_id="stub_client_id", client_secret="stub_client_secret")
+    return _Client(client_id="app", client_secret="secret")
 
 
 @pytest.fixture(name="authorization_server_app", scope="package")

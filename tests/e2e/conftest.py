@@ -40,6 +40,11 @@ class _ResourceServer:
     identifier: str
 
 
+@pytest.fixture(name="debug", scope="package")
+def debug_fixture() -> bool:
+    return False
+
+
 @pytest.fixture(name="configure_live_server", scope="package", autouse=True)
 def configure_live_server_fixture() -> None:
     if sys.platform == "darwin":
@@ -54,6 +59,7 @@ def api_key_fixture() -> str:
 @pytest.fixture(name="app", scope="package", params=[False, True], ids=["database", "api"])
 def app_fixture(
     request: FixtureRequest,
+    debug: bool,
     api_key: str,
     oidc_server: LiveServer,
     api_server: LiveServer,
@@ -66,6 +72,7 @@ def app_fixture(
     private_key, public_key = _generate_key_pair()
 
     config = {
+        "DEBUG": debug,
         "TESTING": True,
         "SECRET_KEY": b"secret_key",
         "SERVER_NAME": f"localhost:{port}",
@@ -113,9 +120,9 @@ def app_client_fixture(live_server: LiveServer, api_key: str) -> Generator[AppCl
 
 
 @pytest.fixture(name="oidc_server_app", scope="package")
-def oidc_server_app_fixture() -> OidcServerApp:
+def oidc_server_app_fixture(debug: bool) -> OidcServerApp:
     port = _get_random_port()
-    return oidc_server_create_app({"TESTING": True, "SERVER_NAME": f"localhost:{port}"})
+    return oidc_server_create_app({"DEBUG": debug, "TESTING": True, "SERVER_NAME": f"localhost:{port}"})
 
 
 @pytest.fixture(name="oidc_server", scope="package")
@@ -134,10 +141,11 @@ def oidc_client_fixture(oidc_server: LiveServer) -> Generator[OidcClient, Any, A
 
 
 @pytest.fixture(name="api_server_app", scope="package")
-def api_server_app_fixture(authorization_server: LiveServer, resource_server: _ResourceServer) -> Flask:
+def api_server_app_fixture(debug: bool, authorization_server: LiveServer, resource_server: _ResourceServer) -> Flask:
     port = _get_random_port()
     return api_server_create_app(
         {
+            "DEBUG": debug,
             "TESTING": True,
             "SERVER_NAME": f"localhost:{port}",
             "OIDC_SERVER_METADATA_URL": authorization_server.app.url_for("openid_configuration", _external=True),
@@ -172,10 +180,11 @@ def app_oauth_client_fixture() -> _Client:
 
 
 @pytest.fixture(name="authorization_server_app", scope="package")
-def authorization_server_app_fixture(app_oauth_client: _Client, resource_server: _ResourceServer) -> Flask:
+def authorization_server_app_fixture(debug: bool, app_oauth_client: _Client, resource_server: _ResourceServer) -> Flask:
     port = _get_random_port()
     return authorization_server_create_app(
         {
+            "DEBUG": debug,
             "TESTING": True,
             "SERVER_NAME": f"localhost:{port}",
             "CLIENT_ID": app_oauth_client.client_id,

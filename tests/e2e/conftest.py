@@ -29,13 +29,13 @@ from tests.e2e.oidc_server.clients import StubClient
 from tests.e2e.oidc_server.web_client import OidcClient
 
 
-@dataclass
+@dataclass(frozen=True)
 class _Client:
     client_id: str
     client_secret: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class _ResourceServer:
     identifier: str
 

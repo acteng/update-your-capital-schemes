@@ -14,7 +14,7 @@ dependencies = [
     "gunicorn~=23.0.0",
     "inject~=5.2.0",
     "pg8000~=1.31.0",
-    "python-dotenv~=1.0.0",
+    "python-dotenv~=1.1.0",
     "requests~=2.32.0",
     "sqlalchemy~=2.0.0"
 ]

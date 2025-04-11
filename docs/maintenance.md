@@ -2,6 +2,22 @@
 
 Project dependencies should be kept up-to-date for the latest security fixes.
 
+## Upgrading GOV.UK Frontend
+
+We use [GOV.UK Frontend](https://frontend.design-system.service.gov.uk/) across the following packages:
+
+* [GOV.UK Frontend Jinja Macros](https://github.com/LandRegistry/govuk-frontend-jinja) (Python)
+* [GOV.UK Frontend WTF](https://github.com/LandRegistry/govuk-frontend-wtf) (Python)
+* [GOV.UK Frontend](https://frontend.design-system.service.gov.uk/) (Node)
+* [GOV.UK One Login Service Header](https://github.com/govuk-one-login/service-header) (Node)
+
+They should be aligned so that they all use the same version of GOV.UK Frontend.
+
+The following sections detail how to upgrade some of these packages:
+
+* [Upgrading GOV.UK Frontend Jinja Macros package](#upgrading-govuk-frontend-jinja-macros-package)
+* [Upgrading GOV.UK One Login Service Header package](#upgrading-govuk-one-login-service-header-package)
+
 ## Upgrading Python packages
 
 To list Python packages that need upgrading:

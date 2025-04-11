@@ -175,9 +175,9 @@ This dependency uses a [GitHub URL](https://docs.npmjs.com/cli/v10/configuring-n
    npm install
    ```
 
-1. Copy the contents of
-   [the service header Nunjucks template](https://raw.githubusercontent.com/govuk-one-login/service-header/main/src/nunjucks/template.njk)
-   to [schemes/views/templates/ate_service_header/macro.html](../schemes/views/templates/ate_service_header/macro.html),
+1. The package [doesn't provide Jinja templates](https://github.com/govuk-one-login/service-header/issues/25), so copy
+   the contents of [the service header Nunjucks template](https://raw.githubusercontent.com/govuk-one-login/service-header/main/src/nunjucks/template.njk)
+   to [schemes/views/templates/ate_service_header/macro.html](../schemes/views/templates/ate_service_header/macro.html)
    replacing the contents of the Jinja macro:
 
    ```
@@ -188,7 +188,8 @@ This dependency uses a [GitHub URL](https://docs.npmjs.com/cli/v10/configuring-n
    {% endmacro %}
    ```
 
-1. Apply the following diff to workaround https://github.com/govuk-one-login/service-header/issues/40:
+1. The template [doesn't allow the crown logo to be customised](https://github.com/govuk-one-login/service-header/issues/40),
+   so replace it with the ATE logo by applying the following diff:
 
    ```diff
           <div class="one-login-header__logo">

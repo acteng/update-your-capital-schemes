@@ -93,7 +93,7 @@ def index(
     schemes: SchemeRepository,
 ) -> str:
     user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
+    user = users.get(user_info["email"])
     assert user
     now = clock.now
     reporting_window = reporting_window_service.get_by_date(now)
@@ -172,7 +172,7 @@ def get_html(
     schemes: SchemeRepository,
 ) -> Response:
     user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
+    user = users.get(user_info["email"])
     assert user
     now = clock.now
     reporting_window = reporting_window_service.get_by_date(now)
@@ -293,7 +293,7 @@ class FundingProgrammeContext:
 @inject.autoparams("users", "schemes")
 def spend_to_date_form(scheme_id: int, users: UserRepository, schemes: SchemeRepository) -> str:
     user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
+    user = users.get(user_info["email"])
     assert user
     scheme = schemes.get(scheme_id)
 
@@ -313,7 +313,7 @@ def spend_to_date_form(scheme_id: int, users: UserRepository, schemes: SchemeRep
 @inject.autoparams("clock", "users", "schemes")
 def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
     user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
+    user = users.get(user_info["email"])
     assert user
     scheme = schemes.get(scheme_id)
 
@@ -339,7 +339,7 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
 @inject.autoparams("clock", "users", "schemes")
 def milestones_form(scheme_id: int, clock: Clock, users: UserRepository, schemes: SchemeRepository) -> str:
     user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
+    user = users.get(user_info["email"])
     assert user
     scheme = schemes.get(scheme_id)
 
@@ -359,7 +359,7 @@ def milestones_form(scheme_id: int, clock: Clock, users: UserRepository, schemes
 @inject.autoparams("clock", "users", "schemes")
 def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
     user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
+    user = users.get(user_info["email"])
     assert user
     scheme = schemes.get(scheme_id)
 
@@ -386,7 +386,7 @@ def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, s
 @inject.autoparams("clock", "users", "schemes")
 def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, scheme_id: int) -> BaseResponse:
     user_info = session["user"]
-    user = users.get_by_email(user_info["email"])
+    user = users.get(user_info["email"])
     assert user
     scheme = schemes.get(scheme_id)
 

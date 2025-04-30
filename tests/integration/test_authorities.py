@@ -76,8 +76,8 @@ class TestAuthoritiesApi:
         )
 
         assert response.status_code == 201
-        user1 = users.get_by_email("boardman@example.com")
-        user2 = users.get_by_email("obree@example.com")
+        user1 = users.get("boardman@example.com")
+        user2 = users.get("obree@example.com")
         assert user1 and user1.email == "boardman@example.com" and user1.authority_abbreviation == "LIV"
         assert user2 and user2.email == "obree@example.com" and user2.authority_abbreviation == "LIV"
 
@@ -85,7 +85,7 @@ class TestAuthoritiesApi:
         response = client.post("/authorities/1/users", json=[{"email": "boardman@example.com"}])
 
         assert response.status_code == 401
-        assert not users.get_by_email("boardman@example.com")
+        assert not users.get("boardman@example.com")
 
     def test_cannot_add_users_when_incorrect_credentials(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -93,7 +93,7 @@ class TestAuthoritiesApi:
         )
 
         assert response.status_code == 401
-        assert not users.get_by_email("boardman@example.com")
+        assert not users.get("boardman@example.com")
 
     def test_cannot_add_users_with_invalid_repr(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -103,7 +103,7 @@ class TestAuthoritiesApi:
         )
 
         assert response.status_code == 400
-        assert not users.get_by_email("boardman@example.com")
+        assert not users.get("boardman@example.com")
 
     def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
         authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
@@ -153,7 +153,7 @@ class TestAuthoritiesApiWhenDisabled:
         )
 
         assert response.status_code == 401
-        assert not users.get_by_email("boardman@example.com")
+        assert not users.get("boardman@example.com")
 
     def test_cannot_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
         authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))

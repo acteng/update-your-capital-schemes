@@ -37,23 +37,23 @@ class TestDatabaseUserRepository:
         assert row1.email == "boardman@example.com" and row1.authority_abbreviation == "LIV"
         assert row2.email == "obree@example.com" and row2.authority_abbreviation == "LIV"
 
-    def test_get_user_by_email(self, users: DatabaseUserRepository, session_maker: sessionmaker[Session]) -> None:
+    def test_get_user(self, users: DatabaseUserRepository, session_maker: sessionmaker[Session]) -> None:
         with session_maker() as session:
             session.add(UserEntity(email="boardman@example.com", authority_abbreviation="LIV"))
             session.commit()
 
-        user = users.get_by_email("boardman@example.com")
+        user = users.get("boardman@example.com")
 
         assert user and user.email == "boardman@example.com" and user.authority_abbreviation == "LIV"
 
-    def test_get_user_by_email_who_does_not_exist(
+    def test_get_user_who_does_not_exist(
         self, users: DatabaseUserRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
             session.add(UserEntity(email="boardman@example.com", authority_abbreviation="LIV"))
             session.commit()
 
-        assert users.get_by_email("obree@example.com") is None
+        assert users.get("obree@example.com") is None
 
     def test_clear_all_users(self, users: DatabaseUserRepository, session_maker: sessionmaker[Session]) -> None:
         with session_maker() as session:

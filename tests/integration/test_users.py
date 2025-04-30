@@ -17,7 +17,7 @@ class TestUsersApi:
         response = client.delete("/users", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 204
-        assert not users.get_by_email("boardman@example.com")
+        assert not users.get("boardman@example.com")
 
     def test_cannot_clear_users_when_no_credentials(self, users: UserRepository, client: FlaskClient) -> None:
         users.add(User("boardman@example.com", authority_abbreviation="LIV"))
@@ -25,7 +25,7 @@ class TestUsersApi:
         response = client.delete("/users")
 
         assert response.status_code == 401
-        assert users.get_by_email("boardman@example.com")
+        assert users.get("boardman@example.com")
 
     def test_cannot_clear_users_when_incorrect_credentials(self, users: UserRepository, client: FlaskClient) -> None:
         users.add(User("boardman@example.com", authority_abbreviation="LIV"))
@@ -33,7 +33,7 @@ class TestUsersApi:
         response = client.delete("/users", headers={"Authorization": "API-Key obree"})
 
         assert response.status_code == 401
-        assert users.get_by_email("boardman@example.com")
+        assert users.get("boardman@example.com")
 
 
 class TestUsersApiWhenDisabled:
@@ -43,4 +43,4 @@ class TestUsersApiWhenDisabled:
         response = client.delete("/users", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 401
-        assert users.get_by_email("boardman@example.com")
+        assert users.get("boardman@example.com")

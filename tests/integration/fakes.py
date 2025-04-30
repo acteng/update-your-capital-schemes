@@ -30,7 +30,7 @@ class MemoryUserRepository(UserRepository):
     def clear(self) -> None:
         self._users.clear()
 
-    def get_by_email(self, email: str) -> User | None:
+    def get(self, email: str) -> User | None:
         return next((user for user in self._users if user.email == email), None)
 
 

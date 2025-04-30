@@ -19,5 +19,5 @@ class UserRepository:
     def clear(self) -> None:
         raise NotImplementedError()
 
-    def get_by_email(self, email: str) -> User | None:
+    def get(self, email: str) -> User | None:
         raise NotImplementedError()

@@ -23,7 +23,7 @@ class DatabaseUserRepository(UserRepository):
             session.execute(delete(UserEntity))
             session.commit()
 
-    def get_by_email(self, email: str) -> User | None:
+    def get(self, email: str) -> User | None:
         with self._session_maker() as session:
             result = session.scalars(select(UserEntity).where(UserEntity.email == email))
             row = result.one_or_none()

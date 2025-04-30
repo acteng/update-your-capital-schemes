@@ -92,7 +92,7 @@ def bearer_auth(func: Callable[P, T]) -> Callable[P, T | Response]:
 
 
 def _is_authorized(users: UserRepository, user: UserInfo) -> bool:
-    return users.get_by_email(user["email"]) is not None
+    return users.get(user["email"]) is not None
 
 
 def _get_oauth() -> OAuth:

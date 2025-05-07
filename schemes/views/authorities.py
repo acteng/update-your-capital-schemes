@@ -1,10 +1,8 @@
-from dataclasses import dataclass
 from logging import Logger
 
 import inject
-from dataclass_wizard import fromlist
-from dataclass_wizard.errors import UnknownJSONKey
 from flask import Blueprint, Response, request
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.users import UserRepository
@@ -19,8 +17,8 @@ bp = Blueprint("authorities", __name__)
 @inject.autoparams()
 def add(authorities: AuthorityRepository, logger: Logger) -> Response:
     try:
-        authorities_repr = fromlist(AuthorityRepr, request.get_json())
-    except UnknownJSONKey as error:
+        authorities_repr = [AuthorityRepr.model_validate(item) for item in request.get_json()]
+    except ValidationError as error:
         logger.error(error)
         return Response(status=400)
 
@@ -33,8 +31,8 @@ def add(authorities: AuthorityRepository, logger: Logger) -> Response:
 @inject.autoparams("users", "logger")
 def add_users(users: UserRepository, logger: Logger, authority_abbreviation: str) -> Response:
     try:
-        users_repr = fromlist(UserRepr, request.get_json())
-    except UnknownJSONKey as error:
+        users_repr = [UserRepr.model_validate(item) for item in request.get_json()]
+    except ValidationError as error:
         logger.error(error)
         return Response(status=400)
 
@@ -50,10 +48,11 @@ def clear(authorities: AuthorityRepository) -> Response:
     return Response(status=204)
 
 
-@dataclass(frozen=True)
-class AuthorityRepr:
+class AuthorityRepr(BaseModel):
     abbreviation: str
     name: str
+
+    model_config = ConfigDict(extra="forbid")
 
     def to_domain(self) -> Authority:
         return Authority(abbreviation=self.abbreviation, name=self.name)

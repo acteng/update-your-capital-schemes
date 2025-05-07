@@ -1,6 +1,5 @@
-from dataclasses import dataclass
-
-from dataclass_wizard import fromdict
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 from requests import Response
 
 from schemes.domain.authorities import Authority, AuthorityRepository
@@ -19,14 +18,15 @@ class ApiAuthorityRepository(AuthorityRepository):
             return None
 
         response.raise_for_status()
-        authority_repr = fromdict(AuthorityRepr, response.json())
+        authority_repr = AuthorityRepr.model_validate(response.json())
         return authority_repr.to_domain()
 
 
-@dataclass(frozen=True)
-class AuthorityRepr:
+class AuthorityRepr(BaseModel):
     abbreviation: str
     full_name: str
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True, alias_generator=to_camel)
 
     def to_domain(self) -> Authority:
         return Authority(abbreviation=self.abbreviation, name=self.full_name)

@@ -6,6 +6,7 @@ from enum import Enum, unique
 from typing import Any
 
 from flask_wtf import FlaskForm
+from pydantic import BaseModel
 from wtforms import FormField
 from wtforms.form import BaseForm, Form
 
@@ -196,8 +197,7 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
         return milestone.name.lower()
 
 
-@dataclass(frozen=True)
-class MilestoneRevisionRepr:
+class MilestoneRevisionRepr(BaseModel):
     effective_date_from: str
     effective_date_to: str | None
     milestone: MilestoneRepr
@@ -235,7 +235,7 @@ class MilestoneRevisionRepr:
 
 
 @unique
-class MilestoneRepr(Enum):
+class MilestoneRepr(str, Enum):
     PUBLIC_CONSULTATION_COMPLETED = "public consultation completed"
     FEASIBILITY_DESIGN_STARTED = "feasibility design started"
     FEASIBILITY_DESIGN_COMPLETED = "feasibility design completed"

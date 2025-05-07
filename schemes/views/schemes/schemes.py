@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from logging import Logger
 
-import dataclass_wizard
 import inject
-from dataclass_wizard import fromlist
-from dataclass_wizard.errors import UnknownJSONKey
 from flask import (
     Blueprint,
     Response,
@@ -20,6 +17,7 @@ from flask import (
     session,
     url_for,
 )
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from werkzeug import Response as BaseResponse
 
 from schemes.annotations import Migrated
@@ -67,8 +65,8 @@ bp = Blueprint("schemes", __name__)
 @inject.autoparams()
 def add_schemes(schemes: SchemeRepository, logger: Logger) -> Response:
     try:
-        schemes_repr = fromlist(SchemeRepr, request.get_json())
-    except UnknownJSONKey as error:
+        schemes_repr = [SchemeRepr.model_validate(item) for item in request.get_json()]
+    except ValidationError as error:
         logger.error(error)
         return Response(status=400)
 
@@ -197,7 +195,7 @@ def get_json(scheme_id: int, schemes: SchemeRepository) -> Response:
     scheme = schemes.get(scheme_id)
     assert scheme
 
-    response = make_response(dataclass_wizard.asdict(SchemeRepr.from_domain(scheme)))
+    response = make_response(SchemeRepr.from_domain(scheme).model_dump())
     response.content_type = "application/json"
     return response
 
@@ -416,16 +414,17 @@ def clear(schemes: SchemeRepository) -> Response:
     return Response(status=204)
 
 
-@dataclass(frozen=True)
-class SchemeRepr:
+class SchemeRepr(BaseModel):
     id: int
     reference: str
-    overview_revisions: list[OverviewRevisionRepr] = field(default_factory=list)
-    bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
-    financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
-    milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
-    output_revisions: list[OutputRevisionRepr] = field(default_factory=list)
-    authority_reviews: list[AuthorityReviewRepr] = field(default_factory=list)
+    overview_revisions: list[OverviewRevisionRepr] = Field(default_factory=list)
+    bid_status_revisions: list[BidStatusRevisionRepr] = Field(default_factory=list)
+    financial_revisions: list[FinancialRevisionRepr] = Field(default_factory=list)
+    milestone_revisions: list[MilestoneRevisionRepr] = Field(default_factory=list)
+    output_revisions: list[OutputRevisionRepr] = Field(default_factory=list)
+    authority_reviews: list[AuthorityReviewRepr] = Field(default_factory=list)
+
+    model_config = ConfigDict(extra="forbid")
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> SchemeRepr:

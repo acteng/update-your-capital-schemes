@@ -7,7 +7,7 @@ from schemes.domain.schemes import DataSource
 
 
 @unique
-class DataSourceRepr(Enum):
+class DataSourceRepr(str, Enum):
     PULSE_5 = "Pulse 5"
     PULSE_6 = "Pulse 6"
     ATF4_BID = "ATF4 bid"

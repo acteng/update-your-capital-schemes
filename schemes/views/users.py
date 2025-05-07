@@ -1,7 +1,6 @@
-from dataclasses import dataclass
-
 import inject
 from flask import Blueprint, Response
+from pydantic import BaseModel, ConfigDict
 
 from schemes.domain.users import User, UserRepository
 from schemes.views.auth.api_key import api_key_auth
@@ -17,9 +16,10 @@ def clear(users: UserRepository) -> Response:
     return Response(status=204)
 
 
-@dataclass(frozen=True)
-class UserRepr:
+class UserRepr(BaseModel):
     email: str
+
+    model_config = ConfigDict(extra="forbid")
 
     def to_domain(self, authority_abbreviation: str) -> User:
         return User(email=self.email, authority_abbreviation=authority_abbreviation)

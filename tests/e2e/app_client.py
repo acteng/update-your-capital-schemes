@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
-
 import requests
-from dataclass_wizard import fromdict
+from pydantic import BaseModel
 
 
 class AppClient:
@@ -19,19 +17,19 @@ class AppClient:
         response.raise_for_status()
 
     def add_authorities(self, *authorities: AuthorityRepr) -> None:
-        json = [asdict(authority) for authority in authorities]
+        json = [authority.model_dump() for authority in authorities]
         response = self._session.post(f"{self._url}/authorities", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
     def add_users(self, authority_abbreviation: str, *users: UserRepr) -> None:
-        json = [asdict(user) for user in users]
+        json = [user.model_dump() for user in users]
         response = self._session.post(
             f"{self._url}/authorities/{authority_abbreviation}/users", json=json, timeout=self.DEFAULT_TIMEOUT
         )
         response.raise_for_status()
 
     def add_schemes(self, *schemes: SchemeRepr) -> None:
-        json = [asdict(scheme) for scheme in schemes]
+        json = [scheme.model_dump() for scheme in schemes]
         response = self._session.post(f"{self._url}/schemes", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
@@ -40,8 +38,7 @@ class AppClient:
             f"{self._url}/schemes/{id_}", headers={"Accept": "application/json"}, timeout=self.DEFAULT_TIMEOUT
         )
         response.raise_for_status()
-        scheme_repr: SchemeRepr = fromdict(SchemeRepr, response.json())
-        return scheme_repr
+        return SchemeRepr.model_validate(response.json())
 
     def clear_authorities(self) -> None:
         response = self._session.delete(f"{self._url}/authorities", timeout=self.DEFAULT_TIMEOUT)
@@ -56,31 +53,27 @@ class AppClient:
         response.raise_for_status()
 
 
-@dataclass(frozen=True)
-class AuthorityRepr:
+class AuthorityRepr(BaseModel):
     abbreviation: str
     name: str
 
 
-@dataclass(frozen=True)
-class UserRepr:
+class UserRepr(BaseModel):
     email: str
 
 
-@dataclass(frozen=True)
-class SchemeRepr:
+class SchemeRepr(BaseModel):
     id: int
     reference: str
-    overview_revisions: list[OverviewRevisionRepr] = field(default_factory=list)
-    bid_status_revisions: list[BidStatusRevisionRepr] = field(default_factory=list)
-    financial_revisions: list[FinancialRevisionRepr] = field(default_factory=list)
-    milestone_revisions: list[MilestoneRevisionRepr] = field(default_factory=list)
-    output_revisions: list[OutputRevisionRepr] = field(default_factory=list)
-    authority_reviews: list[AuthorityReviewRepr] = field(default_factory=list)
+    overview_revisions: list[OverviewRevisionRepr]
+    bid_status_revisions: list[BidStatusRevisionRepr]
+    financial_revisions: list[FinancialRevisionRepr]
+    milestone_revisions: list[MilestoneRevisionRepr]
+    output_revisions: list[OutputRevisionRepr]
+    authority_reviews: list[AuthorityReviewRepr]
 
 
-@dataclass(frozen=True)
-class OverviewRevisionRepr:
+class OverviewRevisionRepr(BaseModel):
     effective_date_from: str
     effective_date_to: str | None
     name: str
@@ -90,16 +83,14 @@ class OverviewRevisionRepr:
     id: int | None = None
 
 
-@dataclass(frozen=True)
-class BidStatusRevisionRepr:
+class BidStatusRevisionRepr(BaseModel):
     effective_date_from: str
     effective_date_to: str | None
     status: str
     id: int | None = None
 
 
-@dataclass(frozen=True)
-class FinancialRevisionRepr:
+class FinancialRevisionRepr(BaseModel):
     effective_date_from: str
     effective_date_to: str | None
     type: str
@@ -108,8 +99,7 @@ class FinancialRevisionRepr:
     id: int | None = None
 
 
-@dataclass(frozen=True)
-class MilestoneRevisionRepr:
+class MilestoneRevisionRepr(BaseModel):
     effective_date_from: str
     effective_date_to: str | None
     milestone: str
@@ -119,8 +109,7 @@ class MilestoneRevisionRepr:
     id: int | None = None
 
 
-@dataclass(frozen=True)
-class OutputRevisionRepr:
+class OutputRevisionRepr(BaseModel):
     effective_date_from: str
     effective_date_to: str | None
     type: str
@@ -130,8 +119,7 @@ class OutputRevisionRepr:
     id: int | None = None
 
 
-@dataclass(frozen=True)
-class AuthorityReviewRepr:
+class AuthorityReviewRepr(BaseModel):
     review_date: str
     source: str
     id: int | None = None

@@ -6,7 +6,6 @@ requires-python = ">=3.13"
 dependencies = [
     "alembic~=1.15.0",
     "authlib~=1.5.0",
-    "dataclass-wizard~=0.35.0",
     "flask~=3.1.0",
     "flask-session[sqlalchemy]~=0.8.0",
     "govuk-frontend-jinja~=3.5.0",
@@ -14,6 +13,7 @@ dependencies = [
     "gunicorn~=23.0.0",
     "inject~=5.2.0",
     "pg8000~=1.31.0",
+    "pydantic~=2.11.0",
     "python-dotenv~=1.1.0",
     "requests~=2.32.0",
     "sqlalchemy~=2.0.0"

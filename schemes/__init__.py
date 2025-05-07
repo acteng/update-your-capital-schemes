@@ -9,8 +9,6 @@ import inject
 from alembic import command
 from authlib.integrations.flask_client import OAuth
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
-from dataclass_wizard import JSONWizard
-from dataclass_wizard.enums import LetterCase
 from flask import (
     Config,
     Flask,
@@ -82,7 +80,6 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.config["SESSION_SQLALCHEMY"] = SQLAlchemy(app)
     flask_session.Session(app)
     app.session_interface = RequestFilteringSessionInterface(app.session_interface, f"{app.static_url_path}/")
-    _configure_dataclass_wizard()
     _configure_jinja(app)
     _configure_http(app)
     _configure_error_pages(app)
@@ -186,12 +183,6 @@ def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
-
-
-def _configure_dataclass_wizard() -> None:
-    class GlobalJSONMeta(JSONWizard.Meta):
-        key_transform_with_dump = LetterCase.SNAKE
-        raise_on_unknown_json_key = True
 
 
 def _configure_jinja(app: Flask) -> None:

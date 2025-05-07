@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, unique
+
+from pydantic import BaseModel
 
 from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
@@ -14,8 +15,7 @@ from schemes.domain.schemes import (
 )
 
 
-@dataclass(frozen=True)
-class OverviewRevisionRepr:
+class OverviewRevisionRepr(BaseModel):
     name: str
     authority_abbreviation: str
     type: SchemeTypeRepr
@@ -53,7 +53,7 @@ class OverviewRevisionRepr:
 
 
 @unique
-class SchemeTypeRepr(Enum):
+class SchemeTypeRepr(str, Enum):
     DEVELOPMENT = "development"
     CONSTRUCTION = "construction"
 
@@ -73,7 +73,7 @@ class SchemeTypeRepr(Enum):
 
 
 @unique
-class FundingProgrammeRepr(Enum):
+class FundingProgrammeRepr(str, Enum):
     ATF2 = "ATF2"
     ATF3 = "ATF3"
     ATF4 = "ATF4"

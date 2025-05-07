@@ -7,6 +7,8 @@ from enum import Enum, unique
 from itertools import groupby
 from typing import Iterator
 
+from pydantic import BaseModel
+
 from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes import (
@@ -108,8 +110,7 @@ class OutputMeasureContext:
         return cls(name=cls._NAMES[measure])
 
 
-@dataclass(frozen=True)
-class OutputRevisionRepr:
+class OutputRevisionRepr(BaseModel):
     effective_date_from: str
     effective_date_to: str | None
     type: OutputTypeRepr
@@ -146,7 +147,7 @@ class OutputRevisionRepr:
 
 
 @unique
-class OutputTypeRepr(Enum):
+class OutputTypeRepr(str, Enum):
     NEW_SEGREGATED_CYCLING_FACILITY = "new segregated cycling facility"
     NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY = "new temporary segregated cycling facility"
     NEW_JUNCTION_TREATMENT = "new junction treatment"
@@ -202,7 +203,7 @@ class OutputTypeRepr(Enum):
 
 
 @unique
-class OutputMeasureRepr(Enum):
+class OutputMeasureRepr(str, Enum):
     MILES = "miles"
     NUMBER_OF_JUNCTIONS = "number of junctions"
     SIZE_OF_AREA = "size of area"

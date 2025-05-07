@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 from flask_wtf import FlaskForm
+from pydantic import BaseModel
 from wtforms import BooleanField
 from wtforms.validators import InputRequired
 
@@ -32,8 +33,7 @@ class SchemeReviewContext:
         return SchemeReviewContext(last_reviewed=reviews.last_reviewed, form=SchemeReviewForm())
 
 
-@dataclass(frozen=True)
-class AuthorityReviewRepr:
+class AuthorityReviewRepr(BaseModel):
     review_date: str
     source: DataSourceRepr
     id: int | None = None

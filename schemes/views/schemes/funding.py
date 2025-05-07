@@ -6,6 +6,7 @@ from enum import Enum, unique
 
 from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovTextInput
+from pydantic import BaseModel
 from wtforms.validators import InputRequired, NumberRange, ValidationError
 
 from schemes.dicts import inverse_dict
@@ -86,8 +87,7 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
             raise ValidationError(f"Spend to date must be £{form.max_amount:,} or less")
 
 
-@dataclass(frozen=True)
-class BidStatusRevisionRepr:
+class BidStatusRevisionRepr(BaseModel):
     effective_date_from: str
     effective_date_to: str | None
     status: BidStatusRepr
@@ -116,7 +116,7 @@ class BidStatusRevisionRepr:
 
 
 @unique
-class BidStatusRepr(Enum):
+class BidStatusRepr(str, Enum):
     SUBMITTED = "submitted"
     FUNDED = "funded"
     NOT_FUNDED = "not funded"
@@ -141,8 +141,7 @@ class BidStatusRepr(Enum):
         }
 
 
-@dataclass(frozen=True)
-class FinancialRevisionRepr:
+class FinancialRevisionRepr(BaseModel):
     effective_date_from: str
     effective_date_to: str | None
     type: FinancialTypeRepr
@@ -177,7 +176,7 @@ class FinancialRevisionRepr:
 
 
 @unique
-class FinancialTypeRepr(Enum):
+class FinancialTypeRepr(str, Enum):
     EXPECTED_COST = "expected cost"
     ACTUAL_COST = "actual cost"
     FUNDING_ALLOCATION = "funding allocation"

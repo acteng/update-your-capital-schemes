@@ -7,7 +7,7 @@ from schemes.domain.schemes import ObservationType
 
 
 @unique
-class ObservationTypeRepr(Enum):
+class ObservationTypeRepr(str, Enum):
     PLANNED = "planned"
     ACTUAL = "actual"
 

@@ -2,8 +2,8 @@
 
 {#
 Component options:
-  - serviceName (string): The name of the service. The service navigation bar will not render unless serviceName is specified
-  - navigationItems (array): An array of objects representing service navigation links.
+  - serviceName (string, DEPRECATED: pass it as an option on serviceNavigationParams instead): The name of the service. The service navigation bar will not render unless serviceName is specified
+  - navigationItems (array, DEPRECATED: pass it as the navigation option on serviceNavigationParams instead): An array of objects representing service navigation links.
     Each link object contains the following fields:
       - href (string – indicates the link destination),
       - text (string, is the text being displayed),
@@ -22,12 +22,13 @@ Component options:
       text: 'service link 3',
       id: 'servicelink3'
     }]
-  - activeLinkId (string): The id of the link that is currently active
+  - activeLinkId (string, DEPRECATED: replaced by navigation option on serviceNavigationParams): The id of the link that is currently active
   - oneLoginLink (string): Option to overwrite the default One Login Home link. Defaults to "https://home.account.gov.uk/"
   - signOutLink (string): Option to overwrite the default signed out page. Defaults to "https://home.account.gov.uk/sign-out"
   - homepageLink (string): Option to overwrite the default GOV.UK link. Defaults to "https://home.account.gov.uk/"
+  - serviceNavigationParams (object): Options for the service navigation component. Accepts all the options listed under "Nunjucks macro options" on the Design System [service navigation component page](https://design-system.service.gov.uk/components/service-navigation/). The service nav bar will not render unless serviceName is specified
 #}
-
+{%- from "govuk_frontend_jinja/components/service-navigation/macro.html" import govukServiceNavigation -%}
 {%- set oneLoginLink = params.oneLoginLink if params.oneLoginLink else "https://home.account.gov.uk/" -%}
 {%- set homepageLink = params.homepageLink if params.homepageLink else "https://www.gov.uk/" -%}
 {%- set signOutLink = params.signOutLink if params.signOutLink else "https://home.account.gov.uk/sign-out" -%}
@@ -46,7 +47,7 @@ Component options:
     </span>
   <!--<![endif]-->
 {%- endmacro -%}
-<header class="cross-service-header" role="banner" data-module="one-login-header">
+<header class="cross-service-header" data-module="one-login-header">
   <div class="one-login-header" data-one-login-header-nav>
     <div class="one-login-header__container govuk-width-container">
       <div class="one-login-header__logo">
@@ -64,18 +65,18 @@ Component options:
         aria-expanded="false"
         class="cross-service-header__button cross-service-header__button--one-login js-x-header-toggle">
         <span class="cross-service-header__button-content">One Login</span>
-          {{ littlePersonIcon() }}
-          {{ littlePersonIcon("focus") }}
+          {{- littlePersonIcon() -}}
+          {{- littlePersonIcon("focus") -}}
       </button>
-      <nav aria-label="GOV.UK One Login menu" class="one-login-header__nav" data-open-class="one-login-header__nav--open" id="one-login-header__nav">
+      <nav aria-label="GOV.UK One Login" class="one-login-header__nav" data-open-class="one-login-header__nav--open" id="one-login-header__nav">
         <ul class="one-login-header__nav__list">
           <li class="one-login-header__nav__list-item">
             <a class="one-login-header__nav__link one-login-header__nav__link--one-login" href="{{ oneLoginLink }}">
               <span class="one-login-header__nav__link-content">
                 GOV.UK One Login
               </span>
-              {{ littlePersonIcon() }}
-              {{ littlePersonIcon("focus") }}
+              {{- littlePersonIcon() -}}
+              {{- littlePersonIcon("focus") -}}
             </a>
           </li>
           <li class="one-login-header__nav__list-item">
@@ -88,51 +89,31 @@ Component options:
       </nav>
     </div>
   </div>
-  {% if params.serviceName %}
   <!-- Start of service navigation -->
-  <div class="service-header" data-one-login-header-nav>
-    <div class="govuk-width-container">
-      <div class="service-header__container">
-        <!-- The name of your service goes here -->
-        <h2 class="service-header__heading">{{ params.serviceName }}</h2>
-        {%- if params.navigationItems %}
-        <div>
-          <!-- Label the toggle button appropriately (you might want to use the name of your service) to provide support for screen reader users -->
-          <button type="button"
-            aria-controls="service-header__nav"
-            data-open-class="cross-service-header__button--open"
-            aria-label="Show service navigation menu"
-            data-label-for-show="Show service navigation menu"
-            data-label-for-hide="Hide service navigation menu"
-            data-text-for-show="Menu"
-            data-text-for-hide="Close"
-            aria-expanded="false"
-            class="cross-service-header__button cross-service-header__button--service-header js-x-header-toggle">
-            <span class="service-header__button-content">Menu</span>
-          </button>
-          <!-- Important! Label your navigation appropriately! When there are multiple navigation landmarks on a page, additional labelling is required to provide support for screen reader users -->
-          <nav aria-label="{{ params.serviceName }} menu">
-            <ul class="service-header__nav-list service-header__nav" id="service-header__nav" data-open-class="service-header__nav--open">
-              {%- for item in params.navigationItems %}
-              <!-- Use the "service-header__nav-list-item--active" modifier class on the li to visually highlight the page the user is currently viewing -->
-              <li class="service-header__nav-list-item {{ 'service-header__nav-list-item--active' if (item.id == params.activeLinkId) else '' }}">
-                <!-- Use the aria-current="page" attribute on the anchor tag -->
-                <a class="service-header__nav-list-item-link"
-                  {%- if (item.id == params.activeLinkId) -%} aria-current="page" {%- endif %}
-                  href="{{item.href}}">
-                  {{item.text}}
-                </a>
-              </li>
-              {%- endfor %}
-            </ul>
-          </nav>
-        </div>
-        {% endif %}
-      </div>
-    </div>
-  </div>
+  <!-- This is a DESIGN SYSTEM component with a dependency on Javascript  -->
+  <!-- Javascript is necessary to enable dropdown functionality for the list of links on mobile -->
+  <!-- Import the latest version of the script for this component using the instructions here https://frontend.design-system.service.gov.uk/import-javascript/#import-javascript  -->
+    {# navigationItems is a legacy parameter #}
+    {# please migrate to the Design System style parameters for Secondary Navigation as soon as you can #}
+    {%- if params.navigationItems -%}
+      {%- set navArr = [] -%}
+      {%- for item in params.navigationItems -%}
+        {{- '' if navArr.push({
+            href: item.href,
+            text: item.text,
+            active: item.id == params.activeLinkId
+        }) -}}
+      {%- endfor -%}
+      {{ govukServiceNavigation({
+        "menuButtonText": params.menuButtonText,
+        "menuButtonLabel": params.menuButtonLabel,
+        "serviceName": params.serviceName,
+        "navigation": navArr
+      }) if params.serviceName }}
+    {%- elif params.serviceNavigationParams -%}
+       {{ govukServiceNavigation(params.serviceNavigationParams) if params.serviceNavigationParams.serviceName }}
+    {%- endif -%}
   <!-- End of service navigation -->
-  {% endif %}
 </header>
 
 {% endmacro %}

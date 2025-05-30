@@ -107,6 +107,7 @@ class FundingProgrammes:
     ATF4 = FundingProgramme("ATF4", False, True)
     ATF4E = FundingProgramme("ATF4e", False, True)
     ATF5 = FundingProgramme("ATF5", False, True)
+    CATF = FundingProgramme("CATF", False, True)
     CRSTS = FundingProgramme("CRSTS", False, False)
     LUF1 = FundingProgramme("LUF1", False, False)
     LUF2 = FundingProgramme("LUF2", False, False)

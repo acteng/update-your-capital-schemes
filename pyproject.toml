@@ -5,7 +5,7 @@ description = "Update your capital schemes service."
 requires-python = ">=3.13"
 dependencies = [
     "alembic~=1.15.0",
-    "authlib~=1.5.0",
+    "authlib~=1.6.0",
     "flask~=3.1.0",
     "flask-session[sqlalchemy]~=0.8.0",
     "govuk-frontend-jinja~=3.5.0",

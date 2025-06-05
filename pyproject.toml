@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "Update your capital schemes service."
 requires-python = ">=3.13"
 dependencies = [
-    "alembic~=1.15.0",
+    "alembic~=1.16.0",
     "authlib~=1.6.0",
     "flask~=3.1.0",
     "flask-session[sqlalchemy]~=0.8.0",
@@ -38,6 +38,11 @@ dev = [
 [build-system]
 requires = ["flit_core<4"]
 build-backend = "flit_core.buildapi"
+
+# alembic
+
+[tool.alembic]
+script_location = "schemes:infrastructure/database/migrations"
 
 # black
 

@@ -50,32 +50,25 @@ so we maintain a copy of the template to replace it with the ATE logo.
 After upgrading GOV.UK Frontend Jinja Macros, update the template:
 
 1. Copy the contents of [the header template](https://raw.githubusercontent.com/LandRegistry/govuk-frontend-jinja/refs/heads/main/govuk_frontend_jinja/templates/components/header/macro.html)
-   to [schemes/views/templates/ate_header/macro.html](../schemes/views/templates/ate_header/macro.html) replacing the
-   contents of the Jinja macro:
-
-   ```
-   {% macro ateHeader(params) %}
-   <PASTE HERE>
-   {% endmacro %}
-   ```
-
-1. Replace the crown logo with the ATE logo by applying the following diff:
+   to [schemes/views/templates/ate_header/macro.html](../schemes/views/templates/ate_header/macro.html) and rename the
+   macro by applying the following patch:
 
    ```diff
-      <div class="govuk-header__container {{ params.containerClasses | default("govuk-width-container", true) }}">
-        <div class="govuk-header__logo">
-          <a href="{{ params.homepageUrl | default("/", true) }}" class="govuk-header__link govuk-header__link--homepage">
-   +        <img class="govuk-header__logotype ate-header__logotype" src="{{ url_for('static', filename='ate-header/ATE_WHITE_LANDSCP_AW.png') }}" alt="Active Travel England"/>
-   +        <img class="govuk-header__logotype ate-header__logotype--focus" src="{{ url_for('static', filename='ate-header/ATE_BLK_LANDSCP_AW.png') }}" alt="Active Travel England"/>
+   -{% macro govukHeader(params) %}
+   +{% macro ateHeader(params) %}
+   ```
+
+1. Replace the crown logo with the ATE logo by applying the following patch:
+
+   ```diff
    -        {{ govukLogo({
    -          'classes': "govuk-header__logotype",
    -          'ariaLabelText': "GOV.UK",
    -          'useTudorCrown': params.useTudorCrown,
    -          'rebrand': _rebrand
    -        }) | trim | indent(8) }}
-            {% if (params.productName) %}
-            <span class="govuk-header__product-name">
-              {{- params.productName -}}
+   +        <img class="govuk-header__logotype ate-header__logotype" src="{{ url_for('static', filename='ate-header/ATE_WHITE_LANDSCP_AW.png') }}" alt="Active Travel England"/>
+   +        <img class="govuk-header__logotype ate-header__logotype--focus" src="{{ url_for('static', filename='ate-header/ATE_BLK_LANDSCP_AW.png') }}" alt="Active Travel England"/>
    ```
 
 ### Upgrading Playwright package
@@ -167,11 +160,11 @@ doesn't publish a Node package. To upgrade:
    {% endmacro %}
    ```
 
-   And update the service navigation component for Jinja by applying the following diffs:
+   And update the service navigation component for Jinja by applying the following patches:
 
    ```diff
-   - {%- from "node_modules/govuk-frontend/dist/govuk/components/service-navigation/macro.njk" import govukServiceNavigation -%}
-   + {%- from "govuk_frontend_jinja/components/service-navigation/macro.html" import govukServiceNavigation -%}
+   -{%- from "node_modules/govuk-frontend/dist/govuk/components/service-navigation/macro.njk" import govukServiceNavigation -%}
+   +{%- from "govuk_frontend_jinja/components/service-navigation/macro.html" import govukServiceNavigation -%}
    ```
    
    ```diff

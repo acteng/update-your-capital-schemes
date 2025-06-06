@@ -240,9 +240,14 @@ def _configure_error_pages(app: Flask) -> None:
 
 def _configure_govuk_frontend(app: Flask) -> None:
     @app.context_processor
-    def govuk_frontend_config() -> dict[str, str]:
+    def govuk_frontend_config() -> dict[str, Any]:
+        rebrand = False
         return {
-            "assetPath": url_for("static", filename="govuk-frontend/assets"),
+            "assetPath": url_for(
+                "static", filename="govuk-frontend/assets/rebrand" if rebrand else "govuk-frontend/assets"
+            ),
+            "govukRebrand": rebrand,
+            "themeColor": "#006853",
             "oneLoginLink": app.config["GOVUK_PROFILE_URL"],
         }
 

@@ -1,5 +1,8 @@
 {% macro ateHeader(params) %}
-{% from "govuk_frontend_jinja/macros/attributes.html" import govukAttributes %}
+{% from "govuk_frontend_jinja/macros/attributes.html" import govukAttributes -%}
+{% from "govuk_frontend_jinja/macros/logo.html" import govukLogo -%}
+
+{%- set _rebrand = params.rebrand | default(govukRebrand() if govukRebrand and govukRebrand is callable else govukRebrand) -%}
 
 {%- set menuButtonText = params.menuButtonText if params.menuButtonText else 'Menu' -%}
 
@@ -12,7 +15,7 @@
         <img class="govuk-header__logotype ate-header__logotype--focus" src="{{ url_for('static', filename='ate-header/ATE_BLK_LANDSCP_AW.png') }}" alt="Active Travel England"/>
         {% if (params.productName) %}
         <span class="govuk-header__product-name">
-          {{ params.productName }}
+          {{- params.productName -}}
         </span>
         {% endif %}
       </a>

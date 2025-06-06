@@ -13,7 +13,8 @@
 
 {% block header %}
     {{ ateHeader({
-        "homepageUrl": "https://www.activetravelengland.gov.uk"
+        "homepageUrl": "https://www.activetravelengland.gov.uk",
+        "rebrand": govukRebrand
     }) }}
 {% endblock %}
 
@@ -56,6 +57,7 @@
                     "href": url_for("legal.cookies")
                 }
             ]
-        }
+        },
+        "rebrand": govukRebrand
     }) }}
 {% endblock %}

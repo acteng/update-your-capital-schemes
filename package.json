@@ -21,7 +21,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "govuk-frontend": "~5.9.0",
+    "govuk-frontend": "~5.10.0",
     "govuk-one-login-service-header": "govuk-one-login/service-header#12e31a02ad0c2b3a10e25d305b5e9a2bc541ab19"
   },
   "devDependencies": {

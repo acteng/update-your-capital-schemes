@@ -60,6 +60,24 @@ data "terraform_remote_state" "schemes_database" {
   workspace = local.env
 }
 
+data "terraform_remote_state" "identity" {
+  backend = "gcs"
+  config = {
+    bucket = "dft-ate-api-common-tf-backend"
+    prefix = "identity"
+  }
+  workspace = local.env
+}
+
+data "terraform_remote_state" "ate_api" {
+  backend = "gcs"
+  config = {
+    bucket = "dft-ate-api-common-tf-backend"
+    prefix = "service"
+  }
+  workspace = local.env
+}
+
 resource "google_project_service" "secret_manager" {
   project = local.project
   service = "secretmanager.googleapis.com"
@@ -97,7 +115,8 @@ module "cloud_run" {
   capital_schemes_database_password        = data.terraform_remote_state.schemes_database.outputs.password
   keep_idle                                = local.config[local.env].keep_idle
   basic_auth                               = local.config[local.env].basic_auth
-  ate_api                                  = local.config[local.env].ate_api
+  ate_api_url                              = local.config[local.env].ate_api ? data.terraform_remote_state.ate_api.outputs.url : null
+  ate_api_client_secret                    = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.update_your_capital_schemes_client_secret : null
   monitoring                               = local.config[local.env].monitoring
   domain                                   = local.config[local.env].domain
 

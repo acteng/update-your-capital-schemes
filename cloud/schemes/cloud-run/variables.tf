@@ -78,9 +78,15 @@ variable "basic_auth" {
   type        = bool
 }
 
-variable "ate_api" {
-  description = "Whether to enable the ATE API"
-  type        = bool
+variable "ate_api_url" {
+  description = "ATE API URL"
+  type        = string
+}
+
+variable "ate_api_client_secret" {
+  description = "ATE API client secret"
+  type        = string
+  sensitive   = true
 }
 
 variable "monitoring" {

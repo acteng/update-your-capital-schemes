@@ -116,7 +116,10 @@ module "cloud_run" {
   keep_idle                                = local.config[local.env].keep_idle
   basic_auth                               = local.config[local.env].basic_auth
   ate_api_url                              = local.config[local.env].ate_api ? data.terraform_remote_state.ate_api.outputs.url : null
+  ate_api_client_id                        = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.update_your_capital_schemes_client_id : null
   ate_api_client_secret                    = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.update_your_capital_schemes_client_secret : null
+  ate_api_server_metadata_url              = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.oidc_server_metadata_url : null
+  ate_api_audience                         = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.resource_server_identifier : null
   monitoring                               = local.config[local.env].monitoring
   domain                                   = local.config[local.env].domain
 

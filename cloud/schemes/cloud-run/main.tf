@@ -89,6 +89,13 @@ resource "google_cloud_run_v2_service" "schemes" {
         }
       }
       dynamic "env" {
+        for_each = var.ate_api_client_id != null ? [1] : []
+        content {
+          name  = "FLASK_ATE_CLIENT_ID"
+          value = var.ate_api_client_id
+        }
+      }
+      dynamic "env" {
         for_each = var.ate_api_client_secret != null ? [1] : []
         content {
           name = "FLASK_ATE_CLIENT_SECRET"
@@ -98,6 +105,20 @@ resource "google_cloud_run_v2_service" "schemes" {
               version = "latest"
             }
           }
+        }
+      }
+      dynamic "env" {
+        for_each = var.ate_api_server_metadata_url != null ? [1] : []
+        content {
+          name  = "FLASK_ATE_SERVER_METADATA_URL"
+          value = var.ate_api_server_metadata_url
+        }
+      }
+      dynamic "env" {
+        for_each = var.ate_api_audience != null ? [1] : []
+        content {
+          name  = "FLASK_ATE_AUDIENCE"
+          value = var.ate_api_audience
         }
       }
       ports {

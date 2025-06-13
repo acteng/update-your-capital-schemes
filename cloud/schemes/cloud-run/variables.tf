@@ -83,10 +83,25 @@ variable "ate_api_url" {
   type        = string
 }
 
+variable "ate_api_client_id" {
+  description = "ATE API client id"
+  type        = string
+}
+
 variable "ate_api_client_secret" {
   description = "ATE API client secret"
   type        = string
   sensitive   = true
+}
+
+variable "ate_api_server_metadata_url" {
+  description = "ATE API OIDC configuration URL"
+  type        = string
+}
+
+variable "ate_api_audience" {
+  description = "ATE API OIDC audience"
+  type        = string
 }
 
 variable "monitoring" {

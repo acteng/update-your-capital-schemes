@@ -17,7 +17,6 @@ locals {
 
   config = {
     dev = {
-      schemes_database = "dev"
       keep_idle        = false
       basic_auth       = true
       ate_api          = true
@@ -26,7 +25,6 @@ locals {
       domain           = "dev.${local.domain}"
     }
     test = {
-      schemes_database = "test"
       keep_idle        = false
       basic_auth       = true
       ate_api          = false
@@ -35,7 +33,6 @@ locals {
       domain           = "test.${local.domain}"
     }
     prod = {
-      schemes_database = "prod"
       keep_idle        = true
       basic_auth       = false
       ate_api          = false
@@ -60,7 +57,7 @@ data "terraform_remote_state" "schemes_database" {
     bucket = "dft-ate-capitalschemes-common-tf-backend"
     prefix = "schemes-database"
   }
-  workspace = local.config[local.env].schemes_database
+  workspace = local.env
 }
 
 resource "google_project_service" "secret_manager" {

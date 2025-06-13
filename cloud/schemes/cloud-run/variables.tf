@@ -41,6 +41,7 @@ variable "database_username" {
 variable "database_password" {
   description = "Database password"
   type        = string
+  sensitive   = true
 }
 
 variable "capital_schemes_database_project" {
@@ -66,6 +67,7 @@ variable "capital_schemes_database_username" {
 variable "capital_schemes_database_password" {
   description = "Capital schemes database password"
   type        = string
+  sensitive   = true
 }
 
 variable "keep_idle" {

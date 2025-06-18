@@ -88,6 +88,14 @@ class AccessibilityPage(PageObject):
         return cls(response)
 
 
+class BadRequestPage(PageObject):
+    def __init__(self, response: TestResponse):
+        super().__init__(response)
+        heading = self._soup.select_one("main h1")
+        self.is_visible = heading.string == "Bad request" if heading else False
+        self.is_bad_request = response.status_code == 400
+
+
 class ForbiddenPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)

@@ -20,7 +20,7 @@ from requests import HTTPError
 
 from schemes.domain.users import User, UserRepository
 from tests.integration.oidc import StubOidcServer
-from tests.integration.pages import ForbiddenPage
+from tests.integration.pages import BadRequestPage, ForbiddenPage
 
 
 class TestAuth:
@@ -250,9 +250,9 @@ class TestAuth:
     def test_callback_without_state_returns_bad_request(
         self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
     ) -> None:
-        response = client.get("/auth", query_string={"code": "x"})
+        bad_request = BadRequestPage(client.get("/auth", query_string={"code": "x"}))
 
-        assert response.status_code == 400
+        assert bad_request.is_visible and bad_request.is_bad_request
 
     @responses.activate
     def test_callback_without_code_returns_bad_request(
@@ -260,9 +260,9 @@ class TestAuth:
     ) -> None:
         given_session_has_authentication_request(client, state="123", nonce="456")
 
-        response = client.get("/auth", query_string={"state": "123"})
+        bad_request = BadRequestPage(client.get("/auth", query_string={"state": "123"}))
 
-        assert response.status_code == 400
+        assert bad_request.is_visible and bad_request.is_bad_request
 
     def test_forbidden(self, client: FlaskClient) -> None:
         forbidden_page = ForbiddenPage.open(client)

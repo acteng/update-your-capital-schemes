@@ -220,6 +220,10 @@ def _configure_http(app: Flask) -> None:
 
 
 def _configure_error_pages(app: Flask) -> None:
+    @app.errorhandler(400)
+    def bad_request(_error: Exception) -> Response:
+        return Response(render_template("400.html"), status=400)
+
     @app.errorhandler(403)
     def forbidden(_error: Exception) -> Response:
         return Response(render_template("403.html"), status=403)

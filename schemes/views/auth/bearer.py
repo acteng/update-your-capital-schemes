@@ -8,10 +8,13 @@ from authlib.integrations.flask_client import OAuth
 from authlib.oidc.core import UserInfo
 from flask import (
     Blueprint,
+    Request,
     Response,
+    abort,
     current_app,
     redirect,
     render_template,
+    request,
     session,
     url_for,
 )
@@ -26,6 +29,9 @@ bp = Blueprint("auth", __name__)
 @inject.autoparams()
 def callback(users: UserRepository, logger: Logger) -> BaseResponse:
     if "user" not in session:
+        if not _is_authorization_response(request) and not _is_error_response(request):
+            abort(400)
+
         oauth = _get_oauth()
         server_metadata = oauth.govuk.load_server_metadata()
         token = oauth.govuk.authorize_access_token(
@@ -89,6 +95,16 @@ def bearer_auth(func: Callable[P, T]) -> Callable[P, T | Response]:
         return func(*args, **kwargs)
 
     return decorated_function
+
+
+def _is_authorization_response(request: Request) -> bool:
+    # See: https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2
+    return "code" in request.args and "state" in request.args
+
+
+def _is_error_response(request: Request) -> bool:
+    # See: https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1
+    return "error" in request.args
 
 
 def _is_authorized(users: UserRepository, user: UserInfo) -> bool:

@@ -246,6 +246,24 @@ class TestAuth:
 
         assert response.status_code == 302 and response.location == "/auth/forbidden"
 
+    @responses.activate
+    def test_callback_without_state_returns_bad_request(
+        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
+    ) -> None:
+        response = client.get("/auth", query_string={"code": "x"})
+
+        assert response.status_code == 400
+
+    @responses.activate
+    def test_callback_without_code_returns_bad_request(
+        self, oidc_server: StubOidcServer, users: UserRepository, client: FlaskClient
+    ) -> None:
+        given_session_has_authentication_request(client, state="123", nonce="456")
+
+        response = client.get("/auth", query_string={"state": "123"})
+
+        assert response.status_code == 400
+
     def test_forbidden(self, client: FlaskClient) -> None:
         forbidden_page = ForbiddenPage.open(client)
 

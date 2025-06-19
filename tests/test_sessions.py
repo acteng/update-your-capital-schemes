@@ -5,10 +5,7 @@ import pytest
 from flask import Flask, Response, request
 from flask.sessions import NullSession, SessionInterface, SessionMixin
 
-from schemes.sessions import (
-    DelegatingSessionInterface,
-    RequestFilteringSessionInterface,
-)
+from schemes.sessions import DelegatingSessionInterface, RequestFilteringSessionInterface
 
 
 @pytest.fixture(name="app")

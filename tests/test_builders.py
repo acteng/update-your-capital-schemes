@@ -3,13 +3,7 @@ from datetime import datetime
 import pytest
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    BidStatus,
-    BidStatusRevision,
-    FundingProgrammes,
-    OverviewRevision,
-    SchemeType,
-)
+from schemes.domain.schemes import BidStatus, BidStatusRevision, FundingProgrammes, OverviewRevision, SchemeType
 from tests.builders import build_scheme
 
 

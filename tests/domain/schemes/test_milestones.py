@@ -4,13 +4,7 @@ from datetime import date, datetime
 import pytest
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    DataSource,
-    Milestone,
-    MilestoneRevision,
-    ObservationType,
-    SchemeMilestones,
-)
+from schemes.domain.schemes import DataSource, Milestone, MilestoneRevision, ObservationType, SchemeMilestones
 
 
 class TestSchemeMilestones:

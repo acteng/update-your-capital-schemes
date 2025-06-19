@@ -17,11 +17,7 @@ from tests.e2e.oidc_server.grants import (
 )
 from tests.e2e.oidc_server.jwts import PrivateKeyJwtClientAssertion
 from tests.e2e.oidc_server.resources import TypedResourceProtector
-from tests.e2e.oidc_server.tokens import (
-    StubBearerTokenValidator,
-    StubToken,
-    TokenRepository,
-)
+from tests.e2e.oidc_server.tokens import StubBearerTokenValidator, StubToken, TokenRepository
 from tests.e2e.oidc_server.users import StubUser, UserRepository
 
 

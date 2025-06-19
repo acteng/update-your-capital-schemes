@@ -5,13 +5,7 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    BidStatus,
-    DataSource,
-    FinancialRevision,
-    FinancialType,
-    SchemeRepository,
-)
+from schemes.domain.schemes import BidStatus, DataSource, FinancialRevision, FinancialType, SchemeRepository
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.builders import build_scheme

@@ -4,12 +4,7 @@ import inject
 import pytest
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives.serialization import (
-    Encoding,
-    NoEncryption,
-    PrivateFormat,
-    PublicFormat,
-)
+from cryptography.hazmat.primitives.serialization import Encoding, NoEncryption, PrivateFormat, PublicFormat
 from flask import Flask, session
 from flask.testing import FlaskClient
 from flask_wtf.csrf import generate_csrf
@@ -21,11 +16,7 @@ from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
-from tests.integration.fakes import (
-    MemoryAuthorityRepository,
-    MemorySchemeRepository,
-    MemoryUserRepository,
-)
+from tests.integration.fakes import MemoryAuthorityRepository, MemorySchemeRepository, MemoryUserRepository
 
 
 @pytest.fixture(name="config", scope="class")

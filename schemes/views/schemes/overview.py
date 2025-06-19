@@ -7,12 +7,7 @@ from pydantic import BaseModel
 
 from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    FundingProgramme,
-    FundingProgrammes,
-    OverviewRevision,
-    SchemeType,
-)
+from schemes.domain.schemes import FundingProgramme, FundingProgrammes, OverviewRevision, SchemeType
 
 
 class OverviewRevisionRepr(BaseModel):

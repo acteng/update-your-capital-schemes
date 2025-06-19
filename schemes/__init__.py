@@ -9,16 +9,7 @@ import inject
 from alembic import command
 from authlib.integrations.flask_client import OAuth
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
-from flask import (
-    Config,
-    Flask,
-    Response,
-    flash,
-    redirect,
-    render_template,
-    request,
-    url_for,
-)
+from flask import Config, Flask, Response, flash, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from flask_wtf.csrf import CSRFError
@@ -35,10 +26,7 @@ from werkzeug import Response as BaseResponse
 from schemes.annotations import Migrated
 from schemes.config import LocalConfig
 from schemes.domain.authorities import AuthorityRepository
-from schemes.domain.reporting_window import (
-    DefaultReportingWindowService,
-    ReportingWindowService,
-)
+from schemes.domain.reporting_window import DefaultReportingWindowService, ReportingWindowService
 from schemes.domain.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.api import ApiAuthorityRepository

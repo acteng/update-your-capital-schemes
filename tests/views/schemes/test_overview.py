@@ -3,17 +3,8 @@ from datetime import datetime
 import pytest
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    FundingProgramme,
-    FundingProgrammes,
-    OverviewRevision,
-    SchemeType,
-)
-from schemes.views.schemes.overview import (
-    FundingProgrammeRepr,
-    OverviewRevisionRepr,
-    SchemeTypeRepr,
-)
+from schemes.domain.schemes import FundingProgramme, FundingProgrammes, OverviewRevision, SchemeType
+from schemes.views.schemes.overview import FundingProgrammeRepr, OverviewRevisionRepr, SchemeTypeRepr
 
 
 class TestOverviewRevisionRepr:

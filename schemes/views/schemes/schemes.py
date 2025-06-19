@@ -5,18 +5,7 @@ from datetime import datetime
 from logging import Logger
 
 import inject
-from flask import (
-    Blueprint,
-    Response,
-    abort,
-    flash,
-    make_response,
-    redirect,
-    render_template,
-    request,
-    session,
-    url_for,
-)
+from flask import Blueprint, Response, abort, flash, make_response, redirect, render_template, request, session, url_for
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from werkzeug import Response as BaseResponse
 
@@ -24,13 +13,7 @@ from schemes.annotations import Migrated
 from schemes.dicts import as_shallow_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
-from schemes.domain.schemes import (
-    FundingProgramme,
-    FundingProgrammes,
-    Scheme,
-    SchemeRepository,
-    SchemeType,
-)
+from schemes.domain.schemes import FundingProgramme, FundingProgrammes, Scheme, SchemeRepository, SchemeType
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
 from schemes.views.auth.api_key import api_key_auth
@@ -51,11 +34,7 @@ from schemes.views.schemes.milestones import (
 )
 from schemes.views.schemes.outputs import OutputRevisionRepr, SchemeOutputsContext
 from schemes.views.schemes.overview import OverviewRevisionRepr
-from schemes.views.schemes.reviews import (
-    AuthorityReviewRepr,
-    SchemeReviewContext,
-    SchemeReviewForm,
-)
+from schemes.views.schemes.reviews import AuthorityReviewRepr, SchemeReviewContext, SchemeReviewForm
 
 bp = Blueprint("schemes", __name__)
 

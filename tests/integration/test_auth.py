@@ -6,12 +6,7 @@ import pytest
 import responses
 from authlib.integrations.base_client import OAuthError
 from authlib.integrations.flask_client import OAuth
-from authlib.jose.errors import (
-    BadSignatureError,
-    ExpiredTokenError,
-    InvalidClaimError,
-    InvalidTokenError,
-)
+from authlib.jose.errors import BadSignatureError, ExpiredTokenError, InvalidClaimError, InvalidTokenError
 from authlib.oidc.core import UserInfo
 from flask import current_app, session
 from flask.testing import FlaskClient

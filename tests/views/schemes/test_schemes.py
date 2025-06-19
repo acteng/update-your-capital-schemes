@@ -26,28 +26,11 @@ from schemes.domain.schemes import (
 )
 from schemes.views.schemes import SchemeRepr
 from schemes.views.schemes.data_sources import DataSourceRepr
-from schemes.views.schemes.funding import (
-    BidStatusRepr,
-    BidStatusRevisionRepr,
-    FinancialRevisionRepr,
-    FinancialTypeRepr,
-)
-from schemes.views.schemes.milestones import (
-    MilestoneContext,
-    MilestoneRepr,
-    MilestoneRevisionRepr,
-)
+from schemes.views.schemes.funding import BidStatusRepr, BidStatusRevisionRepr, FinancialRevisionRepr, FinancialTypeRepr
+from schemes.views.schemes.milestones import MilestoneContext, MilestoneRepr, MilestoneRevisionRepr
 from schemes.views.schemes.observations import ObservationTypeRepr
-from schemes.views.schemes.outputs import (
-    OutputMeasureRepr,
-    OutputRevisionRepr,
-    OutputTypeRepr,
-)
-from schemes.views.schemes.overview import (
-    FundingProgrammeRepr,
-    OverviewRevisionRepr,
-    SchemeTypeRepr,
-)
+from schemes.views.schemes.outputs import OutputMeasureRepr, OutputRevisionRepr, OutputTypeRepr
+from schemes.views.schemes.overview import FundingProgrammeRepr, OverviewRevisionRepr, SchemeTypeRepr
 from schemes.views.schemes.reviews import AuthorityReviewRepr
 from schemes.views.schemes.schemes import (
     FundingProgrammeContext,

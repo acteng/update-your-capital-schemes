@@ -1,10 +1,7 @@
 import pytest
 
 from schemes.domain.schemes import FundingProgramme, FundingProgrammes, SchemeType
-from schemes.infrastructure.database.schemes.overview import (
-    FundingProgrammeMapper,
-    SchemeTypeMapper,
-)
+from schemes.infrastructure.database.schemes.overview import FundingProgrammeMapper, SchemeTypeMapper
 
 
 @pytest.mark.parametrize("type_, id_", [(SchemeType.DEVELOPMENT, 1), (SchemeType.CONSTRUCTION, 2)])

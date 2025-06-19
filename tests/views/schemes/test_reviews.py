@@ -6,11 +6,7 @@ from werkzeug.datastructures import MultiDict
 
 from schemes.domain.schemes import AuthorityReview, DataSource, SchemeReviews
 from schemes.views.schemes.data_sources import DataSourceRepr
-from schemes.views.schemes.reviews import (
-    AuthorityReviewRepr,
-    SchemeReviewContext,
-    SchemeReviewForm,
-)
+from schemes.views.schemes.reviews import AuthorityReviewRepr, SchemeReviewContext, SchemeReviewForm
 
 
 @pytest.mark.usefixtures("app")

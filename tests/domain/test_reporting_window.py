@@ -4,10 +4,7 @@ from datetime import datetime
 import pytest
 
 from schemes.domain.dates import DateRange
-from schemes.domain.reporting_window import (
-    DefaultReportingWindowService,
-    ReportingWindow,
-)
+from schemes.domain.reporting_window import DefaultReportingWindowService, ReportingWindow
 
 
 class TestReportingWindow:

@@ -1,10 +1,7 @@
 import pytest
 
 from schemes.domain.schemes import BidStatus, FinancialType
-from schemes.infrastructure.database.schemes.funding import (
-    BidStatusMapper,
-    FinancialTypeMapper,
-)
+from schemes.infrastructure.database.schemes.funding import BidStatusMapper, FinancialTypeMapper
 
 
 @pytest.mark.parametrize(

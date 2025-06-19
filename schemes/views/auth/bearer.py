@@ -6,18 +6,7 @@ from urllib.parse import urlencode, urljoin
 import inject
 from authlib.integrations.flask_client import OAuth
 from authlib.oidc.core import UserInfo
-from flask import (
-    Blueprint,
-    Request,
-    Response,
-    abort,
-    current_app,
-    redirect,
-    render_template,
-    request,
-    session,
-    url_for,
-)
+from flask import Blueprint, Request, Response, abort, current_app, redirect, render_template, request, session, url_for
 from werkzeug.wrappers import Response as BaseResponse
 
 from schemes.domain.users import UserRepository

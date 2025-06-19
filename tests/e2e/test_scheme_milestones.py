@@ -3,12 +3,7 @@ from playwright.sync_api import Page
 
 from tests.e2e.api_client import ApiClient
 from tests.e2e.api_client import AuthorityRepr as ApiAuthorityRepr
-from tests.e2e.app_client import (
-    AppClient,
-    AuthorityRepr,
-    MilestoneRevisionRepr,
-    UserRepr,
-)
+from tests.e2e.app_client import AppClient, AuthorityRepr, MilestoneRevisionRepr, UserRepr
 from tests.e2e.builders import build_scheme
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient

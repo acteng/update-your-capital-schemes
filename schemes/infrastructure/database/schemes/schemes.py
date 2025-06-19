@@ -26,17 +26,11 @@ from schemes.infrastructure.database import (
     CapitalSchemeOverviewEntity,
 )
 from schemes.infrastructure.database.schemes.data_sources import DataSourceMapper
-from schemes.infrastructure.database.schemes.funding import (
-    BidStatusMapper,
-    FinancialTypeMapper,
-)
+from schemes.infrastructure.database.schemes.funding import BidStatusMapper, FinancialTypeMapper
 from schemes.infrastructure.database.schemes.milestones import MilestoneMapper
 from schemes.infrastructure.database.schemes.observations import ObservationTypeMapper
 from schemes.infrastructure.database.schemes.outputs import OutputTypeMeasureMapper
-from schemes.infrastructure.database.schemes.overview import (
-    FundingProgrammeMapper,
-    SchemeTypeMapper,
-)
+from schemes.infrastructure.database.schemes.overview import FundingProgrammeMapper, SchemeTypeMapper
 
 
 class DatabaseSchemeRepository(SchemeRepository):

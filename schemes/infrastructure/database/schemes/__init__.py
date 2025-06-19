@@ -1,3 +1,1 @@
-from schemes.infrastructure.database.schemes.schemes import (
-    DatabaseSchemeRepository as DatabaseSchemeRepository,
-)
+from schemes.infrastructure.database.schemes.schemes import DatabaseSchemeRepository as DatabaseSchemeRepository

@@ -4,13 +4,7 @@ from decimal import Decimal
 import pytest
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    ObservationType,
-    OutputMeasure,
-    OutputRevision,
-    OutputType,
-    OutputTypeMeasure,
-)
+from schemes.domain.schemes import ObservationType, OutputMeasure, OutputRevision, OutputType, OutputTypeMeasure
 from schemes.views.schemes.observations import ObservationTypeRepr
 from schemes.views.schemes.outputs import (
     OutputMeasureContext,

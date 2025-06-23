@@ -186,7 +186,7 @@ resource "google_project_iam_member" "cloud_run_artifact_registry_reader" {
 
 # secret key
 
-resource "random_password" "secret_key" {
+ephemeral "random_password" "secret_key" {
   length  = 32
   special = false
 }
@@ -201,8 +201,9 @@ resource "google_secret_manager_secret" "secret_key" {
 }
 
 resource "google_secret_manager_secret_version" "secret_key" {
-  secret      = google_secret_manager_secret.secret_key.id
-  secret_data = random_password.secret_key.result
+  secret                 = google_secret_manager_secret.secret_key.id
+  secret_data_wo         = ephemeral.random_password.secret_key.result
+  secret_data_wo_version = 1
 }
 
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_secret_key" {
@@ -230,7 +231,7 @@ resource "google_secret_manager_secret" "database_uri" {
 
 resource "google_secret_manager_secret_version" "database_uri" {
   secret = google_secret_manager_secret.database_uri.id
-  secret_data = join("", [
+  secret_data_wo = join("", [
     "postgresql+pg8000://",
     var.database_username,
     ":",
@@ -238,6 +239,7 @@ resource "google_secret_manager_secret_version" "database_uri" {
     "@127.0.0.1:5432/",
     var.database_name,
   ])
+  secret_data_wo_version = 1
 }
 
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_database_uri" {
@@ -265,7 +267,7 @@ resource "google_secret_manager_secret" "capital_schemes_database_uri" {
 
 resource "google_secret_manager_secret_version" "capital_schemes_database_uri" {
   secret = google_secret_manager_secret.capital_schemes_database_uri.id
-  secret_data = join("", [
+  secret_data_wo = join("", [
     "postgresql+pg8000://",
     var.capital_schemes_database_username,
     ":",
@@ -273,6 +275,7 @@ resource "google_secret_manager_secret_version" "capital_schemes_database_uri" {
     "@127.0.0.1:5433/",
     var.capital_schemes_database_name,
   ])
+  secret_data_wo_version = 1
 }
 
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_capital_schemes_database_uri" {
@@ -341,8 +344,9 @@ resource "google_secret_manager_secret" "ate_api_client_secret" {
 resource "google_secret_manager_secret_version" "ate_api_client_secret" {
   count = var.ate_api_client_secret != null ? 1 : 0
 
-  secret      = google_secret_manager_secret.ate_api_client_secret[0].id
-  secret_data = var.ate_api_client_secret
+  secret                 = google_secret_manager_secret.ate_api_client_secret[0].id
+  secret_data_wo         = var.ate_api_client_secret
+  secret_data_wo_version = 1
 }
 
 moved {

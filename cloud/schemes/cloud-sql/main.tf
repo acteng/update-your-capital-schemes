@@ -36,7 +36,7 @@ resource "google_sql_database" "schemes" {
   instance = google_sql_database_instance.main.name
 }
 
-resource "random_password" "schemes" {
+ephemeral "random_password" "schemes" {
   length  = 32
   special = false
 }
@@ -45,7 +45,7 @@ resource "google_sql_user" "schemes" {
   name     = "schemes"
   instance = google_sql_database_instance.main.name
 
-  password = random_password.schemes.result
+  password_wo = ephemeral.random_password.schemes.result
 }
 
 resource "google_secret_manager_secret" "database_password" {
@@ -58,8 +58,9 @@ resource "google_secret_manager_secret" "database_password" {
 }
 
 resource "google_secret_manager_secret_version" "database_password" {
-  secret      = google_secret_manager_secret.database_password.id
-  secret_data = google_sql_user.schemes.password
+  secret                 = google_secret_manager_secret.database_password.id
+  secret_data_wo         = google_sql_user.schemes.password
+  secret_data_wo_version = 1
 }
 
 resource "google_service_account" "cloud_sql_schemes" {
@@ -87,6 +88,7 @@ resource "google_secret_manager_secret" "database_private_key" {
 }
 
 resource "google_secret_manager_secret_version" "database_private_key" {
-  secret      = google_secret_manager_secret.database_private_key.id
-  secret_data = google_service_account_key.cloud_sql_schemes.private_key
+  secret                 = google_secret_manager_secret.database_private_key.id
+  secret_data_wo         = google_service_account_key.cloud_sql_schemes.private_key
+  secret_data_wo_version = 1
 }

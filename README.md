@@ -309,6 +309,7 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-
 * [Database](docs/database.md)
 * [Maintenance](docs/maintenance.md)
 * [Releasing](docs/releasing.md)
+* [User guide](docs/user-guide/README.md)
 
 ## Licence
 

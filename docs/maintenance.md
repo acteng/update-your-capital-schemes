@@ -148,7 +148,7 @@ doesn't publish a Node package. To upgrade:
    ```
 
 1. The package [doesn't provide Jinja templates](https://github.com/govuk-one-login/service-header/issues/25), so copy
-   the contents of the latest release's [service header Nunjucks template](https://raw.githubusercontent.com/govuk-one-login/service-header/main/src/nunjucks/template.njk)
+   the contents of the installed package's [service header Nunjucks template](../node_modules/govuk-one-login-service-header/dist/nunjucks/di-govuk-one-login-service-header/template.njk)
    to [schemes/views/templates/ate_service_header/macro.html](../schemes/views/templates/ate_service_header/macro.html)
    replacing the contents of the Jinja macro:
 

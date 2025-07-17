@@ -168,18 +168,18 @@ doesn't publish a Node package. To upgrade:
    ```
    
    ```diff
-   -       {{ govukServiceNavigation({
-   -         menuButtonText: params.menuButtonText,
-   -         menuButtonLabel: params.menuButtonLabel,
-   -         serviceName: params.serviceName,
-   -         navigation: navArr
-   -       }) if params.serviceName }}
-   +       {{ govukServiceNavigation({
-   +         "menuButtonText": params.menuButtonText,
-   +         "menuButtonLabel": params.menuButtonLabel,
-   +         "serviceName": params.serviceName,
-   +         "navigation": navArr
-   +       }) if params.serviceName }}
+   -      {{ govukServiceNavigation({
+   -        menuButtonText: params.menuButtonText,
+   -        menuButtonLabel: params.menuButtonLabel,
+   -        serviceName: params.serviceName,
+   -        navigation: navArr
+   -      }) if params.serviceName }}
+   +      {{ govukServiceNavigation({
+   +        "menuButtonText": params.menuButtonText,
+   +        "menuButtonLabel": params.menuButtonLabel,
+   +        "serviceName": params.serviceName,
+   +        "navigation": navArr
+   +      }) if params.serviceName }}
    ```
 
 1. The template [doesn't allow the crown logo to be customised](https://github.com/govuk-one-login/service-header/issues/40),

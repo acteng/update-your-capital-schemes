@@ -183,7 +183,7 @@ doesn't publish a Node package. To upgrade:
    ```
 
 1. The template [doesn't allow the crown logo to be customised](https://github.com/govuk-one-login/service-header/issues/40),
-   so replace it with the ATE logo by applying the following diff:
+   so replace it with the ATE logo by applying the following patch:
 
    ```diff
           <div class="one-login-header__logo">

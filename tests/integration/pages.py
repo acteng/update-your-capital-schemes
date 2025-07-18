@@ -119,7 +119,7 @@ class NotFoundPage(PageObject):
 
 class ServiceHeaderComponent:
     def __init__(self, header: Tag):
-        self.home_url = one(header.select("a.one-login-header__link"))["href"]
+        self.home_url = one(header.select("a.rebranded-one-login-header__link"))["href"]
         self.profile_url = one(header.select("a:-soup-contains('GOV.UK One Login')"))["href"]
         self.sign_out_url = one(header.select("a:-soup-contains('Sign out')"))["href"]
 

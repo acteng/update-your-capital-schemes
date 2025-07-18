@@ -9,10 +9,12 @@
 {% block header %}
     {{ ateServiceHeader({
         "serviceNavigationParams": {
+            "rebrand": govukRebrand,
             "serviceName": "Update your capital schemes",
         },
         "homepageLink": "https://www.activetravelengland.gov.uk",
         "oneLoginLink": oneLoginLink,
+        "rebrand": govukRebrand,
         "signOutLink": url_for("auth.logout")
     }) }}
 {% endblock %}

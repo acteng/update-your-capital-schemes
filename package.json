@@ -22,7 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "govuk-frontend": "~5.10.0",
-    "govuk-one-login-service-header": "govuk-one-login/service-header#12e31a02ad0c2b3a10e25d305b5e9a2bc541ab19"
+    "govuk-one-login-service-header": "govuk-one-login/service-header#d739b4a6c79c3f0f67f40e10e60e320290a866cc"
   },
   "devDependencies": {
     "sass": "~1.69.0",

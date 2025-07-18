@@ -49,7 +49,7 @@ so we maintain a copy of the template to replace it with the ATE logo.
 
 After upgrading GOV.UK Frontend Jinja Macros, update the template:
 
-1. Copy the contents of [the header template](https://raw.githubusercontent.com/LandRegistry/govuk-frontend-jinja/refs/heads/main/govuk_frontend_jinja/templates/components/header/macro.html)
+1. Copy the contents of [the header template](../.venv/lib/python3.13/site-packages/govuk_frontend_jinja/templates/components/header/macro.html)
    to [schemes/views/templates/ate_header/macro.html](../schemes/views/templates/ate_header/macro.html) and rename the
    macro by applying the following patch:
 

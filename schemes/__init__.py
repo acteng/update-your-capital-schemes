@@ -261,6 +261,7 @@ def _configure_oidc(app: Flask) -> None:
     if "ATE_URL" in app.config:
         oauth.register(
             name="ate",
+            fetch_token=lambda: oauth.ate.fetch_access_token(grant_type="client_credentials"),
             client_id=app.config["ATE_CLIENT_ID"],
             client_secret=app.config["ATE_CLIENT_SECRET"],
             server_metadata_url=app.config["ATE_SERVER_METADATA_URL"],

@@ -4,7 +4,6 @@ from responses.matchers import header_matcher
 
 from schemes.infrastructure.api import ApiAuthorityRepository, RemoteApp
 from schemes.infrastructure.api.authorities import AuthorityRepr
-from tests.infrastructure.api.oauth import StubAuthorizationServer
 
 
 class TestApiAuthorityRepository:
@@ -13,13 +12,10 @@ class TestApiAuthorityRepository:
         return ApiAuthorityRepository(remote_app)
 
     @responses.activate
-    def test_get_authority(
-        self, authorization_server: StubAuthorizationServer, api_base_url: str, authorities: ApiAuthorityRepository
-    ) -> None:
-        authorization_server.given_token_endpoint_returns_access_token("dummy_jwt")
+    def test_get_authority(self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository) -> None:
         responses.get(
             f"{api_base_url}/authorities/LIV",
-            match=[header_matcher({"Authorization": "Bearer dummy_jwt"})],
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
             json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority"},
         )
 
@@ -33,12 +29,11 @@ class TestApiAuthorityRepository:
 
     @responses.activate
     def test_get_authority_ignores_unknown_key(
-        self, authorization_server: StubAuthorizationServer, api_base_url: str, authorities: ApiAuthorityRepository
+        self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
-        authorization_server.given_token_endpoint_returns_access_token("dummy_jwt")
         responses.get(
             f"{api_base_url}/authorities/LIV",
-            match=[header_matcher({"Authorization": "Bearer dummy_jwt"})],
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
             json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority", "foo": "bar"},
         )
 
@@ -52,12 +47,11 @@ class TestApiAuthorityRepository:
 
     @responses.activate
     def test_get_authority_that_does_not_exist(
-        self, authorization_server: StubAuthorizationServer, api_base_url: str, authorities: ApiAuthorityRepository
+        self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
-        authorization_server.given_token_endpoint_returns_access_token("dummy_jwt")
         responses.get(
             f"{api_base_url}/authorities/WYO",
-            match=[header_matcher({"Authorization": "Bearer dummy_jwt"})],
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
             status=404,
         )
 

@@ -1,40 +1,25 @@
-from dataclasses import dataclass
+from typing import Any
 
 import pytest
 from authlib.integrations.base_client import BaseApp, FrameworkIntegration, OAuth2Mixin
 from authlib.integrations.requests_client import OAuth2Session
+from authlib.oauth2.rfc6749 import OAuth2Token
 
 from schemes.infrastructure.api.oauth import RemoteApp
-from tests.infrastructure.api.oauth import StubAuthorizationServer
-
-
-@dataclass
-class _Client:
-    client_id: str
-    client_secret: str
 
 
 class _StubRemoteApp(OAuth2Mixin, BaseApp):  # type: ignore
     client_cls = OAuth2Session
 
-
-@pytest.fixture(name="client")
-def client_fixture() -> _Client:
-    return _Client(client_id="stub_client_id", client_secret="stub_client_secret")
-
-
-@pytest.fixture(name="resource_server_identifier")
-def resource_server_identifier_fixture() -> str:
-    return "https://api.example"
+    # Mimics FlaskAppMixin's behaviour of not requiring the current request
+    # See closing note: https://docs.authlib.org/en/latest/client/frameworks.html#fetch-user-oauth-token
+    def _get_requested_token(self, request: Any) -> OAuth2Token | None:
+        return self._fetch_token() if self._fetch_token else None
 
 
-@pytest.fixture(name="authorization_server")
-def authorization_server_fixture(client: _Client, resource_server_identifier: str) -> StubAuthorizationServer:
-    return StubAuthorizationServer(
-        client_id=client.client_id,
-        client_secret=client.client_secret,
-        resource_server_identifier=resource_server_identifier,
-    )
+@pytest.fixture(name="access_token")
+def access_token_fixture() -> str:
+    return "dummy_jwt"
 
 
 @pytest.fixture(name="api_base_url")
@@ -43,15 +28,9 @@ def api_base_url_fixture() -> str:
 
 
 @pytest.fixture(name="remote_app")
-def remote_app_fixture(
-    authorization_server: StubAuthorizationServer, client: _Client, resource_server_identifier: str, api_base_url: str
-) -> RemoteApp:
+def remote_app_fixture(access_token: str, api_base_url: str) -> RemoteApp:
     return _StubRemoteApp(
         FrameworkIntegration("dummy"),
-        client_id=client.client_id,
-        client_secret=client.client_secret,
-        access_token_url=authorization_server.token_endpoint,
-        access_token_params={"audience": resource_server_identifier},
+        fetch_token=lambda: OAuth2Token({"access_token": access_token}),
         api_base_url=api_base_url,
-        client_kwargs={"token_endpoint_auth_method": "client_secret_post"},
     )

@@ -11,8 +11,7 @@ class ApiAuthorityRepository(AuthorityRepository):
         self._remote_app = remote_app
 
     def get(self, abbreviation: str) -> Authority | None:
-        token = self._remote_app.fetch_access_token(grant_type="client_credentials")
-        response: Response = self._remote_app.get(f"/authorities/{abbreviation}", token=token)
+        response: Response = self._remote_app.get(f"/authorities/{abbreviation}")
 
         if response.status_code == 404:
             return None

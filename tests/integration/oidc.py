@@ -62,25 +62,18 @@ class StubOidcServer:
         if signature:
             id_token = self._replace_signature(id_token, signature)
 
-        responses.add(responses.POST, self.token_endpoint, json={"access_token": access_token, "id_token": id_token})
+        responses.post(self.token_endpoint, json={"access_token": access_token, "id_token": id_token})
 
         return id_token
 
     def given_token_endpoint_returns_error(self, error: str, error_description: str) -> None:
-        responses.add(
-            responses.POST, self.token_endpoint, json={"error": error, "error_description": error_description}
-        )
+        responses.post(self.token_endpoint, json={"error": error, "error_description": error_description})
 
     def given_userinfo_endpoint_returns_claims(self, email: str) -> None:
-        responses.add(responses.GET, self.userinfo_endpoint, json={"email": email})
+        responses.get(self.userinfo_endpoint, json={"email": email})
 
     def given_userinfo_endpoint_returns_error(self, error: str, error_description: str) -> None:
-        responses.add(
-            responses.GET,
-            self.userinfo_endpoint,
-            status=401,
-            json={"error": error, "error_description": error_description},
-        )
+        responses.get(self.userinfo_endpoint, status=401, json={"error": error, "error_description": error_description})
 
     @staticmethod
     def _generate_key_pair() -> tuple[bytes, bytes]:

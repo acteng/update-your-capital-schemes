@@ -1,0 +1,72 @@
+from dataclasses import dataclass
+
+import pytest
+import responses
+from flask import Flask
+from responses.matchers import header_matcher
+
+from schemes.oauth import OAuthExtension
+from tests.oauth import StubAuthorizationServer
+
+
+@dataclass(frozen=True)
+class _Client:
+    client_id: str
+    client_secret: str
+
+
+@dataclass(frozen=True)
+class _ResourceServer:
+    url: str
+    identifier: str
+
+
+class TestOAuthExtension:
+    @pytest.fixture(name="api_client")
+    def api_client_fixture(self) -> _Client:
+        return _Client(client_id="test", client_secret="secret")
+
+    @pytest.fixture(name="api_server")
+    def api_server_fixture(self) -> _ResourceServer:
+        return _ResourceServer(url="https://api.example", identifier="https://api.example")
+
+    @pytest.fixture(name="authorization_server")
+    def authorization_server_fixture(self, api_server: _ResourceServer, api_client: _Client) -> StubAuthorizationServer:
+        authorization_server = StubAuthorizationServer(
+            api_server.identifier, api_client.client_id, api_client.client_secret
+        )
+        authorization_server.given_configuration_endpoint_returns_configuration()
+        return authorization_server
+
+    @pytest.fixture(name="app")
+    def app_fixture(
+        self, authorization_server: StubAuthorizationServer, api_client: _Client, api_server: _ResourceServer
+    ) -> Flask:
+        app = Flask("test")
+        app.config.from_mapping(
+            {
+                "GOVUK_CLIENT_ID": "test",
+                "GOVUK_CLIENT_SECRET": "test",
+                "GOVUK_SERVER_METADATA_URL": "test",
+                "GOVUK_TOKEN_ENDPOINT": "test",
+                "ATE_CLIENT_ID": api_client.client_id,
+                "ATE_CLIENT_SECRET": api_client.client_secret,
+                "ATE_SERVER_METADATA_URL": authorization_server.configuration_endpoint,
+                "ATE_AUDIENCE": api_server.identifier,
+                "ATE_URL": api_server.url,
+            }
+        )
+        return app
+
+    @responses.activate
+    def test_ate_api_requests_access_token(
+        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+    ) -> None:
+        oauth = OAuthExtension(app)
+        authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
+        api_response = responses.get(api_server.url, match=[header_matcher({"Authorization": "Bearer dummy_jwt"})])
+
+        with app.app_context():
+            oauth.ate.get("/")
+
+        assert api_response.call_count == 1

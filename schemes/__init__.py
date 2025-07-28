@@ -7,8 +7,6 @@ import alembic.config
 import flask_session
 import inject
 from alembic import command
-from authlib.integrations.flask_client import OAuth
-from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from flask import Config, Flask, Response, flash, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
@@ -45,6 +43,7 @@ from schemes.infrastructure.database import (
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
 from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.database.users import DatabaseUserRepository
+from schemes.oauth import OAuthExtension
 from schemes.sessions import RequestFilteringSessionInterface
 from schemes.views import auth, authorities, clock, legal, schemes, start, users
 from schemes.views.filters import date, pounds, remove_exponent
@@ -74,7 +73,7 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     csrf = CSRFProtect(app)
     _configure_govuk_frontend(app)
     WTFormsHelpers(app)
-    _configure_oidc(app)
+    OAuthExtension(app)
 
     app.register_blueprint(clock.bp, url_prefix="/clock")
     csrf.exempt(clock.set_clock)
@@ -242,33 +241,6 @@ def _configure_govuk_frontend(app: Flask) -> None:
             "themeColor": "#006853",
             "oneLoginLink": app.config["GOVUK_PROFILE_URL"],
         }
-
-
-def _configure_oidc(app: Flask) -> None:
-    oauth = OAuth(app)
-
-    oauth.register(
-        name="govuk",
-        client_id=app.config["GOVUK_CLIENT_ID"],
-        client_secret=app.config["GOVUK_CLIENT_SECRET"].encode(),
-        server_metadata_url=app.config["GOVUK_SERVER_METADATA_URL"],
-        client_kwargs={
-            "scope": "openid email",
-            "token_endpoint_auth_method": PrivateKeyJWT(app.config["GOVUK_TOKEN_ENDPOINT"]),
-        },
-    )
-
-    if "ATE_URL" in app.config:
-        oauth.register(
-            name="ate",
-            fetch_token=lambda: oauth.ate.fetch_access_token(grant_type="client_credentials"),
-            client_id=app.config["ATE_CLIENT_ID"],
-            client_secret=app.config["ATE_CLIENT_SECRET"],
-            server_metadata_url=app.config["ATE_SERVER_METADATA_URL"],
-            access_token_params={"audience": app.config["ATE_AUDIENCE"]},
-            api_base_url=app.config["ATE_URL"],
-            client_kwargs={"token_endpoint_auth_method": "client_secret_post"},
-        )
 
 
 def _migrate_database() -> None:

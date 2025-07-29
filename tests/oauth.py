@@ -20,8 +20,9 @@ class StubAuthorizationServer:
     def given_configuration_endpoint_returns_configuration(self) -> None:
         responses.get(self.configuration_endpoint, json={"token_endpoint": self.token_endpoint})
 
-    def given_token_endpoint_returns_access_token(self, access_token: str, expires_in: int) -> None:
-        responses.post(
+    def given_token_endpoint_returns_access_token(self, access_token: str, expires_in: int) -> responses.BaseResponse:
+        return responses.add(
+            responses.POST,
             self.token_endpoint,
             match=[
                 urlencoded_params_matcher(

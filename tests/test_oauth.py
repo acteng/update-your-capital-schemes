@@ -70,3 +70,17 @@ class TestOAuthExtension:
             oauth.ate.get("/")
 
         assert api_response.call_count == 1
+
+    @responses.activate
+    def test_ate_api_caches_access_token_within_request(
+        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+    ) -> None:
+        oauth = OAuthExtension(app)
+        token_response = authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
+        responses.get(api_server.url, match=[header_matcher({"Authorization": "Bearer dummy_jwt"})])
+
+        with app.app_context():
+            oauth.ate.get("/")
+            oauth.ate.get("/")
+
+        assert token_response.call_count == 1

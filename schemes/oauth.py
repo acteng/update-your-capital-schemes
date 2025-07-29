@@ -39,6 +39,7 @@ class _AccessTokenParamsOAuth2Session(OAuth2Session):  # type: ignore
 class OAuthExtension(OAuth):  # type: ignore
     def __init__(self, app: Flask):
         super().__init__(app)
+        self._ate_token: OAuth2Token | None = None
 
         # Workaround: https://github.com/authlib/authlib/issues/783
         self.oauth2_client_cls.client_cls = _AccessTokenParamsOAuth2Session
@@ -58,7 +59,8 @@ class OAuthExtension(OAuth):  # type: ignore
             access_token_params = {"audience": app.config["ATE_AUDIENCE"]}
             self.register(
                 name="ate",
-                fetch_token=lambda: self.ate.fetch_access_token(),
+                fetch_token=self._fetch_ate_token,
+                update_token=self._update_ate_token,
                 client_id=app.config["ATE_CLIENT_ID"],
                 client_secret=app.config["ATE_CLIENT_SECRET"],
                 server_metadata_url=app.config["ATE_SERVER_METADATA_URL"],
@@ -72,3 +74,13 @@ class OAuthExtension(OAuth):  # type: ignore
                     "access_token_params": access_token_params,
                 },
             )
+
+    def _fetch_ate_token(self) -> OAuth2Token:
+        if not self._ate_token:
+            self._ate_token = self.ate.fetch_access_token()
+        return self._ate_token
+
+    def _update_ate_token(
+        self, token: OAuth2Token, refresh_token: str | None = None, access_token: str | None = None
+    ) -> None:
+        self._ate_token = token

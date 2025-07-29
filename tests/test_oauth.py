@@ -86,6 +86,21 @@ class TestOAuthExtension:
         assert token_response.call_count == 1
 
     @responses.activate
+    def test_ate_api_caches_access_token_across_requests(
+        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+    ) -> None:
+        oauth = OAuthExtension(app)
+        token_response = authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
+        responses.get(api_server.url, match=[header_matcher({"Authorization": "Bearer dummy_jwt"})])
+
+        with app.app_context():
+            oauth.ate.get("/")
+        with app.app_context():
+            oauth.ate.get("/")
+
+        assert token_response.call_count == 1
+
+    @responses.activate
     def test_ate_api_refreshes_access_token_when_expired(
         self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
     ) -> None:
@@ -98,3 +113,21 @@ class TestOAuthExtension:
             oauth.ate.get("/")
 
         assert api_response.call_count == 1
+
+    @responses.activate
+    def test_ate_api_uses_refreshed_access_token_across_requests(
+        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+    ) -> None:
+        oauth = OAuthExtension(app)
+        authorization_server.given_token_endpoint_returns_access_token("expired_jwt", expires_in=1 * 60)
+        token_response = authorization_server.given_token_endpoint_returns_access_token(
+            "refreshed_jwt", expires_in=15 * 60
+        )
+        api_response = responses.get(api_server.url, match=[header_matcher({"Authorization": "Bearer refreshed_jwt"})])
+
+        with app.app_context():
+            oauth.ate.get("/")
+        with app.app_context():
+            oauth.ate.get("/")
+
+        assert token_response.call_count == 1 and api_response.call_count == 2

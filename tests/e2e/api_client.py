@@ -12,7 +12,7 @@ class ApiClient:
         self._url = url
         self._session = requests.Session()
 
-    def add_authorities(self, *authorities: AuthorityRepr) -> None:
+    def add_authorities(self, *authorities: AuthorityModel) -> None:
         json = [asdict(authority) for authority in authorities]
         response = self._session.post(f"{self._url}/authorities", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
@@ -23,6 +23,6 @@ class ApiClient:
 
 
 @dataclass(frozen=True)
-class AuthorityRepr:
+class AuthorityModel:
     abbreviation: str
     fullName: str

@@ -1,8 +1,7 @@
 import pytest
 from playwright.sync_api import Page
 
-from tests.e2e.api_client import ApiClient
-from tests.e2e.api_client import AuthorityRepr as ApiAuthorityRepr
+from tests.e2e.api_client import ApiClient, AuthorityModel
 from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, UserRepr
 from tests.e2e.builders import build_scheme
 from tests.e2e.oidc_server.users import StubUser
@@ -20,7 +19,7 @@ class TestAuthenticated:
         app_client.set_clock("2023-04-24T12:00:00")
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
         api_client.add_authorities(
-            ApiAuthorityRepr(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
+            AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
         )
         app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
@@ -70,7 +69,7 @@ class TestAuthenticated:
     def test_scheme_shows_scheme(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
         api_client.add_authorities(
-            ApiAuthorityRepr(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
+            AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
         )
         app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
@@ -87,7 +86,7 @@ class TestAuthenticated:
         app_client.set_clock("2023-04-24T12:00:00")
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
         api_client.add_authorities(
-            ApiAuthorityRepr(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
+            AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
         )
         app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         app_client.add_schemes(

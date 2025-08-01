@@ -21,8 +21,32 @@ class ApiClient:
         response = self._session.delete(f"{self._url}/authorities", timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
+    def add_schemes(self, *capital_schemes: CapitalSchemeModel) -> None:
+        json = [asdict(capital_scheme) for capital_scheme in capital_schemes]
+        response = self._session.post(f"{self._url}/capital-schemes", json=json, timeout=self.DEFAULT_TIMEOUT)
+        response.raise_for_status()
+
 
 @dataclass(frozen=True)
 class AuthorityModel:
     abbreviation: str
     fullName: str
+
+
+@dataclass(frozen=True)
+class CapitalSchemeOverviewModel:
+    name: str
+    bidSubmittingAuthority: str
+    fundingProgramme: str
+
+
+@dataclass(frozen=True)
+class CapitalSchemeAuthorityReviewModel:
+    reviewDate: str
+
+
+@dataclass(frozen=True)
+class CapitalSchemeModel:
+    reference: str
+    overview: CapitalSchemeOverviewModel
+    authorityReview: CapitalSchemeAuthorityReviewModel

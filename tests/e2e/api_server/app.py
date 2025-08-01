@@ -14,6 +14,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     oauth.register(name="auth", server_metadata_url=app.config["OIDC_SERVER_METADATA_URL"])
 
     authorities: dict[str, AuthorityModel] = {}
+    capital_schemes: dict[str, CapitalSchemeModel] = {}
 
     @app.post("/authorities")
     def add_authorities() -> Response:
@@ -39,6 +40,14 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
         authorities.clear()
         return Response(status=204)
 
+    @app.post("/capital-schemes")
+    def add_capital_schemes() -> Response:
+        for element in request.get_json():
+            capital_scheme = CapitalSchemeModel(**element)
+            capital_schemes[capital_scheme.reference] = capital_scheme
+
+        return Response(status=201)
+
     def _validate_jwt() -> None:
         assert request.authorization
         server_metadata = oauth.auth.load_server_metadata()
@@ -60,3 +69,22 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
 class AuthorityModel:
     abbreviation: str
     fullName: str
+
+
+@dataclass(frozen=True)
+class CapitalSchemeOverviewModel:
+    name: str
+    bidSubmittingAuthority: str
+    fundingProgramme: str
+
+
+@dataclass(frozen=True)
+class CapitalSchemeAuthorityReviewModel:
+    reviewDate: str
+
+
+@dataclass(frozen=True)
+class CapitalSchemeModel:
+    reference: str
+    overview: CapitalSchemeOverviewModel
+    authorityReview: CapitalSchemeAuthorityReviewModel

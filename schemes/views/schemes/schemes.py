@@ -61,7 +61,7 @@ def add_schemes(schemes: SchemeRepository, logger: Logger) -> Response:
     users=UserRepository,
     reporting_window_service=ReportingWindowService,
     authorities=(AuthorityRepository, Migrated),
-    schemes=SchemeRepository,
+    schemes=(SchemeRepository, Migrated),
 )
 def index(
     clock: Clock,

@@ -56,7 +56,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     return app
 
 
-@dataclass
+@dataclass(frozen=True)
 class AuthorityModel:
     abbreviation: str
     fullName: str

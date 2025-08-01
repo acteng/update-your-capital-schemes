@@ -13,12 +13,12 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     oauth = OAuth(app)
     oauth.register(name="auth", server_metadata_url=app.config["OIDC_SERVER_METADATA_URL"])
 
-    authorities: dict[str, AuthorityRepr] = {}
+    authorities: dict[str, AuthorityModel] = {}
 
     @app.post("/authorities")
     def add_authorities() -> Response:
         for element in request.get_json():
-            authority = AuthorityRepr(**element)
+            authority = AuthorityModel(**element)
             authorities[authority.abbreviation] = authority
 
         return Response(status=201)
@@ -57,6 +57,6 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
 
 
 @dataclass
-class AuthorityRepr:
+class AuthorityModel:
     abbreviation: str
     fullName: str

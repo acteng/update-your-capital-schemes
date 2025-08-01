@@ -17,11 +17,11 @@ class ApiAuthorityRepository(AuthorityRepository):
             return None
 
         response.raise_for_status()
-        authority_repr = AuthorityRepr.model_validate(response.json())
-        return authority_repr.to_domain()
+        authority_model = AuthorityModel.model_validate(response.json())
+        return authority_model.to_domain()
 
 
-class AuthorityRepr(BaseModel):
+class AuthorityModel(BaseModel):
     abbreviation: str
     full_name: str
 

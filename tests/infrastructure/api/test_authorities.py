@@ -2,7 +2,7 @@ import pytest
 import responses
 from responses.matchers import header_matcher
 
-from schemes.infrastructure.api.authorities import ApiAuthorityRepository, AuthorityRepr
+from schemes.infrastructure.api.authorities import ApiAuthorityRepository, AuthorityModel
 from schemes.infrastructure.api.oauth import RemoteApp
 
 
@@ -58,10 +58,10 @@ class TestApiAuthorityRepository:
         assert authorities.get("WYO") is None
 
 
-class TestAuthorityRepr:
+class TestAuthorityModel:
     def test_to_domain(self) -> None:
-        authority_repr = AuthorityRepr(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+        authority_model = AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
 
-        authority = authority_repr.to_domain()
+        authority = authority_model.to_domain()
 
         assert authority.abbreviation == "LIV" and authority.name == "Liverpool City Region Combined Authority"

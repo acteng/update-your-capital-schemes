@@ -11,7 +11,8 @@ from wtforms.validators import InputRequired, NumberRange, ValidationError
 
 from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import BidStatus, BidStatusRevision, FinancialRevision, FinancialType, Scheme, SchemeFunding
+from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType, SchemeFunding
+from schemes.domain.schemes.schemes import Scheme
 from schemes.views.forms import CustomMessageIntegerField
 from schemes.views.schemes.data_sources import DataSourceRepr
 

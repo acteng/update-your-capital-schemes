@@ -6,25 +6,14 @@ import pytest
 from schemes.domain.authorities import Authority
 from schemes.domain.dates import DateRange
 from schemes.domain.reporting_window import ReportingWindow
-from schemes.domain.schemes import (
-    AuthorityReview,
-    BidStatus,
-    BidStatusRevision,
-    DataSource,
-    FinancialRevision,
-    FinancialType,
-    FundingProgramme,
-    FundingProgrammes,
-    Milestone,
-    MilestoneRevision,
-    ObservationType,
-    OutputRevision,
-    OutputTypeMeasure,
-    OverviewRevision,
-    Scheme,
-    SchemeType,
-)
-from schemes.views.schemes import SchemeRepr
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType
+from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
+from schemes.domain.schemes.observations import ObservationType
+from schemes.domain.schemes.outputs import OutputRevision, OutputTypeMeasure
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, OverviewRevision, SchemeType
+from schemes.domain.schemes.reviews import AuthorityReview
+from schemes.domain.schemes.schemes import Scheme
 from schemes.views.schemes.data_sources import DataSourceRepr
 from schemes.views.schemes.funding import BidStatusRepr, BidStatusRevisionRepr, FinancialRevisionRepr, FinancialTypeRepr
 from schemes.views.schemes.milestones import MilestoneContext, MilestoneRepr, MilestoneRevisionRepr
@@ -36,6 +25,7 @@ from schemes.views.schemes.schemes import (
     FundingProgrammeContext,
     SchemeContext,
     SchemeOverviewContext,
+    SchemeRepr,
     SchemeRowContext,
     SchemesContext,
     SchemeTypeContext,

@@ -1,6 +1,6 @@
 import pytest
 
-from schemes.domain.schemes import ObservationType
+from schemes.domain.schemes.observations import ObservationType
 from schemes.views.schemes.observations import ObservationTypeRepr
 
 

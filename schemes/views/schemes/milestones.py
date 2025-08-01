@@ -12,7 +12,9 @@ from wtforms.form import BaseForm, Form
 
 from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import Milestone, MilestoneRevision, ObservationType, Scheme, SchemeMilestones
+from schemes.domain.schemes.milestones import Milestone, MilestoneRevision, SchemeMilestones
+from schemes.domain.schemes.observations import ObservationType
+from schemes.domain.schemes.schemes import Scheme
 from schemes.views import forms
 from schemes.views.forms import (
     CustomMessageDateField,

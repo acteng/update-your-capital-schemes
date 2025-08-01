@@ -4,14 +4,8 @@ from datetime import datetime
 import pytest
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    BidStatus,
-    BidStatusRevision,
-    DataSource,
-    FinancialRevision,
-    FinancialType,
-    SchemeFunding,
-)
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType, SchemeFunding
 
 
 class TestSchemeFunding:

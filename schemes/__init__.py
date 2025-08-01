@@ -25,9 +25,9 @@ from schemes.annotations import Migrated
 from schemes.config import LocalConfig
 from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.reporting_window import DefaultReportingWindowService, ReportingWindowService
-from schemes.domain.schemes import SchemeRepository
+from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
-from schemes.infrastructure.api import ApiAuthorityRepository
+from schemes.infrastructure.api.authorities import ApiAuthorityRepository
 from schemes.infrastructure.clock import Clock, FakeClock, SystemClock
 from schemes.infrastructure.database import (
     AuthorityEntity,
@@ -41,12 +41,14 @@ from schemes.infrastructure.database import (
     UserEntity,
 )
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
-from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
+from schemes.infrastructure.database.schemes.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.database.users import DatabaseUserRepository
 from schemes.oauth import OAuthExtension
 from schemes.sessions import RequestFilteringSessionInterface
-from schemes.views import auth, authorities, clock, legal, schemes, start, users
+from schemes.views import authorities, clock, legal, start, users
+from schemes.views.auth import bearer
 from schemes.views.filters import date, pounds, remove_exponent
+from schemes.views.schemes import schemes
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
@@ -79,14 +81,14 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     csrf.exempt(clock.set_clock)
     app.register_blueprint(start.bp)
     app.register_blueprint(legal.bp)
-    app.register_blueprint(auth.bp, url_prefix="/auth")
+    app.register_blueprint(bearer.bp, url_prefix="/auth")
     app.register_blueprint(authorities.bp, url_prefix="/authorities")
     csrf.exempt(authorities.add)
     csrf.exempt(authorities.add_users)
     csrf.exempt(authorities.clear)
     app.register_blueprint(schemes.bp, url_prefix="/schemes")
-    csrf.exempt(schemes.schemes.add_schemes)
-    csrf.exempt(schemes.schemes.clear)
+    csrf.exempt(schemes.add_schemes)
+    csrf.exempt(schemes.clear)
     app.register_blueprint(users.bp, url_prefix="/users")
     csrf.exempt(users.clear)
 

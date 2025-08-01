@@ -1,5 +1,5 @@
 from schemes.dicts import inverse_dict
-from schemes.domain.schemes import OutputTypeMeasure
+from schemes.domain.schemes.outputs import OutputTypeMeasure
 
 
 class OutputTypeMeasureMapper:

@@ -1,6 +1,6 @@
 import pytest
 
-from schemes.domain.schemes import BidStatus, FinancialType
+from schemes.domain.schemes.funding import BidStatus, FinancialType
 from schemes.infrastructure.database.schemes.funding import BidStatusMapper, FinancialTypeMapper
 
 

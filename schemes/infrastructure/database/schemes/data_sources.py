@@ -1,5 +1,5 @@
 from schemes.dicts import inverse_dict
-from schemes.domain.schemes import DataSource
+from schemes.domain.schemes.data_sources import DataSource
 
 
 class DataSourceMapper:

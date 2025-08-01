@@ -1,5 +1,5 @@
 from schemes.dicts import inverse_dict
-from schemes.domain.schemes import ObservationType
+from schemes.domain.schemes.observations import ObservationType
 
 
 class ObservationTypeMapper:

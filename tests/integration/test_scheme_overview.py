@@ -5,16 +5,12 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    AuthorityReview,
-    DataSource,
-    FundingProgrammes,
-    Milestone,
-    MilestoneRevision,
-    ObservationType,
-    SchemeRepository,
-    SchemeType,
-)
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
+from schemes.domain.schemes.observations import ObservationType
+from schemes.domain.schemes.overview import FundingProgrammes, SchemeType
+from schemes.domain.schemes.reviews import AuthorityReview
+from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
 from tests.builders import build_scheme
 from tests.integration.pages import SchemePage

@@ -1,5 +1,5 @@
 from schemes.dicts import inverse_dict
-from schemes.domain.schemes import BidStatus, FinancialType
+from schemes.domain.schemes.funding import BidStatus, FinancialType
 
 
 class BidStatusMapper:

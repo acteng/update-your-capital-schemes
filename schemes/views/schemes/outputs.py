@@ -11,7 +11,8 @@ from pydantic import BaseModel
 
 from schemes.dicts import inverse_dict
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import ObservationType, OutputMeasure, OutputRevision, OutputType, OutputTypeMeasure
+from schemes.domain.schemes.observations import ObservationType
+from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, OutputType, OutputTypeMeasure
 from schemes.views.schemes.observations import ObservationTypeRepr
 
 

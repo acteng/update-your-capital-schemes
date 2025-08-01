@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import FundingProgrammes, OverviewRevision, SchemeOverview, SchemeType
+from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeOverview, SchemeType
 
 
 class TestSchemeOverview:

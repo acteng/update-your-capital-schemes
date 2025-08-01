@@ -1,5 +1,5 @@
 from schemes.dicts import inverse_dict
-from schemes.domain.schemes import FundingProgramme, FundingProgrammes, SchemeType
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeType
 
 
 class SchemeTypeMapper:

@@ -1,6 +1,6 @@
 import pytest
 
-from schemes.domain.schemes import DataSource
+from schemes.domain.schemes.data_sources import DataSource
 from schemes.views.schemes.data_sources import DataSourceRepr
 
 

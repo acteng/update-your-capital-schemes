@@ -2,8 +2,8 @@ import pytest
 import responses
 from responses.matchers import header_matcher
 
-from schemes.infrastructure.api import ApiAuthorityRepository, RemoteApp
-from schemes.infrastructure.api.authorities import AuthorityRepr
+from schemes.infrastructure.api.authorities import ApiAuthorityRepository, AuthorityRepr
+from schemes.infrastructure.api.oauth import RemoteApp
 
 
 class TestApiAuthorityRepository:

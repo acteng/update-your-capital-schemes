@@ -5,14 +5,8 @@ from flask_wtf.csrf import generate_csrf
 from werkzeug.datastructures import MultiDict
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    BidStatus,
-    BidStatusRevision,
-    DataSource,
-    FinancialRevision,
-    FinancialType,
-    SchemeFunding,
-)
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType, SchemeFunding
 from schemes.views.schemes.data_sources import DataSourceRepr
 from schemes.views.schemes.funding import (
     BidStatusRepr,

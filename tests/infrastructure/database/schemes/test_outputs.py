@@ -1,6 +1,6 @@
 import pytest
 
-from schemes.domain.schemes import OutputTypeMeasure
+from schemes.domain.schemes.outputs import OutputTypeMeasure
 from schemes.infrastructure.database.schemes.outputs import OutputTypeMeasureMapper
 
 

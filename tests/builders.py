@@ -1,15 +1,9 @@
 from datetime import datetime
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    BidStatus,
-    BidStatusRevision,
-    FundingProgramme,
-    FundingProgrammes,
-    OverviewRevision,
-    Scheme,
-    SchemeType,
-)
+from schemes.domain.schemes.funding import BidStatus, BidStatusRevision
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, OverviewRevision, SchemeType
+from schemes.domain.schemes.schemes import Scheme
 
 
 def build_scheme(

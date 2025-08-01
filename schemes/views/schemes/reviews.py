@@ -8,7 +8,8 @@ from pydantic import BaseModel
 from wtforms import BooleanField
 from wtforms.validators import InputRequired
 
-from schemes.domain.schemes import AuthorityReview, DataSource, SchemeReviews
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.reviews import AuthorityReview, SchemeReviews
 from schemes.views.forms import FieldsetGovCheckboxInput
 from schemes.views.schemes.data_sources import DataSourceRepr
 

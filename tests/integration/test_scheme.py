@@ -7,24 +7,14 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    AuthorityReview,
-    BidStatus,
-    BidStatusRevision,
-    DataSource,
-    FinancialRevision,
-    FinancialType,
-    FundingProgrammes,
-    Milestone,
-    MilestoneRevision,
-    ObservationType,
-    OutputRevision,
-    OutputTypeMeasure,
-    OverviewRevision,
-    Scheme,
-    SchemeRepository,
-    SchemeType,
-)
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType
+from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
+from schemes.domain.schemes.observations import ObservationType
+from schemes.domain.schemes.outputs import OutputRevision, OutputTypeMeasure
+from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeType
+from schemes.domain.schemes.reviews import AuthorityReview
+from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.builders import build_scheme

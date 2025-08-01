@@ -6,14 +6,10 @@ from werkzeug.datastructures import MultiDict
 from wtforms import Form, FormField, ValidationError
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    DataSource,
-    Milestone,
-    MilestoneRevision,
-    ObservationType,
-    SchemeMilestones,
-    SchemeType,
-)
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.milestones import Milestone, MilestoneRevision, SchemeMilestones
+from schemes.domain.schemes.observations import ObservationType
+from schemes.domain.schemes.overview import SchemeType
 from schemes.views.schemes.data_sources import DataSourceRepr
 from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,

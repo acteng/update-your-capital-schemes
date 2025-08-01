@@ -1,5 +1,5 @@
 from schemes.dicts import inverse_dict
-from schemes.domain.schemes import Milestone
+from schemes.domain.schemes.milestones import Milestone
 
 
 class MilestoneMapper:

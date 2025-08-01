@@ -1,6 +1,6 @@
 import pytest
 
-from schemes.domain.schemes import FundingProgramme, FundingProgrammes, SchemeType
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeType
 from schemes.infrastructure.database.schemes.overview import FundingProgrammeMapper, SchemeTypeMapper
 
 

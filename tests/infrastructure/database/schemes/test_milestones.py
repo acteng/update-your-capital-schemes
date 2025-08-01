@@ -1,6 +1,6 @@
 import pytest
 
-from schemes.domain.schemes import Milestone
+from schemes.domain.schemes.milestones import Milestone
 from schemes.infrastructure.database.schemes.milestones import MilestoneMapper
 
 

@@ -3,22 +3,14 @@ from datetime import date, datetime
 import pytest
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    BidStatus,
-    DataSource,
-    FundingProgramme,
-    FundingProgrammes,
-    Milestone,
-    MilestoneRevision,
-    ObservationType,
-    Scheme,
-    SchemeFunding,
-    SchemeMilestones,
-    SchemeOutputs,
-    SchemeOverview,
-    SchemeReviews,
-    SchemeType,
-)
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.funding import BidStatus, SchemeFunding
+from schemes.domain.schemes.milestones import Milestone, MilestoneRevision, SchemeMilestones
+from schemes.domain.schemes.observations import ObservationType
+from schemes.domain.schemes.outputs import SchemeOutputs
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeOverview, SchemeType
+from schemes.domain.schemes.reviews import SchemeReviews
+from schemes.domain.schemes.schemes import Scheme
 from tests.builders import build_scheme
 
 

@@ -4,7 +4,8 @@ import pytest
 from flask_wtf.csrf import generate_csrf
 from werkzeug.datastructures import MultiDict
 
-from schemes.domain.schemes import AuthorityReview, DataSource, SchemeReviews
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.reviews import AuthorityReview, SchemeReviews
 from schemes.views.schemes.data_sources import DataSourceRepr
 from schemes.views.schemes.reviews import AuthorityReviewRepr, SchemeReviewContext, SchemeReviewForm
 

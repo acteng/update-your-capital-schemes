@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum, unique
 
 from schemes.dicts import inverse_dict
-from schemes.domain.schemes import DataSource
+from schemes.domain.schemes.data_sources import DataSource
 
 
 @unique

@@ -4,7 +4,8 @@ import pytest
 
 from schemes.domain.dates import DateRange
 from schemes.domain.reporting_window import ReportingWindow
-from schemes.domain.schemes import AuthorityReview, DataSource, SchemeReviews
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.reviews import AuthorityReview, SchemeReviews
 
 
 class TestSchemeReviews:

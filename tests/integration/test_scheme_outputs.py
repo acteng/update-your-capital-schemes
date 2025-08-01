@@ -6,7 +6,9 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import ObservationType, OutputRevision, OutputTypeMeasure, SchemeRepository
+from schemes.domain.schemes.observations import ObservationType
+from schemes.domain.schemes.outputs import OutputRevision, OutputTypeMeasure
+from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
 from tests.builders import build_scheme
 from tests.integration.pages import SchemePage

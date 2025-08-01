@@ -13,7 +13,7 @@ from inject import Binder
 from schemes import bindings, create_app, destroy_app
 from schemes.annotations import Migrated
 from schemes.domain.authorities import AuthorityRepository
-from schemes.domain.schemes import SchemeRepository
+from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.fakes import MemoryAuthorityRepository, MemorySchemeRepository, MemoryUserRepository

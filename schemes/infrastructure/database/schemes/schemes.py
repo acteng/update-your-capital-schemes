@@ -5,16 +5,12 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, joinedload, selectinload, sessionmaker
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    AuthorityReview,
-    BidStatusRevision,
-    FinancialRevision,
-    MilestoneRevision,
-    OutputRevision,
-    OverviewRevision,
-    Scheme,
-    SchemeRepository,
-)
+from schemes.domain.schemes.funding import BidStatusRevision, FinancialRevision
+from schemes.domain.schemes.milestones import MilestoneRevision
+from schemes.domain.schemes.outputs import OutputRevision
+from schemes.domain.schemes.overview import OverviewRevision
+from schemes.domain.schemes.reviews import AuthorityReview
+from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.database import (
     AuthorityEntity,
     CapitalSchemeAuthorityReviewEntity,

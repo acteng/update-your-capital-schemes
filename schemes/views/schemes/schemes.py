@@ -13,7 +13,8 @@ from schemes.annotations import Migrated
 from schemes.dicts import as_shallow_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
-from schemes.domain.schemes import FundingProgramme, FundingProgrammes, Scheme, SchemeRepository, SchemeType
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeType
+from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
 from schemes.views.auth.api_key import api_key_auth

@@ -7,23 +7,14 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from schemes.domain.authorities import Authority
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes import (
-    AuthorityReview,
-    BidStatus,
-    BidStatusRevision,
-    DataSource,
-    FinancialRevision,
-    FinancialType,
-    FundingProgrammes,
-    Milestone,
-    MilestoneRevision,
-    ObservationType,
-    OutputRevision,
-    OutputTypeMeasure,
-    OverviewRevision,
-    Scheme,
-    SchemeType,
-)
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType
+from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
+from schemes.domain.schemes.observations import ObservationType
+from schemes.domain.schemes.outputs import OutputRevision, OutputTypeMeasure
+from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeType
+from schemes.domain.schemes.reviews import AuthorityReview
+from schemes.domain.schemes.schemes import Scheme
 from schemes.infrastructure.database import (
     CapitalSchemeAuthorityReviewEntity,
     CapitalSchemeBidStatusEntity,
@@ -34,7 +25,7 @@ from schemes.infrastructure.database import (
     CapitalSchemeOverviewEntity,
 )
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
-from schemes.infrastructure.database.schemes import DatabaseSchemeRepository
+from schemes.infrastructure.database.schemes.schemes import DatabaseSchemeRepository
 from tests.builders import build_scheme
 
 

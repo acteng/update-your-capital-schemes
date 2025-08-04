@@ -1,9 +1,10 @@
-from dataclasses import dataclass
 from typing import Any
 
 from authlib.integrations.flask_client import OAuth
 from authlib.jose import jwt
-from flask import Flask, Response, abort, jsonify, request
+from flask import Flask, Response, abort, request
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
 
 def create_app(test_config: dict[str, Any] | None = None) -> Flask:
@@ -24,7 +25,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
         return Response(status=201)
 
     @app.get("/authorities/<abbreviation>")
-    def get_authority(abbreviation: str) -> Response:
+    def get_authority(abbreviation: str) -> dict[str, Any]:
         _validate_jwt()
 
         authority = authorities.get(abbreviation)
@@ -32,7 +33,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
         if not authority:
             abort(404)
 
-        return jsonify(authority)
+        return authority.model_dump()
 
     @app.delete("/authorities")
     def clear_authorities() -> Response:
@@ -56,7 +57,8 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     return app
 
 
-@dataclass(frozen=True)
-class AuthorityModel:
+class AuthorityModel(BaseModel):
     abbreviation: str
-    fullName: str
+    full_name: str
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)

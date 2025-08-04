@@ -3,7 +3,7 @@ from typing import Any
 
 from authlib.integrations.flask_client import OAuth
 from authlib.jose import jwt
-from flask import Flask, Response, jsonify, request
+from flask import Flask, Response, abort, jsonify, request
 
 
 def create_app(test_config: dict[str, Any] | None = None) -> Flask:
@@ -30,7 +30,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
         authority = authorities.get(abbreviation)
 
         if not authority:
-            return Response(status=404)
+            abort(404)
 
         return jsonify(authority)
 

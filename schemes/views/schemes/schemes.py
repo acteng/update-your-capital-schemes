@@ -48,7 +48,7 @@ def add_schemes(schemes: SchemeRepository, logger: Logger) -> Response:
         schemes_repr = [SchemeRepr.model_validate(item) for item in request.get_json()]
     except ValidationError as error:
         logger.error(error)
-        return Response(status=400)
+        return abort(400)
 
     schemes.add(*[scheme_repr.to_domain() for scheme_repr in schemes_repr])
     return Response(status=201)

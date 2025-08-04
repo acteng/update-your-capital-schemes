@@ -71,7 +71,7 @@ def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, id_=1)
+    scheme_page = SchemePage.open(page, reference="ATE00001")
 
     assert scheme_page.milestones.milestones.to_dicts() == [
         {"milestone": "Feasibility design completed", "planned": "", "actual": "30 Nov 2020"},
@@ -146,7 +146,7 @@ def test_change_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     scheme_page = (
-        SchemePage.open(page, id_=1)
+        SchemePage.open(page, reference="ATE00001")
         .milestones.change_milestone_dates()
         .form.enter_construction_started_actual("5 7 2023")
         .enter_construction_completed_planned("30 9 2023")
@@ -158,7 +158,7 @@ def test_change_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
         scheme_page.milestones.milestones["Construction started"].actual == "5 Jul 2023"
         and scheme_page.milestones.milestones["Construction completed"].planned == "30 Sep 2023"
     )
-    assert app_client.get_scheme(id_=1).milestone_revisions == [
+    assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
         MilestoneRevisionRepr(
             id=1,
             effective_date_from="2020-01-01T12:00:00",
@@ -290,7 +290,7 @@ def test_cannot_change_milestones_when_error(
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     change_milestone_page = (
-        SchemePage.open(page, id_=1)
+        SchemePage.open(page, reference="ATE00001")
         .milestones.change_milestone_dates()
         .form.enter_construction_completed_planned("x x x")
         .confirm_when_error()
@@ -308,7 +308,7 @@ def test_cannot_change_milestones_when_error(
         and change_milestone_page.form.construction_completed_planned.value == "x x x"
     )
 
-    assert app_client.get_scheme(id_=1).milestone_revisions == [
+    assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
         MilestoneRevisionRepr(
             id=1,
             effective_date_from="2020-01-01T12:00:00",

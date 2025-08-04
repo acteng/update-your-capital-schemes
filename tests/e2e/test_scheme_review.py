@@ -26,11 +26,11 @@ def test_scheme_review(app_client: AppClient, api_client: ApiClient, oidc_client
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    schemes_page = SchemePage.open(page, id_=1).review.form.check_up_to_date().confirm()
+    schemes_page = SchemePage.open(page, reference="ATE00001").review.form.check_up_to_date().confirm()
 
     assert schemes_page.success_notification.heading == "Wirral Package has been reviewed"
     assert schemes_page.schemes["ATE00001"].last_reviewed == "24 Apr 2023"
-    assert app_client.get_scheme(id_=1).authority_reviews == [
+    assert app_client.get_scheme(reference="ATE00001").authority_reviews == [
         AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid"),
         AuthorityReviewRepr(id=2, review_date="2023-04-24T13:00:00", source="authority update"),
     ]
@@ -55,7 +55,7 @@ def test_scheme_cannot_review_when_error(
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, id_=1).review.form.confirm_when_error()
+    scheme_page = SchemePage.open(page, reference="ATE00001").review.form.confirm_when_error()
 
     assert scheme_page.title == "Error: Wirral Package - Update your capital schemes - Active Travel England - GOV.UK"
     assert list(scheme_page.errors) == ["Confirm this scheme is up-to-date"]
@@ -64,6 +64,6 @@ def test_scheme_cannot_review_when_error(
         and scheme_page.review.form.up_to_date.error == "Error: Confirm this scheme is up-to-date"
         and not scheme_page.review.form.up_to_date.value
     )
-    assert app_client.get_scheme(id_=1).authority_reviews == [
+    assert app_client.get_scheme(reference="ATE00001").authority_reviews == [
         AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid"),
     ]

@@ -36,17 +36,17 @@ class MemoryUserRepository(UserRepository):
 
 class MemorySchemeRepository(SchemeRepository):
     def __init__(self) -> None:
-        self._schemes: dict[int, Scheme] = {}
+        self._schemes: dict[str, Scheme] = {}
 
     def add(self, *schemes: Scheme) -> None:
         for scheme in schemes:
-            self._schemes[scheme.id] = scheme
+            self._schemes[scheme.reference] = scheme
 
     def clear(self) -> None:
         self._schemes.clear()
 
-    def get(self, id_: int) -> Scheme | None:
-        return deepcopy(self._schemes.get(id_))
+    def get(self, reference: str) -> Scheme | None:
+        return deepcopy(self._schemes.get(reference))
 
     def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         return sorted(
@@ -59,4 +59,4 @@ class MemorySchemeRepository(SchemeRepository):
         )
 
     def update(self, scheme: Scheme) -> None:
-        self._schemes[scheme.id] = scheme
+        self._schemes[scheme.reference] = scheme

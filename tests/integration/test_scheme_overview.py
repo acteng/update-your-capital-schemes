@@ -36,7 +36,7 @@ class TestSchemeOverview:
             )
         )
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert (
             scheme_page.overview.reference == "ATE00001"
@@ -69,7 +69,7 @@ class TestSchemeOverview:
         )
         schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert (
             scheme_page.overview.reference == "ATE00001"

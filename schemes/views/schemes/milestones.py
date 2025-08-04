@@ -78,7 +78,7 @@ class MilestoneContext:
 
 @dataclass(frozen=True)
 class ChangeMilestoneDatesContext:
-    id: int
+    reference: str
     name: str
     form: ChangeMilestoneDatesForm
 
@@ -88,7 +88,7 @@ class ChangeMilestoneDatesContext:
         assert name is not None
 
         return ChangeMilestoneDatesContext(
-            id=scheme.id, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme, now)
+            reference=scheme.reference, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme, now)
         )
 
 

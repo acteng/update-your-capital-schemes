@@ -28,14 +28,14 @@ class TestSchemeMilestones:
     def test_scheme_shows_change_milestones(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
-        assert scheme_page.milestones.change_milestones_url == "/schemes/1/milestones"
+        assert scheme_page.milestones.change_milestones_url == "/schemes/ATE00001/milestones"
 
     def test_scheme_shows_minimal_milestones(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.milestones.milestones.to_dicts() == [
             {"milestone": "Feasibility design completed", "planned": "", "actual": ""},
@@ -105,7 +105,7 @@ class TestSchemeMilestones:
         )
         schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.milestones.milestones.to_dicts() == [
             {"milestone": "Feasibility design completed", "planned": "1 Feb 2020", "actual": "2 Feb 2020"},
@@ -205,7 +205,7 @@ class TestSchemeMilestones:
         )
         schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.milestones.milestones.to_dicts() == [
             {"milestone": "Feasibility design completed", "planned": "1 Feb 2020", "actual": "2 Feb 2020"},
@@ -218,7 +218,7 @@ class TestSchemeMilestones:
     def test_milestones_form_shows_title(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, reference="ATE00001")
 
         assert (
             change_milestone_dates_page.title
@@ -228,14 +228,14 @@ class TestSchemeMilestones:
     def test_milestones_form_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, reference="ATE00001")
 
-        assert change_milestone_dates_page.back_url == "/schemes/1"
+        assert change_milestone_dates_page.back_url == "/schemes/ATE00001"
 
     def test_milestones_form_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, reference="ATE00001")
 
         assert change_milestone_dates_page.heading and change_milestone_dates_page.heading.caption == "Wirral Package"
 
@@ -250,7 +250,7 @@ class TestSchemeMilestones:
             )
         )
 
-        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, reference="ATE00001")
 
         assert (
             change_milestone_dates_page.form.feasibility_design_completed_planned.name
@@ -274,7 +274,7 @@ class TestSchemeMilestones:
     def test_milestones_form_shows_milestone_heading(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, reference="ATE00001")
 
         assert change_milestone_dates_page.form.detailed_design_completed_heading == "Detailed design completed"
 
@@ -292,23 +292,23 @@ class TestSchemeMilestones:
         )
         schemes.add(scheme)
 
-        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, reference="ATE00001")
 
         assert change_milestone_dates_page.form.detailed_design_completed_actual.value == "2 1 2020"
 
     def test_milestones_form_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, reference="ATE00001")
 
-        assert change_milestone_dates_page.form.confirm_url == "/schemes/1/milestones"
+        assert change_milestone_dates_page.form.confirm_url == "/schemes/ATE00001/milestones"
 
     def test_milestones_form_shows_cancel(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, id_=1)
+        change_milestone_dates_page = ChangeMilestoneDatesPage.open(client, reference="ATE00001")
 
-        assert change_milestone_dates_page.form.cancel_url == "/schemes/1"
+        assert change_milestone_dates_page.form.cancel_url == "/schemes/ATE00001"
 
     def test_cannot_milestones_form_when_different_authority(
         self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
@@ -318,19 +318,19 @@ class TestSchemeMilestones:
             build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
         )
 
-        forbidden_page = ChangeMilestoneDatesPage.open_when_unauthorized(client, id_=2)
+        forbidden_page = ChangeMilestoneDatesPage.open_when_unauthorized(client, reference="ATE00002")
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
     def test_cannot_milestones_form_when_no_authority(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
 
-        forbidden_page = ChangeMilestoneDatesPage.open_when_unauthorized(client, id_=2)
+        forbidden_page = ChangeMilestoneDatesPage.open_when_unauthorized(client, reference="ATE00002")
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
     def test_cannot_milestones_form_when_unknown_scheme(self, client: FlaskClient) -> None:
-        not_found_page = ChangeMilestoneDatesPage.open_when_not_found(client, id_=1)
+        not_found_page = ChangeMilestoneDatesPage.open_when_not_found(client, reference="ATE00001")
 
         assert not_found_page.is_visible and not_found_page.is_not_found
 
@@ -347,7 +347,7 @@ class TestSchemeMilestones:
             )
         )
 
-        not_found_page = ChangeMilestoneDatesPage.open_when_not_found(client, id_=1)
+        not_found_page = ChangeMilestoneDatesPage.open_when_not_found(client, reference="ATE00001")
 
         assert not_found_page.is_visible and not_found_page.is_not_found
 
@@ -372,11 +372,11 @@ class TestSchemeMilestones:
         schemes.add(scheme)
 
         client.post(
-            "/schemes/1/milestones",
+            "/schemes/ATE00001/milestones",
             data={"csrf_token": csrf_token, "detailed_design_completed-actual": ["3", "1", "2020"]},
         )
 
-        actual_scheme = schemes.get(1)
+        actual_scheme = schemes.get("ATE00001")
         assert actual_scheme
         milestone_revision1: MilestoneRevision
         milestone_revision2: MilestoneRevision
@@ -393,9 +393,9 @@ class TestSchemeMilestones:
     def test_milestones_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token})
+        response = client.post("/schemes/ATE00001/milestones", data={"csrf_token": csrf_token})
 
-        assert response.status_code == 302 and response.location == "/schemes/1"
+        assert response.status_code == 302 and response.location == "/schemes/ATE00001"
 
     def test_cannot_milestones_when_error(
         self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
@@ -415,7 +415,7 @@ class TestSchemeMilestones:
 
         change_milestone_dates_page = ChangeMilestoneDatesPage(
             client.post(
-                "/schemes/1/milestones",
+                "/schemes/ATE00001/milestones",
                 data=self.empty_change_milestone_dates_form()
                 | {"csrf_token": csrf_token, "detailed_design_completed-actual": ["x", "x", "x"]},
             )
@@ -434,7 +434,7 @@ class TestSchemeMilestones:
             == "Error: Detailed design completed actual date must be a real date"
             and change_milestone_dates_page.form.detailed_design_completed_actual.value == "x x x"
         )
-        actual_scheme = schemes.get(1)
+        actual_scheme = schemes.get("ATE00001")
         assert actual_scheme
         milestone_revision1: MilestoneRevision
         (milestone_revision1,) = actual_scheme.milestones.milestone_revisions
@@ -455,7 +455,7 @@ class TestSchemeMilestones:
 
         change_milestone_dates_page = ChangeMilestoneDatesPage(
             client.post(
-                "/schemes/1/milestones",
+                "/schemes/ATE00001/milestones",
                 data=self.empty_change_milestone_dates_form()
                 | {"csrf_token": csrf_token, "detailed_design_completed-actual": ["1", "3", "2020"]},
             )
@@ -469,7 +469,7 @@ class TestSchemeMilestones:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         change_milestone_dates_page = ChangeMilestoneDatesPage(
-            client.post("/schemes/1/milestones", follow_redirects=True)
+            client.post("/schemes/ATE00001/milestones", follow_redirects=True)
         )
 
         assert change_milestone_dates_page.is_visible
@@ -485,7 +485,7 @@ class TestSchemeMilestones:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         change_milestone_dates_page = ChangeMilestoneDatesPage(
-            client.post("/schemes/1/milestones", data={"csrf_token": "x"}, follow_redirects=True)
+            client.post("/schemes/ATE00001/milestones", data={"csrf_token": "x"}, follow_redirects=True)
         )
 
         assert change_milestone_dates_page.is_visible
@@ -503,7 +503,7 @@ class TestSchemeMilestones:
             build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
         )
 
-        response = client.post("/schemes/2/milestones", data={"csrf_token": csrf_token})
+        response = client.post("/schemes/ATE00002/milestones", data={"csrf_token": csrf_token})
 
         assert response.status_code == 403
 
@@ -512,12 +512,12 @@ class TestSchemeMilestones:
     ) -> None:
         schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
 
-        response = client.post("/schemes/2/milestones", data={"csrf_token": csrf_token})
+        response = client.post("/schemes/ATE00002/milestones", data={"csrf_token": csrf_token})
 
         assert response.status_code == 403
 
     def test_cannot_milestones_when_unknown_scheme(self, client: FlaskClient, csrf_token: str) -> None:
-        response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token})
+        response = client.post("/schemes/ATE00001/milestones", data={"csrf_token": csrf_token})
 
         assert response.status_code == 404
 
@@ -534,7 +534,7 @@ class TestSchemeMilestones:
             )
         )
 
-        response = client.post("/schemes/1/milestones", data={"csrf_token": csrf_token})
+        response = client.post("/schemes/ATE00001/milestones", data={"csrf_token": csrf_token})
 
         assert response.status_code == 404
 

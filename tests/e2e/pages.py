@@ -256,10 +256,10 @@ class SchemePage(PageObject):
         self.review = SchemeReviewComponent(self._main.get_by_role("heading", name="Is this scheme up-to-date?"))
 
     @classmethod
-    def open(cls, page: Page, id_: int) -> SchemePage:
+    def open(cls, page: Page, reference: str) -> SchemePage:
         # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
         page.goto("/schemes")
-        page.goto(f"/schemes/{id_}")
+        page.goto(f"/schemes/{reference}")
         return cls(page)
 
     @property

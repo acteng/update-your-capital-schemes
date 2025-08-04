@@ -60,7 +60,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             session.execute(delete(CapitalSchemeEntity))
             session.commit()
 
-    def get(self, id_: int) -> Scheme | None:
+    def get(self, reference: str) -> Scheme | None:
         with self._session_maker() as session:
             result = session.scalars(
                 select(CapitalSchemeEntity)
@@ -76,7 +76,7 @@ class DatabaseSchemeRepository(SchemeRepository):
                     selectinload(CapitalSchemeEntity.capital_scheme_interventions),
                     selectinload(CapitalSchemeEntity.capital_scheme_authority_reviews),
                 )
-                .where(CapitalSchemeEntity.capital_scheme_id == id_)
+                .where(CapitalSchemeEntity.scheme_reference == reference)
             )
             row = result.one_or_none()
             return self._capital_scheme_to_domain(row) if row else None

@@ -42,7 +42,7 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, id_=1)
+    scheme_page = SchemePage.open(page, reference="ATE00001")
 
     assert (
         scheme_page.funding.funding_allocation == "£100,000"
@@ -87,10 +87,12 @@ def test_change_spend_to_date(
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, id_=1).funding.change_spend_to_date().form.enter_amount("60000").confirm()
+    scheme_page = (
+        SchemePage.open(page, reference="ATE00001").funding.change_spend_to_date().form.enter_amount("60000").confirm()
+    )
 
     assert scheme_page.heading.text == "Wirral Package" and scheme_page.funding.spend_to_date == "£60,000"
-    assert app_client.get_scheme(id_=1).financial_revisions == [
+    assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
         FinancialRevisionRepr(
             id=1,
             effective_date_from="2020-01-01T12:00:00",
@@ -154,7 +156,10 @@ def test_cannot_change_spend_to_date_when_error(
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     change_spend_to_date_page = (
-        SchemePage.open(page, id_=1).funding.change_spend_to_date().form.enter_amount("").confirm_when_error()
+        SchemePage.open(page, reference="ATE00001")
+        .funding.change_spend_to_date()
+        .form.enter_amount("")
+        .confirm_when_error()
     )
 
     assert (
@@ -167,7 +172,7 @@ def test_cannot_change_spend_to_date_when_error(
         and change_spend_to_date_page.form.amount.error == "Error: Enter spend to date"
         and change_spend_to_date_page.form.amount.value == ""
     )
-    assert app_client.get_scheme(id_=1).financial_revisions == [
+    assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
         FinancialRevisionRepr(
             id=1,
             effective_date_from="2020-01-01T12:00:00",

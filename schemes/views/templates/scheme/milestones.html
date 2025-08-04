@@ -13,7 +13,7 @@
 {% block beforeContent %}
     {{ super() }}
     {{ govukBackLink({
-        "href": url_for("schemes.get", scheme_id=id)
+        "href": url_for("schemes.get", reference=reference)
     }) }}
 {% endblock %}
 
@@ -51,7 +51,7 @@
                 "html": html
             }) }}
 
-            <form method="post" action="{{ url_for('schemes.milestones', scheme_id=id) }}" aria-label="Change milestone dates">
+            <form method="post" action="{{ url_for('schemes.milestones', reference=reference) }}" aria-label="Change milestone dates">
                 {{ form.csrf_token }}
 
                 {% for field in form if not field == form.csrf_token %}
@@ -91,7 +91,7 @@
                         "text": "Confirm"
                     }) }}
 
-                    <a class="govuk-link" href={{ url_for("schemes.get", scheme_id=id) }}>Cancel</a>
+                    <a class="govuk-link" href={{ url_for("schemes.get", reference=reference) }}>Cancel</a>
                 </div>
             </form>
         </div>

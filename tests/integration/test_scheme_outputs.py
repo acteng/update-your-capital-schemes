@@ -35,7 +35,7 @@ class TestSchemeOutputs:
         )
         schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.outputs.outputs
         outputs = list(scheme_page.outputs.outputs)
@@ -61,7 +61,7 @@ class TestSchemeOutputs:
         )
         schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.outputs.outputs
         assert scheme_page.outputs.outputs.to_dicts() == [
@@ -90,7 +90,7 @@ class TestSchemeOutputs:
         )
         schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.outputs.outputs
         outputs = list(scheme_page.outputs.outputs)
@@ -99,7 +99,7 @@ class TestSchemeOutputs:
     def test_scheme_shows_message_when_no_outputs(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert not scheme_page.outputs.outputs
         assert scheme_page.outputs.is_no_outputs_message_visible

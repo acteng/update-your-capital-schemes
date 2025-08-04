@@ -175,7 +175,7 @@ class TestChangeMilestoneDatesContext:
         context = ChangeMilestoneDatesContext.from_domain(scheme, datetime(2020, 2, 1))
 
         assert (
-            context.id == 1
+            context.reference == "ATE00001"
             and context.name == "Wirral Package"
             and context.form.construction_started.actual.data == date(2020, 3, 1)
         )

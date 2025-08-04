@@ -35,35 +35,35 @@ class TestScheme:
             "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
         )
 
-        response = client.get("/schemes/1", headers={"Accept": chromium_default_accept})
+        response = client.get("/schemes/ATE00001", headers={"Accept": chromium_default_accept})
 
         assert response.status_code == 200 and response.content_type == "text/html; charset=utf-8"
 
     def test_scheme_shows_title(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.title == "Wirral Package - Update your capital schemes - Active Travel England - GOV.UK"
 
     def test_scheme_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.back_url == "/schemes"
 
     def test_scheme_shows_authority(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.heading and scheme_page.heading.caption == "Liverpool City Region Combined Authority"
 
     def test_scheme_shows_name(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.heading and scheme_page.heading.text == "Wirral Package"
 
@@ -89,7 +89,7 @@ class TestScheme:
         )
         schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.needs_review == expected_needs_review
 
@@ -101,19 +101,19 @@ class TestScheme:
             build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
         )
 
-        forbidden_page = SchemePage.open_when_unauthorized(client, id_=2)
+        forbidden_page = SchemePage.open_when_unauthorized(client, reference="ATE00002")
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
     def test_cannot_scheme_when_no_authority(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
 
-        forbidden_page = SchemePage.open_when_unauthorized(client, id_=2)
+        forbidden_page = SchemePage.open_when_unauthorized(client, reference="ATE00002")
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
     def test_cannot_scheme_when_unknown_scheme(self, client: FlaskClient) -> None:
-        not_found_page = SchemePage.open_when_not_found(client, id_=1)
+        not_found_page = SchemePage.open_when_not_found(client, reference="ATE00001")
 
         assert not_found_page.is_visible and not_found_page.is_not_found
 
@@ -128,7 +128,7 @@ class TestScheme:
             )
         )
 
-        not_found_page = SchemePage.open_when_not_found(client, id_=1)
+        not_found_page = SchemePage.open_when_not_found(client, reference="ATE00001")
 
         assert not_found_page.is_visible and not_found_page.is_not_found
 
@@ -141,7 +141,9 @@ class TestSchemeApi:
     def test_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(Scheme(id_=1, reference="ATE00001"))
 
-        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+        response = client.get(
+            "/schemes/ATE00001", headers={"Accept": "application/json", "Authorization": "API-Key boardman"}
+        )
 
         assert response.json == {
             "id": 1,
@@ -171,7 +173,9 @@ class TestSchemeApi:
         )
         schemes.add(scheme)
 
-        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+        response = client.get(
+            "/schemes/ATE00001", headers={"Accept": "application/json", "Authorization": "API-Key boardman"}
+        )
 
         assert response.json and response.json["id"] == 1
         assert response.json["overview_revisions"] == [
@@ -197,7 +201,9 @@ class TestSchemeApi:
         )
         schemes.add(scheme)
 
-        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+        response = client.get(
+            "/schemes/ATE00001", headers={"Accept": "application/json", "Authorization": "API-Key boardman"}
+        )
 
         assert response.json and response.json["id"] == 1
         assert response.json["bid_status_revisions"] == [
@@ -222,7 +228,9 @@ class TestSchemeApi:
         )
         schemes.add(scheme)
 
-        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+        response = client.get(
+            "/schemes/ATE00001", headers={"Accept": "application/json", "Authorization": "API-Key boardman"}
+        )
 
         assert response.json and response.json["id"] == 1
         assert response.json["financial_revisions"] == [
@@ -250,7 +258,9 @@ class TestSchemeApi:
         )
         schemes.add(scheme)
 
-        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+        response = client.get(
+            "/schemes/ATE00001", headers={"Accept": "application/json", "Authorization": "API-Key boardman"}
+        )
 
         assert response.json and response.json["id"] == 1
         assert response.json["milestone_revisions"] == [
@@ -278,7 +288,9 @@ class TestSchemeApi:
         )
         schemes.add(scheme)
 
-        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+        response = client.get(
+            "/schemes/ATE00001", headers={"Accept": "application/json", "Authorization": "API-Key boardman"}
+        )
 
         assert response.json and response.json["id"] == 1
         assert response.json["output_revisions"] == [
@@ -300,7 +312,9 @@ class TestSchemeApi:
         )
         schemes.add(scheme)
 
-        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+        response = client.get(
+            "/schemes/ATE00001", headers={"Accept": "application/json", "Authorization": "API-Key boardman"}
+        )
 
         assert response.json and response.json["id"] == 1
         assert response.json["authority_reviews"] == [
@@ -314,14 +328,16 @@ class TestSchemeApi:
     def test_cannot_get_scheme_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
-        response = client.get("/schemes/1", headers={"Accept": "application/json"})
+        response = client.get("/schemes/ATE00001", headers={"Accept": "application/json"})
 
         assert response.status_code == 401
 
     def test_cannot_get_scheme_when_incorrect_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
-        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key obree"})
+        response = client.get(
+            "/schemes/ATE00001", headers={"Accept": "application/json", "Authorization": "API-Key obree"}
+        )
 
         assert response.status_code == 401
 
@@ -330,6 +346,8 @@ class TestSchemeApiWhenDisabled:
     def test_cannot_get_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
-        response = client.get("/schemes/1", headers={"Accept": "application/json", "Authorization": "API-Key boardman"})
+        response = client.get(
+            "/schemes/ATE00001", headers={"Accept": "application/json", "Authorization": "API-Key boardman"}
+        )
 
         assert response.status_code == 401

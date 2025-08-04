@@ -239,18 +239,18 @@ class SchemePage(PageObject):
         return SchemeReviewComponent(one(self._soup.select("main h2:-soup-contains('Is this scheme up-to-date?')")))
 
     @classmethod
-    def open(cls, client: FlaskClient, id_: int) -> SchemePage:
-        response = client.get(f"/schemes/{id_}")
+    def open(cls, client: FlaskClient, reference: str) -> SchemePage:
+        response = client.get(f"/schemes/{reference}")
         return cls(response)
 
     @classmethod
-    def open_when_unauthorized(cls, client: FlaskClient, id_: int) -> ForbiddenPage:
-        response = client.get(f"/schemes/{id_}")
+    def open_when_unauthorized(cls, client: FlaskClient, reference: str) -> ForbiddenPage:
+        response = client.get(f"/schemes/{reference}")
         return ForbiddenPage(response)
 
     @classmethod
-    def open_when_not_found(cls, client: FlaskClient, id_: int) -> NotFoundPage:
-        response = client.get(f"/schemes/{id_}")
+    def open_when_not_found(cls, client: FlaskClient, reference: str) -> NotFoundPage:
+        response = client.get(f"/schemes/{reference}")
         return NotFoundPage(response)
 
 
@@ -397,18 +397,18 @@ class ChangeSpendToDatePage(PageObject):
         return ChangeSpendToDateFormComponent(one(self._soup.select("form")))
 
     @classmethod
-    def open(cls, client: FlaskClient, id_: int) -> ChangeSpendToDatePage:
-        response = client.get(f"/schemes/{id_}/spend-to-date")
+    def open(cls, client: FlaskClient, reference: str) -> ChangeSpendToDatePage:
+        response = client.get(f"/schemes/{reference}/spend-to-date")
         return cls(response)
 
     @classmethod
-    def open_when_unauthorized(cls, client: FlaskClient, id_: int) -> ForbiddenPage:
-        response = client.get(f"/schemes/{id_}/spend-to-date")
+    def open_when_unauthorized(cls, client: FlaskClient, reference: str) -> ForbiddenPage:
+        response = client.get(f"/schemes/{reference}/spend-to-date")
         return ForbiddenPage(response)
 
     @classmethod
-    def open_when_not_found(cls, client: FlaskClient, id_: int) -> NotFoundPage:
-        response = client.get(f"/schemes/{id_}/spend-to-date")
+    def open_when_not_found(cls, client: FlaskClient, reference: str) -> NotFoundPage:
+        response = client.get(f"/schemes/{reference}/spend-to-date")
         return NotFoundPage(response)
 
 
@@ -431,18 +431,18 @@ class ChangeMilestoneDatesPage(PageObject):
         return ChangeMilestoneDatesFormComponent(one(self._soup.select("form")))
 
     @classmethod
-    def open(cls, client: FlaskClient, id_: int) -> ChangeMilestoneDatesPage:
-        response = client.get(f"/schemes/{id_}/milestones")
+    def open(cls, client: FlaskClient, reference: str) -> ChangeMilestoneDatesPage:
+        response = client.get(f"/schemes/{reference}/milestones")
         return cls(response)
 
     @classmethod
-    def open_when_unauthorized(cls, client: FlaskClient, id_: int) -> ForbiddenPage:
-        response = client.get(f"/schemes/{id_}/milestones")
+    def open_when_unauthorized(cls, client: FlaskClient, reference: str) -> ForbiddenPage:
+        response = client.get(f"/schemes/{reference}/milestones")
         return ForbiddenPage(response)
 
     @classmethod
-    def open_when_not_found(cls, client: FlaskClient, id_: int) -> NotFoundPage:
-        response = client.get(f"/schemes/{id_}/milestones")
+    def open_when_not_found(cls, client: FlaskClient, reference: str) -> NotFoundPage:
+        response = client.get(f"/schemes/{reference}/milestones")
         return NotFoundPage(response)
 
 

@@ -175,7 +175,7 @@ class TestSchemes:
         schemes_page = SchemesPage.open(client)
 
         assert schemes_page.schemes
-        assert schemes_page.schemes["ATE00001"].reference_url == "/schemes/1"
+        assert schemes_page.schemes["ATE00001"].reference_url == "/schemes/ATE00001"
 
     def test_schemes_shows_message_when_no_schemes(self, client: FlaskClient) -> None:
         schemes_page = SchemesPage.open(client)
@@ -197,8 +197,8 @@ class TestSchemesApi:
         )
 
         assert response.status_code == 201
-        scheme1 = schemes.get(1)
-        scheme2 = schemes.get(2)
+        scheme1 = schemes.get("ATE00001")
+        scheme2 = schemes.get("ATE00002")
         assert scheme1 and scheme1.id == 1 and scheme1.reference == "ATE00001"
         assert scheme2 and scheme2.id == 2 and scheme2.reference == "ATE00002"
 
@@ -226,7 +226,7 @@ class TestSchemesApi:
         )
 
         assert response.status_code == 201
-        scheme1 = schemes.get(1)
+        scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
         overview_revision1: OverviewRevision
         (overview_revision1,) = scheme1.overview.overview_revisions
@@ -260,7 +260,7 @@ class TestSchemesApi:
         )
 
         assert response.status_code == 201
-        scheme1 = schemes.get(1)
+        scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
         bid_status_revision1: BidStatusRevision
         (bid_status_revision1,) = scheme1.funding.bid_status_revisions
@@ -293,7 +293,7 @@ class TestSchemesApi:
         )
 
         assert response.status_code == 201
-        scheme1 = schemes.get(1)
+        scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
         financial_revision1: FinancialRevision
         (financial_revision1,) = scheme1.funding.financial_revisions
@@ -329,7 +329,7 @@ class TestSchemesApi:
         )
 
         assert response.status_code == 201
-        scheme1 = schemes.get(1)
+        scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
         milestone_revision1: MilestoneRevision
         (milestone_revision1,) = scheme1.milestones.milestone_revisions
@@ -366,7 +366,7 @@ class TestSchemesApi:
         )
 
         assert response.status_code == 201
-        scheme1 = schemes.get(1)
+        scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
         output_revision1: OutputRevision
         (output_revision1,) = scheme1.outputs.output_revisions
@@ -398,7 +398,7 @@ class TestSchemesApi:
         )
 
         assert response.status_code == 201
-        scheme1 = schemes.get(1)
+        scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
         authority_review1: AuthorityReview
         (authority_review1,) = scheme1.reviews.authority_reviews
@@ -412,7 +412,7 @@ class TestSchemesApi:
         response = client.post("/schemes", json=[{"id": 1, "reference": "ATE00001"}])
 
         assert response.status_code == 401
-        assert not schemes.get(1)
+        assert not schemes.get("ATE00001")
 
     def test_cannot_add_schemes_when_incorrect_credentials(
         self, schemes: SchemeRepository, client: FlaskClient
@@ -422,7 +422,7 @@ class TestSchemesApi:
         )
 
         assert response.status_code == 401
-        assert not schemes.get(1)
+        assert not schemes.get("ATE00001")
 
     def test_cannot_add_schemes_with_invalid_repr(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -432,7 +432,7 @@ class TestSchemesApi:
         )
 
         assert response.status_code == 400
-        assert not schemes.get(1)
+        assert not schemes.get("ATE00001")
 
     def test_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
@@ -440,7 +440,7 @@ class TestSchemesApi:
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 204
-        assert not schemes.get(1)
+        assert not schemes.get("ATE00001")
 
     def test_cannot_clear_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
@@ -448,7 +448,7 @@ class TestSchemesApi:
         response = client.delete("/schemes")
 
         assert response.status_code == 401
-        assert schemes.get(1)
+        assert schemes.get("ATE00001")
 
     def test_cannot_clear_schemes_when_incorrect_credentials(
         self, schemes: SchemeRepository, client: FlaskClient
@@ -458,7 +458,7 @@ class TestSchemesApi:
         response = client.delete("/schemes", headers={"Authorization": "API-Key obree"})
 
         assert response.status_code == 401
-        assert schemes.get(1)
+        assert schemes.get("ATE00001")
 
 
 class TestSchemesApiWhenDisabled:
@@ -468,7 +468,7 @@ class TestSchemesApiWhenDisabled:
         )
 
         assert response.status_code == 401
-        assert not schemes.get(1)
+        assert not schemes.get("ATE00001")
 
     def test_cannot_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
@@ -476,4 +476,4 @@ class TestSchemesApiWhenDisabled:
         response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 401
-        assert schemes.get(1)
+        assert schemes.get("ATE00001")

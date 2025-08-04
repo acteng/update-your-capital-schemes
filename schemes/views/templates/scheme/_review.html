@@ -15,7 +15,7 @@
         {% endif %}
     </p>
 
-    <form method="post" action="{{ url_for('schemes.review', scheme_id=id) }}" aria-label="Review scheme">
+    <form method="post" action="{{ url_for('schemes.review', reference=reference) }}" aria-label="Review scheme">
         {{ review.form.csrf_token }}
 
         {{ review.form.up_to_date(params={

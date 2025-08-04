@@ -34,7 +34,7 @@ class SchemeFundingContext:
 
 @dataclass(frozen=True)
 class ChangeSpendToDateContext:
-    id: int
+    reference: str
     name: str
     funding_allocation: int | None
     form: ChangeSpendToDateForm
@@ -45,7 +45,7 @@ class ChangeSpendToDateContext:
         assert name is not None
 
         return cls(
-            id=scheme.id,
+            reference=scheme.reference,
             name=name,
             funding_allocation=scheme.funding.funding_allocation,
             form=ChangeSpendToDateForm.from_domain(scheme.funding),

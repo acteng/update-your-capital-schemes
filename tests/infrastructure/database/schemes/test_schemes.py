@@ -343,7 +343,7 @@ class TestDatabaseSchemeRepository:
             session.add(CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"))
             session.commit()
 
-        scheme = schemes.get(1)
+        scheme = schemes.get("ATE00001")
 
         assert scheme and scheme.id == 1 and scheme.reference == "ATE00001"
 
@@ -378,7 +378,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get(1)
+        scheme = schemes.get("ATE00001")
 
         assert scheme
         overview_revision1: OverviewRevision
@@ -426,7 +426,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get(1)
+        scheme = schemes.get("ATE00001")
 
         assert scheme
         bid_status_revision1: BidStatusRevision
@@ -472,7 +472,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get(1)
+        scheme = schemes.get("ATE00001")
 
         assert scheme
         financial_revision1: FinancialRevision
@@ -524,7 +524,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get(1)
+        scheme = schemes.get("ATE00001")
 
         assert scheme
         milestone_revision1: MilestoneRevision
@@ -576,7 +576,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get(1)
+        scheme = schemes.get("ATE00001")
 
         assert scheme
         output_revision1: OutputRevision
@@ -620,7 +620,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get(1)
+        scheme = schemes.get("ATE00001")
 
         assert scheme
         authority_review1: AuthorityReview
@@ -644,7 +644,7 @@ class TestDatabaseSchemeRepository:
             session.add(CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"))
             session.commit()
 
-        assert schemes.get(2) is None
+        assert schemes.get("ATE00002") is None
 
     def test_get_all_schemes_by_authority(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
@@ -1225,7 +1225,7 @@ class TestDatabaseSchemeRepository:
                 ]
             )
             session.commit()
-        scheme = schemes.get(1)
+        scheme = schemes.get("ATE00001")
         assert scheme
         scheme.funding.financial_revisions[0].close(datetime(2020, 2, 1))
         scheme.funding.update_financial(
@@ -1279,7 +1279,7 @@ class TestDatabaseSchemeRepository:
                 ]
             )
             session.commit()
-        scheme = schemes.get(1)
+        scheme = schemes.get("ATE00001")
         assert scheme
         scheme.milestones.milestone_revisions[0].close(datetime(2020, 2, 1))
         scheme.milestones.update_milestone(
@@ -1331,7 +1331,7 @@ class TestDatabaseSchemeRepository:
                 ]
             )
             session.commit()
-        scheme = schemes.get(1)
+        scheme = schemes.get("ATE00001")
         assert scheme
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=3, review_date=datetime(2020, 1, 2), source=DataSource.AUTHORITY_UPDATE)

@@ -101,7 +101,7 @@ class TestChangeSpendToDateContext:
         context = ChangeSpendToDateContext.from_domain(scheme)
 
         assert (
-            context.id == 1
+            context.reference == "ATE00001"
             and context.name == "Wirral Package"
             and context.funding_allocation == 100_000
             and context.form.amount.data == 40_000

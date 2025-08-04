@@ -12,7 +12,7 @@
 {% block beforeContent %}
     {{ super() }}
     {{ govukBackLink({
-        "href": url_for("schemes.get", scheme_id=id)
+        "href": url_for("schemes.get", reference=reference)
     }) }}
 {% endblock %}
 
@@ -31,7 +31,7 @@
                 {% endif %}
             {% endwith %}
 
-            <form method="post" action="{{ url_for('schemes.spend_to_date', scheme_id=id) }}" novalidate aria-label="How much has been spent to date?">
+            <form method="post" action="{{ url_for('schemes.spend_to_date', reference=reference) }}" novalidate aria-label="How much has been spent to date?">
                 {{ form.csrf_token }}
 
                 {% set labelHtml %}
@@ -67,7 +67,7 @@
                         "text": "Confirm"
                     }) }}
 
-                    <a class="govuk-link" href={{ url_for("schemes.get", scheme_id=id) }}>Cancel</a>
+                    <a class="govuk-link" href={{ url_for("schemes.get", reference=reference) }}>Cancel</a>
                 </div>
             </form>
         </div>

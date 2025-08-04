@@ -104,7 +104,6 @@ class TestSchemeRowContext:
         context = SchemeRowContext.from_domain(dummy_reporting_window(), scheme)
 
         assert context == SchemeRowContext(
-            id=1,
             reference="ATE00001",
             funding_programme=FundingProgrammeContext(name="ATF4"),
             name="Wirral Package",
@@ -151,7 +150,7 @@ class TestSchemeContext:
         context = SchemeContext.from_domain(dummy_reporting_window(), authority, scheme)
 
         assert (
-            context.id == 1
+            context.reference == "ATE00001"
             and context.authority_name == "Liverpool City Region Combined Authority"
             and context.name == "Wirral Package"
             and context.needs_review

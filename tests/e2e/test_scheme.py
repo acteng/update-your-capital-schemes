@@ -26,7 +26,7 @@ def test_scheme(app_client: AppClient, api_client: ApiClient, oidc_client: OidcC
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, id_=1)
+    scheme_page = SchemePage.open(page, reference="ATE00001")
 
     assert (
         scheme_page.heading.caption == "Liverpool City Region Combined Authority"

@@ -25,9 +25,9 @@ class TestSchemeReview:
     def test_scheme_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
-        assert scheme_page.review.form.confirm_url == "/schemes/1"
+        assert scheme_page.review.form.confirm_url == "/schemes/ATE00001"
 
     def test_scheme_shows_last_reviewed(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
@@ -36,7 +36,7 @@ class TestSchemeReview:
         )
         schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.review.last_reviewed == "It was last reviewed on 2 Jan 2020."
 
@@ -45,7 +45,7 @@ class TestSchemeReview:
     ) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        scheme_page = SchemePage.open(client, id_=1)
+        scheme_page = SchemePage.open(client, reference="ATE00001")
 
         assert scheme_page.review.last_reviewed == "It has not been reviewed."
 
@@ -59,9 +59,9 @@ class TestSchemeReview:
         )
         schemes.add(scheme)
 
-        client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+        client.post("/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
-        actual_scheme = schemes.get(1)
+        actual_scheme = schemes.get("ATE00001")
         assert actual_scheme
         authority_review1: AuthorityReview
         authority_review2: AuthorityReview
@@ -75,7 +75,9 @@ class TestSchemeReview:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         schemes_page = SchemesPage(
-            client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}, follow_redirects=True)
+            client.post(
+                "/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}, follow_redirects=True
+            )
         )
 
         assert schemes_page.is_visible
@@ -86,7 +88,9 @@ class TestSchemeReview:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         schemes_page = SchemesPage(
-            client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}, follow_redirects=True)
+            client.post(
+                "/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}, follow_redirects=True
+            )
         )
 
         assert (
@@ -102,7 +106,9 @@ class TestSchemeReview:
         )
         schemes.add(scheme)
 
-        scheme_page = SchemePage(client.post("/schemes/1", data={"csrf_token": csrf_token}, follow_redirects=True))
+        scheme_page = SchemePage(
+            client.post("/schemes/ATE00001", data={"csrf_token": csrf_token}, follow_redirects=True)
+        )
 
         assert (
             scheme_page.title == "Error: Wirral Package - Update your capital schemes - Active Travel England - GOV.UK"
@@ -113,7 +119,7 @@ class TestSchemeReview:
             and scheme_page.review.form.up_to_date.error == "Error: Confirm this scheme is up-to-date"
             and not scheme_page.review.form.up_to_date.value
         )
-        actual_scheme = schemes.get(1)
+        actual_scheme = schemes.get("ATE00001")
         assert actual_scheme
         authority_review: AuthorityReview
         (authority_review,) = actual_scheme.reviews.authority_reviews
@@ -126,7 +132,7 @@ class TestSchemeReview:
     def test_cannot_review_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        scheme_page = SchemePage(client.post("/schemes/1", data={}, follow_redirects=True))
+        scheme_page = SchemePage(client.post("/schemes/ATE00001", data={}, follow_redirects=True))
 
         assert scheme_page.heading and scheme_page.heading.text == "Wirral Package"
         assert (
@@ -138,7 +144,7 @@ class TestSchemeReview:
     def test_cannot_review_when_incorrect_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
         schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
-        scheme_page = SchemePage(client.post("/schemes/1", data={"csrf_token": "x"}, follow_redirects=True))
+        scheme_page = SchemePage(client.post("/schemes/ATE00001", data={"csrf_token": "x"}, follow_redirects=True))
 
         assert scheme_page.heading and scheme_page.heading.text == "Wirral Package"
         assert (
@@ -155,7 +161,7 @@ class TestSchemeReview:
             build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
         )
 
-        response = client.post("/schemes/2", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+        response = client.post("/schemes/ATE00002", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
         assert response.status_code == 403
 
@@ -164,12 +170,12 @@ class TestSchemeReview:
     ) -> None:
         schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
 
-        response = client.post("/schemes/2", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+        response = client.post("/schemes/ATE00002", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
         assert response.status_code == 403
 
     def test_cannot_review_when_unknown_scheme(self, client: FlaskClient, csrf_token: str) -> None:
-        response = client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+        response = client.post("/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
         assert response.status_code == 404
 
@@ -186,6 +192,6 @@ class TestSchemeReview:
             )
         )
 
-        response = client.post("/schemes/1", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+        response = client.post("/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
         assert response.status_code == 404

@@ -38,7 +38,7 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, id_=1)
+    scheme_page = SchemePage.open(page, reference="ATE00001")
 
     assert (
         scheme_page.overview.reference == "ATE00001"

@@ -41,7 +41,7 @@
         {% set rows = [] %}
         {% for scheme in schemes %}
             {% set referenceHtml -%}
-                <a class="govuk-link" href="{{ url_for("schemes.get", scheme_id=scheme.id) }}">{{ scheme.reference }}</a>
+                <a class="govuk-link" href="{{ url_for("schemes.get", reference=scheme.reference) }}">{{ scheme.reference }}</a>
             {%- endset %}
             {% set nameHtml -%}
                 <div class="scheme-name">

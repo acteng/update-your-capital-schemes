@@ -33,9 +33,9 @@ class AppClient:
         response = self._session.post(f"{self._url}/schemes", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
-    def get_scheme(self, id_: int) -> SchemeRepr:
+    def get_scheme(self, reference: str) -> SchemeRepr:
         response = self._session.get(
-            f"{self._url}/schemes/{id_}", headers={"Accept": "application/json"}, timeout=self.DEFAULT_TIMEOUT
+            f"{self._url}/schemes/{reference}", headers={"Accept": "application/json"}, timeout=self.DEFAULT_TIMEOUT
         )
         response.raise_for_status()
         return SchemeRepr.model_validate(response.json())

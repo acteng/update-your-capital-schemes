@@ -15,7 +15,7 @@ bp = Blueprint("authorities", __name__)
 authorities: dict[str, AuthorityModel] = {}
 
 
-@bp.post("/authorities")
+@bp.post("")
 def add_authorities() -> Response:
     for element in request.get_json():
         authority = AuthorityModel.model_validate(element)
@@ -24,7 +24,7 @@ def add_authorities() -> Response:
     return Response(status=201)
 
 
-@bp.get("/authorities/<abbreviation>")
+@bp.get("<abbreviation>")
 @jwt_bearer_auth
 def get_authority(abbreviation: str) -> dict[str, Any]:
     authority = authorities.get(abbreviation)
@@ -35,7 +35,7 @@ def get_authority(abbreviation: str) -> dict[str, Any]:
     return authority.model_dump()
 
 
-@bp.delete("/authorities")
+@bp.delete("")
 def clear_authorities() -> Response:
     authorities.clear()
     return Response(status=204)

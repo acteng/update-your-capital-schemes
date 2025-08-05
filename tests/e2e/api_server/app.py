@@ -13,6 +13,6 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     oauth = OAuth(app)
     oauth.register(name="auth", server_metadata_url=app.config["OIDC_SERVER_METADATA_URL"])
 
-    app.register_blueprint(authorities.bp)
+    app.register_blueprint(authorities.bp, url_prefix="/authorities")
 
     return app

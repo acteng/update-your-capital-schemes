@@ -8,11 +8,11 @@ from flask.testing import FlaskClient
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
+from schemes.domain.schemes.funding import BidStatus, FinancialType
+from schemes.domain.schemes.milestones import Milestone
 from schemes.domain.schemes.observations import ObservationType
-from schemes.domain.schemes.outputs import OutputRevision, OutputTypeMeasure
-from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeType
+from schemes.domain.schemes.outputs import OutputTypeMeasure
+from schemes.domain.schemes.overview import FundingProgrammes, SchemeType
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
@@ -228,7 +228,6 @@ class TestSchemesApi:
         assert response.status_code == 201
         scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
-        overview_revision1: OverviewRevision
         (overview_revision1,) = scheme1.overview.overview_revisions
         assert (
             overview_revision1.id == 2
@@ -262,7 +261,6 @@ class TestSchemesApi:
         assert response.status_code == 201
         scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
-        bid_status_revision1: BidStatusRevision
         (bid_status_revision1,) = scheme1.funding.bid_status_revisions
         assert (
             bid_status_revision1.id == 2
@@ -295,7 +293,6 @@ class TestSchemesApi:
         assert response.status_code == 201
         scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
-        financial_revision1: FinancialRevision
         (financial_revision1,) = scheme1.funding.financial_revisions
         assert (
             financial_revision1.id == 2
@@ -331,7 +328,6 @@ class TestSchemesApi:
         assert response.status_code == 201
         scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
-        milestone_revision1: MilestoneRevision
         (milestone_revision1,) = scheme1.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 2
@@ -368,7 +364,6 @@ class TestSchemesApi:
         assert response.status_code == 201
         scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
-        output_revision1: OutputRevision
         (output_revision1,) = scheme1.outputs.output_revisions
         assert (
             output_revision1.id == 2
@@ -400,7 +395,6 @@ class TestSchemesApi:
         assert response.status_code == 201
         scheme1 = schemes.get("ATE00001")
         assert scheme1 and scheme1.id == 1
-        authority_review1: AuthorityReview
         (authority_review1,) = scheme1.reviews.authority_reviews
         assert (
             authority_review1.id == 2

@@ -607,8 +607,6 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain()
 
-        overview_revision1: OverviewRevision
-        overview_revision2: OverviewRevision
         overview_revision1, overview_revision2 = scheme.overview.overview_revisions
         assert (
             overview_revision1.id == 1
@@ -646,8 +644,6 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain()
 
-        bid_status_revision1: BidStatusRevision
-        bid_status_revision2: BidStatusRevision
         bid_status_revision1, bid_status_revision2 = scheme.funding.bid_status_revisions
         assert (
             bid_status_revision1.id == 2
@@ -686,8 +682,6 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain()
 
-        financial_revision1: FinancialRevision
-        financial_revision2: FinancialRevision
         financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
             financial_revision1.id == 2
@@ -732,8 +726,6 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain()
 
-        milestone_revision1: MilestoneRevision
-        milestone_revision2: MilestoneRevision
         milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 1
@@ -780,8 +772,6 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain()
 
-        output_revision1: OutputRevision
-        output_revision2: OutputRevision
         output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
             output_revision1.id == 1
@@ -818,8 +808,6 @@ class TestSchemeRepr:
 
         scheme = scheme_repr.to_domain()
 
-        authority_review1: AuthorityReview
-        authority_review2: AuthorityReview
         authority_review1, authority_review2 = scheme.reviews.authority_reviews
         assert (
             authority_review1.id == 2

@@ -378,8 +378,6 @@ class TestSchemeMilestones:
 
         actual_scheme = schemes.get("ATE00001")
         assert actual_scheme
-        milestone_revision1: MilestoneRevision
-        milestone_revision2: MilestoneRevision
         milestone_revision1, milestone_revision2 = actual_scheme.milestones.milestone_revisions
         assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 2, 1, 13)
         assert (
@@ -436,7 +434,6 @@ class TestSchemeMilestones:
         )
         actual_scheme = schemes.get("ATE00001")
         assert actual_scheme
-        milestone_revision1: MilestoneRevision
         (milestone_revision1,) = actual_scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 1

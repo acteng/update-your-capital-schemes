@@ -14,7 +14,6 @@ from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputRevision, OutputTypeMeasure
 from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeType
 from schemes.domain.schemes.reviews import AuthorityReview
-from schemes.domain.schemes.schemes import Scheme
 from schemes.infrastructure.database import (
     CapitalSchemeAuthorityReviewEntity,
     CapitalSchemeBidStatusEntity,
@@ -381,8 +380,6 @@ class TestDatabaseSchemeRepository:
         scheme = schemes.get("ATE00001")
 
         assert scheme
-        overview_revision1: OverviewRevision
-        overview_revision2: OverviewRevision
         overview_revision1, overview_revision2 = scheme.overview.overview_revisions
         assert (
             overview_revision1.id == 2
@@ -429,8 +426,6 @@ class TestDatabaseSchemeRepository:
         scheme = schemes.get("ATE00001")
 
         assert scheme
-        bid_status_revision1: BidStatusRevision
-        bid_status_revision2: BidStatusRevision
         bid_status_revision1, bid_status_revision2 = scheme.funding.bid_status_revisions
         assert (
             bid_status_revision1.id == 2
@@ -475,8 +470,6 @@ class TestDatabaseSchemeRepository:
         scheme = schemes.get("ATE00001")
 
         assert scheme
-        financial_revision1: FinancialRevision
-        financial_revision2: FinancialRevision
         financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
             financial_revision1.id == 2
@@ -527,8 +520,6 @@ class TestDatabaseSchemeRepository:
         scheme = schemes.get("ATE00001")
 
         assert scheme
-        milestone_revision1: MilestoneRevision
-        milestone_revision2: MilestoneRevision
         milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 2
@@ -579,8 +570,6 @@ class TestDatabaseSchemeRepository:
         scheme = schemes.get("ATE00001")
 
         assert scheme
-        output_revision1: OutputRevision
-        output_revision2: OutputRevision
         output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
             output_revision1.id == 2
@@ -623,8 +612,6 @@ class TestDatabaseSchemeRepository:
         scheme = schemes.get("ATE00001")
 
         assert scheme
-        authority_review1: AuthorityReview
-        authority_review2: AuthorityReview
         authority_review1, authority_review2 = scheme.reviews.authority_reviews
         assert (
             authority_review1.id == 2
@@ -689,8 +676,6 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme1: Scheme
-        scheme2: Scheme
         scheme1, scheme2 = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1 and scheme1.reference == "ATE00001"
@@ -738,12 +723,9 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme1: Scheme
         (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
-        overview_revision1: OverviewRevision
-        overview_revision2: OverviewRevision
         overview_revision1, overview_revision2 = scheme1.overview.overview_revisions
         assert (
             overview_revision1.id == 3
@@ -815,12 +797,9 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme1: Scheme
         (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
-        bid_status_revision1: BidStatusRevision
-        bid_status_revision2: BidStatusRevision
         bid_status_revision1, bid_status_revision2 = scheme1.funding.bid_status_revisions
         assert (
             bid_status_revision1.id == 5
@@ -892,12 +871,9 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme1: Scheme
         (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
-        financial_revision1: FinancialRevision
-        financial_revision2: FinancialRevision
         financial_revision1, financial_revision2 = scheme1.funding.financial_revisions
         assert (
             financial_revision1.id == 5
@@ -976,12 +952,9 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme1: Scheme
         (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
-        milestone_revision1: MilestoneRevision
-        milestone_revision2: MilestoneRevision
         milestone_revision1, milestone_revision2 = scheme1.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 7
@@ -1059,12 +1032,9 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme1: Scheme
         (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
-        output_revision1: OutputRevision
-        output_revision2: OutputRevision
         output_revision1, output_revision2 = scheme1.outputs.output_revisions
         assert (
             output_revision1.id == 7
@@ -1131,11 +1101,9 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme1: Scheme
         (scheme1,) = schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
-        authority_review1: AuthorityReview
         authority_review1, authority_review2 = scheme1.reviews.authority_reviews
         assert (
             authority_review1.id == 5

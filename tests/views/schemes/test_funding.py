@@ -155,8 +155,6 @@ class TestChangeSpendToDateForm:
 
         form.update_domain(funding, now=datetime(2020, 2, 1))
 
-        financial_revision1: FinancialRevision
-        financial_revision2: FinancialRevision
         financial_revision1, financial_revision2 = funding.financial_revisions
         assert financial_revision1.id == 1 and financial_revision1.effective.date_to == datetime(2020, 2, 1)
         assert (

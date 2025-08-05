@@ -296,8 +296,6 @@ class TestMilestoneDatesForm:
 
         form.update_domain(milestones, datetime(2020, 2, 1, 13), Milestone.DETAILED_DESIGN_COMPLETED)
 
-        milestone_revision1: MilestoneRevision
-        milestone_revision2: MilestoneRevision
         milestone_revision1, milestone_revision2 = milestones.milestone_revisions
         assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 2, 1, 13)
         assert (
@@ -330,7 +328,6 @@ class TestMilestoneDatesForm:
 
         form.update_domain(milestones, datetime(2020, 2, 1, 13), Milestone.DETAILED_DESIGN_COMPLETED)
 
-        milestone_revision1: MilestoneRevision
         (milestone_revision1,) = milestones.milestone_revisions
         assert (
             milestone_revision1.id == 1
@@ -361,7 +358,6 @@ class TestMilestoneDatesForm:
 
         form.update_domain(milestones, datetime(2020, 2, 1, 13), Milestone.DETAILED_DESIGN_COMPLETED)
 
-        milestone_revision1: MilestoneRevision
         (milestone_revision1,) = milestones.milestone_revisions
         assert (
             milestone_revision1.id == 1

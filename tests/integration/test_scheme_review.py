@@ -63,8 +63,6 @@ class TestSchemeReview:
 
         actual_scheme = schemes.get("ATE00001")
         assert actual_scheme
-        authority_review1: AuthorityReview
-        authority_review2: AuthorityReview
         authority_review1, authority_review2 = actual_scheme.reviews.authority_reviews
         assert (
             authority_review2.review_date == datetime(2023, 4, 24, 12)
@@ -121,7 +119,6 @@ class TestSchemeReview:
         )
         actual_scheme = schemes.get("ATE00001")
         assert actual_scheme
-        authority_review: AuthorityReview
         (authority_review,) = actual_scheme.reviews.authority_reviews
         assert (
             authority_review.id == 1

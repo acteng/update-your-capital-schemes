@@ -26,8 +26,6 @@ class TestSchemeReviewForm:
 
         form.update_domain(reviews, now=datetime(2023, 4, 24, 12))
 
-        review1: AuthorityReview
-        review2: AuthorityReview
         review1, review2 = reviews.authority_reviews
         assert review2.review_date == datetime(2023, 4, 24, 12) and review2.source == DataSource.AUTHORITY_UPDATE
 

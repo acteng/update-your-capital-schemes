@@ -1,9 +1,12 @@
 from typing import Any
 
-from flask import Blueprint, Response, abort, request
+from flask import Blueprint, Response, abort, request, url_for
+from pydantic import AnyUrl
 
 from schemes.infrastructure.api.base import BaseModel
 from tests.e2e.api_server.auth import jwt_bearer_auth
+from tests.e2e.api_server.capital_schemes import capital_schemes
+from tests.e2e.api_server.collections import CollectionModel
 
 
 class AuthorityModel(BaseModel):
@@ -32,7 +35,23 @@ def get_authority(abbreviation: str) -> dict[str, Any]:
     if not authority:
         abort(404)
 
-    return authority.model_dump()
+    return authority.model_dump(mode="json")
+
+
+@bp.get("<abbreviation>/capital-schemes/bid-submitting")
+@jwt_bearer_auth
+def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str, Any]:
+    authority_url = url_for("authorities.get_authority", abbreviation=abbreviation, _external=True)
+    references = [
+        capital_scheme.reference
+        for capital_scheme in capital_schemes.values()
+        if capital_scheme.overview.bid_submitting_authority == authority_url
+    ]
+    capital_scheme_urls = [
+        AnyUrl(url_for("capital_schemes.get_capital_scheme", reference=reference, _external=True))
+        for reference in references
+    ]
+    return CollectionModel[AnyUrl](items=capital_scheme_urls).model_dump(mode="json")
 
 
 @bp.delete("")

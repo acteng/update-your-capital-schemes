@@ -9,12 +9,35 @@ class AuthorityModel:
     fullName: str
 
 
+@dataclass(frozen=True)
+class CapitalSchemeOverviewModel:
+    name: str
+    bidSubmittingAuthority: str
+    fundingProgramme: str
+
+
+@dataclass(frozen=True)
+class CapitalSchemeAuthorityReviewModel:
+    reviewDate: str
+
+
+@dataclass(frozen=True)
+class CapitalSchemeModel:
+    reference: str
+    overview: CapitalSchemeOverviewModel
+    authorityReview: CapitalSchemeAuthorityReviewModel
+
+
 class ApiClient:
     DEFAULT_TIMEOUT = 10
 
     def __init__(self, url: str):
         self._url = url
         self._session = requests.Session()
+
+    @property
+    def base_url(self) -> str:
+        return self._url
 
     def add_authorities(self, *authorities: AuthorityModel) -> None:
         json = [asdict(authority) for authority in authorities]
@@ -23,4 +46,9 @@ class ApiClient:
 
     def clear_authorities(self) -> None:
         response = self._session.delete(f"{self._url}/authorities", timeout=self.DEFAULT_TIMEOUT)
+        response.raise_for_status()
+
+    def add_schemes(self, *capital_schemes: CapitalSchemeModel) -> None:
+        json = [asdict(capital_scheme) for capital_scheme in capital_schemes]
+        response = self._session.post(f"{self._url}/capital-schemes", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()

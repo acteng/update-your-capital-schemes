@@ -1,7 +1,13 @@
 import pytest
 from playwright.sync_api import Page
 
-from tests.e2e.api_client import ApiClient, AuthorityModel
+from tests.e2e.api_client import (
+    ApiClient,
+    AuthorityModel,
+    CapitalSchemeAuthorityReviewModel,
+    CapitalSchemeModel,
+    CapitalSchemeOverviewModel,
+)
 from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, UserRepr
 from tests.e2e.builders import build_scheme
 from tests.e2e.oidc_server.users import StubUser
@@ -38,6 +44,26 @@ class TestAuthenticated:
                 authority_abbreviation="LIV",
                 funding_programme="ATF4",
                 authority_reviews=[AuthorityReviewRepr(id=2, review_date="2020-01-03", source="ATF4 bid")],
+            ),
+        )
+        api_client.add_schemes(
+            CapitalSchemeModel(
+                reference="ATE00001",
+                overview=CapitalSchemeOverviewModel(
+                    name="Wirral Package",
+                    bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
+                    fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF3",
+                ),
+                authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T00:00:00Z"),
+            ),
+            CapitalSchemeModel(
+                reference="ATE00002",
+                overview=CapitalSchemeOverviewModel(
+                    name="School Streets",
+                    bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
+                    fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF4",
+                ),
+                authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-03T00:00:00Z"),
             ),
         )
 

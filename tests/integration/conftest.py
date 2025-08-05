@@ -89,7 +89,9 @@ def _test_bindings(app: Flask) -> Callable[[Binder], None]:
         binder.bind(AuthorityRepository, authority_repository)
         binder.bind((AuthorityRepository, Migrated), authority_repository)
         binder.bind(UserRepository, MemoryUserRepository())
-        binder.bind(SchemeRepository, MemorySchemeRepository())
+        scheme_repository = MemorySchemeRepository()
+        binder.bind(SchemeRepository, scheme_repository)
+        binder.bind((SchemeRepository, Migrated), scheme_repository)
 
     return _bindings
 

@@ -1,11 +1,8 @@
 from dataclasses import fields
-from typing import Any, TypeVar
-
-K = TypeVar("K")
-V = TypeVar("V")
+from typing import Any
 
 
-def inverse_dict(d: dict[K, V]) -> dict[V, K]:
+def inverse_dict[K, V](d: dict[K, V]) -> dict[V, K]:
     return {value: key for key, value in d.items()}
 
 

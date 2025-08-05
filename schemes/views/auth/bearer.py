@@ -1,6 +1,6 @@
 from functools import wraps
 from logging import Logger
-from typing import Callable, ParamSpec, TypeVar
+from typing import Callable
 from urllib.parse import urlencode, urljoin
 
 import inject
@@ -69,11 +69,7 @@ def logout(logger: Logger) -> BaseResponse:
     return redirect(end_session_endpoint)
 
 
-T = TypeVar("T")
-P = ParamSpec("P")
-
-
-def bearer_auth(func: Callable[P, T]) -> Callable[P, T | Response]:
+def bearer_auth[**P, T](func: Callable[P, T]) -> Callable[P, T | Response]:
     @wraps(func)
     def decorated_function(*args: P.args, **kwargs: P.kwargs) -> T | Response:
         if "user" not in session:

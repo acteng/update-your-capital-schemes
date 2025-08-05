@@ -1,13 +1,10 @@
 from functools import wraps
-from typing import Callable, ParamSpec, TypeVar
+from typing import Callable
 
 from flask import Response, abort, current_app, request
 
-T = TypeVar("T")
-P = ParamSpec("P")
 
-
-def api_key_auth(func: Callable[P, T]) -> Callable[P, T | Response]:
+def api_key_auth[**P, T](func: Callable[P, T]) -> Callable[P, T | Response]:
     @wraps(func)
     def decorated_function(*args: P.args, **kwargs: P.kwargs) -> T | Response:
         api_key = current_app.config.get("API_KEY")

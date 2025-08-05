@@ -1,17 +1,14 @@
 from typing import Any
 
 from flask import Blueprint, Response, abort, request
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
 
+from schemes.infrastructure.api.base import BaseModel
 from tests.e2e.api_server.auth import jwt_bearer_auth
 
 
 class AuthorityModel(BaseModel):
     abbreviation: str
     full_name: str
-
-    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
 bp = Blueprint("authorities", __name__)

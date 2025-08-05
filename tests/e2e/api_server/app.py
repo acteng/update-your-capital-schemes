@@ -1,10 +1,11 @@
 from typing import Any
 
 from authlib.integrations.flask_client import OAuth
-from authlib.jose import jwt
 from flask import Flask, Response, abort, request
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
+
+from tests.e2e.api_server.auth import jwt_bearer_auth
 
 
 def create_app(test_config: dict[str, Any] | None = None) -> Flask:
@@ -25,9 +26,8 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
         return Response(status=201)
 
     @app.get("/authorities/<abbreviation>")
+    @jwt_bearer_auth
     def get_authority(abbreviation: str) -> dict[str, Any]:
-        _validate_jwt()
-
         authority = authorities.get(abbreviation)
 
         if not authority:
@@ -39,20 +39,6 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     def clear_authorities() -> Response:
         authorities.clear()
         return Response(status=204)
-
-    def _validate_jwt() -> None:
-        assert request.authorization
-        server_metadata = oauth.auth.load_server_metadata()
-        jwks = oauth.auth.fetch_jwk_set()
-        claims = jwt.decode(
-            request.authorization.token,
-            key=jwks,
-            claims_options={
-                "iss": {"value": server_metadata.get("issuer")},
-                "aud": {"value": app.config["RESOURCE_SERVER_IDENTIFIER"]},
-            },
-        )
-        claims.validate()
 
     return app
 

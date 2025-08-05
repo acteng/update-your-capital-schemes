@@ -33,23 +33,29 @@ class ApiSchemeRepository(SchemeRepository):
         return capital_scheme_model.to_domain()
 
 
+class CapitalSchemeOverviewModel(BaseModel):
+    name: str
+
+    def to_domain(self) -> OverviewRevision:
+        # TODO: id, effective, authority_abbreviation, type, funding_programme
+        return OverviewRevision(
+            id_=None,
+            effective=DateRange(date_from=datetime.min, date_to=None),
+            name=self.name,
+            authority_abbreviation="",
+            type_=SchemeType.DEVELOPMENT,
+            funding_programme=FundingProgrammes.ATF2,
+        )
+
+
 class CapitalSchemeModel(BaseModel):
     reference: str
+    overview: CapitalSchemeOverviewModel
 
     def to_domain(self) -> Scheme:
         # TODO: id
         scheme = Scheme(id_=0, reference=self.reference)
-        # TODO: overview
-        scheme.overview.update_overview(
-            OverviewRevision(
-                id_=None,
-                effective=DateRange(date_from=datetime.min, date_to=None),
-                name="",
-                authority_abbreviation="",
-                type_=SchemeType.DEVELOPMENT,
-                funding_programme=FundingProgrammes.ATF2,
-            )
-        )
+        scheme.overview.update_overview(self.overview.to_domain())
         # TODO: bid_status
         scheme.funding.update_bid_status(
             BidStatusRevision(

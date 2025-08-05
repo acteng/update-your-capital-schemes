@@ -1,11 +1,9 @@
 from typing import Any
 
 from authlib.integrations.flask_client import OAuth
-from flask import Flask, Response, abort, request
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+from flask import Flask
 
-from tests.e2e.api_server.auth import jwt_bearer_auth
+from tests.e2e.api_server import authorities
 
 
 def create_app(test_config: dict[str, Any] | None = None) -> Flask:
@@ -15,36 +13,6 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     oauth = OAuth(app)
     oauth.register(name="auth", server_metadata_url=app.config["OIDC_SERVER_METADATA_URL"])
 
-    authorities: dict[str, AuthorityModel] = {}
-
-    @app.post("/authorities")
-    def add_authorities() -> Response:
-        for element in request.get_json():
-            authority = AuthorityModel(**element)
-            authorities[authority.abbreviation] = authority
-
-        return Response(status=201)
-
-    @app.get("/authorities/<abbreviation>")
-    @jwt_bearer_auth
-    def get_authority(abbreviation: str) -> dict[str, Any]:
-        authority = authorities.get(abbreviation)
-
-        if not authority:
-            abort(404)
-
-        return authority.model_dump()
-
-    @app.delete("/authorities")
-    def clear_authorities() -> Response:
-        authorities.clear()
-        return Response(status=204)
+    app.register_blueprint(authorities.bp)
 
     return app
-
-
-class AuthorityModel(BaseModel):
-    abbreviation: str
-    full_name: str
-
-    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)

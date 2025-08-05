@@ -18,7 +18,7 @@ authorities: dict[str, AuthorityModel] = {}
 @bp.post("/authorities")
 def add_authorities() -> Response:
     for element in request.get_json():
-        authority = AuthorityModel(**element)
+        authority = AuthorityModel.model_validate(element)
         authorities[authority.abbreviation] = authority
 
     return Response(status=201)

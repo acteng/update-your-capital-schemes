@@ -21,7 +21,7 @@ class OverviewRevisionRepr(BaseModel):
 
     @classmethod
     def from_domain(cls, overview_revision: OverviewRevision) -> OverviewRevisionRepr:
-        return OverviewRevisionRepr(
+        return cls(
             id=overview_revision.id,
             effective_date_from=overview_revision.effective.date_from.isoformat(),
             effective_date_to=(

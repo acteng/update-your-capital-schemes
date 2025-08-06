@@ -87,9 +87,7 @@ class ChangeMilestoneDatesContext:
         name = scheme.overview.name
         assert name is not None
 
-        return ChangeMilestoneDatesContext(
-            reference=scheme.reference, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme, now)
-        )
+        return cls(reference=scheme.reference, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme, now))
 
 
 class MilestoneDateField(CustomMessageDateField):

@@ -152,11 +152,11 @@ class NotificationBannerComponent:
 
     @classmethod
     def for_important(cls, page: Page) -> NotificationBannerComponent:
-        return NotificationBannerComponent(page.get_by_role("region", name="Important"))
+        return cls(page.get_by_role("region", name="Important"))
 
     @classmethod
     def for_success(cls, page: Page) -> NotificationBannerComponent:
-        return NotificationBannerComponent(page.get_by_role("alert", name="Success"))
+        return cls(page.get_by_role("alert", name="Success"))
 
 
 class HeadingComponent:

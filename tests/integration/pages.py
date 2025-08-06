@@ -461,12 +461,12 @@ class NotificationBannerComponent:
     @classmethod
     def for_important(cls, soup: BeautifulSoup) -> NotificationBannerComponent | None:
         tag = soup.select_one(".govuk-notification-banner:not(.govuk-notification-banner--success)")
-        return NotificationBannerComponent(tag) if tag else None
+        return cls(tag) if tag else None
 
     @classmethod
     def for_success(cls, soup: BeautifulSoup) -> NotificationBannerComponent | None:
         tag = soup.select_one(".govuk-notification-banner.govuk-notification-banner--success")
-        return NotificationBannerComponent(tag) if tag else None
+        return cls(tag) if tag else None
 
 
 class ChangeSpendToDateFormComponent:

@@ -31,7 +31,7 @@ class SchemeReviewContext:
 
     @classmethod
     def from_domain(cls, reviews: SchemeReviews) -> SchemeReviewContext:
-        return SchemeReviewContext(last_reviewed=reviews.last_reviewed, form=SchemeReviewForm())
+        return cls(last_reviewed=reviews.last_reviewed, form=SchemeReviewForm())
 
 
 class AuthorityReviewRepr(BaseModel):
@@ -41,7 +41,7 @@ class AuthorityReviewRepr(BaseModel):
 
     @classmethod
     def from_domain(cls, authority_review: AuthorityReview) -> AuthorityReviewRepr:
-        return AuthorityReviewRepr(
+        return cls(
             id=authority_review.id,
             review_date=authority_review.review_date.isoformat(),
             source=DataSourceRepr.from_domain(authority_review.source),

@@ -89,7 +89,7 @@ class BidStatusRevisionRepr(BaseModel):
 
     @classmethod
     def from_domain(cls, bid_status_revision: BidStatusRevision) -> BidStatusRevisionRepr:
-        return BidStatusRevisionRepr(
+        return cls(
             id=bid_status_revision.id,
             effective_date_from=bid_status_revision.effective.date_from.isoformat(),
             effective_date_to=(
@@ -145,7 +145,7 @@ class FinancialRevisionRepr(BaseModel):
 
     @classmethod
     def from_domain(cls, financial_revision: FinancialRevision) -> FinancialRevisionRepr:
-        return FinancialRevisionRepr(
+        return cls(
             id=financial_revision.id,
             effective_date_from=financial_revision.effective.date_from.isoformat(),
             effective_date_to=(

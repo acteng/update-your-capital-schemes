@@ -11,43 +11,6 @@ from schemes.domain.dates import DateRange
 from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, OverviewRevision, SchemeType
 
 
-class OverviewRevisionRepr(BaseModel):
-    name: str
-    authority_abbreviation: str
-    type: SchemeTypeRepr
-    funding_programme: FundingProgrammeRepr
-    effective_date_from: str
-    effective_date_to: str | None
-    id: int | None = None
-
-    @classmethod
-    def from_domain(cls, overview_revision: OverviewRevision) -> Self:
-        return cls(
-            id=overview_revision.id,
-            effective_date_from=overview_revision.effective.date_from.isoformat(),
-            effective_date_to=(
-                overview_revision.effective.date_to.isoformat() if overview_revision.effective.date_to else None
-            ),
-            name=overview_revision.name,
-            authority_abbreviation=overview_revision.authority_abbreviation,
-            type=SchemeTypeRepr.from_domain(overview_revision.type),
-            funding_programme=FundingProgrammeRepr.from_domain(overview_revision.funding_programme),
-        )
-
-    def to_domain(self) -> OverviewRevision:
-        return OverviewRevision(
-            id_=self.id,
-            effective=DateRange(
-                date_from=datetime.fromisoformat(self.effective_date_from),
-                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
-            ),
-            name=self.name,
-            authority_abbreviation=self.authority_abbreviation,
-            type_=self.type.to_domain(),
-            funding_programme=self.funding_programme.to_domain(),
-        )
-
-
 @unique
 class SchemeTypeRepr(str, Enum):
     DEVELOPMENT = "development"
@@ -104,3 +67,40 @@ class FundingProgrammeRepr(str, Enum):
             FundingProgrammes.LUF3: FundingProgrammeRepr.LUF3,
             FundingProgrammes.MRN: FundingProgrammeRepr.MRN,
         }
+
+
+class OverviewRevisionRepr(BaseModel):
+    name: str
+    authority_abbreviation: str
+    type: SchemeTypeRepr
+    funding_programme: FundingProgrammeRepr
+    effective_date_from: str
+    effective_date_to: str | None
+    id: int | None = None
+
+    @classmethod
+    def from_domain(cls, overview_revision: OverviewRevision) -> Self:
+        return cls(
+            id=overview_revision.id,
+            effective_date_from=overview_revision.effective.date_from.isoformat(),
+            effective_date_to=(
+                overview_revision.effective.date_to.isoformat() if overview_revision.effective.date_to else None
+            ),
+            name=overview_revision.name,
+            authority_abbreviation=overview_revision.authority_abbreviation,
+            type=SchemeTypeRepr.from_domain(overview_revision.type),
+            funding_programme=FundingProgrammeRepr.from_domain(overview_revision.funding_programme),
+        )
+
+    def to_domain(self) -> OverviewRevision:
+        return OverviewRevision(
+            id_=self.id,
+            effective=DateRange(
+                date_from=datetime.fromisoformat(self.effective_date_from),
+                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+            ),
+            name=self.name,
+            authority_abbreviation=self.authority_abbreviation,
+            type_=self.type.to_domain(),
+            funding_programme=self.funding_programme.to_domain(),
+        )

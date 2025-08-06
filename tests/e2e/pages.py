@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import re
 from re import Pattern
 from typing import Iterator, Self
@@ -14,79 +12,6 @@ class PageObject:
     @property
     def title(self) -> str:
         return self._page.title()
-
-
-class StartPage(PageObject):
-    def __init__(self, page: Page):
-        super().__init__(page)
-        self._start = page.get_by_role("button")
-        self.footer = FooterComponent(page.get_by_role("contentinfo"))
-
-    @classmethod
-    def open(cls, page: Page) -> Self:
-        page.goto("/")
-        return cls(page)
-
-    @classmethod
-    def open_when_authenticated(cls, page: Page) -> SchemesPage:
-        cls.open(page)
-        return SchemesPage(page)
-
-    @property
-    def is_visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Schemes").is_visible()
-
-    def start(self) -> SchemesPage:
-        self._start.click()
-        return SchemesPage(self._page)
-
-    def start_when_unauthenticated(self) -> LoginPage:
-        self.start()
-        return LoginPage(self._page)
-
-
-class FooterComponent:
-    def __init__(self, footer: Locator):
-        self._footer = footer
-
-    def privacy(self) -> PrivacyPage:
-        self._footer.get_by_role("link", name="Privacy").click()
-        return PrivacyPage(self._footer.page)
-
-    def accessibility(self) -> AccessibilityPage:
-        self._footer.get_by_role("link", name="Accessibility").click()
-        return AccessibilityPage(self._footer.page)
-
-    def cookies(self) -> CookiesPage:
-        self._footer.get_by_role("link", name="Cookies").click()
-        return CookiesPage(self._footer.page)
-
-
-class PrivacyPage(PageObject):
-    def __init__(self, page: Page):
-        super().__init__(page)
-
-    @property
-    def is_visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Privacy notice").first.is_visible()
-
-
-class AccessibilityPage(PageObject):
-    def __init__(self, page: Page):
-        super().__init__(page)
-
-    @property
-    def is_visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Accessibility statement").first.is_visible()
-
-
-class CookiesPage(PageObject):
-    def __init__(self, page: Page):
-        super().__init__(page)
-
-    @property
-    def is_visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Cookies").first.is_visible()
 
 
 class LoginPage(PageObject):
@@ -133,6 +58,79 @@ class SchemesPage(PageObject):
         return ForbiddenPage(page)
 
 
+class StartPage(PageObject):
+    def __init__(self, page: Page):
+        super().__init__(page)
+        self._start = page.get_by_role("button")
+        self.footer = FooterComponent(page.get_by_role("contentinfo"))
+
+    @classmethod
+    def open(cls, page: Page) -> Self:
+        page.goto("/")
+        return cls(page)
+
+    @classmethod
+    def open_when_authenticated(cls, page: Page) -> SchemesPage:
+        cls.open(page)
+        return SchemesPage(page)
+
+    @property
+    def is_visible(self) -> bool:
+        return self._page.get_by_role("heading", name="Schemes").is_visible()
+
+    def start(self) -> SchemesPage:
+        self._start.click()
+        return SchemesPage(self._page)
+
+    def start_when_unauthenticated(self) -> LoginPage:
+        self.start()
+        return LoginPage(self._page)
+
+
+class PrivacyPage(PageObject):
+    def __init__(self, page: Page):
+        super().__init__(page)
+
+    @property
+    def is_visible(self) -> bool:
+        return self._page.get_by_role("heading", name="Privacy notice").first.is_visible()
+
+
+class AccessibilityPage(PageObject):
+    def __init__(self, page: Page):
+        super().__init__(page)
+
+    @property
+    def is_visible(self) -> bool:
+        return self._page.get_by_role("heading", name="Accessibility statement").first.is_visible()
+
+
+class CookiesPage(PageObject):
+    def __init__(self, page: Page):
+        super().__init__(page)
+
+    @property
+    def is_visible(self) -> bool:
+        return self._page.get_by_role("heading", name="Cookies").first.is_visible()
+
+
+class FooterComponent:
+    def __init__(self, footer: Locator):
+        self._footer = footer
+
+    def privacy(self) -> PrivacyPage:
+        self._footer.get_by_role("link", name="Privacy").click()
+        return PrivacyPage(self._footer.page)
+
+    def accessibility(self) -> AccessibilityPage:
+        self._footer.get_by_role("link", name="Accessibility").click()
+        return AccessibilityPage(self._footer.page)
+
+    def cookies(self) -> CookiesPage:
+        self._footer.get_by_role("link", name="Cookies").click()
+        return CookiesPage(self._footer.page)
+
+
 class ServiceHeaderComponent:
     def __init__(self, header: Locator):
         self._header = header
@@ -173,19 +171,31 @@ class HeadingComponent:
         return self._text.text_content()
 
 
-class SchemesTableComponent:
-    def __init__(self, table: Locator):
-        self._rows = table.get_by_role("row")
+class SchemePage(PageObject):
+    def __init__(self, page: Page):
+        super().__init__(page)
+        self._main = page.get_by_role("main")
+        self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
+        self.heading = HeadingComponent(self._main.get_by_role("heading").first)
+        self._inset_text = InsetTextComponent(self._main.locator(".govuk-inset-text"))
+        self.overview = SchemeOverviewComponent(self._main.get_by_role("heading", name="Overview"))
+        self.funding = SchemeFundingComponent(self._main.get_by_role("heading", name="Funding"))
+        self.milestones = SchemeMilestonesComponent(self._main.get_by_role("heading", name="Milestones"))
+        self.outputs = SchemeOutputsComponent(self._main.get_by_role("heading", name="Outputs"))
+        self.review = SchemeReviewComponent(self._main.get_by_role("heading", name="Is this scheme up-to-date?"))
 
-    def __iter__(self) -> Iterator[SchemeRowComponent]:
-        self._rows.first.wait_for()
-        return (SchemeRowComponent(row) for row in self._rows.all()[1:])
+    @classmethod
+    def open(cls, page: Page, reference: str) -> Self:
+        # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
+        page.goto("/schemes")
+        page.goto(f"/schemes/{reference}")
+        return cls(page)
 
-    def __getitem__(self, reference: str) -> SchemeRowComponent:
-        return next((scheme for scheme in self if scheme.reference == reference))
-
-    def to_dicts(self) -> list[dict[str, str | bool | None]]:
-        return [scheme.to_dict() for scheme in self]
+    @property
+    def needs_review(self) -> bool:
+        return self._inset_text.has_text(
+            re.compile(r"Needs review\s+Check the details before confirming that this scheme is up-to-date.")
+        )
 
 
 class SchemeRowComponent:
@@ -231,6 +241,21 @@ class SchemeRowComponent:
         }
 
 
+class SchemesTableComponent:
+    def __init__(self, table: Locator):
+        self._rows = table.get_by_role("row")
+
+    def __iter__(self) -> Iterator[SchemeRowComponent]:
+        self._rows.first.wait_for()
+        return (SchemeRowComponent(row) for row in self._rows.all()[1:])
+
+    def __getitem__(self, reference: str) -> SchemeRowComponent:
+        return next((scheme for scheme in self if scheme.reference == reference))
+
+    def to_dicts(self) -> list[dict[str, str | bool | None]]:
+        return [scheme.to_dict() for scheme in self]
+
+
 class TagComponent:
     def __init__(self, tag: Locator):
         self._tag = tag
@@ -240,33 +265,6 @@ class TagComponent:
         self._tag.first.wait_for()
         texts = self._tag.all_text_contents()
         return texts[0].strip() if texts else ""
-
-
-class SchemePage(PageObject):
-    def __init__(self, page: Page):
-        super().__init__(page)
-        self._main = page.get_by_role("main")
-        self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
-        self.heading = HeadingComponent(self._main.get_by_role("heading").first)
-        self._inset_text = InsetTextComponent(self._main.locator(".govuk-inset-text"))
-        self.overview = SchemeOverviewComponent(self._main.get_by_role("heading", name="Overview"))
-        self.funding = SchemeFundingComponent(self._main.get_by_role("heading", name="Funding"))
-        self.milestones = SchemeMilestonesComponent(self._main.get_by_role("heading", name="Milestones"))
-        self.outputs = SchemeOutputsComponent(self._main.get_by_role("heading", name="Outputs"))
-        self.review = SchemeReviewComponent(self._main.get_by_role("heading", name="Is this scheme up-to-date?"))
-
-    @classmethod
-    def open(cls, page: Page, reference: str) -> Self:
-        # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
-        page.goto("/schemes")
-        page.goto(f"/schemes/{reference}")
-        return cls(page)
-
-    @property
-    def needs_review(self) -> bool:
-        return self._inset_text.has_text(
-            re.compile(r"Needs review\s+Check the details before confirming that this scheme is up-to-date.")
-        )
 
 
 class InsetTextComponent:
@@ -317,6 +315,13 @@ class SchemeOverviewComponent(SummaryCardComponent):
         return (self._current_milestone.text_content() or "").strip()
 
 
+class ChangeSpendToDatePage(PageObject):
+    def __init__(self, page: Page):
+        super().__init__(page)
+        self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
+        self.form = ChangeSpendToDateFormComponent(page.get_by_role("form"))
+
+
 class SchemeFundingComponent(SummaryCardComponent):
     def __init__(self, title: Locator):
         super().__init__(title)
@@ -343,6 +348,13 @@ class SchemeFundingComponent(SummaryCardComponent):
         return (self._allocation_still_to_spend.text_content() or "").strip()
 
 
+class ChangeMilestoneDatesPage(PageObject):
+    def __init__(self, page: Page):
+        super().__init__(page)
+        self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
+        self.form = ChangeMilestoneDatesFormComponent(page.get_by_role("form"))
+
+
 class SchemeMilestonesComponent:
     def __init__(self, title: Locator):
         self._title = title
@@ -354,21 +366,6 @@ class SchemeMilestonesComponent:
     def change_milestone_dates(self) -> ChangeMilestoneDatesPage:
         self._change_milestone_dates.click()
         return ChangeMilestoneDatesPage(self._title.page)
-
-
-class SchemeMilestonesTableComponent:
-    def __init__(self, table: Locator):
-        self._rows = table.get_by_role("row")
-
-    def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
-        self._rows.first.wait_for()
-        return (SchemeMilestoneRowComponent(row) for row in self._rows.all()[1:])
-
-    def __getitem__(self, milestone: str) -> SchemeMilestoneRowComponent:
-        return next(row for row in self if row.milestone == milestone)
-
-    def to_dicts(self) -> list[dict[str, str | None]]:
-        return [milestone.to_dict() for milestone in self]
 
 
 class SchemeMilestoneRowComponent:
@@ -392,22 +389,25 @@ class SchemeMilestoneRowComponent:
         return {"milestone": self.milestone, "planned": self.planned, "actual": self.actual}
 
 
+class SchemeMilestonesTableComponent:
+    def __init__(self, table: Locator):
+        self._rows = table.get_by_role("row")
+
+    def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
+        self._rows.first.wait_for()
+        return (SchemeMilestoneRowComponent(row) for row in self._rows.all()[1:])
+
+    def __getitem__(self, milestone: str) -> SchemeMilestoneRowComponent:
+        return next(row for row in self if row.milestone == milestone)
+
+    def to_dicts(self) -> list[dict[str, str | None]]:
+        return [milestone.to_dict() for milestone in self]
+
+
 class SchemeOutputsComponent:
     def __init__(self, title: Locator):
         card = title.locator("xpath=../..")
         self.outputs = SchemeOutputsTableComponent(card.get_by_role("table"))
-
-
-class SchemeOutputsTableComponent:
-    def __init__(self, table: Locator):
-        self._rows = table.get_by_role("row")
-
-    def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
-        self._rows.first.wait_for()
-        return (SchemeOutputRowComponent(row) for row in self._rows.all()[1:])
-
-    def to_dicts(self) -> list[dict[str, str | None]]:
-        return [output.to_dict() for output in self]
 
 
 class SchemeOutputRowComponent:
@@ -432,6 +432,18 @@ class SchemeOutputRowComponent:
             "measurement": self.measurement,
             "planned": self.planned,
         }
+
+
+class SchemeOutputsTableComponent:
+    def __init__(self, table: Locator):
+        self._rows = table.get_by_role("row")
+
+    def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
+        self._rows.first.wait_for()
+        return (SchemeOutputRowComponent(row) for row in self._rows.all()[1:])
+
+    def to_dicts(self) -> list[dict[str, str | None]]:
+        return [output.to_dict() for output in self]
 
 
 class SchemeReviewComponent:
@@ -461,13 +473,6 @@ class SchemeReviewFormComponent:
         return SchemePage(self._form.page)
 
 
-class ChangeSpendToDatePage(PageObject):
-    def __init__(self, page: Page):
-        super().__init__(page)
-        self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
-        self.form = ChangeSpendToDateFormComponent(page.get_by_role("form"))
-
-
 class ChangeSpendToDateFormComponent:
     def __init__(self, form: Locator):
         self._form = form
@@ -485,13 +490,6 @@ class ChangeSpendToDateFormComponent:
     def confirm_when_error(self) -> ChangeSpendToDatePage:
         self._confirm.click()
         return ChangeSpendToDatePage(self._form.page)
-
-
-class ChangeMilestoneDatesPage(PageObject):
-    def __init__(self, page: Page):
-        super().__init__(page)
-        self.errors = ErrorSummaryComponent(page.get_by_role("alert"))
-        self.form = ChangeMilestoneDatesFormComponent(page.get_by_role("form"))
 
 
 class ChangeMilestoneDatesFormComponent:

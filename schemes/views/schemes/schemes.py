@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from datetime import datetime
 from logging import Logger
@@ -85,21 +83,25 @@ def index(
 
 
 @dataclass(frozen=True)
-class SchemesContext:
-    reporting_window_days_left: int | None
-    authority_name: str
-    schemes: list[SchemeRowContext]
+class FundingProgrammeContext:
+    name: str
+    _NAMES = {
+        FundingProgrammes.ATF2: "ATF2",
+        FundingProgrammes.ATF3: "ATF3",
+        FundingProgrammes.ATF4: "ATF4",
+        FundingProgrammes.ATF4E: "ATF4e",
+        FundingProgrammes.ATF5: "ATF5",
+        FundingProgrammes.CATF: "CATF",
+        FundingProgrammes.CRSTS: "CRSTS",
+        FundingProgrammes.LUF1: "LUF1",
+        FundingProgrammes.LUF2: "LUF2",
+        FundingProgrammes.LUF3: "LUF3",
+        FundingProgrammes.MRN: "MRN",
+    }
 
     @classmethod
-    def from_domain(
-        cls, now: datetime, reporting_window: ReportingWindow, authority: Authority, schemes: list[Scheme]
-    ) -> Self:
-        needs_review = any(scheme.reviews.needs_review(reporting_window) for scheme in schemes)
-        return cls(
-            reporting_window_days_left=reporting_window.days_left(now) if needs_review else None,
-            authority_name=authority.name,
-            schemes=[SchemeRowContext.from_domain(reporting_window, scheme) for scheme in schemes],
-        )
+    def from_domain(cls, funding_programme: FundingProgramme) -> Self:
+        return cls(name=cls._NAMES[funding_programme])
 
 
 @dataclass(frozen=True)
@@ -123,6 +125,24 @@ class SchemeRowContext:
             name=name,
             needs_review=scheme.reviews.needs_review(reporting_window),
             last_reviewed=scheme.reviews.last_reviewed,
+        )
+
+
+@dataclass(frozen=True)
+class SchemesContext:
+    reporting_window_days_left: int | None
+    authority_name: str
+    schemes: list[SchemeRowContext]
+
+    @classmethod
+    def from_domain(
+        cls, now: datetime, reporting_window: ReportingWindow, authority: Authority, schemes: list[Scheme]
+    ) -> Self:
+        needs_review = any(scheme.reviews.needs_review(reporting_window) for scheme in schemes)
+        return cls(
+            reporting_window_days_left=reporting_window.days_left(now) if needs_review else None,
+            authority_name=authority.name,
+            schemes=[SchemeRowContext.from_domain(reporting_window, scheme) for scheme in schemes],
         )
 
 
@@ -180,6 +200,41 @@ def get_json(reference: str, schemes: SchemeRepository) -> Response:
 
 
 @dataclass(frozen=True)
+class SchemeTypeContext:
+    name: str
+    _NAMES = {
+        SchemeType.DEVELOPMENT: "Development",
+        SchemeType.CONSTRUCTION: "Construction",
+    }
+
+    @classmethod
+    def from_domain(cls, type_: SchemeType) -> Self:
+        return cls(name=cls._NAMES[type_])
+
+
+@dataclass(frozen=True)
+class SchemeOverviewContext:
+    reference: str
+    type: SchemeTypeContext
+    funding_programme: FundingProgrammeContext
+    current_milestone: MilestoneContext
+
+    @classmethod
+    def from_domain(cls, scheme: Scheme) -> Self:
+        type_ = scheme.overview.type
+        assert type_
+        funding_programme = scheme.overview.funding_programme
+        assert funding_programme
+
+        return cls(
+            reference=scheme.reference,
+            type=SchemeTypeContext.from_domain(type_),
+            funding_programme=FundingProgrammeContext.from_domain(funding_programme),
+            current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
+        )
+
+
+@dataclass(frozen=True)
 class SchemeContext:
     reference: str
     authority_name: str
@@ -207,63 +262,6 @@ class SchemeContext:
             outputs=SchemeOutputsContext.from_domain(scheme.outputs.current_output_revisions),
             review=SchemeReviewContext.from_domain(scheme.reviews),
         )
-
-
-@dataclass(frozen=True)
-class SchemeOverviewContext:
-    reference: str
-    type: SchemeTypeContext
-    funding_programme: FundingProgrammeContext
-    current_milestone: MilestoneContext
-
-    @classmethod
-    def from_domain(cls, scheme: Scheme) -> Self:
-        type_ = scheme.overview.type
-        assert type_
-        funding_programme = scheme.overview.funding_programme
-        assert funding_programme
-
-        return cls(
-            reference=scheme.reference,
-            type=SchemeTypeContext.from_domain(type_),
-            funding_programme=FundingProgrammeContext.from_domain(funding_programme),
-            current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
-        )
-
-
-@dataclass(frozen=True)
-class SchemeTypeContext:
-    name: str
-    _NAMES = {
-        SchemeType.DEVELOPMENT: "Development",
-        SchemeType.CONSTRUCTION: "Construction",
-    }
-
-    @classmethod
-    def from_domain(cls, type_: SchemeType) -> Self:
-        return cls(name=cls._NAMES[type_])
-
-
-@dataclass(frozen=True)
-class FundingProgrammeContext:
-    name: str
-    _NAMES = {
-        FundingProgrammes.ATF2: "ATF2",
-        FundingProgrammes.ATF3: "ATF3",
-        FundingProgrammes.ATF4: "ATF4",
-        FundingProgrammes.ATF4E: "ATF4e",
-        FundingProgrammes.ATF5: "ATF5",
-        FundingProgrammes.CATF: "CATF",
-        FundingProgrammes.CRSTS: "CRSTS",
-        FundingProgrammes.LUF1: "LUF1",
-        FundingProgrammes.LUF2: "LUF2",
-        FundingProgrammes.LUF3: "LUF3",
-        FundingProgrammes.MRN: "MRN",
-    }
-
-    @classmethod
-    def from_domain(cls, funding_programme: FundingProgramme) -> Self:
-        return cls(name=cls._NAMES[funding_programme])
 
 
 @bp.get("<reference>/spend-to-date")

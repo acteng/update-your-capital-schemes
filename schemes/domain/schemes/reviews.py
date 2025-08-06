@@ -1,9 +1,27 @@
-from __future__ import annotations
-
 from datetime import datetime
 
 from schemes.domain.reporting_window import ReportingWindow
 from schemes.domain.schemes.data_sources import DataSource
+
+
+class AuthorityReview:
+    # TODO: domain identifier should be mandatory for transient instances
+    def __init__(self, id_: int | None, review_date: datetime, source: DataSource):
+        self._id = id_
+        self._review_date = review_date
+        self._source = source
+
+    @property
+    def id(self) -> int | None:
+        return self._id
+
+    @property
+    def review_date(self) -> datetime:
+        return self._review_date
+
+    @property
+    def source(self) -> DataSource:
+        return self._source
 
 
 class SchemeReviews:
@@ -32,23 +50,3 @@ class SchemeReviews:
     def needs_review(self, reporting_window: ReportingWindow) -> bool:
         last_reviewed = self.last_reviewed
         return last_reviewed is None or last_reviewed < reporting_window.window.date_from
-
-
-class AuthorityReview:
-    # TODO: domain identifier should be mandatory for transient instances
-    def __init__(self, id_: int | None, review_date: datetime, source: DataSource):
-        self._id = id_
-        self._review_date = review_date
-        self._source = source
-
-    @property
-    def id(self) -> int | None:
-        return self._id
-
-    @property
-    def review_date(self) -> datetime:
-        return self._review_date
-
-    @property
-    def source(self) -> DataSource:
-        return self._source

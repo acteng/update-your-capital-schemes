@@ -33,26 +33,6 @@ class SchemeFundingContext:
         )
 
 
-@dataclass(frozen=True)
-class ChangeSpendToDateContext:
-    reference: str
-    name: str
-    funding_allocation: int | None
-    form: ChangeSpendToDateForm
-
-    @classmethod
-    def from_domain(cls, scheme: Scheme) -> Self:
-        name = scheme.overview.name
-        assert name is not None
-
-        return cls(
-            reference=scheme.reference,
-            name=name,
-            funding_allocation=scheme.funding.funding_allocation,
-            form=ChangeSpendToDateForm.from_domain(scheme.funding),
-        )
-
-
 class ChangeSpendToDateForm(FlaskForm):  # type: ignore
     amount = CustomMessageIntegerField(
         widget=GovTextInput(),
@@ -80,6 +60,52 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
     def validate_amount(form: ChangeSpendToDateForm, field: CustomMessageIntegerField) -> None:
         if field.data is not None and field.data > form.max_amount:
             raise ValidationError(f"Spend to date must be £{form.max_amount:,} or less")
+
+
+@dataclass(frozen=True)
+class ChangeSpendToDateContext:
+    reference: str
+    name: str
+    funding_allocation: int | None
+    form: ChangeSpendToDateForm
+
+    @classmethod
+    def from_domain(cls, scheme: Scheme) -> Self:
+        name = scheme.overview.name
+        assert name is not None
+
+        return cls(
+            reference=scheme.reference,
+            name=name,
+            funding_allocation=scheme.funding.funding_allocation,
+            form=ChangeSpendToDateForm.from_domain(scheme.funding),
+        )
+
+
+@unique
+class BidStatusRepr(str, Enum):
+    SUBMITTED = "submitted"
+    FUNDED = "funded"
+    NOT_FUNDED = "not funded"
+    SPLIT = "split"
+    DELETED = "deleted"
+
+    @classmethod
+    def from_domain(cls, bid_status: BidStatus) -> BidStatusRepr:
+        return cls._members()[bid_status]
+
+    def to_domain(self) -> BidStatus:
+        return inverse_dict(self._members())[self]
+
+    @staticmethod
+    def _members() -> dict[BidStatus, BidStatusRepr]:
+        return {
+            BidStatus.SUBMITTED: BidStatusRepr.SUBMITTED,
+            BidStatus.FUNDED: BidStatusRepr.FUNDED,
+            BidStatus.NOT_FUNDED: BidStatusRepr.NOT_FUNDED,
+            BidStatus.SPLIT: BidStatusRepr.SPLIT,
+            BidStatus.DELETED: BidStatusRepr.DELETED,
+        }
 
 
 class BidStatusRevisionRepr(BaseModel):
@@ -111,28 +137,28 @@ class BidStatusRevisionRepr(BaseModel):
 
 
 @unique
-class BidStatusRepr(str, Enum):
-    SUBMITTED = "submitted"
-    FUNDED = "funded"
-    NOT_FUNDED = "not funded"
-    SPLIT = "split"
-    DELETED = "deleted"
+class FinancialTypeRepr(str, Enum):
+    EXPECTED_COST = "expected cost"
+    ACTUAL_COST = "actual cost"
+    FUNDING_ALLOCATION = "funding allocation"
+    SPEND_TO_DATE = "spend to date"
+    FUNDING_REQUEST = "funding request"
 
     @classmethod
-    def from_domain(cls, bid_status: BidStatus) -> BidStatusRepr:
-        return cls._members()[bid_status]
+    def from_domain(cls, financial_type: FinancialType) -> FinancialTypeRepr:
+        return cls._members()[financial_type]
 
-    def to_domain(self) -> BidStatus:
+    def to_domain(self) -> FinancialType:
         return inverse_dict(self._members())[self]
 
     @staticmethod
-    def _members() -> dict[BidStatus, BidStatusRepr]:
+    def _members() -> dict[FinancialType, FinancialTypeRepr]:
         return {
-            BidStatus.SUBMITTED: BidStatusRepr.SUBMITTED,
-            BidStatus.FUNDED: BidStatusRepr.FUNDED,
-            BidStatus.NOT_FUNDED: BidStatusRepr.NOT_FUNDED,
-            BidStatus.SPLIT: BidStatusRepr.SPLIT,
-            BidStatus.DELETED: BidStatusRepr.DELETED,
+            FinancialType.EXPECTED_COST: FinancialTypeRepr.EXPECTED_COST,
+            FinancialType.ACTUAL_COST: FinancialTypeRepr.ACTUAL_COST,
+            FinancialType.FUNDING_ALLOCATION: FinancialTypeRepr.FUNDING_ALLOCATION,
+            FinancialType.SPEND_TO_DATE: FinancialTypeRepr.SPEND_TO_DATE,
+            FinancialType.FUNDING_REQUEST: FinancialTypeRepr.FUNDING_REQUEST,
         }
 
 
@@ -168,29 +194,3 @@ class FinancialRevisionRepr(BaseModel):
             amount=self.amount,
             source=self.source.to_domain(),
         )
-
-
-@unique
-class FinancialTypeRepr(str, Enum):
-    EXPECTED_COST = "expected cost"
-    ACTUAL_COST = "actual cost"
-    FUNDING_ALLOCATION = "funding allocation"
-    SPEND_TO_DATE = "spend to date"
-    FUNDING_REQUEST = "funding request"
-
-    @classmethod
-    def from_domain(cls, financial_type: FinancialType) -> FinancialTypeRepr:
-        return cls._members()[financial_type]
-
-    def to_domain(self) -> FinancialType:
-        return inverse_dict(self._members())[self]
-
-    @staticmethod
-    def _members() -> dict[FinancialType, FinancialTypeRepr]:
-        return {
-            FinancialType.EXPECTED_COST: FinancialTypeRepr.EXPECTED_COST,
-            FinancialType.ACTUAL_COST: FinancialTypeRepr.ACTUAL_COST,
-            FinancialType.FUNDING_ALLOCATION: FinancialTypeRepr.FUNDING_ALLOCATION,
-            FinancialType.SPEND_TO_DATE: FinancialTypeRepr.SPEND_TO_DATE,
-            FinancialType.FUNDING_REQUEST: FinancialTypeRepr.FUNDING_REQUEST,
-        }

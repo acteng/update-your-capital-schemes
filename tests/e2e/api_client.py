@@ -1,8 +1,12 @@
-from __future__ import annotations
-
 from dataclasses import asdict, dataclass
 
 import requests
+
+
+@dataclass(frozen=True)
+class AuthorityModel:
+    abbreviation: str
+    fullName: str
 
 
 class ApiClient:
@@ -20,9 +24,3 @@ class ApiClient:
     def clear_authorities(self) -> None:
         response = self._session.delete(f"{self._url}/authorities", timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
-
-
-@dataclass(frozen=True)
-class AuthorityModel:
-    abbreviation: str
-    fullName: str

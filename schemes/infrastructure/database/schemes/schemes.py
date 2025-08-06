@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import inject
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, joinedload, selectinload, sessionmaker
@@ -27,6 +25,22 @@ from schemes.infrastructure.database.schemes.milestones import MilestoneMapper
 from schemes.infrastructure.database.schemes.observations import ObservationTypeMapper
 from schemes.infrastructure.database.schemes.outputs import OutputTypeMeasureMapper
 from schemes.infrastructure.database.schemes.overview import FundingProgrammeMapper, SchemeTypeMapper
+
+
+class _AuthorityMapper:
+    def __init__(self) -> None:
+        self._authorities: dict[str, int] = {}
+
+    def execute(self, session: Session, abbreviations: list[str]) -> None:
+        rows = session.execute(
+            select(AuthorityEntity.authority_id, AuthorityEntity.authority_abbreviation).where(
+                AuthorityEntity.authority_abbreviation.in_(abbreviations)
+            )
+        )
+        self._authorities = {row.authority_abbreviation: row.authority_id for row in rows}
+
+    def to_id(self, abbreviation: str) -> int:
+        return self._authorities[abbreviation]
 
 
 class DatabaseSchemeRepository(SchemeRepository):
@@ -323,19 +337,3 @@ class DatabaseSchemeRepository(SchemeRepository):
             for scheme in schemes
             for overview_revision in scheme.overview.overview_revisions
         ]
-
-
-class _AuthorityMapper:
-    def __init__(self) -> None:
-        self._authorities: dict[str, int] = {}
-
-    def execute(self, session: Session, abbreviations: list[str]) -> None:
-        rows = session.execute(
-            select(AuthorityEntity.authority_id, AuthorityEntity.authority_abbreviation).where(
-                AuthorityEntity.authority_abbreviation.in_(abbreviations)
-            )
-        )
-        self._authorities = {row.authority_abbreviation: row.authority_id for row in rows}
-
-    def to_id(self, abbreviation: str) -> int:
-        return self._authorities[abbreviation]

@@ -1,68 +1,9 @@
-from __future__ import annotations
-
 from decimal import Decimal
 from enum import Enum, IntEnum, auto, unique
 from typing import Self
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.observations import ObservationType
-
-
-class SchemeOutputs:
-    def __init__(self) -> None:
-        self._output_revisions: list[OutputRevision] = []
-
-    @property
-    def output_revisions(self) -> list[OutputRevision]:
-        return list(self._output_revisions)
-
-    @property
-    def current_output_revisions(self) -> list[OutputRevision]:
-        return [revision for revision in self._output_revisions if revision.effective.date_to is None]
-
-    def update_output(self, output_revision: OutputRevision) -> None:
-        self._output_revisions.append(output_revision)
-
-    def update_outputs(self, *output_revisions: OutputRevision) -> None:
-        for output_revision in output_revisions:
-            self.update_output(output_revision)
-
-
-class OutputRevision:
-    # TODO: domain identifier should be mandatory for transient instances
-    def __init__(
-        self,
-        id_: int | None,
-        effective: DateRange,
-        type_measure: OutputTypeMeasure,
-        value: Decimal,
-        observation_type: ObservationType,
-    ):
-        self._id = id_
-        self._effective = effective
-        self._type_measure = type_measure
-        self._value = value
-        self._observation_type = observation_type
-
-    @property
-    def id(self) -> int | None:
-        return self._id
-
-    @property
-    def effective(self) -> DateRange:
-        return self._effective
-
-    @property
-    def type_measure(self) -> OutputTypeMeasure:
-        return self._type_measure
-
-    @property
-    def value(self) -> Decimal:
-        return self._value
-
-    @property
-    def observation_type(self) -> ObservationType:
-        return self._observation_type
 
 
 class OutputType(IntEnum):
@@ -174,3 +115,60 @@ class OutputTypeMeasure(Enum):
             raise ValueError(f"No such output type measure for type {type_.name} and measure {measure.name}")
 
         return member
+
+
+class OutputRevision:
+    # TODO: domain identifier should be mandatory for transient instances
+    def __init__(
+        self,
+        id_: int | None,
+        effective: DateRange,
+        type_measure: OutputTypeMeasure,
+        value: Decimal,
+        observation_type: ObservationType,
+    ):
+        self._id = id_
+        self._effective = effective
+        self._type_measure = type_measure
+        self._value = value
+        self._observation_type = observation_type
+
+    @property
+    def id(self) -> int | None:
+        return self._id
+
+    @property
+    def effective(self) -> DateRange:
+        return self._effective
+
+    @property
+    def type_measure(self) -> OutputTypeMeasure:
+        return self._type_measure
+
+    @property
+    def value(self) -> Decimal:
+        return self._value
+
+    @property
+    def observation_type(self) -> ObservationType:
+        return self._observation_type
+
+
+class SchemeOutputs:
+    def __init__(self) -> None:
+        self._output_revisions: list[OutputRevision] = []
+
+    @property
+    def output_revisions(self) -> list[OutputRevision]:
+        return list(self._output_revisions)
+
+    @property
+    def current_output_revisions(self) -> list[OutputRevision]:
+        return [revision for revision in self._output_revisions if revision.effective.date_to is None]
+
+    def update_output(self, output_revision: OutputRevision) -> None:
+        self._output_revisions.append(output_revision)
+
+    def update_outputs(self, *output_revisions: OutputRevision) -> None:
+        for output_revision in output_revisions:
+            self.update_output(output_revision)

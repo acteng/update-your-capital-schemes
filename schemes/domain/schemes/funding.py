@@ -1,10 +1,87 @@
-from __future__ import annotations
-
 from datetime import datetime
 from enum import Enum, auto, unique
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
+
+
+@unique
+class FinancialType(Enum):
+    EXPECTED_COST = auto()
+    ACTUAL_COST = auto()
+    FUNDING_ALLOCATION = auto()
+    SPEND_TO_DATE = auto()
+    FUNDING_REQUEST = auto()
+
+
+class FinancialRevision:
+    # TODO: domain identifier should be mandatory for transient instances
+    def __init__(self, id_: int | None, effective: DateRange, type_: FinancialType, amount: int, source: DataSource):
+        self._id = id_
+        self._effective = effective
+        self._type = type_
+        self._amount = amount
+        self._source = source
+
+    @property
+    def id(self) -> int | None:
+        return self._id
+
+    @property
+    def effective(self) -> DateRange:
+        return self._effective
+
+    @property
+    def type(self) -> FinancialType:
+        return self._type
+
+    @property
+    def amount(self) -> int:
+        return self._amount
+
+    @property
+    def source(self) -> DataSource:
+        return self._source
+
+    @property
+    def is_current_funding_allocation(self) -> bool:
+        return self.type == FinancialType.FUNDING_ALLOCATION and self.effective.date_to is None
+
+    @property
+    def is_current_spend_to_date(self) -> bool:
+        return self.type == FinancialType.SPEND_TO_DATE and self.effective.date_to is None
+
+    def close(self, effective_date_to: datetime) -> None:
+        self._effective = DateRange(self.effective.date_from, effective_date_to)
+
+
+@unique
+class BidStatus(Enum):
+    SUBMITTED = auto()
+    FUNDED = auto()
+    NOT_FUNDED = auto()
+    SPLIT = auto()
+    DELETED = auto()
+
+
+class BidStatusRevision:
+    # TODO: domain identifier should be mandatory for transient instances
+    def __init__(self, id_: int | None, effective: DateRange, status: BidStatus):
+        self._id = id_
+        self._effective = effective
+        self._status = status
+
+    @property
+    def id(self) -> int | None:
+        return self._id
+
+    @property
+    def effective(self) -> DateRange:
+        return self._effective
+
+    @property
+    def status(self) -> BidStatus:
+        return self._status
 
 
 class SchemeFunding:
@@ -96,82 +173,3 @@ class SchemeFunding:
         funding_allocation = self.funding_allocation or 0
         spend_to_date = self.spend_to_date or 0
         return funding_allocation - spend_to_date
-
-
-class BidStatusRevision:
-    # TODO: domain identifier should be mandatory for transient instances
-    def __init__(self, id_: int | None, effective: DateRange, status: BidStatus):
-        self._id = id_
-        self._effective = effective
-        self._status = status
-
-    @property
-    def id(self) -> int | None:
-        return self._id
-
-    @property
-    def effective(self) -> DateRange:
-        return self._effective
-
-    @property
-    def status(self) -> BidStatus:
-        return self._status
-
-
-@unique
-class BidStatus(Enum):
-    SUBMITTED = auto()
-    FUNDED = auto()
-    NOT_FUNDED = auto()
-    SPLIT = auto()
-    DELETED = auto()
-
-
-class FinancialRevision:
-    # TODO: domain identifier should be mandatory for transient instances
-    def __init__(self, id_: int | None, effective: DateRange, type_: FinancialType, amount: int, source: DataSource):
-        self._id = id_
-        self._effective = effective
-        self._type = type_
-        self._amount = amount
-        self._source = source
-
-    @property
-    def id(self) -> int | None:
-        return self._id
-
-    @property
-    def effective(self) -> DateRange:
-        return self._effective
-
-    @property
-    def type(self) -> FinancialType:
-        return self._type
-
-    @property
-    def amount(self) -> int:
-        return self._amount
-
-    @property
-    def source(self) -> DataSource:
-        return self._source
-
-    @property
-    def is_current_funding_allocation(self) -> bool:
-        return self.type == FinancialType.FUNDING_ALLOCATION and self.effective.date_to is None
-
-    @property
-    def is_current_spend_to_date(self) -> bool:
-        return self.type == FinancialType.SPEND_TO_DATE and self.effective.date_to is None
-
-    def close(self, effective_date_to: datetime) -> None:
-        self._effective = DateRange(self.effective.date_from, effective_date_to)
-
-
-@unique
-class FinancialType(Enum):
-    EXPECTED_COST = auto()
-    ACTUAL_COST = auto()
-    FUNDING_ALLOCATION = auto()
-    SPEND_TO_DATE = auto()
-    FUNDING_REQUEST = auto()

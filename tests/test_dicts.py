@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from schemes.dicts import as_shallow_dict, inverse_dict
@@ -12,14 +10,14 @@ def test_inverse_dict() -> None:
 
 
 @dataclass
-class Person:
-    name: str
-    address: Address
+class Address:
+    city: str
 
 
 @dataclass
-class Address:
-    city: str
+class Person:
+    name: str
+    address: Address
 
 
 def test_as_shallow_dict() -> None:

@@ -27,33 +27,6 @@ from schemes.views.schemes.observations import ObservationTypeRepr
 
 
 @dataclass(frozen=True)
-class SchemeMilestonesContext:
-    milestones: list[SchemeMilestoneRowContext]
-
-    @classmethod
-    def from_domain(cls, scheme: Scheme) -> Self:
-        return cls(
-            milestones=[
-                SchemeMilestoneRowContext(
-                    milestone=MilestoneContext.from_domain(milestone),
-                    planned=scheme.milestones.get_current_status_date(milestone, ObservationType.PLANNED),
-                    actual=scheme.milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
-                )
-                for milestone in sorted(
-                    scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.stage_order
-                )
-            ]
-        )
-
-
-@dataclass(frozen=True)
-class SchemeMilestoneRowContext:
-    milestone: MilestoneContext
-    planned: date | None
-    actual: date | None
-
-
-@dataclass(frozen=True)
 class MilestoneContext:
     name: str | None
     _NAMES = {
@@ -77,17 +50,30 @@ class MilestoneContext:
 
 
 @dataclass(frozen=True)
-class ChangeMilestoneDatesContext:
-    reference: str
-    name: str
-    form: ChangeMilestoneDatesForm
+class SchemeMilestoneRowContext:
+    milestone: MilestoneContext
+    planned: date | None
+    actual: date | None
+
+
+@dataclass(frozen=True)
+class SchemeMilestonesContext:
+    milestones: list[SchemeMilestoneRowContext]
 
     @classmethod
-    def from_domain(cls, scheme: Scheme, now: datetime) -> Self:
-        name = scheme.overview.name
-        assert name is not None
-
-        return cls(reference=scheme.reference, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme, now))
+    def from_domain(cls, scheme: Scheme) -> Self:
+        return cls(
+            milestones=[
+                SchemeMilestoneRowContext(
+                    milestone=MilestoneContext.from_domain(milestone),
+                    planned=scheme.milestones.get_current_status_date(milestone, ObservationType.PLANNED),
+                    actual=scheme.milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
+                )
+                for milestone in sorted(
+                    scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.stage_order
+                )
+            ]
+        )
 
 
 class MilestoneDateField(CustomMessageDateField):
@@ -191,41 +177,18 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
         return milestone.name.lower()
 
 
-class MilestoneRevisionRepr(BaseModel):
-    effective_date_from: str
-    effective_date_to: str | None
-    milestone: MilestoneRepr
-    observation_type: ObservationTypeRepr
-    status_date: str
-    source: DataSourceRepr
-    id: int | None = None
+@dataclass(frozen=True)
+class ChangeMilestoneDatesContext:
+    reference: str
+    name: str
+    form: ChangeMilestoneDatesForm
 
     @classmethod
-    def from_domain(cls, milestone_revision: MilestoneRevision) -> Self:
-        return cls(
-            id=milestone_revision.id,
-            effective_date_from=milestone_revision.effective.date_from.isoformat(),
-            effective_date_to=(
-                milestone_revision.effective.date_to.isoformat() if milestone_revision.effective.date_to else None
-            ),
-            milestone=MilestoneRepr.from_domain(milestone_revision.milestone),
-            observation_type=ObservationTypeRepr.from_domain(milestone_revision.observation_type),
-            status_date=milestone_revision.status_date.isoformat(),
-            source=DataSourceRepr.from_domain(milestone_revision.source),
-        )
+    def from_domain(cls, scheme: Scheme, now: datetime) -> Self:
+        name = scheme.overview.name
+        assert name is not None
 
-    def to_domain(self) -> MilestoneRevision:
-        return MilestoneRevision(
-            id_=self.id,
-            effective=DateRange(
-                date_from=datetime.fromisoformat(self.effective_date_from),
-                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
-            ),
-            milestone=self.milestone.to_domain(),
-            observation_type=self.observation_type.to_domain(),
-            status_date=date.fromisoformat(self.status_date),
-            source=self.source.to_domain(),
-        )
+        return cls(reference=scheme.reference, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme, now))
 
 
 @unique
@@ -266,3 +229,40 @@ class MilestoneRepr(str, Enum):
             Milestone.SUPERSEDED: MilestoneRepr.SUPERSEDED,
             Milestone.REMOVED: MilestoneRepr.REMOVED,
         }
+
+
+class MilestoneRevisionRepr(BaseModel):
+    effective_date_from: str
+    effective_date_to: str | None
+    milestone: MilestoneRepr
+    observation_type: ObservationTypeRepr
+    status_date: str
+    source: DataSourceRepr
+    id: int | None = None
+
+    @classmethod
+    def from_domain(cls, milestone_revision: MilestoneRevision) -> Self:
+        return cls(
+            id=milestone_revision.id,
+            effective_date_from=milestone_revision.effective.date_from.isoformat(),
+            effective_date_to=(
+                milestone_revision.effective.date_to.isoformat() if milestone_revision.effective.date_to else None
+            ),
+            milestone=MilestoneRepr.from_domain(milestone_revision.milestone),
+            observation_type=ObservationTypeRepr.from_domain(milestone_revision.observation_type),
+            status_date=milestone_revision.status_date.isoformat(),
+            source=DataSourceRepr.from_domain(milestone_revision.source),
+        )
+
+    def to_domain(self) -> MilestoneRevision:
+        return MilestoneRevision(
+            id_=self.id,
+            effective=DateRange(
+                date_from=datetime.fromisoformat(self.effective_date_from),
+                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+            ),
+            milestone=self.milestone.to_domain(),
+            observation_type=self.observation_type.to_domain(),
+            status_date=date.fromisoformat(self.status_date),
+            source=self.source.to_domain(),
+        )

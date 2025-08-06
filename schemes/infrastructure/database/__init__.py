@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from datetime import date, datetime
 from decimal import Decimal
 
@@ -29,20 +27,6 @@ class UserEntity(Base):
         ForeignKey("authority.authority.authority_abbreviation", name="user_authority_abbreviation_fkey"),
         nullable=False,
     )
-
-
-class CapitalSchemeEntity(Base):
-    __tablename__ = "capital_scheme"
-    __table_args__ = {"schema": "capital_scheme"}
-
-    capital_scheme_id: Mapped[int] = mapped_column(primary_key=True)
-    scheme_reference: Mapped[str] = mapped_column(unique=True)
-    capital_scheme_overviews: Mapped[list[CapitalSchemeOverviewEntity]] = relationship()
-    capital_scheme_bid_statuses: Mapped[list[CapitalSchemeBidStatusEntity]] = relationship()
-    capital_scheme_financials: Mapped[list[CapitalSchemeFinancialEntity]] = relationship()
-    capital_scheme_milestones: Mapped[list[CapitalSchemeMilestoneEntity]] = relationship()
-    capital_scheme_interventions: Mapped[list[CapitalSchemeInterventionEntity]] = relationship()
-    capital_scheme_authority_reviews: Mapped[list[CapitalSchemeAuthorityReviewEntity]] = relationship()
 
 
 class CapitalSchemeOverviewEntity(Base):
@@ -153,3 +137,17 @@ class CapitalSchemeAuthorityReviewEntity(Base):
     )
     review_date: Mapped[datetime]
     data_source_id: Mapped[int]
+
+
+class CapitalSchemeEntity(Base):
+    __tablename__ = "capital_scheme"
+    __table_args__ = {"schema": "capital_scheme"}
+
+    capital_scheme_id: Mapped[int] = mapped_column(primary_key=True)
+    scheme_reference: Mapped[str] = mapped_column(unique=True)
+    capital_scheme_overviews: Mapped[list[CapitalSchemeOverviewEntity]] = relationship()
+    capital_scheme_bid_statuses: Mapped[list[CapitalSchemeBidStatusEntity]] = relationship()
+    capital_scheme_financials: Mapped[list[CapitalSchemeFinancialEntity]] = relationship()
+    capital_scheme_milestones: Mapped[list[CapitalSchemeMilestoneEntity]] = relationship()
+    capital_scheme_interventions: Mapped[list[CapitalSchemeInterventionEntity]] = relationship()
+    capital_scheme_authority_reviews: Mapped[list[CapitalSchemeAuthorityReviewEntity]] = relationship()

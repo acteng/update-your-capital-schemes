@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from datetime import date, datetime
 
 import pytest
@@ -17,6 +15,15 @@ from schemes.views.forms import (
     MultivalueOptional,
     RemoveLeadingZerosGovDateInput,
 )
+
+
+class FakeForm(Form):
+    field = CustomMessageIntegerField()
+    custom_message_field = CustomMessageIntegerField(invalid_message="My custom message")
+    boolean_field = BooleanField()
+    description_boolean_field = BooleanField(description="My description")
+    date_field = CustomMessageDateField()
+    custom_message_date_field = CustomMessageDateField(invalid_message="My custom message")
 
 
 @pytest.fixture(name="form")
@@ -278,12 +285,3 @@ class TestDateRange:
 
         with pytest.raises(ValidationError, match="Date must not be after 2000-01-31"):
             date_range(form, form.date_field)
-
-
-class FakeForm(Form):
-    field = CustomMessageIntegerField()
-    custom_message_field = CustomMessageIntegerField(invalid_message="My custom message")
-    boolean_field = BooleanField()
-    description_boolean_field = BooleanField(description="My description")
-    date_field = CustomMessageDateField()
-    custom_message_date_field = CustomMessageDateField(invalid_message="My custom message")

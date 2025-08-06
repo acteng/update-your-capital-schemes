@@ -1,48 +1,34 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from enum import Enum, auto, unique
 
 from schemes.domain.dates import DateRange
 
 
-class SchemeOverview:
-    def __init__(self) -> None:
-        self._overview_revisions: list[OverviewRevision] = []
+@unique
+class SchemeType(Enum):
+    DEVELOPMENT = auto()
+    CONSTRUCTION = auto()
 
-    @property
-    def overview_revisions(self) -> list[OverviewRevision]:
-        return list(self._overview_revisions)
 
-    def update_overview(self, overview_revision: OverviewRevision) -> None:
-        self._overview_revisions.append(overview_revision)
+@dataclass(frozen=True)
+class FundingProgramme:
+    code: str
+    is_under_embargo: bool
+    is_eligible_for_authority_update: bool
 
-    def update_overviews(self, *overview_revisions: OverviewRevision) -> None:
-        for overview_revision in overview_revisions:
-            self.update_overview(overview_revision)
 
-    @property
-    def name(self) -> str | None:
-        current_overview_revision = self._current_overview_revision()
-        return current_overview_revision.name if current_overview_revision else None
-
-    @property
-    def authority_abbreviation(self) -> str | None:
-        current_overview_revision = self._current_overview_revision()
-        return current_overview_revision.authority_abbreviation if current_overview_revision else None
-
-    @property
-    def type(self) -> SchemeType | None:
-        current_overview_revision = self._current_overview_revision()
-        return current_overview_revision.type if current_overview_revision else None
-
-    @property
-    def funding_programme(self) -> FundingProgramme | None:
-        current_overview_revision = self._current_overview_revision()
-        return current_overview_revision.funding_programme if current_overview_revision else None
-
-    def _current_overview_revision(self) -> OverviewRevision | None:
-        return next((overview for overview in self.overview_revisions if overview.effective.date_to is None), None)
+class FundingProgrammes:
+    ATF2 = FundingProgramme("ATF2", False, True)
+    ATF3 = FundingProgramme("ATF3", False, True)
+    ATF4 = FundingProgramme("ATF4", False, True)
+    ATF4E = FundingProgramme("ATF4e", False, True)
+    ATF5 = FundingProgramme("ATF5", False, True)
+    CATF = FundingProgramme("CATF", False, True)
+    CRSTS = FundingProgramme("CRSTS", False, False)
+    LUF1 = FundingProgramme("LUF1", False, False)
+    LUF2 = FundingProgramme("LUF2", False, False)
+    LUF3 = FundingProgramme("LUF3", False, False)
+    MRN = FundingProgramme("MRN", False, False)
 
 
 class OverviewRevision:
@@ -88,28 +74,40 @@ class OverviewRevision:
         return self._funding_programme
 
 
-@unique
-class SchemeType(Enum):
-    DEVELOPMENT = auto()
-    CONSTRUCTION = auto()
+class SchemeOverview:
+    def __init__(self) -> None:
+        self._overview_revisions: list[OverviewRevision] = []
 
+    @property
+    def overview_revisions(self) -> list[OverviewRevision]:
+        return list(self._overview_revisions)
 
-@dataclass(frozen=True)
-class FundingProgramme:
-    code: str
-    is_under_embargo: bool
-    is_eligible_for_authority_update: bool
+    def update_overview(self, overview_revision: OverviewRevision) -> None:
+        self._overview_revisions.append(overview_revision)
 
+    def update_overviews(self, *overview_revisions: OverviewRevision) -> None:
+        for overview_revision in overview_revisions:
+            self.update_overview(overview_revision)
 
-class FundingProgrammes:
-    ATF2 = FundingProgramme("ATF2", False, True)
-    ATF3 = FundingProgramme("ATF3", False, True)
-    ATF4 = FundingProgramme("ATF4", False, True)
-    ATF4E = FundingProgramme("ATF4e", False, True)
-    ATF5 = FundingProgramme("ATF5", False, True)
-    CATF = FundingProgramme("CATF", False, True)
-    CRSTS = FundingProgramme("CRSTS", False, False)
-    LUF1 = FundingProgramme("LUF1", False, False)
-    LUF2 = FundingProgramme("LUF2", False, False)
-    LUF3 = FundingProgramme("LUF3", False, False)
-    MRN = FundingProgramme("MRN", False, False)
+    @property
+    def name(self) -> str | None:
+        current_overview_revision = self._current_overview_revision()
+        return current_overview_revision.name if current_overview_revision else None
+
+    @property
+    def authority_abbreviation(self) -> str | None:
+        current_overview_revision = self._current_overview_revision()
+        return current_overview_revision.authority_abbreviation if current_overview_revision else None
+
+    @property
+    def type(self) -> SchemeType | None:
+        current_overview_revision = self._current_overview_revision()
+        return current_overview_revision.type if current_overview_revision else None
+
+    @property
+    def funding_programme(self) -> FundingProgramme | None:
+        current_overview_revision = self._current_overview_revision()
+        return current_overview_revision.funding_programme if current_overview_revision else None
+
+    def _current_overview_revision(self) -> OverviewRevision | None:
+        return next((overview for overview in self.overview_revisions if overview.effective.date_to is None), None)

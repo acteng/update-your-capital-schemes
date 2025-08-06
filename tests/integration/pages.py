@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import re
 from re import Pattern
 from typing import Iterator, Self
@@ -17,6 +15,19 @@ class PageObject:
     @property
     def title(self) -> str:
         return one(self._soup.select("head > title")).get_text()
+
+
+class HeaderComponent:
+    def __init__(self, header: Tag):
+        self.home_url = one(header.select("a.govuk-header__link"))["href"]
+
+
+class FooterComponent:
+    def __init__(self, footer: Tag):
+        list_items = footer.select(".govuk-footer__inline-list a")
+        self.privacy_url = list_items[0]["href"]
+        self.accessibility_url = list_items[1]["href"]
+        self.cookies_url = list_items[2]["href"]
 
 
 class StartPage(PageObject):
@@ -37,19 +48,6 @@ class StartPage(PageObject):
     def open(cls, client: FlaskClient) -> Self:
         response = client.get("/")
         return cls(response)
-
-
-class HeaderComponent:
-    def __init__(self, header: Tag):
-        self.home_url = one(header.select("a.govuk-header__link"))["href"]
-
-
-class FooterComponent:
-    def __init__(self, footer: Tag):
-        list_items = footer.select(".govuk-footer__inline-list a")
-        self.privacy_url = list_items[0]["href"]
-        self.accessibility_url = list_items[1]["href"]
-        self.cookies_url = list_items[2]["href"]
 
 
 class PrivacyPage(PageObject):
@@ -117,6 +115,13 @@ class NotFoundPage(PageObject):
         self.is_not_found = response.status_code == 404
 
 
+class ServiceHeaderComponent:
+    def __init__(self, header: Tag):
+        self.home_url = one(header.select("a.one-login-header__link"))["href"]
+        self.profile_url = one(header.select("a:-soup-contains('GOV.UK One Login')"))["href"]
+        self.sign_out_url = one(header.select("a:-soup-contains('Sign out')"))["href"]
+
+
 class SchemesPage(PageObject):
     def __init__(self, response: TestResponse):
         super().__init__(response)
@@ -142,31 +147,10 @@ class SchemesPage(PageObject):
         return cls(response)
 
 
-class ServiceHeaderComponent:
-    def __init__(self, header: Tag):
-        self.home_url = one(header.select("a.one-login-header__link"))["href"]
-        self.profile_url = one(header.select("a:-soup-contains('GOV.UK One Login')"))["href"]
-        self.sign_out_url = one(header.select("a:-soup-contains('Sign out')"))["href"]
-
-
 class HeadingComponent:
     def __init__(self, heading: Tag):
         self.caption = one(heading.select(".govuk-caption-xl, .govuk-caption-l")).string
         self.text = one(heading.select("span:nth-child(2)")).string
-
-
-class SchemesTableComponent:
-    def __init__(self, table: Tag):
-        self._rows = table.select("tbody tr")
-
-    def __iter__(self) -> Iterator[SchemeRowComponent]:
-        return (SchemeRowComponent(row) for row in self._rows)
-
-    def __getitem__(self, reference: str) -> SchemeRowComponent:
-        return next((scheme for scheme in self if scheme.reference == reference))
-
-    def to_dicts(self) -> list[dict[str, str | bool | None]]:
-        return [scheme.to_dict() for scheme in self]
 
 
 class SchemeRowComponent:
@@ -192,9 +176,81 @@ class SchemeRowComponent:
         }
 
 
+class SchemesTableComponent:
+    def __init__(self, table: Tag):
+        self._rows = table.select("tbody tr")
+
+    def __iter__(self) -> Iterator[SchemeRowComponent]:
+        return (SchemeRowComponent(row) for row in self._rows)
+
+    def __getitem__(self, reference: str) -> SchemeRowComponent:
+        return next((scheme for scheme in self if scheme.reference == reference))
+
+    def to_dicts(self) -> list[dict[str, str | bool | None]]:
+        return [scheme.to_dict() for scheme in self]
+
+
 class TagComponent:
     def __init__(self, tag: Tag):
         self.text = (tag.string or "").strip()
+
+
+class SummaryCardComponent:
+    def __init__(self, title: Tag):
+        card = title.find_parent("div", class_="govuk-summary-card")
+        assert isinstance(card, Tag)
+        self._card = card
+
+    def _get_definition(self, term_text: str) -> list[Tag]:
+        return self._card.select(f"dt:-soup-contains('{term_text}') ~ dd")
+
+
+class SchemeOverviewComponent(SummaryCardComponent):
+    def __init__(self, title: Tag):
+        super().__init__(title)
+        self.reference = (self._get_definition("Reference")[0].string or "").strip()
+        self.scheme_type = (self._get_definition("Scheme type")[0].string or "").strip()
+        self.funding_programme = (self._get_definition("Funding programme")[0].string or "").strip()
+        self.current_milestone = (self._get_definition("Current milestone")[0].string or "").strip()
+
+
+class SchemeFundingComponent(SummaryCardComponent):
+    def __init__(self, title: Tag):
+        super().__init__(title)
+        self.funding_allocation = (self._get_definition("Funding allocation")[0].string or "").strip()
+        self.spend_to_date = (self._get_definition("Spend to date")[0].string or "").strip()
+        self.change_spend_to_date_url = one(self._get_definition("Spend to date")[1].select("a")).get("href")
+        self.allocation_still_to_spend = (self._get_definition("Allocation still to spend")[0].string or "").strip()
+
+
+class SchemeMilestonesComponent:
+    def __init__(self, title: Tag):
+        title_wrapper = title.find_parent("div", class_="govuk-summary-card__title-wrapper")
+        assert isinstance(title_wrapper, Tag)
+        self.change_milestones_url = one(title_wrapper.select("a:-soup-contains('Change')"))["href"]
+        card = title_wrapper.find_parent("div", class_="govuk-summary-card")
+        assert isinstance(card, Tag)
+        self.milestones = SchemeMilestonesTableComponent(one(card.select("table")))
+
+
+class SchemeOutputsComponent:
+    def __init__(self, title: Tag):
+        card = title.find_parent("div", class_="govuk-summary-card")
+        assert isinstance(card, Tag)
+        table = card.select_one("table")
+        self.outputs = SchemeOutputsTableComponent(table) if table else None
+        paragraph = card.select_one("p")
+        self.is_no_outputs_message_visible = (
+            paragraph.string == "There are no outputs for this scheme." if paragraph else None
+        )
+
+
+class SchemeReviewComponent:
+    def __init__(self, heading: Tag):
+        section = heading.find_parent("section")
+        assert isinstance(section, Tag)
+        self.last_reviewed = (one(section.select("section > p")).string or "").strip()
+        self.form = SchemeReviewFormComponent(one(section.select("form")))
 
 
 class SchemePage(PageObject):
@@ -265,55 +321,6 @@ class InsetTextComponent:
         return pattern.match(self.text()) is not None
 
 
-class SummaryCardComponent:
-    def __init__(self, title: Tag):
-        card = title.find_parent("div", class_="govuk-summary-card")
-        assert isinstance(card, Tag)
-        self._card = card
-
-    def _get_definition(self, term_text: str) -> list[Tag]:
-        return self._card.select(f"dt:-soup-contains('{term_text}') ~ dd")
-
-
-class SchemeOverviewComponent(SummaryCardComponent):
-    def __init__(self, title: Tag):
-        super().__init__(title)
-        self.reference = (self._get_definition("Reference")[0].string or "").strip()
-        self.scheme_type = (self._get_definition("Scheme type")[0].string or "").strip()
-        self.funding_programme = (self._get_definition("Funding programme")[0].string or "").strip()
-        self.current_milestone = (self._get_definition("Current milestone")[0].string or "").strip()
-
-
-class SchemeFundingComponent(SummaryCardComponent):
-    def __init__(self, title: Tag):
-        super().__init__(title)
-        self.funding_allocation = (self._get_definition("Funding allocation")[0].string or "").strip()
-        self.spend_to_date = (self._get_definition("Spend to date")[0].string or "").strip()
-        self.change_spend_to_date_url = one(self._get_definition("Spend to date")[1].select("a")).get("href")
-        self.allocation_still_to_spend = (self._get_definition("Allocation still to spend")[0].string or "").strip()
-
-
-class SchemeMilestonesComponent:
-    def __init__(self, title: Tag):
-        title_wrapper = title.find_parent("div", class_="govuk-summary-card__title-wrapper")
-        assert isinstance(title_wrapper, Tag)
-        self.change_milestones_url = one(title_wrapper.select("a:-soup-contains('Change')"))["href"]
-        card = title_wrapper.find_parent("div", class_="govuk-summary-card")
-        assert isinstance(card, Tag)
-        self.milestones = SchemeMilestonesTableComponent(one(card.select("table")))
-
-
-class SchemeMilestonesTableComponent:
-    def __init__(self, table: Tag):
-        self._rows = table.select("tbody tr")
-
-    def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
-        return (SchemeMilestoneRowComponent(row) for row in self._rows)
-
-    def to_dicts(self) -> list[dict[str, str | None]]:
-        return [milestone.to_dict() for milestone in self]
-
-
 class SchemeMilestoneRowComponent:
     def __init__(self, row: Tag):
         self.milestone = one(row.select("th")).string
@@ -325,27 +332,15 @@ class SchemeMilestoneRowComponent:
         return {"milestone": self.milestone, "planned": self.planned, "actual": self.actual}
 
 
-class SchemeOutputsComponent:
-    def __init__(self, title: Tag):
-        card = title.find_parent("div", class_="govuk-summary-card")
-        assert isinstance(card, Tag)
-        table = card.select_one("table")
-        self.outputs = SchemeOutputsTableComponent(table) if table else None
-        paragraph = card.select_one("p")
-        self.is_no_outputs_message_visible = (
-            paragraph.string == "There are no outputs for this scheme." if paragraph else None
-        )
-
-
-class SchemeOutputsTableComponent:
+class SchemeMilestonesTableComponent:
     def __init__(self, table: Tag):
         self._rows = table.select("tbody tr")
 
-    def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
-        return (SchemeOutputRowComponent(row) for row in self._rows)
+    def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
+        return (SchemeMilestoneRowComponent(row) for row in self._rows)
 
     def to_dicts(self) -> list[dict[str, str | None]]:
-        return [output.to_dict() for output in self]
+        return [milestone.to_dict() for milestone in self]
 
 
 class SchemeOutputRowComponent:
@@ -363,12 +358,15 @@ class SchemeOutputRowComponent:
         }
 
 
-class SchemeReviewComponent:
-    def __init__(self, heading: Tag):
-        section = heading.find_parent("section")
-        assert isinstance(section, Tag)
-        self.last_reviewed = (one(section.select("section > p")).string or "").strip()
-        self.form = SchemeReviewFormComponent(one(section.select("form")))
+class SchemeOutputsTableComponent:
+    def __init__(self, table: Tag):
+        self._rows = table.select("tbody tr")
+
+    def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
+        return (SchemeOutputRowComponent(row) for row in self._rows)
+
+    def to_dicts(self) -> list[dict[str, str | None]]:
+        return [output.to_dict() for output in self]
 
 
 class SchemeReviewFormComponent:
@@ -376,6 +374,16 @@ class SchemeReviewFormComponent:
         self._form = form
         self.confirm_url = form["action"]
         self.up_to_date = CheckboxComponent(one(form.select("input[name='up_to_date']")))
+
+
+class ChangeSpendToDateFormComponent:
+    def __init__(self, form: Tag):
+        self._form = form
+        self.confirm_url = form["action"]
+        self.heading = HeadingComponent(one(self._form.select("h1")))
+        self.funding_summary = (one(self._form.select(".govuk-hint")).string or "").strip()
+        self.amount = TextComponent(one(form.select("input[name='amount']")))
+        self.cancel_url = one(self._form.select("a"))["href"]
 
 
 class ChangeSpendToDatePage(PageObject):
@@ -410,6 +418,45 @@ class ChangeSpendToDatePage(PageObject):
     def open_when_not_found(cls, client: FlaskClient, reference: str) -> NotFoundPage:
         response = client.get(f"/schemes/{reference}/spend-to-date")
         return NotFoundPage(response)
+
+
+class ChangeMilestoneDatesFormComponent:
+    def __init__(self, form: Tag):
+        self.confirm_url = form["action"]
+        self.feasibility_design_completed_planned = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Feasibility design completed Planned date'))"))
+        )
+        self.feasibility_design_completed_actual = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Feasibility design completed Actual date'))"))
+        )
+        self.preliminary_design_completed_planned = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Preliminary design completed Planned date'))"))
+        )
+        self.preliminary_design_completed_actual = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Preliminary design completed Actual date'))"))
+        )
+        self.detailed_design_completed_heading = one(
+            form.select("h2:-soup-contains('Detailed design completed')")
+        ).string
+        self.detailed_design_completed_planned = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Detailed design completed Planned date'))"))
+        )
+        self.detailed_design_completed_actual = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Detailed design completed Actual date'))"))
+        )
+        self.construction_started_planned = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Construction started Planned date'))"))
+        )
+        self.construction_started_actual = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Construction started Actual date'))"))
+        )
+        self.construction_completed_planned = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Construction completed Planned date'))"))
+        )
+        self.construction_completed_actual = DateComponent(
+            one(form.select("fieldset:has(legend:-soup-contains('Construction completed Actual date'))"))
+        )
+        self.cancel_url = one(form.select("a"))["href"]
 
 
 class ChangeMilestoneDatesPage(PageObject):
@@ -467,55 +514,6 @@ class NotificationBannerComponent:
     def for_success(cls, soup: BeautifulSoup) -> Self | None:
         tag = soup.select_one(".govuk-notification-banner.govuk-notification-banner--success")
         return cls(tag) if tag else None
-
-
-class ChangeSpendToDateFormComponent:
-    def __init__(self, form: Tag):
-        self._form = form
-        self.confirm_url = form["action"]
-        self.heading = HeadingComponent(one(self._form.select("h1")))
-        self.funding_summary = (one(self._form.select(".govuk-hint")).string or "").strip()
-        self.amount = TextComponent(one(form.select("input[name='amount']")))
-        self.cancel_url = one(self._form.select("a"))["href"]
-
-
-class ChangeMilestoneDatesFormComponent:
-    def __init__(self, form: Tag):
-        self.confirm_url = form["action"]
-        self.feasibility_design_completed_planned = DateComponent(
-            one(form.select("fieldset:has(legend:-soup-contains('Feasibility design completed Planned date'))"))
-        )
-        self.feasibility_design_completed_actual = DateComponent(
-            one(form.select("fieldset:has(legend:-soup-contains('Feasibility design completed Actual date'))"))
-        )
-        self.preliminary_design_completed_planned = DateComponent(
-            one(form.select("fieldset:has(legend:-soup-contains('Preliminary design completed Planned date'))"))
-        )
-        self.preliminary_design_completed_actual = DateComponent(
-            one(form.select("fieldset:has(legend:-soup-contains('Preliminary design completed Actual date'))"))
-        )
-        self.detailed_design_completed_heading = one(
-            form.select("h2:-soup-contains('Detailed design completed')")
-        ).string
-        self.detailed_design_completed_planned = DateComponent(
-            one(form.select("fieldset:has(legend:-soup-contains('Detailed design completed Planned date'))"))
-        )
-        self.detailed_design_completed_actual = DateComponent(
-            one(form.select("fieldset:has(legend:-soup-contains('Detailed design completed Actual date'))"))
-        )
-        self.construction_started_planned = DateComponent(
-            one(form.select("fieldset:has(legend:-soup-contains('Construction started Planned date'))"))
-        )
-        self.construction_started_actual = DateComponent(
-            one(form.select("fieldset:has(legend:-soup-contains('Construction started Actual date'))"))
-        )
-        self.construction_completed_planned = DateComponent(
-            one(form.select("fieldset:has(legend:-soup-contains('Construction completed Planned date'))"))
-        )
-        self.construction_completed_actual = DateComponent(
-            one(form.select("fieldset:has(legend:-soup-contains('Construction completed Actual date'))"))
-        )
-        self.cancel_url = one(form.select("a"))["href"]
 
 
 class DateComponent:

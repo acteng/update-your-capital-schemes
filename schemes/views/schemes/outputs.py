@@ -17,42 +17,6 @@ from schemes.views.schemes.observations import ObservationTypeRepr
 
 
 @dataclass(frozen=True)
-class SchemeOutputsContext:
-    outputs: list[SchemeOutputRowContext]
-
-    @classmethod
-    def from_domain(cls, output_revisions: list[OutputRevision]) -> Self:
-        return cls(
-            outputs=[
-                SchemeOutputRowContext(
-                    type=OutputTypeContext.from_domain(type_),
-                    measure=OutputMeasureContext.from_domain(measure),
-                    planned=cls._get_value(group, ObservationType.PLANNED),
-                )
-                for (type_, measure), group in groupby(
-                    sorted(output_revisions, key=cls._by_type_and_measure), cls._by_type_and_measure
-                )
-            ]
-        )
-
-    @staticmethod
-    def _by_type_and_measure(output_revision: OutputRevision) -> tuple[OutputType, OutputMeasure]:
-        return output_revision.type_measure.type, output_revision.type_measure.measure
-
-    @staticmethod
-    def _get_value(output_revisions: Iterator[OutputRevision], observation_type: ObservationType) -> Decimal | None:
-        revisions = (revision.value for revision in output_revisions if revision.observation_type == observation_type)
-        return next(revisions, None)
-
-
-@dataclass(frozen=True)
-class SchemeOutputRowContext:
-    type: OutputTypeContext
-    measure: OutputMeasureContext
-    planned: Decimal | None
-
-
-@dataclass(frozen=True)
 class OutputTypeContext:
     name: str
     _NAMES = {
@@ -105,40 +69,40 @@ class OutputMeasureContext:
         return cls(name=cls._NAMES[measure])
 
 
-class OutputRevisionRepr(BaseModel):
-    effective_date_from: str
-    effective_date_to: str | None
-    type: OutputTypeRepr
-    measure: OutputMeasureRepr
-    value: str
-    observation_type: ObservationTypeRepr
-    id: int | None = None
+@dataclass(frozen=True)
+class SchemeOutputRowContext:
+    type: OutputTypeContext
+    measure: OutputMeasureContext
+    planned: Decimal | None
+
+
+@dataclass(frozen=True)
+class SchemeOutputsContext:
+    outputs: list[SchemeOutputRowContext]
 
     @classmethod
-    def from_domain(cls, output_revision: OutputRevision) -> Self:
+    def from_domain(cls, output_revisions: list[OutputRevision]) -> Self:
         return cls(
-            id=output_revision.id,
-            effective_date_from=output_revision.effective.date_from.isoformat(),
-            effective_date_to=(
-                output_revision.effective.date_to.isoformat() if output_revision.effective.date_to else None
-            ),
-            type=OutputTypeRepr.from_domain(output_revision.type_measure.type),
-            measure=OutputMeasureRepr.from_domain(output_revision.type_measure.measure),
-            value=str(output_revision.value),
-            observation_type=ObservationTypeRepr.from_domain(output_revision.observation_type),
+            outputs=[
+                SchemeOutputRowContext(
+                    type=OutputTypeContext.from_domain(type_),
+                    measure=OutputMeasureContext.from_domain(measure),
+                    planned=cls._get_value(group, ObservationType.PLANNED),
+                )
+                for (type_, measure), group in groupby(
+                    sorted(output_revisions, key=cls._by_type_and_measure), cls._by_type_and_measure
+                )
+            ]
         )
 
-    def to_domain(self) -> OutputRevision:
-        return OutputRevision(
-            id_=self.id,
-            effective=DateRange(
-                date_from=datetime.fromisoformat(self.effective_date_from),
-                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
-            ),
-            type_measure=OutputTypeMeasure.from_type_and_measure(self.type.to_domain(), self.measure.to_domain()),
-            value=Decimal(self.value),
-            observation_type=self.observation_type.to_domain(),
-        )
+    @staticmethod
+    def _by_type_and_measure(output_revision: OutputRevision) -> tuple[OutputType, OutputMeasure]:
+        return output_revision.type_measure.type, output_revision.type_measure.measure
+
+    @staticmethod
+    def _get_value(output_revisions: Iterator[OutputRevision], observation_type: ObservationType) -> Decimal | None:
+        revisions = (revision.value for revision in output_revisions if revision.observation_type == observation_type)
+        return next(revisions, None)
 
 
 @unique
@@ -233,3 +197,39 @@ class OutputMeasureRepr(str, Enum):
             OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED: OutputMeasureRepr.NUMBER_OF_CHILDREN_AFFECTED,
             OutputMeasure.NUMBER_OF_MEASURES_PLANNED: OutputMeasureRepr.NUMBER_OF_MEASURES_PLANNED,
         }
+
+
+class OutputRevisionRepr(BaseModel):
+    effective_date_from: str
+    effective_date_to: str | None
+    type: OutputTypeRepr
+    measure: OutputMeasureRepr
+    value: str
+    observation_type: ObservationTypeRepr
+    id: int | None = None
+
+    @classmethod
+    def from_domain(cls, output_revision: OutputRevision) -> Self:
+        return cls(
+            id=output_revision.id,
+            effective_date_from=output_revision.effective.date_from.isoformat(),
+            effective_date_to=(
+                output_revision.effective.date_to.isoformat() if output_revision.effective.date_to else None
+            ),
+            type=OutputTypeRepr.from_domain(output_revision.type_measure.type),
+            measure=OutputMeasureRepr.from_domain(output_revision.type_measure.measure),
+            value=str(output_revision.value),
+            observation_type=ObservationTypeRepr.from_domain(output_revision.observation_type),
+        )
+
+    def to_domain(self) -> OutputRevision:
+        return OutputRevision(
+            id_=self.id,
+            effective=DateRange(
+                date_from=datetime.fromisoformat(self.effective_date_from),
+                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
+            ),
+            type_measure=OutputTypeMeasure.from_type_and_measure(self.type.to_domain(), self.measure.to_domain()),
+            value=Decimal(self.value),
+            observation_type=self.observation_type.to_domain(),
+        )

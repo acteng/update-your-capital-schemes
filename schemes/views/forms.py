@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 from datetime import date, datetime
-from typing import Any, Callable
+from typing import Any, Callable, Self
 
 from govuk_frontend_wtf.wtforms_widgets import GovCheckboxInput, GovDateInput
 from wtforms import DateField, Field
@@ -20,7 +18,7 @@ class CustomMessageIntegerField(IntegerField):
     def __init__(
         self,
         label: str | None = None,
-        validators: tuple[Callable[[BaseForm, CustomMessageIntegerField], object], ...] | list[Any] | None = None,
+        validators: tuple[Callable[[BaseForm, Self], object], ...] | list[Any] | None = None,
         invalid_message: str = "Not a valid integer value.",
         **kwargs: Any,
     ):
@@ -56,7 +54,7 @@ class CustomMessageDateField(DateField):
     def __init__(
         self,
         label: str | None = None,
-        validators: tuple[Callable[[BaseForm, CustomMessageDateField], object], ...] | list[Any] | None = None,
+        validators: tuple[Callable[[BaseForm, Self], object], ...] | list[Any] | None = None,
         format: str = "%Y-%m-%d",
         invalid_message: str = "Not a valid date value.",
         **kwargs: Any,

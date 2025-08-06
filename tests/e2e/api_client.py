@@ -4,6 +4,11 @@ import requests
 
 
 @dataclass(frozen=True)
+class FundingProgrammeModel:
+    code: str
+
+
+@dataclass(frozen=True)
 class AuthorityModel:
     abbreviation: str
     fullName: str
@@ -38,6 +43,11 @@ class ApiClient:
     @property
     def base_url(self) -> str:
         return self._url
+
+    def add_funding_programmes(self, *funding_programmes: FundingProgrammeModel) -> None:
+        json = [asdict(funding_programme) for funding_programme in funding_programmes]
+        response = self._session.post(f"{self._url}/funding-programmes", json=json, timeout=self.DEFAULT_TIMEOUT)
+        response.raise_for_status()
 
     def add_authorities(self, *authorities: AuthorityModel) -> None:
         json = [asdict(authority) for authority in authorities]

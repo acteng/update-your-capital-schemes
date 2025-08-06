@@ -1,12 +1,13 @@
 from datetime import datetime
+from typing import Annotated
 
-from pydantic import AnyUrl
+from pydantic import AnyUrl, Field
 from requests import Response
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import BidStatus, BidStatusRevision
-from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeType
+from schemes.domain.schemes.overview import FundingProgramme, OverviewRevision, SchemeType
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.base import BaseModel
@@ -20,34 +21,59 @@ class ApiSchemeRepository(SchemeRepository):
         self._remote_app = remote_app
 
     def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
+        funding_programmes = self._get_funding_programmes()
+
         response: Response = self._remote_app.get(
             f"/authorities/{authority_abbreviation}/capital-schemes/bid-submitting"
         )
         response.raise_for_status()
 
         collection_model = CollectionModel[AnyUrl].model_validate(response.json())
-        return [self._get_by_url(str(capital_scheme_url)) for capital_scheme_url in collection_model.items]
+        return [
+            self._get_by_url(str(capital_scheme_url), funding_programmes)
+            for capital_scheme_url in collection_model.items
+        ]
 
-    def _get_by_url(self, url: str) -> Scheme:
+    def _get_funding_programmes(self) -> dict[str, FundingProgramme]:
+        response: Response = self._remote_app.get("/funding-programmes")
+        response.raise_for_status()
+
+        collection_model = CollectionModel[FundingProgrammeItemModel].model_validate(response.json())
+        return {
+            str(funding_programme_item.id): funding_programme_item.to_domain()
+            for funding_programme_item in collection_model.items
+        }
+
+    def _get_by_url(self, url: str, funding_programmes: dict[str, FundingProgramme]) -> Scheme:
         response: Response = self._remote_app.get(url)
         response.raise_for_status()
 
         capital_scheme_model = CapitalSchemeModel.model_validate(response.json())
-        return capital_scheme_model.to_domain()
+        return capital_scheme_model.to_domain(funding_programmes)
+
+
+class FundingProgrammeItemModel(BaseModel):
+    id: Annotated[AnyUrl, Field(alias="@id")]
+    code: str
+
+    def to_domain(self) -> FundingProgramme:
+        # TODO: is_under_embargo, is_eligible_for_authority_update
+        return FundingProgramme(code=self.code, is_under_embargo=False, is_eligible_for_authority_update=True)
 
 
 class CapitalSchemeOverviewModel(BaseModel):
     name: str
+    funding_programme: AnyUrl
 
-    def to_domain(self) -> OverviewRevision:
-        # TODO: id, effective, authority_abbreviation, type, funding_programme
+    def to_domain(self, funding_programmes: dict[str, FundingProgramme]) -> OverviewRevision:
+        # TODO: id, effective, authority_abbreviation, type
         return OverviewRevision(
             id_=None,
             effective=DateRange(date_from=datetime.min, date_to=None),
             name=self.name,
             authority_abbreviation="",
             type_=SchemeType.DEVELOPMENT,
-            funding_programme=FundingProgrammes.ATF2,
+            funding_programme=funding_programmes[str(self.funding_programme)],
         )
 
 
@@ -64,10 +90,10 @@ class CapitalSchemeModel(BaseModel):
     overview: CapitalSchemeOverviewModel
     authority_review: CapitalSchemeAuthorityReviewModel | None = None
 
-    def to_domain(self) -> Scheme:
+    def to_domain(self, funding_programmes: dict[str, FundingProgramme]) -> Scheme:
         # TODO: id
         scheme = Scheme(id_=0, reference=self.reference)
-        scheme.overview.update_overview(self.overview.to_domain())
+        scheme.overview.update_overview(self.overview.to_domain(funding_programmes))
         # TODO: bid_status
         scheme.funding.update_bid_status(
             BidStatusRevision(

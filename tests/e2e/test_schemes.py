@@ -7,6 +7,7 @@ from tests.e2e.api_client import (
     CapitalSchemeAuthorityReviewModel,
     CapitalSchemeModel,
     CapitalSchemeOverviewModel,
+    FundingProgrammeModel,
 )
 from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, UserRepr
 from tests.e2e.builders import build_scheme
@@ -23,6 +24,7 @@ class TestAuthenticated:
 
     def test_schemes(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF3"), FundingProgrammeModel(code="ATF4"))
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")

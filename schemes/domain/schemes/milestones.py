@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from enum import Enum, auto
+from typing import Self
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
@@ -145,7 +146,7 @@ class Milestone(Enum):
     is_active: bool
     is_complete: bool
 
-    def __new__(cls, value: int, stage_order: int, is_active: bool, is_complete: bool) -> Milestone:
+    def __new__(cls, value: int, stage_order: int, is_active: bool, is_complete: bool) -> Self:
         obj = object.__new__(cls)
         obj._value_ = value
         obj.stage_order = stage_order

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum, unique
+from typing import Self
 
 from pydantic import BaseModel
 
@@ -20,7 +21,7 @@ class OverviewRevisionRepr(BaseModel):
     id: int | None = None
 
     @classmethod
-    def from_domain(cls, overview_revision: OverviewRevision) -> OverviewRevisionRepr:
+    def from_domain(cls, overview_revision: OverviewRevision) -> Self:
         return cls(
             id=overview_revision.id,
             effective_date_from=overview_revision.effective.date_from.isoformat(),

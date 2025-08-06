@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 from enum import Enum, IntEnum, auto, unique
+from typing import Self
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.observations import ObservationType
@@ -166,7 +167,7 @@ class OutputTypeMeasure(Enum):
         self.measure = measure
 
     @classmethod
-    def from_type_and_measure(cls, type_: OutputType, measure: OutputMeasure) -> OutputTypeMeasure:
+    def from_type_and_measure(cls, type_: OutputType, measure: OutputMeasure) -> Self:
         member = next((member for member in cls if member.type == type_ and member.measure == measure), None)
 
         if not member:

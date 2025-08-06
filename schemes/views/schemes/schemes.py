@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from logging import Logger
+from typing import Self
 
 import inject
 from flask import Blueprint, Response, abort, flash, make_response, redirect, render_template, request, session, url_for
@@ -92,7 +93,7 @@ class SchemesContext:
     @classmethod
     def from_domain(
         cls, now: datetime, reporting_window: ReportingWindow, authority: Authority, schemes: list[Scheme]
-    ) -> SchemesContext:
+    ) -> Self:
         needs_review = any(scheme.reviews.needs_review(reporting_window) for scheme in schemes)
         return cls(
             reporting_window_days_left=reporting_window.days_left(now) if needs_review else None,
@@ -110,7 +111,7 @@ class SchemeRowContext:
     last_reviewed: datetime | None
 
     @classmethod
-    def from_domain(cls, reporting_window: ReportingWindow, scheme: Scheme) -> SchemeRowContext:
+    def from_domain(cls, reporting_window: ReportingWindow, scheme: Scheme) -> Self:
         funding_programme = scheme.overview.funding_programme
         assert funding_programme
         name = scheme.overview.name
@@ -191,7 +192,7 @@ class SchemeContext:
     review: SchemeReviewContext
 
     @classmethod
-    def from_domain(cls, reporting_window: ReportingWindow, authority: Authority, scheme: Scheme) -> SchemeContext:
+    def from_domain(cls, reporting_window: ReportingWindow, authority: Authority, scheme: Scheme) -> Self:
         name = scheme.overview.name
         assert name is not None
 
@@ -216,7 +217,7 @@ class SchemeOverviewContext:
     current_milestone: MilestoneContext
 
     @classmethod
-    def from_domain(cls, scheme: Scheme) -> SchemeOverviewContext:
+    def from_domain(cls, scheme: Scheme) -> Self:
         type_ = scheme.overview.type
         assert type_
         funding_programme = scheme.overview.funding_programme
@@ -239,7 +240,7 @@ class SchemeTypeContext:
     }
 
     @classmethod
-    def from_domain(cls, type_: SchemeType) -> SchemeTypeContext:
+    def from_domain(cls, type_: SchemeType) -> Self:
         return cls(name=cls._NAMES[type_])
 
 
@@ -261,7 +262,7 @@ class FundingProgrammeContext:
     }
 
     @classmethod
-    def from_domain(cls, funding_programme: FundingProgramme) -> FundingProgrammeContext:
+    def from_domain(cls, funding_programme: FundingProgramme) -> Self:
         return cls(name=cls._NAMES[funding_programme])
 
 
@@ -406,7 +407,7 @@ class SchemeRepr(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     @classmethod
-    def from_domain(cls, scheme: Scheme) -> SchemeRepr:
+    def from_domain(cls, scheme: Scheme) -> Self:
         return cls(
             id=scheme.id,
             reference=scheme.reference,

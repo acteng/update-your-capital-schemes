@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, unique
+from typing import Self
 
 from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovTextInput
@@ -24,7 +25,7 @@ class SchemeFundingContext:
     allocation_still_to_spend: int
 
     @classmethod
-    def from_domain(cls, funding: SchemeFunding) -> SchemeFundingContext:
+    def from_domain(cls, funding: SchemeFunding) -> Self:
         return cls(
             funding_allocation=funding.funding_allocation,
             spend_to_date=funding.spend_to_date,
@@ -40,7 +41,7 @@ class ChangeSpendToDateContext:
     form: ChangeSpendToDateForm
 
     @classmethod
-    def from_domain(cls, scheme: Scheme) -> ChangeSpendToDateContext:
+    def from_domain(cls, scheme: Scheme) -> Self:
         name = scheme.overview.name
         assert name is not None
 
@@ -67,7 +68,7 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
         self.max_amount = max_amount
 
     @classmethod
-    def from_domain(cls, funding: SchemeFunding) -> ChangeSpendToDateForm:
+    def from_domain(cls, funding: SchemeFunding) -> Self:
         funding_allocation = funding.funding_allocation or 0
         return cls(max_amount=funding_allocation, data={"amount": funding.spend_to_date})
 
@@ -88,7 +89,7 @@ class BidStatusRevisionRepr(BaseModel):
     id: int | None = None
 
     @classmethod
-    def from_domain(cls, bid_status_revision: BidStatusRevision) -> BidStatusRevisionRepr:
+    def from_domain(cls, bid_status_revision: BidStatusRevision) -> Self:
         return cls(
             id=bid_status_revision.id,
             effective_date_from=bid_status_revision.effective.date_from.isoformat(),
@@ -144,7 +145,7 @@ class FinancialRevisionRepr(BaseModel):
     id: int | None = None
 
     @classmethod
-    def from_domain(cls, financial_revision: FinancialRevision) -> FinancialRevisionRepr:
+    def from_domain(cls, financial_revision: FinancialRevision) -> Self:
         return cls(
             id=financial_revision.id,
             effective_date_from=financial_revision.effective.date_from.isoformat(),

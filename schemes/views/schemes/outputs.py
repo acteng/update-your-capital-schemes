@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 from enum import Enum, unique
 from itertools import groupby
-from typing import Iterator
+from typing import Iterator, Self
 
 from pydantic import BaseModel
 
@@ -21,7 +21,7 @@ class SchemeOutputsContext:
     outputs: list[SchemeOutputRowContext]
 
     @classmethod
-    def from_domain(cls, output_revisions: list[OutputRevision]) -> SchemeOutputsContext:
+    def from_domain(cls, output_revisions: list[OutputRevision]) -> Self:
         return cls(
             outputs=[
                 SchemeOutputRowContext(
@@ -79,7 +79,7 @@ class OutputTypeContext:
     }
 
     @classmethod
-    def from_domain(cls, type_: OutputType) -> OutputTypeContext:
+    def from_domain(cls, type_: OutputType) -> Self:
         return cls(name=cls._NAMES[type_])
 
 
@@ -101,7 +101,7 @@ class OutputMeasureContext:
     }
 
     @classmethod
-    def from_domain(cls, measure: OutputMeasure) -> OutputMeasureContext:
+    def from_domain(cls, measure: OutputMeasure) -> Self:
         return cls(name=cls._NAMES[measure])
 
 
@@ -115,7 +115,7 @@ class OutputRevisionRepr(BaseModel):
     id: int | None = None
 
     @classmethod
-    def from_domain(cls, output_revision: OutputRevision) -> OutputRevisionRepr:
+    def from_domain(cls, output_revision: OutputRevision) -> Self:
         return cls(
             id=output_revision.id,
             effective_date_from=output_revision.effective.date_from.isoformat(),

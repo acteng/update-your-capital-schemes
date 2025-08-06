@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Self
 
 from flask_wtf import FlaskForm
 from pydantic import BaseModel
@@ -30,7 +29,7 @@ class SchemeReviewContext:
     form: SchemeReviewForm = field(default_factory=SchemeReviewForm)
 
     @classmethod
-    def from_domain(cls, reviews: SchemeReviews) -> SchemeReviewContext:
+    def from_domain(cls, reviews: SchemeReviews) -> Self:
         return cls(last_reviewed=reviews.last_reviewed, form=SchemeReviewForm())
 
 
@@ -40,7 +39,7 @@ class AuthorityReviewRepr(BaseModel):
     id: int | None = None
 
     @classmethod
-    def from_domain(cls, authority_review: AuthorityReview) -> AuthorityReviewRepr:
+    def from_domain(cls, authority_review: AuthorityReview) -> Self:
         return cls(
             id=authority_review.id,
             review_date=authority_review.review_date.isoformat(),

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from re import Pattern
-from typing import Iterator
+from typing import Iterator, Self
 
 from playwright.sync_api import Locator, Page
 
@@ -23,7 +23,7 @@ class StartPage(PageObject):
         self.footer = FooterComponent(page.get_by_role("contentinfo"))
 
     @classmethod
-    def open(cls, page: Page) -> StartPage:
+    def open(cls, page: Page) -> Self:
         page.goto("/")
         return cls(page)
 
@@ -118,7 +118,7 @@ class SchemesPage(PageObject):
         self.schemes = SchemesTableComponent(self._main.get_by_role("table"))
 
     @classmethod
-    def open(cls, page: Page) -> SchemesPage:
+    def open(cls, page: Page) -> Self:
         page.goto("/schemes")
         return cls(page)
 
@@ -151,11 +151,11 @@ class NotificationBannerComponent:
         return (self._heading.text_content() or "").strip()
 
     @classmethod
-    def for_important(cls, page: Page) -> NotificationBannerComponent:
+    def for_important(cls, page: Page) -> Self:
         return cls(page.get_by_role("region", name="Important"))
 
     @classmethod
-    def for_success(cls, page: Page) -> NotificationBannerComponent:
+    def for_success(cls, page: Page) -> Self:
         return cls(page.get_by_role("alert", name="Success"))
 
 
@@ -256,7 +256,7 @@ class SchemePage(PageObject):
         self.review = SchemeReviewComponent(self._main.get_by_role("heading", name="Is this scheme up-to-date?"))
 
     @classmethod
-    def open(cls, page: Page, reference: str) -> SchemePage:
+    def open(cls, page: Page, reference: str) -> Self:
         # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
         page.goto("/schemes")
         page.goto(f"/schemes/{reference}")
@@ -448,7 +448,7 @@ class SchemeReviewFormComponent:
         )
         self._confirm = form.get_by_role("button", name="Confirm")
 
-    def check_up_to_date(self) -> SchemeReviewFormComponent:
+    def check_up_to_date(self) -> Self:
         self.up_to_date.value = True
         return self
 
@@ -474,7 +474,7 @@ class ChangeSpendToDateFormComponent:
         self.amount = TextComponent(form.get_by_label("How much has been spent to date?"))
         self._confirm = form.get_by_role("button", name="Confirm")
 
-    def enter_amount(self, value: str) -> ChangeSpendToDateFormComponent:
+    def enter_amount(self, value: str) -> Self:
         self.amount.value = value
         return self
 
@@ -505,11 +505,11 @@ class ChangeMilestoneDatesFormComponent:
         )
         self._confirm = form.get_by_role("button", name="Confirm")
 
-    def enter_construction_started_actual(self, value: str) -> ChangeMilestoneDatesFormComponent:
+    def enter_construction_started_actual(self, value: str) -> Self:
         self.construction_started_actual.value = value
         return self
 
-    def enter_construction_completed_planned(self, value: str) -> ChangeMilestoneDatesFormComponent:
+    def enter_construction_completed_planned(self, value: str) -> Self:
         self.construction_completed_planned.value = value
         return self
 

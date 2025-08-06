@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date, datetime
 from enum import Enum, unique
-from typing import Any
+from typing import Any, Self
 
 from flask_wtf import FlaskForm
 from pydantic import BaseModel
@@ -31,7 +31,7 @@ class SchemeMilestonesContext:
     milestones: list[SchemeMilestoneRowContext]
 
     @classmethod
-    def from_domain(cls, scheme: Scheme) -> SchemeMilestonesContext:
+    def from_domain(cls, scheme: Scheme) -> Self:
         return cls(
             milestones=[
                 SchemeMilestoneRowContext(
@@ -72,7 +72,7 @@ class MilestoneContext:
     }
 
     @classmethod
-    def from_domain(cls, milestone: Milestone | None) -> MilestoneContext:
+    def from_domain(cls, milestone: Milestone | None) -> Self:
         return cls(name=cls._NAMES[milestone] if milestone else None)
 
 
@@ -83,7 +83,7 @@ class ChangeMilestoneDatesContext:
     form: ChangeMilestoneDatesForm
 
     @classmethod
-    def from_domain(cls, scheme: Scheme, now: datetime) -> ChangeMilestoneDatesContext:
+    def from_domain(cls, scheme: Scheme, now: datetime) -> Self:
         name = scheme.overview.name
         assert name is not None
 
@@ -201,7 +201,7 @@ class MilestoneRevisionRepr(BaseModel):
     id: int | None = None
 
     @classmethod
-    def from_domain(cls, milestone_revision: MilestoneRevision) -> MilestoneRevisionRepr:
+    def from_domain(cls, milestone_revision: MilestoneRevision) -> Self:
         return cls(
             id=milestone_revision.id,
             effective_date_from=milestone_revision.effective.date_from.isoformat(),

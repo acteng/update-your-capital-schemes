@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from re import Pattern
-from typing import Iterator
+from typing import Iterator, Self
 
 from bs4 import BeautifulSoup, ResultSet, Tag
 from flask.testing import FlaskClient
@@ -34,7 +34,7 @@ class StartPage(PageObject):
         return FooterComponent(one(self._soup.select("footer")))
 
     @classmethod
-    def open(cls, client: FlaskClient) -> StartPage:
+    def open(cls, client: FlaskClient) -> Self:
         response = client.get("/")
         return cls(response)
 
@@ -59,7 +59,7 @@ class PrivacyPage(PageObject):
         self.is_visible = heading.string == "Privacy notice" if heading else False
 
     @classmethod
-    def open(cls, client: FlaskClient) -> PrivacyPage:
+    def open(cls, client: FlaskClient) -> Self:
         response = client.get("/privacy")
         return cls(response)
 
@@ -71,7 +71,7 @@ class CookiesPage(PageObject):
         self.is_visible = heading.string == "Cookies" if heading else False
 
     @classmethod
-    def open(cls, client: FlaskClient) -> CookiesPage:
+    def open(cls, client: FlaskClient) -> Self:
         response = client.get("/cookies")
         return cls(response)
 
@@ -83,7 +83,7 @@ class AccessibilityPage(PageObject):
         self.is_visible = heading.string == "Accessibility statement" if heading else False
 
     @classmethod
-    def open(cls, client: FlaskClient) -> AccessibilityPage:
+    def open(cls, client: FlaskClient) -> Self:
         response = client.get("/accessibility")
         return cls(response)
 
@@ -104,7 +104,7 @@ class ForbiddenPage(PageObject):
         self.is_forbidden = response.status_code == 403
 
     @classmethod
-    def open(cls, client: FlaskClient) -> ForbiddenPage:
+    def open(cls, client: FlaskClient) -> Self:
         response = client.get("/auth/forbidden")
         return cls(response)
 
@@ -137,7 +137,7 @@ class SchemesPage(PageObject):
         return ServiceHeaderComponent(one(self._soup.select("header")))
 
     @classmethod
-    def open(cls, client: FlaskClient) -> SchemesPage:
+    def open(cls, client: FlaskClient) -> Self:
         response = client.get("/schemes")
         return cls(response)
 
@@ -239,7 +239,7 @@ class SchemePage(PageObject):
         return SchemeReviewComponent(one(self._soup.select("main h2:-soup-contains('Is this scheme up-to-date?')")))
 
     @classmethod
-    def open(cls, client: FlaskClient, reference: str) -> SchemePage:
+    def open(cls, client: FlaskClient, reference: str) -> Self:
         response = client.get(f"/schemes/{reference}")
         return cls(response)
 
@@ -397,7 +397,7 @@ class ChangeSpendToDatePage(PageObject):
         return ChangeSpendToDateFormComponent(one(self._soup.select("form")))
 
     @classmethod
-    def open(cls, client: FlaskClient, reference: str) -> ChangeSpendToDatePage:
+    def open(cls, client: FlaskClient, reference: str) -> Self:
         response = client.get(f"/schemes/{reference}/spend-to-date")
         return cls(response)
 
@@ -431,7 +431,7 @@ class ChangeMilestoneDatesPage(PageObject):
         return ChangeMilestoneDatesFormComponent(one(self._soup.select("form")))
 
     @classmethod
-    def open(cls, client: FlaskClient, reference: str) -> ChangeMilestoneDatesPage:
+    def open(cls, client: FlaskClient, reference: str) -> Self:
         response = client.get(f"/schemes/{reference}/milestones")
         return cls(response)
 
@@ -459,12 +459,12 @@ class NotificationBannerComponent:
         self.heading = (one(banner.select("p")).string or "").strip()
 
     @classmethod
-    def for_important(cls, soup: BeautifulSoup) -> NotificationBannerComponent | None:
+    def for_important(cls, soup: BeautifulSoup) -> Self | None:
         tag = soup.select_one(".govuk-notification-banner:not(.govuk-notification-banner--success)")
         return cls(tag) if tag else None
 
     @classmethod
-    def for_success(cls, soup: BeautifulSoup) -> NotificationBannerComponent | None:
+    def for_success(cls, soup: BeautifulSoup) -> Self | None:
         tag = soup.select_one(".govuk-notification-banner.govuk-notification-banner--success")
         return cls(tag) if tag else None
 

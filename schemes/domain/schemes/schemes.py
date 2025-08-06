@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from schemes.domain.schemes.funding import BidStatus, SchemeFunding
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs

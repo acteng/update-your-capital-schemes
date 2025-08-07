@@ -12,6 +12,10 @@ class CapitalSchemeOverviewModel(BaseModel):
     funding_programme: str
 
 
+class CapitalSchemeBidStatusDetailsModel(BaseModel):
+    bid_status: str
+
+
 class CapitalSchemeAuthorityReviewModel(BaseModel):
     review_date: str
 
@@ -19,6 +23,7 @@ class CapitalSchemeAuthorityReviewModel(BaseModel):
 class CapitalSchemeModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
+    bid_status_details: CapitalSchemeBidStatusDetailsModel
     authority_review: CapitalSchemeAuthorityReviewModel
 
 

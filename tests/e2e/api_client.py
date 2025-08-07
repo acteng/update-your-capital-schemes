@@ -22,6 +22,11 @@ class CapitalSchemeOverviewModel:
 
 
 @dataclass(frozen=True)
+class CapitalSchemeBidStatusDetailsModel:
+    bidStatus: str
+
+
+@dataclass(frozen=True)
 class CapitalSchemeAuthorityReviewModel:
     reviewDate: str
 
@@ -30,6 +35,7 @@ class CapitalSchemeAuthorityReviewModel:
 class CapitalSchemeModel:
     reference: str
     overview: CapitalSchemeOverviewModel
+    bidStatusDetails: CapitalSchemeBidStatusDetailsModel
     authorityReview: CapitalSchemeAuthorityReviewModel
 
 

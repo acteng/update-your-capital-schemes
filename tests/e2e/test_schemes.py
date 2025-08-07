@@ -5,6 +5,7 @@ from tests.e2e.api_client import (
     ApiClient,
     AuthorityModel,
     CapitalSchemeAuthorityReviewModel,
+    CapitalSchemeBidStatusDetailsModel,
     CapitalSchemeModel,
     CapitalSchemeOverviewModel,
     FundingProgrammeModel,
@@ -56,6 +57,7 @@ class TestAuthenticated:
                     bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
                     fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF3",
                 ),
+                bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
                 authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T00:00:00Z"),
             ),
             CapitalSchemeModel(
@@ -65,6 +67,7 @@ class TestAuthenticated:
                     bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
                     fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF4",
                 ),
+                bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
                 authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-03T00:00:00Z"),
             ),
         )

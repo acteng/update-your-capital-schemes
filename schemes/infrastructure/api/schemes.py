@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from typing import Annotated
 
 from pydantic import AnyUrl, Field
@@ -77,6 +78,27 @@ class CapitalSchemeOverviewModel(BaseModel):
         )
 
 
+class BidStatusModel(str, Enum):
+    SUBMITTED = "submitted"
+    FUNDED = "funded"
+    NOT_FUNDED = "not funded"
+    SPLIT = "split"
+    DELETED = "deleted"
+
+    def to_domain(self) -> BidStatus:
+        return BidStatus[self.name]
+
+
+class CapitalSchemeBidStatusDetailsModel(BaseModel):
+    bid_status: BidStatusModel
+
+    def to_domain(self) -> BidStatusRevision:
+        # TODO: id, effective
+        return BidStatusRevision(
+            id_=None, effective=DateRange(date_from=datetime.min, date_to=None), status=self.bid_status.to_domain()
+        )
+
+
 class CapitalSchemeAuthorityReviewModel(BaseModel):
     review_date: datetime
 
@@ -88,18 +110,14 @@ class CapitalSchemeAuthorityReviewModel(BaseModel):
 class CapitalSchemeModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
+    bid_status_details: CapitalSchemeBidStatusDetailsModel
     authority_review: CapitalSchemeAuthorityReviewModel | None = None
 
     def to_domain(self, funding_programmes: dict[str, FundingProgramme]) -> Scheme:
         # TODO: id
         scheme = Scheme(id_=0, reference=self.reference)
         scheme.overview.update_overview(self.overview.to_domain(funding_programmes))
-        # TODO: bid_status
-        scheme.funding.update_bid_status(
-            BidStatusRevision(
-                id_=None, effective=DateRange(date_from=datetime.min, date_to=None), status=BidStatus.FUNDED
-            )
-        )
+        scheme.funding.update_bid_status(self.bid_status_details.to_domain())
 
         if self.authority_review:
             scheme.reviews.update_authority_review(self.authority_review.to_domain())

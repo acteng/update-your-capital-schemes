@@ -4,7 +4,7 @@ from typing import Any
 import pytest
 import responses
 from pydantic import AnyUrl
-from responses.matchers import header_matcher
+from responses.matchers import header_matcher, query_param_matcher
 
 from schemes.domain.schemes.funding import BidStatus
 from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes
@@ -151,6 +151,33 @@ class TestApiSchemeRepository:
         assert scheme1.reference == "ATE00001"
         (authority_review1,) = scheme1.reviews.authority_reviews
         assert authority_review1.review_date == datetime(2020, 1, 2)
+
+    @responses.activate
+    def test_get_by_authority_filters_by_bid_status_funded(
+        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+    ) -> None:
+        responses.get(
+            f"{api_base_url}/funding-programmes",
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
+            json=_dummy_funding_programmes_json(),
+        )
+        responses.get(
+            f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            match=[
+                query_param_matcher({"bid-status": "funded"}),
+                header_matcher({"Authorization": f"Bearer {access_token}"}),
+            ],
+            json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]},
+        )
+        responses.get(
+            f"{api_base_url}/capital-schemes/ATE00001",
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
+            json=_build_capital_scheme_json("ATE00001"),
+        )
+
+        (scheme1,) = schemes.get_by_authority("LIV")
+
+        assert scheme1.reference == "ATE00001"
 
 
 class TestFundingProgrammeItemModel:

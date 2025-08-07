@@ -41,12 +41,16 @@ def get_authority(abbreviation: str) -> dict[str, Any]:
 @bp.get("<abbreviation>/capital-schemes/bid-submitting")
 @jwt_bearer_auth
 def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str, Any]:
+    bid_status = request.args.get("bid-status")
+
     authority_url = url_for("authorities.get_authority", abbreviation=abbreviation, _external=True)
     references = [
         capital_scheme.reference
         for capital_scheme in capital_schemes.values()
         if capital_scheme.overview.bid_submitting_authority == authority_url
+        and (not bid_status or capital_scheme.bid_status_details.bid_status == bid_status)
     ]
+
     capital_scheme_urls = [
         AnyUrl(url_for("capital_schemes.get_capital_scheme", reference=reference, _external=True))
         for reference in references

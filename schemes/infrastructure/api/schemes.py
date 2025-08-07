@@ -25,7 +25,7 @@ class ApiSchemeRepository(SchemeRepository):
         funding_programmes = self._get_funding_programmes()
 
         response: Response = self._remote_app.get(
-            f"/authorities/{authority_abbreviation}/capital-schemes/bid-submitting"
+            f"/authorities/{authority_abbreviation}/capital-schemes/bid-submitting", params={"bid-status": "funded"}
         )
         response.raise_for_status()
 

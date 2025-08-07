@@ -41,13 +41,19 @@ def get_authority(abbreviation: str) -> dict[str, Any]:
 @bp.get("<abbreviation>/capital-schemes/bid-submitting")
 @jwt_bearer_auth
 def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str, Any]:
+    funding_programme_codes = request.args.getlist("funding-programme-code")
     bid_status = request.args.get("bid-status")
 
     authority_url = url_for("authorities.get_authority", abbreviation=abbreviation, _external=True)
+    funding_programme_urls = [
+        url_for("funding_programmes.get_funding_programme", code=funding_programme_code, _external=True)
+        for funding_programme_code in funding_programme_codes
+    ]
     references = [
         capital_scheme.reference
         for capital_scheme in capital_schemes.values()
         if capital_scheme.overview.bid_submitting_authority == authority_url
+        and (not funding_programme_urls or capital_scheme.overview.funding_programme in funding_programme_urls)
         and (not bid_status or capital_scheme.bid_status_details.bid_status == bid_status)
     ]
 

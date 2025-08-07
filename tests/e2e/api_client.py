@@ -6,6 +6,7 @@ import requests
 @dataclass(frozen=True)
 class FundingProgrammeModel:
     code: str
+    eligibleForAuthorityUpdate: bool
 
 
 @dataclass(frozen=True)

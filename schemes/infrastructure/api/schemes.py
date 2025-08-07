@@ -25,7 +25,11 @@ class ApiSchemeRepository(SchemeRepository):
         funding_programmes = self._get_funding_programmes()
 
         response: Response = self._remote_app.get(
-            f"/authorities/{authority_abbreviation}/capital-schemes/bid-submitting", params={"bid-status": "funded"}
+            f"/authorities/{authority_abbreviation}/capital-schemes/bid-submitting",
+            params={
+                "funding-programme-code": [funding_programme.code for funding_programme in funding_programmes.values()],
+                "bid-status": "funded",
+            },
         )
         response.raise_for_status()
 
@@ -36,7 +40,9 @@ class ApiSchemeRepository(SchemeRepository):
         ]
 
     def _get_funding_programmes(self) -> dict[str, FundingProgramme]:
-        response: Response = self._remote_app.get("/funding-programmes")
+        response: Response = self._remote_app.get(
+            "/funding-programmes", params={"eligible-for-authority-update": "true"}
+        )
         response.raise_for_status()
 
         collection_model = CollectionModel[FundingProgrammeItemModel].model_validate(response.json())

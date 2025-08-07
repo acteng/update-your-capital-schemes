@@ -45,20 +45,12 @@ class TestApiSchemeRepository:
         responses.get(
             f"{api_base_url}/capital-schemes/ATE00001",
             match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
-            json={
-                "reference": "ATE00001",
-                "overview": _dummy_overview_json(),
-                "bidStatusDetails": _dummy_bid_status_details_json(),
-            },
+            json=_build_capital_scheme_json("ATE00001"),
         )
         responses.get(
             f"{api_base_url}/capital-schemes/ATE00002",
             match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
-            json={
-                "reference": "ATE00002",
-                "overview": _dummy_overview_json(),
-                "bidStatusDetails": _dummy_bid_status_details_json(),
-            },
+            json=_build_capital_scheme_json("ATE00002"),
         )
 
         scheme1, scheme2 = schemes.get_by_authority("LIV")
@@ -284,3 +276,11 @@ def _dummy_bid_status_details_model() -> CapitalSchemeBidStatusDetailsModel:
 
 def _dummy_bid_status_details_json() -> dict[str, Any]:
     return {"bidStatus": "submitted"}
+
+
+def _build_capital_scheme_json(reference: str) -> dict[str, Any]:
+    return {
+        "reference": reference,
+        "overview": _dummy_overview_json(),
+        "bidStatusDetails": _dummy_bid_status_details_json(),
+    }

@@ -142,7 +142,7 @@ class TestScheme:
             (FundingProgramme("ATF100", False, False), False),
         ],
     )
-    def test_is_updateable_when_not_eligible_for_authority_update(
+    def test_is_updateable_when_eligible_for_authority_update(
         self, funding_programme: FundingProgramme, expected_updateable: bool
     ) -> None:
         scheme = build_scheme(

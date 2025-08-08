@@ -23,12 +23,14 @@ class ApiSchemeRepository(SchemeRepository):
 
     def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         funding_programmes = self._get_funding_programmes()
+        milestones = self._get_milestones()
 
         response: Response = self._remote_app.get(
             f"/authorities/{authority_abbreviation}/capital-schemes/bid-submitting",
             params={
                 "funding-programme-code": [funding_programme.code for funding_programme in funding_programmes.values()],
                 "bid-status": "funded",
+                "current-milestone": milestones,
             },
         )
         response.raise_for_status()
@@ -50,6 +52,15 @@ class ApiSchemeRepository(SchemeRepository):
             str(funding_programme_item.id): funding_programme_item.to_domain()
             for funding_programme_item in collection_model.items
         }
+
+    def _get_milestones(self) -> list[str]:
+        response: Response = self._remote_app.get(
+            "/capital-schemes/milestones", params={"active": "true", "complete": "false"}
+        )
+        response.raise_for_status()
+
+        collection_model = CollectionModel[str].model_validate(response.json())
+        return collection_model.items
 
     def _get_by_url(self, url: str, funding_programmes: dict[str, FundingProgramme]) -> Scheme:
         response: Response = self._remote_app.get(url)

@@ -33,6 +33,11 @@ class TestApiSchemeRepository:
             json=_dummy_funding_programmes_json(),
         )
         responses.get(
+            f"{api_base_url}/capital-schemes/milestones",
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
+            json=_dummy_milestones_json(),
+        )
+        responses.get(
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
             match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
             json={
@@ -68,6 +73,11 @@ class TestApiSchemeRepository:
             json={"items": [{"@id": f"{api_base_url}/funding-programmes/ATF4", "code": "ATF4"}]},
         )
         responses.get(
+            f"{api_base_url}/capital-schemes/milestones",
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
+            json=_dummy_milestones_json(),
+        )
+        responses.get(
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
             match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
             json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]},
@@ -101,6 +111,11 @@ class TestApiSchemeRepository:
             json=_dummy_funding_programmes_json(),
         )
         responses.get(
+            f"{api_base_url}/capital-schemes/milestones",
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
+            json=_dummy_milestones_json(),
+        )
+        responses.get(
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
             match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
             json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]},
@@ -129,6 +144,11 @@ class TestApiSchemeRepository:
             f"{api_base_url}/funding-programmes",
             match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
             json=_dummy_funding_programmes_json(),
+        )
+        responses.get(
+            f"{api_base_url}/capital-schemes/milestones",
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
+            json=_dummy_milestones_json(),
         )
         responses.get(
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
@@ -170,6 +190,11 @@ class TestApiSchemeRepository:
             },
         )
         responses.get(
+            f"{api_base_url}/capital-schemes/milestones",
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
+            json=_dummy_milestones_json(),
+        )
+        responses.get(
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
             match=[
                 query_param_matcher({"funding-programme-code": ["ATF3", "ATF4"]}, strict_match=False),
@@ -201,9 +226,51 @@ class TestApiSchemeRepository:
             json=_dummy_funding_programmes_json(),
         )
         responses.get(
+            f"{api_base_url}/capital-schemes/milestones",
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
+            json=_dummy_milestones_json(),
+        )
+        responses.get(
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
             match=[
                 query_param_matcher({"bid-status": "funded"}, strict_match=False),
+                header_matcher({"Authorization": f"Bearer {access_token}"}),
+            ],
+            json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]},
+        )
+        responses.get(
+            f"{api_base_url}/capital-schemes/ATE00001",
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
+            json=_build_capital_scheme_json("ATE00001"),
+        )
+
+        (scheme1,) = schemes.get_by_authority("LIV")
+
+        assert scheme1.reference == "ATE00001"
+
+    @responses.activate
+    def test_get_by_authority_filters_by_current_milestone_active_and_incomplete(
+        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+    ) -> None:
+        responses.get(
+            f"{api_base_url}/funding-programmes",
+            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
+            json=_dummy_funding_programmes_json(),
+        )
+        responses.get(
+            f"{api_base_url}/capital-schemes/milestones",
+            match=[
+                query_param_matcher({"active": "true", "complete": "false"}),
+                header_matcher({"Authorization": f"Bearer {access_token}"}),
+            ],
+            json={"items": ["detailed design completed", "construction started"]},
+        )
+        responses.get(
+            f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            match=[
+                query_param_matcher(
+                    {"current-milestone": ["detailed design completed", "construction started"]}, strict_match=False
+                ),
                 header_matcher({"Authorization": f"Bearer {access_token}"}),
             ],
             json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]},
@@ -326,6 +393,10 @@ def _dummy_funding_programmes() -> dict[str, FundingProgramme]:
 
 def _dummy_funding_programmes_json() -> dict[str, Any]:
     return {"items": [{"@id": _dummy_funding_programme_url(), "code": _dummy_funding_programme().code}]}
+
+
+def _dummy_milestones_json() -> dict[str, Any]:
+    return {"items": []}
 
 
 def _dummy_overview_model() -> CapitalSchemeOverviewModel:

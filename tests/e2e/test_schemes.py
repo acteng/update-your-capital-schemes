@@ -6,9 +6,11 @@ from tests.e2e.api_client import (
     AuthorityModel,
     CapitalSchemeAuthorityReviewModel,
     CapitalSchemeBidStatusDetailsModel,
+    CapitalSchemeMilestonesModel,
     CapitalSchemeModel,
     CapitalSchemeOverviewModel,
     FundingProgrammeModel,
+    MilestoneModel,
 )
 from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, UserRepr
 from tests.e2e.builders import build_scheme
@@ -28,6 +30,10 @@ class TestAuthenticated:
         api_client.add_funding_programmes(
             FundingProgrammeModel(code="ATF3", eligibleForAuthorityUpdate=True),
             FundingProgrammeModel(code="ATF4", eligibleForAuthorityUpdate=True),
+        )
+        api_client.add_milestones(
+            MilestoneModel(name="detailed design completed", active=True, complete=False),
+            MilestoneModel(name="construction started", active=True, complete=False),
         )
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
         api_client.add_authorities(
@@ -61,6 +67,7 @@ class TestAuthenticated:
                     fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF3",
                 ),
                 bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
+                milestones=CapitalSchemeMilestonesModel(currentMilestone="detailed design completed"),
                 authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T00:00:00Z"),
             ),
             CapitalSchemeModel(
@@ -71,6 +78,7 @@ class TestAuthenticated:
                     fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF4",
                 ),
                 bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
+                milestones=CapitalSchemeMilestonesModel(currentMilestone="construction started"),
                 authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-03T00:00:00Z"),
             ),
         )

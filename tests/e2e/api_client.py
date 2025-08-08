@@ -28,6 +28,11 @@ class CapitalSchemeBidStatusDetailsModel:
 
 
 @dataclass(frozen=True)
+class CapitalSchemeMilestonesModel:
+    currentMilestone: str | None
+
+
+@dataclass(frozen=True)
 class CapitalSchemeAuthorityReviewModel:
     reviewDate: str
 
@@ -37,7 +42,15 @@ class CapitalSchemeModel:
     reference: str
     overview: CapitalSchemeOverviewModel
     bidStatusDetails: CapitalSchemeBidStatusDetailsModel
+    milestones: CapitalSchemeMilestonesModel
     authorityReview: CapitalSchemeAuthorityReviewModel
+
+
+@dataclass(frozen=True)
+class MilestoneModel:
+    name: str
+    active: bool
+    complete: bool
 
 
 class ApiClient:
@@ -68,4 +81,11 @@ class ApiClient:
     def add_schemes(self, *capital_schemes: CapitalSchemeModel) -> None:
         json = [asdict(capital_scheme) for capital_scheme in capital_schemes]
         response = self._session.post(f"{self._url}/capital-schemes", json=json, timeout=self.DEFAULT_TIMEOUT)
+        response.raise_for_status()
+
+    def add_milestones(self, *milestones: MilestoneModel) -> None:
+        json = [asdict(milestone) for milestone in milestones]
+        response = self._session.post(
+            f"{self._url}/capital-schemes/milestones", json=json, timeout=self.DEFAULT_TIMEOUT
+        )
         response.raise_for_status()

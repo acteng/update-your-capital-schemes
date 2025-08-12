@@ -264,7 +264,7 @@ class TestApiSchemeRepository:
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
             match=[
                 query_param_matcher(
-                    {"current-milestone": ["detailed design completed", "construction started"]}, strict_match=False
+                    {"current-milestone": ["detailed design completed", "construction started", ""]}, strict_match=False
                 ),
                 header_matcher({"Authorization": f"Bearer {access_token}"}),
             ],

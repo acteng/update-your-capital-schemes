@@ -60,7 +60,8 @@ class ApiSchemeRepository(SchemeRepository):
         response.raise_for_status()
 
         collection_model = CollectionModel[str].model_validate(response.json())
-        return collection_model.items
+        no_milestone = ""
+        return collection_model.items + [no_milestone]
 
     def _get_by_url(self, url: str, funding_programmes: dict[str, FundingProgramme]) -> Scheme:
         response: Response = self._remote_app.get(url)

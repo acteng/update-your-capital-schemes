@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 from typing import Any
 
 import pytest
-import responses
 from pydantic import AnyUrl
+from responses import RequestsMock
 from responses.matchers import header_matcher, query_param_matcher
 
 from schemes.domain.schemes.funding import BidStatus
@@ -25,8 +25,9 @@ class TestApiSchemeRepository:
     def schemes_fixture(self, remote_app: RemoteApp) -> ApiSchemeRepository:
         return ApiSchemeRepository(remote_app)
 
-    @responses.activate
-    def test_get_by_authority(self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository) -> None:
+    def test_get_by_authority(
+        self, responses: RequestsMock, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+    ) -> None:
         responses.get(
             f"{api_base_url}/funding-programmes",
             match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
@@ -63,9 +64,8 @@ class TestApiSchemeRepository:
         assert scheme1.reference == "ATE00001"
         assert scheme2.reference == "ATE00002"
 
-    @responses.activate
     def test_get_by_authority_sets_overview_revision(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, responses: RequestsMock, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         responses.get(
             f"{api_base_url}/funding-programmes",
@@ -101,9 +101,8 @@ class TestApiSchemeRepository:
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
         )
 
-    @responses.activate
     def test_get_by_authority_sets_bid_status_revision(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, responses: RequestsMock, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         responses.get(
             f"{api_base_url}/funding-programmes",
@@ -136,9 +135,8 @@ class TestApiSchemeRepository:
         (bid_status_revision1,) = scheme1.funding.bid_status_revisions
         assert bid_status_revision1.status == BidStatus.FUNDED
 
-    @responses.activate
     def test_get_by_authority_sets_authority_review(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, responses: RequestsMock, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         responses.get(
             f"{api_base_url}/funding-programmes",
@@ -172,9 +170,8 @@ class TestApiSchemeRepository:
         (authority_review1,) = scheme1.reviews.authority_reviews
         assert authority_review1.review_date == datetime(2020, 1, 2)
 
-    @responses.activate
     def test_get_by_authority_filters_by_funding_programme_eligible_for_authority_update(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, responses: RequestsMock, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         responses.get(
             f"{api_base_url}/funding-programmes",
@@ -216,9 +213,8 @@ class TestApiSchemeRepository:
 
         assert scheme1.reference == "ATE00001"
 
-    @responses.activate
     def test_get_by_authority_filters_by_bid_status_funded(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, responses: RequestsMock, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         responses.get(
             f"{api_base_url}/funding-programmes",
@@ -248,9 +244,8 @@ class TestApiSchemeRepository:
 
         assert scheme1.reference == "ATE00001"
 
-    @responses.activate
     def test_get_by_authority_filters_by_current_milestone_active_and_incomplete(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, responses: RequestsMock, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         responses.get(
             f"{api_base_url}/funding-programmes",

@@ -1,9 +1,10 @@
-from typing import Any
+from typing import Any, Generator
 
 import pytest
 from authlib.integrations.base_client import BaseApp, FrameworkIntegration, OAuth2Mixin
 from authlib.integrations.requests_client import OAuth2Session
 from authlib.oauth2.rfc6749 import OAuth2Token
+from responses import RequestsMock
 
 from schemes.infrastructure.api.oauth import RemoteApp
 
@@ -15,6 +16,12 @@ class _StubRemoteApp(OAuth2Mixin, BaseApp):  # type: ignore
     # See closing note: https://docs.authlib.org/en/latest/client/frameworks.html#fetch-user-oauth-token
     def _get_requested_token(self, request: Any) -> OAuth2Token | None:
         return self._fetch_token() if self._fetch_token else None
+
+
+@pytest.fixture(name="responses")
+def responses_fixture() -> Generator[RequestsMock]:
+    with RequestsMock() as mock:
+        yield mock
 
 
 @pytest.fixture(name="access_token")

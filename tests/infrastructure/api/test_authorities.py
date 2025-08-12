@@ -1,5 +1,5 @@
 import pytest
-import responses
+from responses import RequestsMock
 from responses.matchers import header_matcher
 
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository, AuthorityModel
@@ -11,8 +11,9 @@ class TestApiAuthorityRepository:
     def authorities_fixture(self, remote_app: RemoteApp) -> ApiAuthorityRepository:
         return ApiAuthorityRepository(remote_app)
 
-    @responses.activate
-    def test_get_authority(self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository) -> None:
+    def test_get_authority(
+        self, responses: RequestsMock, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
+    ) -> None:
         responses.get(
             f"{api_base_url}/authorities/LIV",
             match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
@@ -27,9 +28,8 @@ class TestApiAuthorityRepository:
             and authority.name == "Liverpool City Region Combined Authority"
         )
 
-    @responses.activate
     def test_get_authority_ignores_unknown_key(
-        self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
+        self, responses: RequestsMock, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
         responses.get(
             f"{api_base_url}/authorities/LIV",
@@ -45,9 +45,8 @@ class TestApiAuthorityRepository:
             and authority.name == "Liverpool City Region Combined Authority"
         )
 
-    @responses.activate
     def test_get_authority_that_does_not_exist(
-        self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
+        self, responses: RequestsMock, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
         responses.get(
             f"{api_base_url}/authorities/WYO",

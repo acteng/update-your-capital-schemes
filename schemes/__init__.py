@@ -28,6 +28,7 @@ from schemes.domain.reporting_window import DefaultReportingWindowService, Repor
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository
+from schemes.infrastructure.api.schemes import ApiSchemeRepository
 from schemes.infrastructure.clock import Clock, FakeClock, SystemClock
 from schemes.infrastructure.database import (
     AuthorityEntity,
@@ -118,6 +119,10 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
         )
         binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
         binder.bind_to_constructor(SchemeRepository, DatabaseSchemeRepository)
+        binder.bind_to_constructor(
+            (SchemeRepository, Migrated),
+            _create_api_scheme_repository if "ATE_URL" in app.config else DatabaseSchemeRepository,
+        )
 
     return _bindings
 
@@ -166,6 +171,12 @@ def _create_session_maker(engine: Engine, capital_schemes_engine: Engine) -> ses
 def _create_api_authority_repository(app: Flask) -> ApiAuthorityRepository:
     oauth = app.extensions["authlib.integrations.flask_client"]
     return ApiAuthorityRepository(oauth.ate)
+
+
+@inject.autoparams()
+def _create_api_scheme_repository(app: Flask) -> ApiSchemeRepository:
+    oauth = app.extensions["authlib.integrations.flask_client"]
+    return ApiSchemeRepository(oauth.ate)
 
 
 def _enforce_sqlite_foreign_keys(dbapi_connection: DBAPIConnection, _connection_record: ConnectionPoolEntry) -> None:

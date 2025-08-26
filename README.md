@@ -13,7 +13,7 @@ Digital service for local authorities to provide updates about capital schemes t
    ```bash
    gcloud auth application-default login
    ```
-1. Install Terraform 1.12
+1. Install Terraform 1.13
 1. Install [Bitwarden CLI](https://bitwarden.com/help/cli/#download-and-install)
 
 ## Configure the app

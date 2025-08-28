@@ -1,14 +1,14 @@
 import pytest
+from authlib.integrations.base_client import BaseApp
 from responses import RequestsMock
 from responses.matchers import header_matcher
 
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository, AuthorityModel
-from schemes.infrastructure.api.oauth import RemoteApp
 
 
 class TestApiAuthorityRepository:
     @pytest.fixture(name="authorities")
-    def authorities_fixture(self, remote_app: RemoteApp) -> ApiAuthorityRepository:
+    def authorities_fixture(self, remote_app: BaseApp) -> ApiAuthorityRepository:
         return ApiAuthorityRepository(remote_app)
 
     def test_get_authority(

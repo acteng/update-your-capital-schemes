@@ -2,6 +2,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Annotated
 
+from authlib.integrations.base_client import BaseApp
 from pydantic import AnyUrl, Field
 from requests import Response
 
@@ -14,11 +15,10 @@ from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.dates import zoned_to_local
-from schemes.infrastructure.api.oauth import RemoteApp
 
 
 class ApiSchemeRepository(SchemeRepository):
-    def __init__(self, remote_app: RemoteApp):
+    def __init__(self, remote_app: BaseApp):
         self._remote_app = remote_app
 
     def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:

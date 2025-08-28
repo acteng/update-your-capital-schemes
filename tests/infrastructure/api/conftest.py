@@ -8,8 +8,6 @@ from authlib.integrations.requests_client import OAuth2Session
 from authlib.oauth2.rfc6749 import OAuth2Token
 from responses import RequestsMock
 
-from schemes.infrastructure.api.oauth import RemoteApp
-
 
 class _AllowEmptyQueryParamRequestsMock(RequestsMock):
     """
@@ -56,7 +54,7 @@ def api_base_url_fixture() -> str:
 
 
 @pytest.fixture(name="remote_app")
-def remote_app_fixture(access_token: str, api_base_url: str) -> RemoteApp:
+def remote_app_fixture(access_token: str, api_base_url: str) -> BaseApp:
     return _StubRemoteApp(
         FrameworkIntegration("dummy"),
         fetch_token=lambda: OAuth2Token({"access_token": access_token}),

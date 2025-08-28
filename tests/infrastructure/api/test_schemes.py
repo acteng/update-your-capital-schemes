@@ -2,13 +2,13 @@ from datetime import datetime, timezone
 from typing import Any
 
 import pytest
+from authlib.integrations.base_client import BaseApp
 from pydantic import AnyUrl
 from responses import RequestsMock
 from responses.matchers import header_matcher, query_param_matcher
 
 from schemes.domain.schemes.funding import BidStatus
 from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes
-from schemes.infrastructure.api.oauth import RemoteApp
 from schemes.infrastructure.api.schemes import (
     ApiSchemeRepository,
     BidStatusModel,
@@ -22,7 +22,7 @@ from schemes.infrastructure.api.schemes import (
 
 class TestApiSchemeRepository:
     @pytest.fixture(name="schemes")
-    def schemes_fixture(self, remote_app: RemoteApp) -> ApiSchemeRepository:
+    def schemes_fixture(self, remote_app: BaseApp) -> ApiSchemeRepository:
         return ApiSchemeRepository(remote_app)
 
     def test_get_by_authority(

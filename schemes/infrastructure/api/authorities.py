@@ -1,12 +1,12 @@
+from authlib.integrations.base_client import BaseApp
 from requests import Response
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.infrastructure.api.base import BaseModel
-from schemes.infrastructure.api.oauth import RemoteApp
 
 
 class ApiAuthorityRepository(AuthorityRepository):
-    def __init__(self, remote_app: RemoteApp):
+    def __init__(self, remote_app: BaseApp):
         self._remote_app = remote_app
 
     def get(self, abbreviation: str) -> Authority | None:

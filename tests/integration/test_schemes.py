@@ -18,6 +18,7 @@ from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.builders import build_scheme
+from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import SchemesPage
 
 
@@ -29,8 +30,8 @@ class TestSchemes:
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
-    def test_schemes_shows_title(self, client: FlaskClient) -> None:
-        schemes_page = SchemesPage.open(client)
+    async def test_schemes_shows_title(self, async_client: AsyncFlaskClient) -> None:
+        schemes_page = await SchemesPage.open(async_client)
 
         assert schemes_page.title == "Your schemes - Update your capital schemes - Active Travel England - GOV.UK"
 
@@ -44,7 +45,7 @@ class TestSchemes:
     )
     async def test_schemes_shows_update_schemes_notification(
         self,
-        client: FlaskClient,
+        async_client: AsyncFlaskClient,
         clock: Clock,
         now: datetime,
         schemes: SchemeRepository,
@@ -57,7 +58,7 @@ class TestSchemes:
         )
         await schemes.add(scheme)
 
-        schemes_page = SchemesPage.open(client)
+        schemes_page = await SchemesPage.open(async_client)
 
         assert (
             schemes_page.important_notification
@@ -65,7 +66,7 @@ class TestSchemes:
         )
 
     async def test_schemes_does_not_show_notification_when_up_to_date(
-        self, client: FlaskClient, clock: Clock, schemes: SchemeRepository
+        self, async_client: AsyncFlaskClient, clock: Clock, schemes: SchemeRepository
     ) -> None:
         clock.now = datetime(2020, 3, 1)
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
@@ -74,16 +75,16 @@ class TestSchemes:
         )
         await schemes.add(scheme)
 
-        schemes_page = SchemesPage.open(client)
+        schemes_page = await SchemesPage.open(async_client)
 
         assert not schemes_page.important_notification
 
-    def test_schemes_shows_authority(self, client: FlaskClient) -> None:
-        schemes_page = SchemesPage.open(client)
+    async def test_schemes_shows_authority(self, async_client: AsyncFlaskClient) -> None:
+        schemes_page = await SchemesPage.open(async_client)
 
         assert schemes_page.heading and schemes_page.heading.caption == "Liverpool City Region Combined Authority"
 
-    async def test_schemes_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_schemes_shows_schemes(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"),
             build_scheme(id_=2, reference="ATE00002", name="School Streets", authority_abbreviation="LIV"),
@@ -98,13 +99,15 @@ class TestSchemes:
             build_scheme(id_=5, reference="ATE00005", overview_revisions=[]),
         )
 
-        schemes_page = SchemesPage.open(client)
+        schemes_page = await SchemesPage.open(async_client)
 
         assert schemes_page.schemes
         assert [row.reference for row in schemes_page.schemes] == ["ATE00001", "ATE00002"]
         assert not schemes_page.is_no_schemes_message_visible
 
-    async def test_schemes_shows_minimal_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_schemes_shows_minimal_scheme(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         await schemes.add(
             build_scheme(
                 id_=1,
@@ -115,7 +118,7 @@ class TestSchemes:
             )
         )
 
-        schemes_page = SchemesPage.open(client)
+        schemes_page = await SchemesPage.open(async_client)
 
         assert schemes_page.schemes
         assert schemes_page.schemes.to_dicts() == [
@@ -128,7 +131,7 @@ class TestSchemes:
             }
         ]
 
-    async def test_schemes_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_schemes_shows_scheme(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(
             id_=1,
             reference="ATE00001",
@@ -141,7 +144,7 @@ class TestSchemes:
         )
         await schemes.add(scheme)
 
-        schemes_page = SchemesPage.open(client)
+        schemes_page = await SchemesPage.open(async_client)
 
         assert schemes_page.schemes
         assert schemes_page.schemes.to_dicts() == [
@@ -155,7 +158,7 @@ class TestSchemes:
         ]
 
     async def test_schemes_shows_scheme_needs_review(
-        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient
+        self, clock: Clock, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         clock.now = datetime(2023, 4, 24)
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
@@ -164,23 +167,23 @@ class TestSchemes:
         )
         await schemes.add(scheme)
 
-        schemes_page = SchemesPage.open(client)
+        schemes_page = await SchemesPage.open(async_client)
 
         assert schemes_page.schemes
         assert [row.needs_review for row in schemes_page.schemes] == [True]
 
-    async def test_scheme_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_scheme_shows_scheme(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        schemes_page = SchemesPage.open(client)
+        schemes_page = await SchemesPage.open(async_client)
 
         assert schemes_page.schemes
         assert schemes_page.schemes["ATE00001"].reference_url == "/schemes/ATE00001"
 
-    def test_schemes_shows_message_when_no_schemes(self, client: FlaskClient) -> None:
-        schemes_page = SchemesPage.open(client)
+    async def test_schemes_shows_message_when_no_schemes(self, async_client: AsyncFlaskClient) -> None:
+        schemes_page = await SchemesPage.open(async_client)
 
         assert not schemes_page.schemes
         assert schemes_page.is_no_schemes_message_visible
@@ -191,8 +194,8 @@ class TestSchemesApi:
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"API_KEY": "boardman"}
 
-    async def test_add_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
+    async def test_add_schemes(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
+        response = await async_client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[{"id": 1, "reference": "ATE00001"}, {"id": 2, "reference": "ATE00002"}],
@@ -204,8 +207,10 @@ class TestSchemesApi:
         assert scheme1 and scheme1.id == 1 and scheme1.reference == "ATE00001"
         assert scheme2 and scheme2.id == 2 and scheme2.reference == "ATE00002"
 
-    async def test_add_schemes_overview_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
+    async def test_add_schemes_overview_revisions(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
+        response = await async_client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
@@ -240,8 +245,10 @@ class TestSchemesApi:
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
         )
 
-    async def test_add_schemes_bid_status_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
+    async def test_add_schemes_bid_status_revisions(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
+        response = await async_client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
@@ -270,8 +277,10 @@ class TestSchemesApi:
             and bid_status_revision1.status == BidStatus.FUNDED
         )
 
-    async def test_add_schemes_financial_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
+    async def test_add_schemes_financial_revisions(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
+        response = await async_client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
@@ -304,8 +313,10 @@ class TestSchemesApi:
             and financial_revision1.source == DataSource.ATF4_BID
         )
 
-    async def test_add_schemes_milestone_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
+    async def test_add_schemes_milestone_revisions(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
+        response = await async_client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
@@ -340,8 +351,10 @@ class TestSchemesApi:
             and milestone_revision1.source == DataSource.ATF4_BID
         )
 
-    async def test_add_schemes_output_revisions(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
+    async def test_add_schemes_output_revisions(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
+        response = await async_client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
@@ -375,8 +388,10 @@ class TestSchemesApi:
             and output_revision1.observation_type == ObservationType.ACTUAL
         )
 
-    async def test_add_schemes_authority_reviews(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
+    async def test_add_schemes_authority_reviews(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
+        response = await async_client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[
@@ -404,24 +419,28 @@ class TestSchemesApi:
             and authority_review1.source == DataSource.ATF4_BID
         )
 
-    async def test_cannot_add_schemes_when_no_credentials(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post("/schemes", json=[{"id": 1, "reference": "ATE00001"}])
+    async def test_cannot_add_schemes_when_no_credentials(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
+        response = await async_client.post("/schemes", json=[{"id": 1, "reference": "ATE00001"}])
 
         assert response.status_code == 401
         assert not await schemes.get("ATE00001")
 
     async def test_cannot_add_schemes_when_incorrect_credentials(
-        self, schemes: SchemeRepository, client: FlaskClient
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        response = client.post(
+        response = await async_client.post(
             "/schemes", headers={"Authorization": "API-Key obree"}, json=[{"id": 1, "reference": "ATE00001"}]
         )
 
         assert response.status_code == 401
         assert not await schemes.get("ATE00001")
 
-    async def test_cannot_add_schemes_with_invalid_repr(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
+    async def test_cannot_add_schemes_with_invalid_repr(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
+        response = await async_client.post(
             "/schemes",
             headers={"Authorization": "API-Key boardman"},
             json=[{"id": 1, "reference": "ATE00001", "foo": "bar"}],
@@ -430,48 +449,48 @@ class TestSchemesApi:
         assert response.status_code == 400
         assert not await schemes.get("ATE00001")
 
-    async def test_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_clear_schemes(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         await schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
-        response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
+        response = await async_client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 204
         assert not await schemes.get("ATE00001")
 
     async def test_cannot_clear_schemes_when_no_credentials(
-        self, schemes: SchemeRepository, client: FlaskClient
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
-        response = client.delete("/schemes")
+        response = await async_client.delete("/schemes")
 
         assert response.status_code == 401
         assert await schemes.get("ATE00001")
 
     async def test_cannot_clear_schemes_when_incorrect_credentials(
-        self, schemes: SchemeRepository, client: FlaskClient
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
-        response = client.delete("/schemes", headers={"Authorization": "API-Key obree"})
+        response = await async_client.delete("/schemes", headers={"Authorization": "API-Key obree"})
 
         assert response.status_code == 401
         assert await schemes.get("ATE00001")
 
 
 class TestSchemesApiWhenDisabled:
-    async def test_cannot_add_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        response = client.post(
+    async def test_cannot_add_schemes(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
+        response = await async_client.post(
             "/schemes", headers={"Authorization": "API-Key boardman"}, json=[{"id": 1, "reference": "ATE00001"}]
         )
 
         assert response.status_code == 401
         assert not await schemes.get("ATE00001")
 
-    async def test_cannot_clear_schemes(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_cannot_clear_schemes(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         await schemes.add(build_scheme(id_=1, reference="ATE00001", name="Wirral Package"))
 
-        response = client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
+        response = await async_client.delete("/schemes", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 401
         assert await schemes.get("ATE00001")

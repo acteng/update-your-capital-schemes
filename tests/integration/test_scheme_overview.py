@@ -13,6 +13,7 @@ from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
 from tests.builders import build_scheme
+from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import SchemePage
 
 
@@ -24,7 +25,9 @@ class TestSchemeOverview:
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
-    async def test_scheme_shows_minimal_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_scheme_shows_minimal_overview(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         await schemes.add(
             build_scheme(
                 id_=1,
@@ -36,7 +39,7 @@ class TestSchemeOverview:
             )
         )
 
-        scheme_page = SchemePage.open(client, reference="ATE00001")
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert (
             scheme_page.overview.reference == "ATE00001"
@@ -45,7 +48,7 @@ class TestSchemeOverview:
             and scheme_page.overview.current_milestone == ""
         )
 
-    async def test_scheme_shows_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_scheme_shows_overview(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(
             id_=1,
             reference="ATE00001",
@@ -69,7 +72,7 @@ class TestSchemeOverview:
         )
         await schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, reference="ATE00001")
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert (
             scheme_page.overview.reference == "ATE00001"

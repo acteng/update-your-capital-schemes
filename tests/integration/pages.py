@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup, ResultSet, Tag
 from flask.testing import FlaskClient
 from werkzeug.test import TestResponse
 
+from tests.integration.conftest import AsyncFlaskClient
+
 
 class PageObject:
     def __init__(self, response: TestResponse):
@@ -142,8 +144,8 @@ class SchemesPage(PageObject):
         return ServiceHeaderComponent(one(self._soup.select("header")))
 
     @classmethod
-    def open(cls, client: FlaskClient) -> Self:
-        response = client.get("/schemes")
+    async def open(cls, client: AsyncFlaskClient) -> Self:
+        response = await client.get("/schemes")
         return cls(response)
 
 
@@ -295,18 +297,18 @@ class SchemePage(PageObject):
         return SchemeReviewComponent(one(self._soup.select("main h2:-soup-contains('Is this scheme up-to-date?')")))
 
     @classmethod
-    def open(cls, client: FlaskClient, reference: str) -> Self:
-        response = client.get(f"/schemes/{reference}")
+    async def open(cls, client: AsyncFlaskClient, reference: str) -> Self:
+        response = await client.get(f"/schemes/{reference}")
         return cls(response)
 
     @classmethod
-    def open_when_unauthorized(cls, client: FlaskClient, reference: str) -> ForbiddenPage:
-        response = client.get(f"/schemes/{reference}")
+    async def open_when_unauthorized(cls, client: AsyncFlaskClient, reference: str) -> ForbiddenPage:
+        response = await client.get(f"/schemes/{reference}")
         return ForbiddenPage(response)
 
     @classmethod
-    def open_when_not_found(cls, client: FlaskClient, reference: str) -> NotFoundPage:
-        response = client.get(f"/schemes/{reference}")
+    async def open_when_not_found(cls, client: AsyncFlaskClient, reference: str) -> NotFoundPage:
+        response = await client.get(f"/schemes/{reference}")
         return NotFoundPage(response)
 
 
@@ -405,18 +407,18 @@ class ChangeSpendToDatePage(PageObject):
         return ChangeSpendToDateFormComponent(one(self._soup.select("form")))
 
     @classmethod
-    def open(cls, client: FlaskClient, reference: str) -> Self:
-        response = client.get(f"/schemes/{reference}/spend-to-date")
+    async def open(cls, client: AsyncFlaskClient, reference: str) -> Self:
+        response = await client.get(f"/schemes/{reference}/spend-to-date")
         return cls(response)
 
     @classmethod
-    def open_when_unauthorized(cls, client: FlaskClient, reference: str) -> ForbiddenPage:
-        response = client.get(f"/schemes/{reference}/spend-to-date")
+    async def open_when_unauthorized(cls, client: AsyncFlaskClient, reference: str) -> ForbiddenPage:
+        response = await client.get(f"/schemes/{reference}/spend-to-date")
         return ForbiddenPage(response)
 
     @classmethod
-    def open_when_not_found(cls, client: FlaskClient, reference: str) -> NotFoundPage:
-        response = client.get(f"/schemes/{reference}/spend-to-date")
+    async def open_when_not_found(cls, client: AsyncFlaskClient, reference: str) -> NotFoundPage:
+        response = await client.get(f"/schemes/{reference}/spend-to-date")
         return NotFoundPage(response)
 
 
@@ -478,18 +480,18 @@ class ChangeMilestoneDatesPage(PageObject):
         return ChangeMilestoneDatesFormComponent(one(self._soup.select("form")))
 
     @classmethod
-    def open(cls, client: FlaskClient, reference: str) -> Self:
-        response = client.get(f"/schemes/{reference}/milestones")
+    async def open(cls, client: AsyncFlaskClient, reference: str) -> Self:
+        response = await client.get(f"/schemes/{reference}/milestones")
         return cls(response)
 
     @classmethod
-    def open_when_unauthorized(cls, client: FlaskClient, reference: str) -> ForbiddenPage:
-        response = client.get(f"/schemes/{reference}/milestones")
+    async def open_when_unauthorized(cls, client: AsyncFlaskClient, reference: str) -> ForbiddenPage:
+        response = await client.get(f"/schemes/{reference}/milestones")
         return ForbiddenPage(response)
 
     @classmethod
-    def open_when_not_found(cls, client: FlaskClient, reference: str) -> NotFoundPage:
-        response = client.get(f"/schemes/{reference}/milestones")
+    async def open_when_not_found(cls, client: AsyncFlaskClient, reference: str) -> NotFoundPage:
+        response = await client.get(f"/schemes/{reference}/milestones")
         return NotFoundPage(response)
 
 

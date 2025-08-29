@@ -11,6 +11,7 @@ from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.builders import build_scheme
+from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import SchemePage, SchemesPage
 
 
@@ -22,39 +23,39 @@ class TestSchemeReview:
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
-    async def test_scheme_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_scheme_shows_confirm(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        scheme_page = SchemePage.open(client, reference="ATE00001")
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.review.form.confirm_url == "/schemes/ATE00001"
 
-    async def test_scheme_shows_last_reviewed(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_scheme_shows_last_reviewed(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, reference="ATE00001")
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.review.last_reviewed == "It was last reviewed on 2 Jan 2020."
 
     async def test_scheme_shows_last_reviewed_when_no_authority_reviews(
-        self, schemes: SchemeRepository, client: FlaskClient
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        scheme_page = SchemePage.open(client, reference="ATE00001")
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.review.last_reviewed == "It has not been reviewed."
 
     async def test_review_updates_last_reviewed(
-        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, clock: Clock, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         clock.now = datetime(2023, 4, 24, 12)
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
@@ -63,7 +64,7 @@ class TestSchemeReview:
         )
         await schemes.add(scheme)
 
-        client.post("/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+        await async_client.post("/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 
         actual_scheme = await schemes.get("ATE00001")
         assert actual_scheme
@@ -73,13 +74,15 @@ class TestSchemeReview:
             and authority_review2.source == DataSource.AUTHORITY_UPDATE
         )
 
-    async def test_review_shows_schemes(self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str) -> None:
+    async def test_review_shows_schemes(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
+    ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
         schemes_page = SchemesPage(
-            client.post(
+            await async_client.post(
                 "/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}, follow_redirects=True
             )
         )
@@ -87,14 +90,14 @@ class TestSchemeReview:
         assert schemes_page.is_visible
 
     async def test_review_shows_success_notification(
-        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
         schemes_page = SchemesPage(
-            client.post(
+            await async_client.post(
                 "/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}, follow_redirects=True
             )
         )
@@ -106,7 +109,7 @@ class TestSchemeReview:
         assert not schemes_page.important_notification
 
     async def test_cannot_review_when_error(
-        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
@@ -115,7 +118,7 @@ class TestSchemeReview:
         await schemes.add(scheme)
 
         scheme_page = SchemePage(
-            client.post("/schemes/ATE00001", data={"csrf_token": csrf_token}, follow_redirects=True)
+            await async_client.post("/schemes/ATE00001", data={"csrf_token": csrf_token}, follow_redirects=True)
         )
 
         assert (
@@ -136,12 +139,14 @@ class TestSchemeReview:
             and authority_review.source == DataSource.ATF4_BID
         )
 
-    async def test_cannot_review_when_no_csrf_token(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_cannot_review_when_no_csrf_token(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        scheme_page = SchemePage(client.post("/schemes/ATE00001", data={}, follow_redirects=True))
+        scheme_page = SchemePage(await async_client.post("/schemes/ATE00001", data={}, follow_redirects=True))
 
         assert scheme_page.heading and scheme_page.heading.text == "Wirral Package"
         assert (
@@ -151,13 +156,15 @@ class TestSchemeReview:
         )
 
     async def test_cannot_review_when_incorrect_csrf_token(
-        self, schemes: SchemeRepository, client: FlaskClient
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        scheme_page = SchemePage(client.post("/schemes/ATE00001", data={"csrf_token": "x"}, follow_redirects=True))
+        scheme_page = SchemePage(
+            await async_client.post("/schemes/ATE00001", data={"csrf_token": "x"}, follow_redirects=True)
+        )
 
         assert scheme_page.heading and scheme_page.heading.text == "Wirral Package"
         assert (
@@ -167,23 +174,31 @@ class TestSchemeReview:
         )
 
     async def test_cannot_review_when_different_authority(
-        self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self,
+        authorities: AuthorityRepository,
+        schemes: SchemeRepository,
+        async_client: AsyncFlaskClient,
+        csrf_token: str,
     ) -> None:
         await authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
         await schemes.add(
             build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
         )
 
-        response = client.post("/schemes/ATE00002", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+        response = await async_client.post(
+            "/schemes/ATE00002", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}
+        )
 
         assert response.status_code == 403
 
     async def test_cannot_review_when_no_authority(
-        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         await schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
 
-        response = client.post("/schemes/ATE00002", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+        response = await async_client.post(
+            "/schemes/ATE00002", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}
+        )
 
         assert response.status_code == 403
 
@@ -193,7 +208,7 @@ class TestSchemeReview:
         assert response.status_code == 404
 
     async def test_cannot_review_when_not_updateable_scheme(
-        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         await schemes.add(
             build_scheme(
@@ -205,6 +220,8 @@ class TestSchemeReview:
             )
         )
 
-        response = client.post("/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
+        response = await async_client.post(
+            "/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}
+        )
 
         assert response.status_code == 404

@@ -11,6 +11,7 @@ from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.builders import build_scheme
+from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import ChangeSpendToDatePage, SchemePage
 
 
@@ -22,12 +23,14 @@ class TestSchemeFunding:
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
-    async def test_scheme_shows_minimal_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_scheme_shows_minimal_funding(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        scheme_page = SchemePage.open(client, reference="ATE00001")
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert (
             scheme_page.funding.funding_allocation == ""
@@ -35,7 +38,7 @@ class TestSchemeFunding:
             and scheme_page.funding.allocation_still_to_spend == "£0"
         )
 
-    async def test_scheme_shows_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_scheme_shows_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financials(
             FinancialRevision(
@@ -55,7 +58,7 @@ class TestSchemeFunding:
         )
         await schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, reference="ATE00001")
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert (
             scheme_page.funding.funding_allocation == "£100,000"
@@ -63,7 +66,7 @@ class TestSchemeFunding:
             and scheme_page.funding.allocation_still_to_spend == "£50,000"
         )
 
-    async def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financials(
             FinancialRevision(
@@ -83,7 +86,7 @@ class TestSchemeFunding:
         )
         await schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, reference="ATE00001")
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert (
             scheme_page.funding.funding_allocation == "£0"
@@ -91,47 +94,55 @@ class TestSchemeFunding:
             and scheme_page.funding.allocation_still_to_spend == "£0"
         )
 
-    async def test_scheme_shows_change_spend_to_date(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_scheme_shows_change_spend_to_date(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        scheme_page = SchemePage.open(client, reference="ATE00001")
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.funding.change_spend_to_date_url == "/schemes/ATE00001/spend-to-date"
 
-    async def test_spend_to_date_form_shows_title(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_spend_to_date_form_shows_title(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        change_spend_to_date_page = ChangeSpendToDatePage.open(client, reference="ATE00001")
+        change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
         assert (
             change_spend_to_date_page.title
             == "How much has been spent to date? - Update your capital schemes - Active Travel England - GOV.UK"
         )
 
-    async def test_spend_to_date_form_shows_back(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_spend_to_date_form_shows_back(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        change_spend_to_date_page = ChangeSpendToDatePage.open(client, reference="ATE00001")
+        change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
         assert change_spend_to_date_page.back_url == "/schemes/ATE00001"
 
-    async def test_spend_to_date_form_shows_scheme(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_spend_to_date_form_shows_scheme(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        change_spend_to_date_page = ChangeSpendToDatePage.open(client, reference="ATE00001")
+        change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
         assert change_spend_to_date_page.form.heading.caption == "Wirral Package"
 
     async def test_spend_to_date_form_shows_funding_summary(
-        self, schemes: SchemeRepository, client: FlaskClient
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financials(
@@ -145,22 +156,24 @@ class TestSchemeFunding:
         )
         await schemes.add(scheme)
 
-        change_spend_to_date_page = ChangeSpendToDatePage.open(client, reference="ATE00001")
+        change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
         assert change_spend_to_date_page.form.funding_summary == "This scheme has £100,000 of funding allocation"
 
     async def test_spend_to_date_form_shows_minimal_funding_summary(
-        self, schemes: SchemeRepository, client: FlaskClient
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        change_spend_to_date_page = ChangeSpendToDatePage.open(client, reference="ATE00001")
+        change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
         assert change_spend_to_date_page.form.funding_summary == "This scheme has no funding allocation"
 
-    async def test_spend_to_date_form_shows_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_spend_to_date_form_shows_amount(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financial(
             FinancialRevision(
@@ -173,11 +186,13 @@ class TestSchemeFunding:
         )
         await schemes.add(scheme)
 
-        change_spend_to_date_page = ChangeSpendToDatePage.open(client, reference="ATE00001")
+        change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
         assert change_spend_to_date_page.form.amount.value == "50000"
 
-    async def test_spend_to_date_form_shows_zero_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_spend_to_date_form_shows_zero_amount(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financial(
             FinancialRevision(
@@ -190,65 +205,71 @@ class TestSchemeFunding:
         )
         await schemes.add(scheme)
 
-        change_spend_to_date_page = ChangeSpendToDatePage.open(client, reference="ATE00001")
+        change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
         assert change_spend_to_date_page.form.amount.value == "0"
 
-    async def test_spend_to_date_form_shows_empty_amount(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_spend_to_date_form_shows_empty_amount(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        change_spend_to_date_page = ChangeSpendToDatePage.open(client, reference="ATE00001")
+        change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
         assert not change_spend_to_date_page.form.amount.value
 
-    async def test_spend_to_date_form_shows_confirm(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_spend_to_date_form_shows_confirm(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        change_spend_to_date_page = ChangeSpendToDatePage.open(client, reference="ATE00001")
+        change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
         assert change_spend_to_date_page.form.confirm_url == "/schemes/ATE00001/spend-to-date"
 
-    async def test_spend_to_date_form_shows_cancel(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_spend_to_date_form_shows_cancel(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        change_spend_to_date_page = ChangeSpendToDatePage.open(client, reference="ATE00001")
+        change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
         assert change_spend_to_date_page.form.cancel_url == "/schemes/ATE00001"
 
     async def test_cannot_spend_to_date_form_when_different_authority(
-        self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient
+        self, authorities: AuthorityRepository, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
         await schemes.add(
             build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
         )
 
-        forbidden_page = ChangeSpendToDatePage.open_when_unauthorized(client, reference="ATE00002")
+        forbidden_page = await ChangeSpendToDatePage.open_when_unauthorized(async_client, reference="ATE00002")
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
     async def test_cannot_spend_to_date_form_when_no_authority(
-        self, schemes: SchemeRepository, client: FlaskClient
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
 
-        forbidden_page = ChangeSpendToDatePage.open_when_unauthorized(client, reference="ATE00002")
+        forbidden_page = await ChangeSpendToDatePage.open_when_unauthorized(async_client, reference="ATE00002")
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
-    def test_cannot_spend_to_date_form_when_unknown_scheme(self, client: FlaskClient) -> None:
-        not_found_page = ChangeSpendToDatePage.open_when_not_found(client, reference="ATE00001")
+    async def test_cannot_spend_to_date_form_when_unknown_scheme(self, async_client: AsyncFlaskClient) -> None:
+        not_found_page = await ChangeSpendToDatePage.open_when_not_found(async_client, reference="ATE00001")
 
         assert not_found_page.is_visible and not_found_page.is_not_found
 
     async def test_cannot_spend_to_date_form_when_not_updateable_scheme(
-        self, schemes: SchemeRepository, client: FlaskClient
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await schemes.add(
             build_scheme(
@@ -260,12 +281,12 @@ class TestSchemeFunding:
             )
         )
 
-        not_found_page = ChangeSpendToDatePage.open_when_not_found(client, reference="ATE00001")
+        not_found_page = await ChangeSpendToDatePage.open_when_not_found(async_client, reference="ATE00001")
 
         assert not_found_page.is_visible and not_found_page.is_not_found
 
     async def test_spend_to_date_updates_spend_to_date(
-        self, clock: Clock, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, clock: Clock, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         clock.now = datetime(2020, 2, 1, 13)
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
@@ -287,7 +308,7 @@ class TestSchemeFunding:
         )
         await schemes.add(scheme)
 
-        client.post("/schemes/ATE00001/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+        await async_client.post("/schemes/ATE00001/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
 
         actual_scheme = await schemes.get("ATE00001")
         assert actual_scheme
@@ -301,7 +322,7 @@ class TestSchemeFunding:
         )
 
     async def test_spend_to_date_shows_scheme(
-        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financial(
@@ -315,12 +336,14 @@ class TestSchemeFunding:
         )
         await schemes.add(scheme)
 
-        response = client.post("/schemes/ATE00001/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+        response = await async_client.post(
+            "/schemes/ATE00001/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"}
+        )
 
         assert response.status_code == 302 and response.location == "/schemes/ATE00001"
 
     async def test_cannot_spend_to_date_when_error(
-        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financial(
@@ -335,7 +358,7 @@ class TestSchemeFunding:
         await schemes.add(scheme)
 
         change_spend_to_date_page = ChangeSpendToDatePage(
-            client.post("/schemes/ATE00001/spend-to-date", data={"csrf_token": csrf_token, "amount": ""})
+            await async_client.post("/schemes/ATE00001/spend-to-date", data={"csrf_token": csrf_token, "amount": ""})
         )
 
         assert (
@@ -360,14 +383,14 @@ class TestSchemeFunding:
         )
 
     async def test_cannot_spend_to_date_when_no_csrf_token(
-        self, schemes: SchemeRepository, client: FlaskClient
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
         change_spend_to_date_page = ChangeSpendToDatePage(
-            client.post("/schemes/ATE00001/spend-to-date", data={"amount": "60000"}, follow_redirects=True)
+            await async_client.post("/schemes/ATE00001/spend-to-date", data={"amount": "60000"}, follow_redirects=True)
         )
 
         assert change_spend_to_date_page.is_visible
@@ -378,14 +401,14 @@ class TestSchemeFunding:
         )
 
     async def test_cannot_spend_to_date_when_incorrect_csrf_token(
-        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         await schemes.add(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
         change_spend_to_date_page = ChangeSpendToDatePage(
-            client.post(
+            await async_client.post(
                 "/schemes/ATE00001/spend-to-date", data={"csrf_token": "x", "amount": "60000"}, follow_redirects=True
             )
         )
@@ -398,23 +421,31 @@ class TestSchemeFunding:
         )
 
     async def test_cannot_spend_to_date_when_different_authority(
-        self, authorities: AuthorityRepository, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self,
+        authorities: AuthorityRepository,
+        schemes: SchemeRepository,
+        async_client: AsyncFlaskClient,
+        csrf_token: str,
     ) -> None:
         await authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
         await schemes.add(
             build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
         )
 
-        response = client.post("/schemes/ATE00002/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+        response = await async_client.post(
+            "/schemes/ATE00002/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"}
+        )
 
         assert response.status_code == 403
 
     async def test_cannot_spend_to_date_when_no_authority(
-        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         await schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
 
-        response = client.post("/schemes/ATE00002/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+        response = await async_client.post(
+            "/schemes/ATE00002/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"}
+        )
 
         assert response.status_code == 403
 
@@ -424,7 +455,7 @@ class TestSchemeFunding:
         assert response.status_code == 404
 
     async def test_cannot_spend_to_date_when_not_updateable_scheme(
-        self, schemes: SchemeRepository, client: FlaskClient, csrf_token: str
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         await schemes.add(
             build_scheme(
@@ -436,6 +467,8 @@ class TestSchemeFunding:
             )
         )
 
-        response = client.post("/schemes/ATE00001/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
+        response = await async_client.post(
+            "/schemes/ATE00001/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"}
+        )
 
         assert response.status_code == 404

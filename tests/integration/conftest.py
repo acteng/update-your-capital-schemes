@@ -2,6 +2,7 @@ from typing import Any, AsyncGenerator, Callable, Generator, Mapping
 
 import inject
 import pytest
+from asgiref.sync import sync_to_async
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.serialization import Encoding, NoEncryption, PrivateFormat, PublicFormat
@@ -9,6 +10,7 @@ from flask import Flask, session
 from flask.testing import FlaskClient
 from flask_wtf.csrf import generate_csrf
 from inject import Binder
+from werkzeug.test import TestResponse
 
 from schemes import bindings, create_app, destroy_app
 from schemes.annotations import Migrated
@@ -17,6 +19,23 @@ from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.fakes import MemoryAuthorityRepository, MemorySchemeRepository, MemoryUserRepository
+
+
+class AsyncFlaskClient:
+    def __init__(self, client: FlaskClient):
+        self._client = client
+
+    @sync_to_async
+    def get(self, *args: Any, **kwargs: Any) -> TestResponse:
+        return self._client.get(*args, **kwargs)
+
+    @sync_to_async
+    def post(self, *args: Any, **kwargs: Any) -> TestResponse:
+        return self._client.post(*args, **kwargs)
+
+    @sync_to_async
+    def delete(self, *args: Any, **kwargs: Any) -> TestResponse:
+        return self._client.delete(*args, **kwargs)
 
 
 @pytest.fixture(name="config", scope="class")
@@ -46,6 +65,11 @@ def app_fixture(config: Mapping[str, Any]) -> Generator[Flask, Any, Any]:
 @pytest.fixture(name="client")
 def client_fixture(app: Flask) -> FlaskClient:
     return app.test_client()
+
+
+@pytest.fixture(name="async_client")
+def async_client_fixture(client: FlaskClient) -> AsyncFlaskClient:
+    return AsyncFlaskClient(client)
 
 
 @pytest.fixture(name="csrf_token")

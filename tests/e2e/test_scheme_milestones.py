@@ -153,10 +153,10 @@ def test_change_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
         .confirm()
     )
 
-    assert scheme_page.heading.text == "Wirral Package"
+    assert scheme_page.heading.text() == "Wirral Package"
     assert (
-        scheme_page.milestones.milestones["Construction started"].actual == "5 Jul 2023"
-        and scheme_page.milestones.milestones["Construction completed"].planned == "30 Sep 2023"
+        scheme_page.milestones.milestones["Construction started"].actual() == "5 Jul 2023"
+        and scheme_page.milestones.milestones["Construction completed"].planned() == "30 Sep 2023"
     )
     assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
         MilestoneRevisionRepr(
@@ -297,15 +297,15 @@ def test_cannot_change_milestones_when_error(
     )
 
     assert (
-        change_milestone_page.title
+        change_milestone_page.title()
         == "Error: Change milestone dates - Update your capital schemes - Active Travel England - GOV.UK"
     )
     assert list(change_milestone_page.errors) == ["Construction completed planned date must be a real date"]
     assert (
-        change_milestone_page.form.construction_completed_planned.is_errored
-        and change_milestone_page.form.construction_completed_planned.error
+        change_milestone_page.form.construction_completed_planned.is_errored()
+        and change_milestone_page.form.construction_completed_planned.error()
         == "Error: Construction completed planned date must be a real date"
-        and change_milestone_page.form.construction_completed_planned.value == "x x x"
+        and change_milestone_page.form.construction_completed_planned.value() == "x x x"
     )
 
     assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [

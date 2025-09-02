@@ -10,7 +10,7 @@ def test_privacy(page: Page) -> None:
 
     privacy_page = start_page.footer.privacy()
 
-    assert privacy_page.is_visible
+    assert privacy_page.is_visible()
 
 
 @pytest.mark.usefixtures("live_server")
@@ -19,7 +19,7 @@ def test_accessibility(page: Page) -> None:
 
     accessibility_page = start_page.footer.accessibility()
 
-    assert accessibility_page.is_visible
+    assert accessibility_page.is_visible()
 
 
 @pytest.mark.usefixtures("live_server")
@@ -28,4 +28,4 @@ def test_cookies(page: Page) -> None:
 
     cookies_page = start_page.footer.cookies()
 
-    assert cookies_page.is_visible
+    assert cookies_page.is_visible()

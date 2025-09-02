@@ -85,7 +85,7 @@ class TestAuthenticated:
 
         schemes_page = SchemesPage.open(page)
 
-        assert schemes_page.heading.caption == "Liverpool City Region Combined Authority"
+        assert schemes_page.heading.caption() == "Liverpool City Region Combined Authority"
         assert schemes_page.schemes.to_dicts() == [
             {
                 "reference": "ATE00001",
@@ -106,7 +106,7 @@ class TestAuthenticated:
     def test_schemes_when_unauthorized(self, page: Page) -> None:
         forbidden_page = SchemesPage.open_when_unauthorized(page)
 
-        assert forbidden_page.is_visible
+        assert forbidden_page.is_visible()
 
     def test_scheme_shows_scheme(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
@@ -120,7 +120,7 @@ class TestAuthenticated:
 
         scheme_page = SchemesPage.open(page).schemes["ATE00001"].open()
 
-        assert scheme_page.heading.text == "Wirral Package"
+        assert scheme_page.heading.text() == "Wirral Package"
 
     def test_schemes_shows_update_schemes_notification(
         self, app_client: AppClient, api_client: ApiClient, page: Page
@@ -143,7 +143,7 @@ class TestAuthenticated:
 
         schemes_page = SchemesPage.open(page)
 
-        assert schemes_page.important_notification.heading == "You have 7 days left to update your schemes"
+        assert schemes_page.important_notification.heading() == "You have 7 days left to update your schemes"
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
@@ -151,4 +151,4 @@ class TestUnauthenticated:
     def test_schemes_when_unauthenticated(self, page: Page) -> None:
         login_page = SchemesPage.open_when_unauthenticated(page)
 
-        assert login_page.is_visible
+        assert login_page.is_visible()

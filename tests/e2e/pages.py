@@ -9,7 +9,6 @@ class PageObject:
     def __init__(self, page: Page):
         self._page = page
 
-    @property
     def title(self) -> str:
         return self._page.title()
 
@@ -18,7 +17,6 @@ class LoginPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
 
-    @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Login").is_visible()
 
@@ -27,7 +25,6 @@ class ForbiddenPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
 
-    @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Forbidden").is_visible()
 
@@ -74,7 +71,6 @@ class StartPage(PageObject):
         cls.open(page)
         return SchemesPage(page)
 
-    @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Schemes").is_visible()
 
@@ -91,7 +87,6 @@ class PrivacyPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
 
-    @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Privacy notice").first.is_visible()
 
@@ -100,7 +95,6 @@ class AccessibilityPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
 
-    @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Accessibility statement").first.is_visible()
 
@@ -109,7 +103,6 @@ class CookiesPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
 
-    @property
     def is_visible(self) -> bool:
         return self._page.get_by_role("heading", name="Cookies").first.is_visible()
 
@@ -144,7 +137,6 @@ class NotificationBannerComponent:
     def __init__(self, banner: Locator):
         self._heading = banner.get_by_role("paragraph")
 
-    @property
     def heading(self) -> str:
         return (self._heading.text_content() or "").strip()
 
@@ -162,11 +154,9 @@ class HeadingComponent:
         self._caption = heading.locator(".govuk-caption-xl")
         self._text = heading.locator("span").nth(1)
 
-    @property
     def caption(self) -> str | None:
         return self._caption.text_content()
 
-    @property
     def text(self) -> str | None:
         return self._text.text_content()
 
@@ -191,7 +181,6 @@ class SchemePage(PageObject):
         page.goto(f"/schemes/{reference}")
         return cls(page)
 
-    @property
     def needs_review(self) -> bool:
         return self._inset_text.has_text(
             re.compile(r"Needs review\s+Check the details before confirming that this scheme is up-to-date.")
@@ -207,23 +196,18 @@ class SchemeRowComponent:
         self._name = name_cell.locator("span")
         self._tag = TagComponent(name_cell.locator(".govuk-tag"))
 
-    @property
     def reference(self) -> str | None:
         return self._reference.text_content()
 
-    @property
     def funding_programme(self) -> str | None:
         return self._cells.nth(1).text_content()
 
-    @property
     def name(self) -> str | None:
         return self._name.text_content()
 
-    @property
     def needs_review(self) -> bool:
-        return self._tag.text == "Needs review"
+        return self._tag.text() == "Needs review"
 
-    @property
     def last_reviewed(self) -> str | None:
         return self._cells.nth(3).text_content()
 
@@ -233,11 +217,11 @@ class SchemeRowComponent:
 
     def to_dict(self) -> dict[str, str | bool | None]:
         return {
-            "reference": self.reference,
-            "funding_programme": self.funding_programme,
-            "name": self.name,
-            "needs_review": self.needs_review,
-            "last_reviewed": self.last_reviewed,
+            "reference": self.reference(),
+            "funding_programme": self.funding_programme(),
+            "name": self.name(),
+            "needs_review": self.needs_review(),
+            "last_reviewed": self.last_reviewed(),
         }
 
 
@@ -250,7 +234,7 @@ class SchemesTableComponent:
         return (SchemeRowComponent(row) for row in self._rows.all()[1:])
 
     def __getitem__(self, reference: str) -> SchemeRowComponent:
-        return next((scheme for scheme in self if scheme.reference == reference))
+        return next((scheme for scheme in self if scheme.reference() == reference))
 
     def to_dicts(self) -> list[dict[str, str | bool | None]]:
         return [scheme.to_dict() for scheme in self]
@@ -260,7 +244,6 @@ class TagComponent:
     def __init__(self, tag: Locator):
         self._tag = tag
 
-    @property
     def text(self) -> str:
         self._tag.first.wait_for()
         texts = self._tag.all_text_contents()
@@ -271,12 +254,11 @@ class InsetTextComponent:
     def __init__(self, inset_text: Locator):
         self._inset_text = inset_text
 
-    @property
     def text(self) -> str:
         return (self._inset_text.text_content() or "").strip()
 
     def has_text(self, pattern: Pattern[str]) -> bool:
-        return pattern.match(self.text) is not None
+        return pattern.match(self.text()) is not None
 
 
 class SummaryCardComponent:
@@ -298,19 +280,15 @@ class SchemeOverviewComponent(SummaryCardComponent):
         self._funding_programme = self._get_definition("Funding programme")
         self._current_milestone = self._get_definition("Current milestone")
 
-    @property
     def reference(self) -> str:
         return (self._reference.text_content() or "").strip()
 
-    @property
     def scheme_type(self) -> str:
         return (self._scheme_type.text_content() or "").strip()
 
-    @property
     def funding_programme(self) -> str:
         return (self._funding_programme.text_content() or "").strip()
 
-    @property
     def current_milestone(self) -> str:
         return (self._current_milestone.text_content() or "").strip()
 
@@ -331,11 +309,9 @@ class SchemeFundingComponent(SummaryCardComponent):
         self._change_spend_to_date = self._get_definition("Spend to date").nth(1)
         self._allocation_still_to_spend = self._get_definition("Allocation still to spend")
 
-    @property
     def funding_allocation(self) -> str:
         return (self._funding_allocation.text_content() or "").strip()
 
-    @property
     def spend_to_date(self) -> str:
         return (self._spend_to_date.text_content() or "").strip()
 
@@ -343,7 +319,6 @@ class SchemeFundingComponent(SummaryCardComponent):
         self._change_spend_to_date.click()
         return ChangeSpendToDatePage(self._title.page)
 
-    @property
     def allocation_still_to_spend(self) -> str:
         return (self._allocation_still_to_spend.text_content() or "").strip()
 
@@ -373,20 +348,17 @@ class SchemeMilestoneRowComponent:
         self._header = row.get_by_role("rowheader")
         self._cells = row.get_by_role("cell")
 
-    @property
     def milestone(self) -> str | None:
         return self._header.text_content()
 
-    @property
     def planned(self) -> str | None:
         return self._cells.nth(0).text_content()
 
-    @property
     def actual(self) -> str | None:
         return self._cells.nth(1).text_content()
 
     def to_dict(self) -> dict[str, str | None]:
-        return {"milestone": self.milestone, "planned": self.planned, "actual": self.actual}
+        return {"milestone": self.milestone(), "planned": self.planned(), "actual": self.actual()}
 
 
 class SchemeMilestonesTableComponent:
@@ -398,7 +370,7 @@ class SchemeMilestonesTableComponent:
         return (SchemeMilestoneRowComponent(row) for row in self._rows.all()[1:])
 
     def __getitem__(self, milestone: str) -> SchemeMilestoneRowComponent:
-        return next(row for row in self if row.milestone == milestone)
+        return next(row for row in self if row.milestone() == milestone)
 
     def to_dicts(self) -> list[dict[str, str | None]]:
         return [milestone.to_dict() for milestone in self]
@@ -414,23 +386,20 @@ class SchemeOutputRowComponent:
     def __init__(self, row: Locator):
         self._cells = row.get_by_role("cell")
 
-    @property
     def infrastructure(self) -> str | None:
         return self._cells.nth(0).text_content()
 
-    @property
     def measurement(self) -> str | None:
         return self._cells.nth(1).text_content()
 
-    @property
     def planned(self) -> str | None:
         return self._cells.nth(2).text_content()
 
     def to_dict(self) -> dict[str, str | None]:
         return {
-            "infrastructure": self.infrastructure,
-            "measurement": self.measurement,
-            "planned": self.planned,
+            "infrastructure": self.infrastructure(),
+            "measurement": self.measurement(),
+            "planned": self.planned(),
         }
 
 
@@ -461,7 +430,7 @@ class SchemeReviewFormComponent:
         self._confirm = form.get_by_role("button", name="Confirm")
 
     def check_up_to_date(self) -> Self:
-        self.up_to_date.value = True
+        self.up_to_date.check(True)
         return self
 
     def confirm(self) -> SchemesPage:
@@ -480,7 +449,7 @@ class ChangeSpendToDateFormComponent:
         self._confirm = form.get_by_role("button", name="Confirm")
 
     def enter_amount(self, value: str) -> Self:
-        self.amount.value = value
+        self.amount.enter(value)
         return self
 
     def confirm(self) -> SchemePage:
@@ -504,11 +473,11 @@ class ChangeMilestoneDatesFormComponent:
         self._confirm = form.get_by_role("button", name="Confirm")
 
     def enter_construction_started_actual(self, value: str) -> Self:
-        self.construction_started_actual.value = value
+        self.construction_started_actual.enter(value)
         return self
 
     def enter_construction_completed_planned(self, value: str) -> Self:
-        self.construction_completed_planned.value = value
+        self.construction_completed_planned.enter(value)
         return self
 
     def confirm(self) -> SchemePage:
@@ -528,22 +497,18 @@ class DateComponent:
         self.year = TextComponent(fieldset.get_by_label("Year"))
         self._error = form_group.locator(".govuk-error-message")
 
-    @property
     def value(self) -> str:
-        return f"{self.day.value} {self.month.value} {self.year.value}"
+        return f"{self.day.value()} {self.month.value()} {self.year.value()}"
 
-    @value.setter
-    def value(self, value: str) -> None:
+    def enter(self, value: str) -> None:
         values = value.split(" ")
-        self.day.value = values[0]
-        self.month.value = values[1]
-        self.year.value = values[2]
+        self.day.enter(values[0])
+        self.month.enter(values[1])
+        self.year.enter(values[2])
 
-    @property
     def is_errored(self) -> bool:
-        return self.day.is_errored and self.month.is_errored and self.year.is_errored
+        return self.day.is_errored() and self.month.is_errored() and self.year.is_errored()
 
-    @property
     def error(self) -> str | None:
         text_content = self._error.text_content()
         return text_content.strip() if text_content else None
@@ -564,19 +529,15 @@ class TextComponent:
         form_group = input_.locator("xpath=../..")
         self._error = form_group.locator(".govuk-error-message")
 
-    @property
     def value(self) -> str:
         return self._input.input_value()
 
-    @value.setter
-    def value(self, value: str) -> None:
+    def enter(self, value: str) -> None:
         self._input.fill(value)
 
-    @property
     def is_errored(self) -> bool:
         return "govuk-input--error" in (self._input.get_attribute("class") or "").split(" ")
 
-    @property
     def error(self) -> str | None:
         text_content = self._error.text_content()
         return text_content.strip() if text_content else None
@@ -588,19 +549,15 @@ class CheckboxComponent:
         self._form_group = input_.locator("xpath=../../..")
         self._error = self._form_group.locator(".govuk-error-message")
 
-    @property
     def value(self) -> bool:
         return self._input.is_checked()
 
-    @value.setter
-    def value(self, value: bool) -> None:
+    def check(self, value: bool) -> None:
         self._input.set_checked(value)
 
-    @property
     def is_errored(self) -> bool:
         return "govuk-form-group--error" in (self._form_group.get_attribute("class") or "").split(" ")
 
-    @property
     def error(self) -> str | None:
         text_content = self._error.text_content()
         return text_content.strip() if text_content else None

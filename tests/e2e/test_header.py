@@ -18,4 +18,4 @@ def test_sign_out(app_client: AppClient, api_client: ApiClient, oidc_client: Oid
 
     start_page = schemes_page.header.sign_out()
 
-    assert start_page.is_visible
+    assert start_page.is_visible()

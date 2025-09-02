@@ -45,9 +45,9 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
     scheme_page = SchemePage.open(page, reference="ATE00001")
 
     assert (
-        scheme_page.funding.funding_allocation == "£100,000"
-        and scheme_page.funding.spend_to_date == "£50,000"
-        and scheme_page.funding.allocation_still_to_spend == "£50,000"
+        scheme_page.funding.funding_allocation() == "£100,000"
+        and scheme_page.funding.spend_to_date() == "£50,000"
+        and scheme_page.funding.allocation_still_to_spend() == "£50,000"
     )
 
 
@@ -91,7 +91,7 @@ def test_change_spend_to_date(
         SchemePage.open(page, reference="ATE00001").funding.change_spend_to_date().form.enter_amount("60000").confirm()
     )
 
-    assert scheme_page.heading.text == "Wirral Package" and scheme_page.funding.spend_to_date == "£60,000"
+    assert scheme_page.heading.text() == "Wirral Package" and scheme_page.funding.spend_to_date() == "£60,000"
     assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
         FinancialRevisionRepr(
             id=1,
@@ -163,14 +163,14 @@ def test_cannot_change_spend_to_date_when_error(
     )
 
     assert (
-        change_spend_to_date_page.title
+        change_spend_to_date_page.title()
         == "Error: How much has been spent to date? - Update your capital schemes - Active Travel England - GOV.UK"
     )
     assert list(change_spend_to_date_page.errors) == ["Enter spend to date"]
     assert (
-        change_spend_to_date_page.form.amount.is_errored
-        and change_spend_to_date_page.form.amount.error == "Error: Enter spend to date"
-        and change_spend_to_date_page.form.amount.value == ""
+        change_spend_to_date_page.form.amount.is_errored()
+        and change_spend_to_date_page.form.amount.error() == "Error: Enter spend to date"
+        and change_spend_to_date_page.form.amount.value() == ""
     )
     assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
         FinancialRevisionRepr(

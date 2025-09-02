@@ -41,8 +41,8 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
     scheme_page = SchemePage.open(page, reference="ATE00001")
 
     assert (
-        scheme_page.overview.reference == "ATE00001"
-        and scheme_page.overview.scheme_type == "Construction"
-        and scheme_page.overview.funding_programme == "ATF4"
-        and scheme_page.overview.current_milestone == "Detailed design completed"
+        scheme_page.overview.reference() == "ATE00001"
+        and scheme_page.overview.scheme_type() == "Construction"
+        and scheme_page.overview.funding_programme() == "ATF4"
+        and scheme_page.overview.current_milestone() == "Detailed design completed"
     )

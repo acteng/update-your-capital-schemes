@@ -13,7 +13,7 @@ class TestUnauthenticated:
     def test_start(self, page: Page) -> None:
         start_page = StartPage.open(page)
 
-        assert start_page.is_visible
+        assert start_page.is_visible()
 
     @pytest.mark.usefixtures("oidc_server")
     def test_start_shows_login(self, page: Page) -> None:
@@ -21,7 +21,7 @@ class TestUnauthenticated:
 
         login_page = start_page.start_when_unauthenticated()
 
-        assert login_page.is_visible
+        assert login_page.is_visible()
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
@@ -40,4 +40,4 @@ class TestAuthenticated:
 
         schemes_page = StartPage.open_when_authenticated(page)
 
-        assert schemes_page.heading.caption == "Liverpool City Region Combined Authority"
+        assert schemes_page.heading.caption() == "Liverpool City Region Combined Authority"

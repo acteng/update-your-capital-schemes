@@ -29,7 +29,7 @@ def test_scheme(app_client: AppClient, api_client: ApiClient, oidc_client: OidcC
     scheme_page = SchemePage.open(page, reference="ATE00001")
 
     assert (
-        scheme_page.heading.caption == "Liverpool City Region Combined Authority"
-        and scheme_page.heading.text == "Wirral Package"
-        and scheme_page.needs_review
+        scheme_page.heading.caption() == "Liverpool City Region Combined Authority"
+        and scheme_page.heading.text() == "Wirral Package"
+        and scheme_page.needs_review()
     )

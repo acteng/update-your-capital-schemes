@@ -1,32 +1,32 @@
 import re
 from re import Pattern
-from typing import Iterator, Self
+from typing import AsyncGenerator, AsyncIterator, Self
 
-from playwright.sync_api import Locator, Page
+from playwright.async_api import Locator, Page
 
 
 class PageObject:
     def __init__(self, page: Page):
         self._page = page
 
-    def title(self) -> str:
-        return self._page.title()
+    async def title(self) -> str:
+        return await self._page.title()
 
 
 class LoginPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
 
-    def is_visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Login").is_visible()
+    async def is_visible(self) -> bool:
+        return await self._page.get_by_role("heading", name="Login").is_visible()
 
 
 class ForbiddenPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
 
-    def is_visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Forbidden").is_visible()
+    async def is_visible(self) -> bool:
+        return await self._page.get_by_role("heading", name="Forbidden").is_visible()
 
 
 class SchemesPage(PageObject):
@@ -40,18 +40,18 @@ class SchemesPage(PageObject):
         self.schemes = SchemesTableComponent(self._main.get_by_role("table"))
 
     @classmethod
-    def open(cls, page: Page) -> Self:
-        page.goto("/schemes")
+    async def open(cls, page: Page) -> Self:
+        await page.goto("/schemes")
         return cls(page)
 
     @classmethod
-    def open_when_unauthenticated(cls, page: Page) -> LoginPage:
-        cls.open(page)
+    async def open_when_unauthenticated(cls, page: Page) -> LoginPage:
+        await cls.open(page)
         return LoginPage(page)
 
     @classmethod
-    def open_when_unauthorized(cls, page: Page) -> ForbiddenPage:
-        cls.open(page)
+    async def open_when_unauthorized(cls, page: Page) -> ForbiddenPage:
+        await cls.open(page)
         return ForbiddenPage(page)
 
 
@@ -62,24 +62,24 @@ class StartPage(PageObject):
         self.footer = FooterComponent(page.get_by_role("contentinfo"))
 
     @classmethod
-    def open(cls, page: Page) -> Self:
-        page.goto("/")
+    async def open(cls, page: Page) -> Self:
+        await page.goto("/")
         return cls(page)
 
     @classmethod
-    def open_when_authenticated(cls, page: Page) -> SchemesPage:
-        cls.open(page)
+    async def open_when_authenticated(cls, page: Page) -> SchemesPage:
+        await cls.open(page)
         return SchemesPage(page)
 
-    def is_visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Schemes").is_visible()
+    async def is_visible(self) -> bool:
+        return await self._page.get_by_role("heading", name="Schemes").is_visible()
 
-    def start(self) -> SchemesPage:
-        self._start.click()
+    async def start(self) -> SchemesPage:
+        await self._start.click()
         return SchemesPage(self._page)
 
-    def start_when_unauthenticated(self) -> LoginPage:
-        self.start()
+    async def start_when_unauthenticated(self) -> LoginPage:
+        await self.start()
         return LoginPage(self._page)
 
 
@@ -87,40 +87,40 @@ class PrivacyPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
 
-    def is_visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Privacy notice").first.is_visible()
+    async def is_visible(self) -> bool:
+        return await self._page.get_by_role("heading", name="Privacy notice").first.is_visible()
 
 
 class AccessibilityPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
 
-    def is_visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Accessibility statement").first.is_visible()
+    async def is_visible(self) -> bool:
+        return await self._page.get_by_role("heading", name="Accessibility statement").first.is_visible()
 
 
 class CookiesPage(PageObject):
     def __init__(self, page: Page):
         super().__init__(page)
 
-    def is_visible(self) -> bool:
-        return self._page.get_by_role("heading", name="Cookies").first.is_visible()
+    async def is_visible(self) -> bool:
+        return await self._page.get_by_role("heading", name="Cookies").first.is_visible()
 
 
 class FooterComponent:
     def __init__(self, footer: Locator):
         self._footer = footer
 
-    def privacy(self) -> PrivacyPage:
-        self._footer.get_by_role("link", name="Privacy").click()
+    async def privacy(self) -> PrivacyPage:
+        await self._footer.get_by_role("link", name="Privacy").click()
         return PrivacyPage(self._footer.page)
 
-    def accessibility(self) -> AccessibilityPage:
-        self._footer.get_by_role("link", name="Accessibility").click()
+    async def accessibility(self) -> AccessibilityPage:
+        await self._footer.get_by_role("link", name="Accessibility").click()
         return AccessibilityPage(self._footer.page)
 
-    def cookies(self) -> CookiesPage:
-        self._footer.get_by_role("link", name="Cookies").click()
+    async def cookies(self) -> CookiesPage:
+        await self._footer.get_by_role("link", name="Cookies").click()
         return CookiesPage(self._footer.page)
 
 
@@ -128,8 +128,8 @@ class ServiceHeaderComponent:
     def __init__(self, header: Locator):
         self._header = header
 
-    def sign_out(self) -> StartPage:
-        self._header.get_by_role("link", name="Sign out").click()
+    async def sign_out(self) -> StartPage:
+        await self._header.get_by_role("link", name="Sign out").click()
         return StartPage(self._header.page)
 
 
@@ -137,8 +137,8 @@ class NotificationBannerComponent:
     def __init__(self, banner: Locator):
         self._heading = banner.get_by_role("paragraph")
 
-    def heading(self) -> str:
-        return (self._heading.text_content() or "").strip()
+    async def heading(self) -> str:
+        return (await self._heading.text_content() or "").strip()
 
     @classmethod
     def for_important(cls, page: Page) -> Self:
@@ -154,11 +154,11 @@ class HeadingComponent:
         self._caption = heading.locator(".govuk-caption-xl")
         self._text = heading.locator("span").nth(1)
 
-    def caption(self) -> str | None:
-        return self._caption.text_content()
+    async def caption(self) -> str | None:
+        return await self._caption.text_content()
 
-    def text(self) -> str | None:
-        return self._text.text_content()
+    async def text(self) -> str | None:
+        return await self._text.text_content()
 
 
 class SchemePage(PageObject):
@@ -175,14 +175,14 @@ class SchemePage(PageObject):
         self.review = SchemeReviewComponent(self._main.get_by_role("heading", name="Is this scheme up-to-date?"))
 
     @classmethod
-    def open(cls, page: Page, reference: str) -> Self:
+    async def open(cls, page: Page, reference: str) -> Self:
         # TODO: redirect to requested page after login - workaround, use homepage to complete authentication
-        page.goto("/schemes")
-        page.goto(f"/schemes/{reference}")
+        await page.goto("/schemes")
+        await page.goto(f"/schemes/{reference}")
         return cls(page)
 
-    def needs_review(self) -> bool:
-        return self._inset_text.has_text(
+    async def needs_review(self) -> bool:
+        return await self._inset_text.has_text(
             re.compile(r"Needs review\s+Check the details before confirming that this scheme is up-to-date.")
         )
 
@@ -196,32 +196,32 @@ class SchemeRowComponent:
         self._name = name_cell.locator("span")
         self._tag = TagComponent(name_cell.locator(".govuk-tag"))
 
-    def reference(self) -> str | None:
-        return self._reference.text_content()
+    async def reference(self) -> str | None:
+        return await self._reference.text_content()
 
-    def funding_programme(self) -> str | None:
-        return self._cells.nth(1).text_content()
+    async def funding_programme(self) -> str | None:
+        return await self._cells.nth(1).text_content()
 
-    def name(self) -> str | None:
-        return self._name.text_content()
+    async def name(self) -> str | None:
+        return await self._name.text_content()
 
-    def needs_review(self) -> bool:
-        return self._tag.text() == "Needs review"
+    async def needs_review(self) -> bool:
+        return await self._tag.text() == "Needs review"
 
-    def last_reviewed(self) -> str | None:
-        return self._cells.nth(3).text_content()
+    async def last_reviewed(self) -> str | None:
+        return await self._cells.nth(3).text_content()
 
-    def open(self) -> SchemePage:
-        self._reference.get_by_role("link").click()
+    async def open(self) -> SchemePage:
+        await self._reference.get_by_role("link").click()
         return SchemePage(self._row.page)
 
-    def to_dict(self) -> dict[str, str | bool | None]:
+    async def to_dict(self) -> dict[str, str | bool | None]:
         return {
-            "reference": self.reference(),
-            "funding_programme": self.funding_programme(),
-            "name": self.name(),
-            "needs_review": self.needs_review(),
-            "last_reviewed": self.last_reviewed(),
+            "reference": await self.reference(),
+            "funding_programme": await self.funding_programme(),
+            "name": await self.name(),
+            "needs_review": await self.needs_review(),
+            "last_reviewed": await self.last_reviewed(),
         }
 
 
@@ -229,24 +229,30 @@ class SchemesTableComponent:
     def __init__(self, table: Locator):
         self._rows = table.get_by_role("row")
 
-    def __iter__(self) -> Iterator[SchemeRowComponent]:
-        self._rows.first.wait_for()
-        return (SchemeRowComponent(row) for row in self._rows.all()[1:])
+    async def __aiter__(self) -> AsyncIterator[SchemeRowComponent]:
+        await self._rows.first.wait_for()
+        for row in (await self._rows.all())[1:]:
+            yield SchemeRowComponent(row)
 
-    def __getitem__(self, reference: str) -> SchemeRowComponent:
-        return next((scheme for scheme in self if scheme.reference() == reference))
+    async def scheme(self, reference: str) -> SchemeRowComponent:
+        async def schemes() -> AsyncGenerator[SchemeRowComponent]:
+            async for scheme in self:
+                if await scheme.reference() == reference:
+                    yield scheme
 
-    def to_dicts(self) -> list[dict[str, str | bool | None]]:
-        return [scheme.to_dict() for scheme in self]
+        return await anext(schemes())
+
+    async def to_dicts(self) -> list[dict[str, str | bool | None]]:
+        return [await scheme.to_dict() async for scheme in self]
 
 
 class TagComponent:
     def __init__(self, tag: Locator):
         self._tag = tag
 
-    def text(self) -> str:
-        self._tag.first.wait_for()
-        texts = self._tag.all_text_contents()
+    async def text(self) -> str:
+        await self._tag.first.wait_for()
+        texts = await self._tag.all_text_contents()
         return texts[0].strip() if texts else ""
 
 
@@ -254,11 +260,11 @@ class InsetTextComponent:
     def __init__(self, inset_text: Locator):
         self._inset_text = inset_text
 
-    def text(self) -> str:
-        return (self._inset_text.text_content() or "").strip()
+    async def text(self) -> str:
+        return (await self._inset_text.text_content() or "").strip()
 
-    def has_text(self, pattern: Pattern[str]) -> bool:
-        return pattern.match(self.text()) is not None
+    async def has_text(self, pattern: Pattern[str]) -> bool:
+        return pattern.match(await self.text()) is not None
 
 
 class SummaryCardComponent:
@@ -280,17 +286,17 @@ class SchemeOverviewComponent(SummaryCardComponent):
         self._funding_programme = self._get_definition("Funding programme")
         self._current_milestone = self._get_definition("Current milestone")
 
-    def reference(self) -> str:
-        return (self._reference.text_content() or "").strip()
+    async def reference(self) -> str:
+        return (await self._reference.text_content() or "").strip()
 
-    def scheme_type(self) -> str:
-        return (self._scheme_type.text_content() or "").strip()
+    async def scheme_type(self) -> str:
+        return (await self._scheme_type.text_content() or "").strip()
 
-    def funding_programme(self) -> str:
-        return (self._funding_programme.text_content() or "").strip()
+    async def funding_programme(self) -> str:
+        return (await self._funding_programme.text_content() or "").strip()
 
-    def current_milestone(self) -> str:
-        return (self._current_milestone.text_content() or "").strip()
+    async def current_milestone(self) -> str:
+        return (await self._current_milestone.text_content() or "").strip()
 
 
 class ChangeSpendToDatePage(PageObject):
@@ -309,18 +315,18 @@ class SchemeFundingComponent(SummaryCardComponent):
         self._change_spend_to_date = self._get_definition("Spend to date").nth(1)
         self._allocation_still_to_spend = self._get_definition("Allocation still to spend")
 
-    def funding_allocation(self) -> str:
-        return (self._funding_allocation.text_content() or "").strip()
+    async def funding_allocation(self) -> str:
+        return (await self._funding_allocation.text_content() or "").strip()
 
-    def spend_to_date(self) -> str:
-        return (self._spend_to_date.text_content() or "").strip()
+    async def spend_to_date(self) -> str:
+        return (await self._spend_to_date.text_content() or "").strip()
 
-    def change_spend_to_date(self) -> ChangeSpendToDatePage:
-        self._change_spend_to_date.click()
+    async def change_spend_to_date(self) -> ChangeSpendToDatePage:
+        await self._change_spend_to_date.click()
         return ChangeSpendToDatePage(self._title.page)
 
-    def allocation_still_to_spend(self) -> str:
-        return (self._allocation_still_to_spend.text_content() or "").strip()
+    async def allocation_still_to_spend(self) -> str:
+        return (await self._allocation_still_to_spend.text_content() or "").strip()
 
 
 class ChangeMilestoneDatesPage(PageObject):
@@ -338,8 +344,8 @@ class SchemeMilestonesComponent:
         self._change_milestone_dates = title_wrapper.get_by_role("link", name="Change")
         self.milestones = SchemeMilestonesTableComponent(card.get_by_role("table"))
 
-    def change_milestone_dates(self) -> ChangeMilestoneDatesPage:
-        self._change_milestone_dates.click()
+    async def change_milestone_dates(self) -> ChangeMilestoneDatesPage:
+        await self._change_milestone_dates.click()
         return ChangeMilestoneDatesPage(self._title.page)
 
 
@@ -348,32 +354,38 @@ class SchemeMilestoneRowComponent:
         self._header = row.get_by_role("rowheader")
         self._cells = row.get_by_role("cell")
 
-    def milestone(self) -> str | None:
-        return self._header.text_content()
+    async def milestone(self) -> str | None:
+        return await self._header.text_content()
 
-    def planned(self) -> str | None:
-        return self._cells.nth(0).text_content()
+    async def planned(self) -> str | None:
+        return await self._cells.nth(0).text_content()
 
-    def actual(self) -> str | None:
-        return self._cells.nth(1).text_content()
+    async def actual(self) -> str | None:
+        return await self._cells.nth(1).text_content()
 
-    def to_dict(self) -> dict[str, str | None]:
-        return {"milestone": self.milestone(), "planned": self.planned(), "actual": self.actual()}
+    async def to_dict(self) -> dict[str, str | None]:
+        return {"milestone": await self.milestone(), "planned": await self.planned(), "actual": await self.actual()}
 
 
 class SchemeMilestonesTableComponent:
     def __init__(self, table: Locator):
         self._rows = table.get_by_role("row")
 
-    def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
-        self._rows.first.wait_for()
-        return (SchemeMilestoneRowComponent(row) for row in self._rows.all()[1:])
+    async def __aiter__(self) -> AsyncIterator[SchemeMilestoneRowComponent]:
+        await self._rows.first.wait_for()
+        for row in (await self._rows.all())[1:]:
+            yield SchemeMilestoneRowComponent(row)
 
-    def __getitem__(self, milestone: str) -> SchemeMilestoneRowComponent:
-        return next(row for row in self if row.milestone() == milestone)
+    async def milestone(self, milestone: str) -> SchemeMilestoneRowComponent:
+        async def milestones() -> AsyncGenerator[SchemeMilestoneRowComponent]:
+            async for row in self:
+                if await row.milestone() == milestone:
+                    yield row
 
-    def to_dicts(self) -> list[dict[str, str | None]]:
-        return [milestone.to_dict() for milestone in self]
+        return await anext(milestones())
+
+    async def to_dicts(self) -> list[dict[str, str | None]]:
+        return [await milestone.to_dict() async for milestone in self]
 
 
 class SchemeOutputsComponent:
@@ -386,20 +398,20 @@ class SchemeOutputRowComponent:
     def __init__(self, row: Locator):
         self._cells = row.get_by_role("cell")
 
-    def infrastructure(self) -> str | None:
-        return self._cells.nth(0).text_content()
+    async def infrastructure(self) -> str | None:
+        return await self._cells.nth(0).text_content()
 
-    def measurement(self) -> str | None:
-        return self._cells.nth(1).text_content()
+    async def measurement(self) -> str | None:
+        return await self._cells.nth(1).text_content()
 
-    def planned(self) -> str | None:
-        return self._cells.nth(2).text_content()
+    async def planned(self) -> str | None:
+        return await self._cells.nth(2).text_content()
 
-    def to_dict(self) -> dict[str, str | None]:
+    async def to_dict(self) -> dict[str, str | None]:
         return {
-            "infrastructure": self.infrastructure(),
-            "measurement": self.measurement(),
-            "planned": self.planned(),
+            "infrastructure": await self.infrastructure(),
+            "measurement": await self.measurement(),
+            "planned": await self.planned(),
         }
 
 
@@ -407,12 +419,13 @@ class SchemeOutputsTableComponent:
     def __init__(self, table: Locator):
         self._rows = table.get_by_role("row")
 
-    def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
-        self._rows.first.wait_for()
-        return (SchemeOutputRowComponent(row) for row in self._rows.all()[1:])
+    async def __aiter__(self) -> AsyncIterator[SchemeOutputRowComponent]:
+        await self._rows.first.wait_for()
+        for row in (await self._rows.all())[1:]:
+            yield SchemeOutputRowComponent(row)
 
-    def to_dicts(self) -> list[dict[str, str | None]]:
-        return [output.to_dict() for output in self]
+    async def to_dicts(self) -> list[dict[str, str | None]]:
+        return [await output.to_dict() async for output in self]
 
 
 class SchemeReviewComponent:
@@ -429,16 +442,16 @@ class SchemeReviewFormComponent:
         )
         self._confirm = form.get_by_role("button", name="Confirm")
 
-    def check_up_to_date(self) -> Self:
-        self.up_to_date.check(True)
+    async def check_up_to_date(self) -> Self:
+        await self.up_to_date.check(True)
         return self
 
-    def confirm(self) -> SchemesPage:
-        self._confirm.click()
+    async def confirm(self) -> SchemesPage:
+        await self._confirm.click()
         return SchemesPage(self._form.page)
 
-    def confirm_when_error(self) -> SchemePage:
-        self._confirm.click()
+    async def confirm_when_error(self) -> SchemePage:
+        await self._confirm.click()
         return SchemePage(self._form.page)
 
 
@@ -448,16 +461,16 @@ class ChangeSpendToDateFormComponent:
         self.amount = TextComponent(form.get_by_label("How much has been spent to date?"))
         self._confirm = form.get_by_role("button", name="Confirm")
 
-    def enter_amount(self, value: str) -> Self:
-        self.amount.enter(value)
+    async def enter_amount(self, value: str) -> Self:
+        await self.amount.enter(value)
         return self
 
-    def confirm(self) -> SchemePage:
-        self._confirm.click()
+    async def confirm(self) -> SchemePage:
+        await self._confirm.click()
         return SchemePage(self._form.page)
 
-    def confirm_when_error(self) -> ChangeSpendToDatePage:
-        self._confirm.click()
+    async def confirm_when_error(self) -> ChangeSpendToDatePage:
+        await self._confirm.click()
         return ChangeSpendToDatePage(self._form.page)
 
 
@@ -472,20 +485,20 @@ class ChangeMilestoneDatesFormComponent:
         )
         self._confirm = form.get_by_role("button", name="Confirm")
 
-    def enter_construction_started_actual(self, value: str) -> Self:
-        self.construction_started_actual.enter(value)
+    async def enter_construction_started_actual(self, value: str) -> Self:
+        await self.construction_started_actual.enter(value)
         return self
 
-    def enter_construction_completed_planned(self, value: str) -> Self:
-        self.construction_completed_planned.enter(value)
+    async def enter_construction_completed_planned(self, value: str) -> Self:
+        await self.construction_completed_planned.enter(value)
         return self
 
-    def confirm(self) -> SchemePage:
-        self._confirm.click()
+    async def confirm(self) -> SchemePage:
+        await self._confirm.click()
         return SchemePage(self._form.page)
 
-    def confirm_when_error(self) -> ChangeMilestoneDatesPage:
-        self._confirm.click()
+    async def confirm_when_error(self) -> ChangeMilestoneDatesPage:
+        await self._confirm.click()
         return ChangeMilestoneDatesPage(self._form.page)
 
 
@@ -497,20 +510,20 @@ class DateComponent:
         self.year = TextComponent(fieldset.get_by_label("Year"))
         self._error = form_group.locator(".govuk-error-message")
 
-    def value(self) -> str:
-        return f"{self.day.value()} {self.month.value()} {self.year.value()}"
+    async def value(self) -> str:
+        return f"{await self.day.value()} {await self.month.value()} {await self.year.value()}"
 
-    def enter(self, value: str) -> None:
+    async def enter(self, value: str) -> None:
         values = value.split(" ")
-        self.day.enter(values[0])
-        self.month.enter(values[1])
-        self.year.enter(values[2])
+        await self.day.enter(values[0])
+        await self.month.enter(values[1])
+        await self.year.enter(values[2])
 
-    def is_errored(self) -> bool:
-        return self.day.is_errored() and self.month.is_errored() and self.year.is_errored()
+    async def is_errored(self) -> bool:
+        return await self.day.is_errored() and await self.month.is_errored() and await self.year.is_errored()
 
-    def error(self) -> str | None:
-        text_content = self._error.text_content()
+    async def error(self) -> str | None:
+        text_content = await self._error.text_content()
         return text_content.strip() if text_content else None
 
 
@@ -518,9 +531,10 @@ class ErrorSummaryComponent:
     def __init__(self, alert: Locator):
         self._listitems = alert.get_by_role("listitem")
 
-    def __iter__(self) -> Iterator[str]:
-        self._listitems.first.wait_for()
-        return (text_content.strip() for text_content in self._listitems.all_text_contents())
+    async def __aiter__(self) -> AsyncIterator[str]:
+        await self._listitems.first.wait_for()
+        for text_content in await self._listitems.all_text_contents():
+            yield text_content.strip()
 
 
 class TextComponent:
@@ -529,17 +543,17 @@ class TextComponent:
         form_group = input_.locator("xpath=../..")
         self._error = form_group.locator(".govuk-error-message")
 
-    def value(self) -> str:
-        return self._input.input_value()
+    async def value(self) -> str:
+        return await self._input.input_value()
 
-    def enter(self, value: str) -> None:
-        self._input.fill(value)
+    async def enter(self, value: str) -> None:
+        await self._input.fill(value)
 
-    def is_errored(self) -> bool:
-        return "govuk-input--error" in (self._input.get_attribute("class") or "").split(" ")
+    async def is_errored(self) -> bool:
+        return "govuk-input--error" in (await self._input.get_attribute("class") or "").split(" ")
 
-    def error(self) -> str | None:
-        text_content = self._error.text_content()
+    async def error(self) -> str | None:
+        text_content = await self._error.text_content()
         return text_content.strip() if text_content else None
 
 
@@ -549,15 +563,15 @@ class CheckboxComponent:
         self._form_group = input_.locator("xpath=../../..")
         self._error = self._form_group.locator(".govuk-error-message")
 
-    def value(self) -> bool:
-        return self._input.is_checked()
+    async def value(self) -> bool:
+        return await self._input.is_checked()
 
-    def check(self, value: bool) -> None:
-        self._input.set_checked(value)
+    async def check(self, value: bool) -> None:
+        await self._input.set_checked(value)
 
-    def is_errored(self) -> bool:
-        return "govuk-form-group--error" in (self._form_group.get_attribute("class") or "").split(" ")
+    async def is_errored(self) -> bool:
+        return "govuk-form-group--error" in (await self._form_group.get_attribute("class") or "").split(" ")
 
-    def error(self) -> str | None:
-        text_content = self._error.text_content()
+    async def error(self) -> str | None:
+        text_content = await self._error.text_content()
         return text_content.strip() if text_content else None

@@ -1,5 +1,5 @@
 import pytest
-from playwright.sync_api import Page
+from playwright.async_api import Page
 
 from tests.e2e.api_client import ApiClient, AuthorityModel
 from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, MilestoneRevisionRepr, UserRepr
@@ -8,9 +8,13 @@ from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
+async def test_scheme_overview(
+    app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+) -> None:
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
@@ -38,11 +42,11 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, reference="ATE00001")
+    scheme_page = await SchemePage.open(page, reference="ATE00001")
 
     assert (
-        scheme_page.overview.reference() == "ATE00001"
-        and scheme_page.overview.scheme_type() == "Construction"
-        and scheme_page.overview.funding_programme() == "ATF4"
-        and scheme_page.overview.current_milestone() == "Detailed design completed"
+        await scheme_page.overview.reference() == "ATE00001"
+        and await scheme_page.overview.scheme_type() == "Construction"
+        and await scheme_page.overview.funding_programme() == "ATF4"
+        and await scheme_page.overview.current_milestone() == "Detailed design completed"
     )

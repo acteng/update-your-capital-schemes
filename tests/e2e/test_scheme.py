@@ -1,5 +1,5 @@
 import pytest
-from playwright.sync_api import Page
+from playwright.async_api import Page
 
 from tests.e2e.api_client import ApiClient, AuthorityModel
 from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, UserRepr
@@ -8,9 +8,11 @@ from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_scheme(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
+async def test_scheme(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
     app_client.set_clock("2023-04-24T12:00:00")
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
@@ -26,10 +28,10 @@ def test_scheme(app_client: AppClient, api_client: ApiClient, oidc_client: OidcC
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, reference="ATE00001")
+    scheme_page = await SchemePage.open(page, reference="ATE00001")
 
     assert (
-        scheme_page.heading.caption() == "Liverpool City Region Combined Authority"
-        and scheme_page.heading.text() == "Wirral Package"
-        and scheme_page.needs_review()
+        await scheme_page.heading.caption() == "Liverpool City Region Combined Authority"
+        and await scheme_page.heading.text() == "Wirral Package"
+        and await scheme_page.needs_review()
     )

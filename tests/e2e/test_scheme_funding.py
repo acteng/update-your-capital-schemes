@@ -1,5 +1,5 @@
 import pytest
-from playwright.sync_api import Page
+from playwright.async_api import Page
 
 from tests.e2e.api_client import ApiClient, AuthorityModel
 from tests.e2e.app_client import AppClient, AuthorityRepr, FinancialRevisionRepr, UserRepr
@@ -8,9 +8,13 @@ from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
+async def test_scheme_funding(
+    app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+) -> None:
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
@@ -42,17 +46,17 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, reference="ATE00001")
+    scheme_page = await SchemePage.open(page, reference="ATE00001")
 
     assert (
-        scheme_page.funding.funding_allocation() == "£100,000"
-        and scheme_page.funding.spend_to_date() == "£50,000"
-        and scheme_page.funding.allocation_still_to_spend() == "£50,000"
+        await scheme_page.funding.funding_allocation() == "£100,000"
+        and await scheme_page.funding.spend_to_date() == "£50,000"
+        and await scheme_page.funding.allocation_still_to_spend() == "£50,000"
     )
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_change_spend_to_date(
+async def test_change_spend_to_date(
     app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.set_clock("2020-01-31T13:00:00")
@@ -87,11 +91,14 @@ def test_change_spend_to_date(
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = (
-        SchemePage.open(page, reference="ATE00001").funding.change_spend_to_date().form.enter_amount("60000").confirm()
-    )
+    scheme_page = await SchemePage.open(page, reference="ATE00001")
+    change_spend_to_date_page = await scheme_page.funding.change_spend_to_date()
+    change_spend_to_date_form = await change_spend_to_date_page.form.enter_amount("60000")
+    scheme_page = await change_spend_to_date_form.confirm()
 
-    assert scheme_page.heading.text() == "Wirral Package" and scheme_page.funding.spend_to_date() == "£60,000"
+    assert (
+        await scheme_page.heading.text() == "Wirral Package" and await scheme_page.funding.spend_to_date() == "£60,000"
+    )
     assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
         FinancialRevisionRepr(
             id=1,
@@ -121,7 +128,7 @@ def test_change_spend_to_date(
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_cannot_change_spend_to_date_when_error(
+async def test_cannot_change_spend_to_date_when_error(
     app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
@@ -155,22 +162,20 @@ def test_cannot_change_spend_to_date_when_error(
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    change_spend_to_date_page = (
-        SchemePage.open(page, reference="ATE00001")
-        .funding.change_spend_to_date()
-        .form.enter_amount("")
-        .confirm_when_error()
-    )
+    scheme_page = await SchemePage.open(page, reference="ATE00001")
+    change_spend_to_date_page = await scheme_page.funding.change_spend_to_date()
+    change_spend_to_date_form = await change_spend_to_date_page.form.enter_amount("")
+    change_spend_to_date_page = await change_spend_to_date_form.confirm_when_error()
 
     assert (
-        change_spend_to_date_page.title()
+        await change_spend_to_date_page.title()
         == "Error: How much has been spent to date? - Update your capital schemes - Active Travel England - GOV.UK"
     )
-    assert list(change_spend_to_date_page.errors) == ["Enter spend to date"]
+    assert [error async for error in change_spend_to_date_page.errors] == ["Enter spend to date"]
     assert (
-        change_spend_to_date_page.form.amount.is_errored()
-        and change_spend_to_date_page.form.amount.error() == "Error: Enter spend to date"
-        and change_spend_to_date_page.form.amount.value() == ""
+        await change_spend_to_date_page.form.amount.is_errored()
+        and await change_spend_to_date_page.form.amount.error() == "Error: Enter spend to date"
+        and await change_spend_to_date_page.form.amount.value() == ""
     )
     assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
         FinancialRevisionRepr(

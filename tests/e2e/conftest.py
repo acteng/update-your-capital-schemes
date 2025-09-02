@@ -2,14 +2,15 @@ import multiprocessing
 import socket
 import sys
 from dataclasses import dataclass
-from typing import Any, Generator
+from typing import Any, AsyncGenerator, Generator
 
 import pytest
+import pytest_asyncio
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.serialization import Encoding, NoEncryption, PrivateFormat, PublicFormat
 from flask import Flask
-from playwright.sync_api import BrowserContext
+from playwright.async_api import BrowserContext
 from pytest import FixtureRequest
 from pytest_flask.live_server import LiveServer
 
@@ -203,8 +204,8 @@ def browser_context_args_fixture(browser_context_args: dict[str, Any], live_serv
     return browser_context_args
 
 
-@pytest.fixture(name="context")
-def browser_context_fixture(context: BrowserContext) -> Generator[BrowserContext, None, None]:
+@pytest_asyncio.fixture(name="context", loop_scope="session")
+async def browser_context_fixture(context: BrowserContext) -> AsyncGenerator[BrowserContext]:
     context.set_default_timeout(5_000)
     yield context
 

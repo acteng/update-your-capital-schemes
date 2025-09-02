@@ -1,5 +1,5 @@
 import pytest
-from playwright.sync_api import Page
+from playwright.async_api import Page
 
 from tests.e2e.api_client import ApiClient, AuthorityModel
 from tests.e2e.app_client import AppClient, AuthorityRepr, MilestoneRevisionRepr, UserRepr
@@ -8,9 +8,13 @@ from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
+async def test_scheme_milestones(
+    app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+) -> None:
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
@@ -71,9 +75,9 @@ def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = SchemePage.open(page, reference="ATE00001")
+    scheme_page = await SchemePage.open(page, reference="ATE00001")
 
-    assert scheme_page.milestones.milestones.to_dicts() == [
+    assert await scheme_page.milestones.milestones.to_dicts() == [
         {"milestone": "Feasibility design completed", "planned": "", "actual": "30 Nov 2020"},
         {"milestone": "Preliminary design completed", "planned": "", "actual": "30 Jun 2022"},
         {"milestone": "Detailed design completed", "planned": "", "actual": "30 Jun 2022"},
@@ -83,7 +87,9 @@ def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_change_milestones(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
+async def test_change_milestones(
+    app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+) -> None:
     app_client.set_clock("2023-08-01T13:00:00")
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
@@ -145,18 +151,17 @@ def test_change_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    scheme_page = (
-        SchemePage.open(page, reference="ATE00001")
-        .milestones.change_milestone_dates()
-        .form.enter_construction_started_actual("5 7 2023")
-        .enter_construction_completed_planned("30 9 2023")
-        .confirm()
-    )
+    scheme_page = await SchemePage.open(page, reference="ATE00001")
+    change_milestone_dates_page = await scheme_page.milestones.change_milestone_dates()
+    change_milestone_dates_form = await change_milestone_dates_page.form.enter_construction_started_actual("5 7 2023")
+    change_milestone_dates_form = await change_milestone_dates_form.enter_construction_completed_planned("30 9 2023")
+    scheme_page = await change_milestone_dates_form.confirm()
 
-    assert scheme_page.heading.text() == "Wirral Package"
+    assert await scheme_page.heading.text() == "Wirral Package"
     assert (
-        scheme_page.milestones.milestones["Construction started"].actual() == "5 Jul 2023"
-        and scheme_page.milestones.milestones["Construction completed"].planned() == "30 Sep 2023"
+        await (await scheme_page.milestones.milestones.milestone("Construction started")).actual() == "5 Jul 2023"
+        and await (await scheme_page.milestones.milestones.milestone("Construction completed")).planned()
+        == "30 Sep 2023"
     )
     assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
         MilestoneRevisionRepr(
@@ -226,7 +231,7 @@ def test_change_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_cannot_change_milestones_when_error(
+async def test_cannot_change_milestones_when_error(
     app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
@@ -289,23 +294,23 @@ def test_cannot_change_milestones_when_error(
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    change_milestone_page = (
-        SchemePage.open(page, reference="ATE00001")
-        .milestones.change_milestone_dates()
-        .form.enter_construction_completed_planned("x x x")
-        .confirm_when_error()
-    )
+    scheme_page = await SchemePage.open(page, reference="ATE00001")
+    change_milestone_dates_page = await scheme_page.milestones.change_milestone_dates()
+    change_milestone_dates_form = await change_milestone_dates_page.form.enter_construction_completed_planned("x x x")
+    change_milestone_page = await change_milestone_dates_form.confirm_when_error()
 
     assert (
-        change_milestone_page.title()
+        await change_milestone_page.title()
         == "Error: Change milestone dates - Update your capital schemes - Active Travel England - GOV.UK"
     )
-    assert list(change_milestone_page.errors) == ["Construction completed planned date must be a real date"]
+    assert [error async for error in change_milestone_page.errors] == [
+        "Construction completed planned date must be a real date"
+    ]
     assert (
-        change_milestone_page.form.construction_completed_planned.is_errored()
-        and change_milestone_page.form.construction_completed_planned.error()
+        await change_milestone_page.form.construction_completed_planned.is_errored()
+        and await change_milestone_page.form.construction_completed_planned.error()
         == "Error: Construction completed planned date must be a real date"
-        and change_milestone_page.form.construction_completed_planned.value() == "x x x"
+        and await change_milestone_page.form.construction_completed_planned.value() == "x x x"
     )
 
     assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [

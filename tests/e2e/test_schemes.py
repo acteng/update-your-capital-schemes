@@ -1,5 +1,5 @@
 import pytest
-from playwright.sync_api import Page
+from playwright.async_api import Page
 
 from tests.e2e.api_client import (
     ApiClient,
@@ -18,6 +18,8 @@ from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemesPage
 
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 class TestAuthenticated:
@@ -25,7 +27,7 @@ class TestAuthenticated:
     def oidc_user(self, oidc_client: OidcClient) -> None:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    def test_schemes(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
+    async def test_schemes(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
         api_client.add_funding_programmes(
             FundingProgrammeModel(code="ATF3", eligibleForAuthorityUpdate=True),
@@ -83,10 +85,10 @@ class TestAuthenticated:
             ),
         )
 
-        schemes_page = SchemesPage.open(page)
+        schemes_page = await SchemesPage.open(page)
 
-        assert schemes_page.heading.caption() == "Liverpool City Region Combined Authority"
-        assert schemes_page.schemes.to_dicts() == [
+        assert await schemes_page.heading.caption() == "Liverpool City Region Combined Authority"
+        assert await schemes_page.schemes.to_dicts() == [
             {
                 "reference": "ATE00001",
                 "funding_programme": "ATF3",
@@ -103,12 +105,12 @@ class TestAuthenticated:
             },
         ]
 
-    def test_schemes_when_unauthorized(self, page: Page) -> None:
-        forbidden_page = SchemesPage.open_when_unauthorized(page)
+    async def test_schemes_when_unauthorized(self, page: Page) -> None:
+        forbidden_page = await SchemesPage.open_when_unauthorized(page)
 
-        assert forbidden_page.is_visible()
+        assert await forbidden_page.is_visible()
 
-    def test_scheme_shows_scheme(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
+    async def test_scheme_shows_scheme(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
@@ -118,11 +120,13 @@ class TestAuthenticated:
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         )
 
-        scheme_page = SchemesPage.open(page).schemes["ATE00001"].open()
+        schemes_page = await SchemesPage.open(page)
+        scheme_row = await schemes_page.schemes.scheme("ATE00001")
+        scheme_page = await scheme_row.open()
 
-        assert scheme_page.heading.text() == "Wirral Package"
+        assert await scheme_page.heading.text() == "Wirral Package"
 
-    def test_schemes_shows_update_schemes_notification(
+    async def test_schemes_shows_update_schemes_notification(
         self, app_client: AppClient, api_client: ApiClient, page: Page
     ) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
@@ -141,14 +145,14 @@ class TestAuthenticated:
             ),
         )
 
-        schemes_page = SchemesPage.open(page)
+        schemes_page = await SchemesPage.open(page)
 
-        assert schemes_page.important_notification.heading() == "You have 7 days left to update your schemes"
+        assert await schemes_page.important_notification.heading() == "You have 7 days left to update your schemes"
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 class TestUnauthenticated:
-    def test_schemes_when_unauthenticated(self, page: Page) -> None:
-        login_page = SchemesPage.open_when_unauthenticated(page)
+    async def test_schemes_when_unauthenticated(self, page: Page) -> None:
+        login_page = await SchemesPage.open_when_unauthenticated(page)
 
-        assert login_page.is_visible()
+        assert await login_page.is_visible()

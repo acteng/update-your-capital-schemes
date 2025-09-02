@@ -17,9 +17,9 @@ def test_privacy(page: Page) -> None:
 def test_accessibility(page: Page) -> None:
     start_page = StartPage.open(page)
 
-    privacy_page = start_page.footer.accessibility()
+    accessibility_page = start_page.footer.accessibility()
 
-    assert privacy_page.is_visible
+    assert accessibility_page.is_visible
 
 
 @pytest.mark.usefixtures("live_server")

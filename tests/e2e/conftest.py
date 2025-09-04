@@ -198,7 +198,7 @@ def authorization_server_fixture(authorization_server_app: Flask, request: Fixtu
 
 
 @pytest.fixture(name="browser_context_args", scope="package")
-def browser_context_args_fixture(browser_context_args: dict[str, str], live_server: LiveServer) -> dict[str, str]:
+def browser_context_args_fixture(browser_context_args: dict[str, Any], live_server: LiveServer) -> dict[str, Any]:
     browser_context_args["base_url"] = _get_url(live_server)
     return browser_context_args
 

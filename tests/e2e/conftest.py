@@ -1,15 +1,17 @@
+import json
 import multiprocessing
 import socket
 import sys
 from dataclasses import dataclass
-from typing import Any, Generator
+from tempfile import TemporaryDirectory
+from typing import Any, Callable, Generator
 
 import pytest
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.serialization import Encoding, NoEncryption, PrivateFormat, PublicFormat
 from flask import Flask
-from playwright.sync_api import BrowserContext
+from playwright.sync_api import Browser, BrowserContext, BrowserType, Playwright, sync_playwright
 from pytest import FixtureRequest
 from pytest_flask.live_server import LiveServer
 
@@ -197,8 +199,35 @@ def authorization_server_fixture(authorization_server_app: Flask, request: Fixtu
     return server
 
 
+# Copy of pytest_playwright.pytest_playwright.browser_context_args to narrow scope for pytest-asyncio compatibility
+# See: https://github.com/microsoft/playwright-pytest/issues/167
+# See: https://github.com/microsoft/playwright-pytest/issues/289
 @pytest.fixture(name="browser_context_args", scope="package")
-def browser_context_args_fixture(browser_context_args: dict[str, Any], live_server: LiveServer) -> dict[str, Any]:
+def browser_context_args_fixture(
+    pytestconfig: Any,
+    playwright: Playwright,
+    device: str | None,
+    base_url: str | None,
+    _pw_artifacts_folder: TemporaryDirectory[str],
+) -> dict[str, str]:
+    context_args = {}
+    if device:
+        context_args.update(playwright.devices[device])
+    if base_url:
+        context_args["base_url"] = base_url
+
+    video_option = pytestconfig.getoption("--video")
+    capture_video = video_option in ["on", "retain-on-failure"]
+    if capture_video:
+        context_args["record_video_dir"] = _pw_artifacts_folder.name
+
+    return context_args
+
+
+@pytest.fixture(name="browser_context_args", scope="package")
+def custom_browser_context_args_fixture(
+    browser_context_args: dict[str, Any], live_server: LiveServer
+) -> dict[str, Any]:
     browser_context_args["base_url"] = _get_url(live_server)
     return browser_context_args
 
@@ -207,6 +236,63 @@ def browser_context_args_fixture(browser_context_args: dict[str, Any], live_serv
 def browser_context_fixture(context: BrowserContext) -> Generator[BrowserContext, None, None]:
     context.set_default_timeout(5_000)
     yield context
+
+
+# Copy of pytest_playwright.pytest_playwright.playwright to narrow scope for pytest-asyncio compatibility
+# See: https://github.com/microsoft/playwright-pytest/issues/167
+# See: https://github.com/microsoft/playwright-pytest/issues/289
+@pytest.fixture(name="playwright", scope="package")
+def playwright_fixture() -> Generator[Playwright, None, None]:
+    pw = sync_playwright().start()
+    yield pw
+    pw.stop()
+
+
+# Copy of pytest_playwright.pytest_playwright.browser_type to narrow scope for pytest-asyncio compatibility
+# See: https://github.com/microsoft/playwright-pytest/issues/167
+# See: https://github.com/microsoft/playwright-pytest/issues/289
+@pytest.fixture(name="browser_type", scope="package")
+def browser_type_fixture(playwright: Playwright, browser_name: str) -> BrowserType:
+    browser_type: BrowserType = getattr(playwright, browser_name)
+    return browser_type
+
+
+# Copy of pytest_playwright.pytest_playwright.launch_browser to narrow scope for pytest-asyncio compatibility
+# See: https://github.com/microsoft/playwright-pytest/issues/167
+# See: https://github.com/microsoft/playwright-pytest/issues/289
+@pytest.fixture(name="launch_browser", scope="package")
+def launch_browser_fixture(
+    browser_type_launch_args: dict[str, Any], browser_type: BrowserType, connect_options: dict[str, Any] | None
+) -> Callable[..., Browser]:
+    def launch(**kwargs: dict[str, Any]) -> Browser:
+        launch_options = {**browser_type_launch_args, **kwargs}
+        if connect_options:
+            browser = browser_type.connect(
+                **(
+                    {
+                        **connect_options,
+                        "headers": {
+                            "x-playwright-launch-options": json.dumps(launch_options),
+                            **(connect_options.get("headers") or {}),
+                        },
+                    }
+                )
+            )
+        else:
+            browser = browser_type.launch(**launch_options)
+        return browser
+
+    return launch
+
+
+# Copy of pytest_playwright.pytest_playwright.browser to narrow scope for pytest-asyncio compatibility
+# See: https://github.com/microsoft/playwright-pytest/issues/167
+# See: https://github.com/microsoft/playwright-pytest/issues/289
+@pytest.fixture(name="browser", scope="package")
+def browser_fixture(launch_browser: Callable[[], Browser]) -> Generator[Browser, None, None]:
+    browser = launch_browser()
+    yield browser
+    browser.close()
 
 
 def _get_url(live_server: LiveServer) -> str:

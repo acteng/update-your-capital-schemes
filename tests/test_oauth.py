@@ -66,7 +66,7 @@ class TestOAuthExtension:
         api_response = respx.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
 
         with app.app_context():
-            await oauth.ate.request("GET", "/", request=request)
+            await oauth.ate.get("/", request=request)
 
         assert api_response.call_count == 1
 
@@ -79,8 +79,8 @@ class TestOAuthExtension:
         respx.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
 
         with app.app_context():
-            await oauth.ate.request("GET", "/", request=request)
-            await oauth.ate.request("GET", "/", request=request)
+            await oauth.ate.get("/", request=request)
+            await oauth.ate.get("/", request=request)
 
         assert token_response.call_count == 1
 
@@ -93,9 +93,9 @@ class TestOAuthExtension:
         respx.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
 
         with app.app_context():
-            await oauth.ate.request("GET", "/", request=request)
+            await oauth.ate.get("/", request=request)
         with app.app_context():
-            await oauth.ate.request("GET", "/", request=request)
+            await oauth.ate.get("/", request=request)
 
         assert token_response.call_count == 1
 
@@ -109,7 +109,7 @@ class TestOAuthExtension:
         api_response = respx.get(api_server.url, headers={"Authorization": "Bearer refreshed_jwt"})
 
         with app.app_context():
-            await oauth.ate.request("GET", "/", request=request)
+            await oauth.ate.get("/", request=request)
 
         assert api_response.call_count == 1
 
@@ -125,8 +125,8 @@ class TestOAuthExtension:
         api_response = respx.get(api_server.url, headers={"Authorization": "Bearer refreshed_jwt"})
 
         with app.app_context():
-            await oauth.ate.request("GET", "/", request=request)
+            await oauth.ate.get("/", request=request)
         with app.app_context():
-            await oauth.ate.request("GET", "/", request=request)
+            await oauth.ate.get("/", request=request)
 
         assert token_response.call_count == 2 and api_response.call_count == 2

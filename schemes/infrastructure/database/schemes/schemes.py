@@ -56,14 +56,14 @@ class DatabaseSchemeRepository(SchemeRepository):
         self._data_source_mapper = DataSourceMapper()
         self._output_type_measure_mapper = OutputTypeMeasureMapper()
 
-    def add(self, *schemes: Scheme) -> None:
+    async def add(self, *schemes: Scheme) -> None:
         authority_mapper = _AuthorityMapper()
         with self._session_maker() as session:
             authority_mapper.execute(session, self._get_authority_abbreviations(list(schemes)))
             session.add_all(self._capital_scheme_from_domain(scheme, authority_mapper) for scheme in schemes)
             session.commit()
 
-    def clear(self) -> None:
+    async def clear(self) -> None:
         with self._session_maker() as session:
             session.execute(delete(CapitalSchemeAuthorityReviewEntity))
             session.execute(delete(CapitalSchemeInterventionEntity))
@@ -74,7 +74,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             session.execute(delete(CapitalSchemeEntity))
             session.commit()
 
-    def get(self, reference: str) -> Scheme | None:
+    async def get(self, reference: str) -> Scheme | None:
         with self._session_maker() as session:
             result = session.scalars(
                 select(CapitalSchemeEntity)
@@ -95,7 +95,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             row = result.one_or_none()
             return self._capital_scheme_to_domain(row) if row else None
 
-    def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
+    async def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         with self._session_maker() as session:
             result = session.scalars(
                 select(CapitalSchemeEntity)
@@ -125,7 +125,7 @@ class DatabaseSchemeRepository(SchemeRepository):
             )
             return [self._capital_scheme_to_domain(row) for row in result]
 
-    def update(self, scheme: Scheme) -> None:
+    async def update(self, scheme: Scheme) -> None:
         authority_mapper = _AuthorityMapper()
         with self._session_maker() as session:
             authority_mapper.execute(session, self._get_authority_abbreviations([scheme]))

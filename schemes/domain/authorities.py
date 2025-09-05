@@ -13,11 +13,11 @@ class Authority:
 
 
 class AuthorityRepository:
-    def add(self, *authorities: Authority) -> None:
+    async def add(self, *authorities: Authority) -> None:
         raise NotImplementedError()
 
-    def clear(self) -> None:
+    async def clear(self) -> None:
         raise NotImplementedError()
 
-    def get(self, abbreviation: str) -> Authority | None:
+    async def get(self, abbreviation: str) -> Authority | None:
         raise NotImplementedError()

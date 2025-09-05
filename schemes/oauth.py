@@ -1,4 +1,6 @@
-from authlib.integrations.base_client import BaseApp, InvalidTokenError
+from typing import Any
+
+from authlib.integrations.base_client import InvalidTokenError
 from authlib.integrations.base_client.async_app import AsyncOAuth2Mixin
 from authlib.integrations.base_client.async_openid import AsyncOpenIDMixin
 from authlib.integrations.flask_client import OAuth
@@ -6,6 +8,7 @@ from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from flask import Flask, Request
+from httpx import Response
 
 
 class _AccessTokenParamsAsyncOAuth2Client(AsyncOAuth2Client):  # type: ignore
@@ -35,8 +38,20 @@ class _AccessTokenParamsAsyncOAuth2Client(AsyncOAuth2Client):  # type: ignore
                     raise InvalidTokenError()
 
 
+# Workaround: https://github.com/authlib/authlib/issues/819
+class AsyncBaseApp:
+    client_cls: type | None = None
+    OAUTH_APP_CONFIG: Any = None
+
+    async def request(self, method: str, url: str, token: OAuth2Token | None = None, **kwargs: Any) -> Response:
+        raise NotImplementedError()
+
+    async def get(self, url: str, **kwargs: Any) -> Response:
+        return await self.request("GET", url, **kwargs)
+
+
 # Workaround: https://github.com/authlib/authlib/issues/818
-class _AccessTokenParamsAsyncFlaskOAuth2App(AsyncOAuth2Mixin, AsyncOpenIDMixin, BaseApp):  # type: ignore
+class _AccessTokenParamsAsyncFlaskOAuth2App(AsyncOAuth2Mixin, AsyncOpenIDMixin, AsyncBaseApp):  # type: ignore
     # Workaround: https://github.com/authlib/authlib/issues/783
     client_cls = _AccessTokenParamsAsyncOAuth2Client
 

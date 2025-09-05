@@ -11,7 +11,7 @@ class DatabaseAuthorityRepository(AuthorityRepository):
     def __init__(self, session_maker: sessionmaker[Session]):
         self._session_maker = session_maker
 
-    def add(self, *authorities: Authority) -> None:
+    async def add(self, *authorities: Authority) -> None:
         with self._session_maker() as session:
             session.add_all(
                 AuthorityEntity(authority_abbreviation=authority.abbreviation, authority_full_name=authority.name)
@@ -19,12 +19,12 @@ class DatabaseAuthorityRepository(AuthorityRepository):
             )
             session.commit()
 
-    def clear(self) -> None:
+    async def clear(self) -> None:
         with self._session_maker() as session:
             session.execute(delete(AuthorityEntity))
             session.commit()
 
-    def get(self, abbreviation: str) -> Authority | None:
+    async def get(self, abbreviation: str) -> Authority | None:
         with self._session_maker() as session:
             result = session.scalars(
                 select(AuthorityEntity).where(AuthorityEntity.authority_abbreviation == abbreviation)

@@ -40,16 +40,16 @@ class TestDatabaseSchemeRepository:
         return repository
 
     @pytest.fixture(name="authority", autouse=True)
-    def authority_fixture(self, authorities: DatabaseAuthorityRepository) -> None:
-        authorities.add(
+    async def authority_fixture(self, authorities: DatabaseAuthorityRepository) -> None:
+        await authorities.add(
             Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"),
             Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"),
         )
 
-    def test_add_schemes(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
+    async def test_add_schemes(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
         scheme1 = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
 
-        schemes.add(
+        await schemes.add(
             scheme1, build_scheme(id_=2, reference="ATE00002", name="School Streets", authority_abbreviation="WYO")
         )
 
@@ -60,7 +60,7 @@ class TestDatabaseSchemeRepository:
         assert row1.capital_scheme_id == 1 and row1.scheme_reference == "ATE00001"
         assert row2.capital_scheme_id == 2 and row2.scheme_reference == "ATE00002"
 
-    def test_add_schemes_overview_revisions(
+    async def test_add_schemes_overview_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         scheme = build_scheme(
@@ -86,7 +86,7 @@ class TestDatabaseSchemeRepository:
             ],
         )
 
-        schemes.add(scheme)
+        await schemes.add(scheme)
 
         row1: CapitalSchemeOverviewEntity
         row2: CapitalSchemeOverviewEntity
@@ -116,7 +116,7 @@ class TestDatabaseSchemeRepository:
             and row2.funding_programme_id == 3
         )
 
-    def test_add_schemes_bid_status_revisions(
+    async def test_add_schemes_bid_status_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         scheme = build_scheme(
@@ -132,7 +132,7 @@ class TestDatabaseSchemeRepository:
             ],
         )
 
-        schemes.add(scheme)
+        await schemes.add(scheme)
 
         row1: CapitalSchemeBidStatusEntity
         row2: CapitalSchemeBidStatusEntity
@@ -155,7 +155,7 @@ class TestDatabaseSchemeRepository:
             and row2.bid_status_id == 2
         )
 
-    def test_add_schemes_financial_revisions(
+    async def test_add_schemes_financial_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
@@ -176,7 +176,7 @@ class TestDatabaseSchemeRepository:
             ),
         )
 
-        schemes.add(scheme)
+        await schemes.add(scheme)
 
         row1: CapitalSchemeFinancialEntity
         row2: CapitalSchemeFinancialEntity
@@ -203,7 +203,7 @@ class TestDatabaseSchemeRepository:
             and row2.data_source_id == 3
         )
 
-    def test_add_schemes_milestone_revisions(
+    async def test_add_schemes_milestone_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
@@ -226,7 +226,7 @@ class TestDatabaseSchemeRepository:
             ),
         )
 
-        schemes.add(scheme)
+        await schemes.add(scheme)
 
         row1: CapitalSchemeMilestoneEntity
         row2: CapitalSchemeMilestoneEntity
@@ -255,7 +255,7 @@ class TestDatabaseSchemeRepository:
             and row2.data_source_id == 3
         )
 
-    def test_add_schemes_output_revisions(
+    async def test_add_schemes_output_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
@@ -276,7 +276,7 @@ class TestDatabaseSchemeRepository:
             ),
         )
 
-        schemes.add(scheme)
+        await schemes.add(scheme)
 
         row1: CapitalSchemeInterventionEntity
         row2: CapitalSchemeInterventionEntity
@@ -305,7 +305,7 @@ class TestDatabaseSchemeRepository:
             and row2.observation_type_id == 1
         )
 
-    def test_add_schemes_authority_reviews(
+    async def test_add_schemes_authority_reviews(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
@@ -314,7 +314,7 @@ class TestDatabaseSchemeRepository:
             AuthorityReview(id_=3, review_date=datetime(2020, 2, 1), source=DataSource.PULSE_6),
         )
 
-        schemes.add(scheme)
+        await schemes.add(scheme)
 
         row1: CapitalSchemeAuthorityReviewEntity
         row2: CapitalSchemeAuthorityReviewEntity
@@ -337,16 +337,16 @@ class TestDatabaseSchemeRepository:
             and row2.data_source_id == 2
         )
 
-    def test_get_scheme(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
+    async def test_get_scheme(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
         with session_maker() as session:
             session.add(CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"))
             session.commit()
 
-        scheme = schemes.get("ATE00001")
+        scheme = await schemes.get("ATE00001")
 
         assert scheme and scheme.id == 1 and scheme.reference == "ATE00001"
 
-    def test_get_scheme_overview_revisions(
+    async def test_get_scheme_overview_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -377,7 +377,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get("ATE00001")
+        scheme = await schemes.get("ATE00001")
 
         assert scheme
         overview_revision1, overview_revision2 = scheme.overview.overview_revisions
@@ -398,7 +398,7 @@ class TestDatabaseSchemeRepository:
             and overview_revision2.funding_programme == FundingProgrammes.ATF4
         )
 
-    def test_get_scheme_bid_status_revisions(
+    async def test_get_scheme_bid_status_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -423,7 +423,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get("ATE00001")
+        scheme = await schemes.get("ATE00001")
 
         assert scheme
         bid_status_revision1, bid_status_revision2 = scheme.funding.bid_status_revisions
@@ -438,7 +438,7 @@ class TestDatabaseSchemeRepository:
             and bid_status_revision2.status == BidStatus.FUNDED
         )
 
-    def test_get_scheme_financial_revisions(
+    async def test_get_scheme_financial_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -467,7 +467,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get("ATE00001")
+        scheme = await schemes.get("ATE00001")
 
         assert scheme
         financial_revision1, financial_revision2 = scheme.funding.financial_revisions
@@ -486,7 +486,7 @@ class TestDatabaseSchemeRepository:
             and financial_revision2.source == DataSource.ATF4_BID
         )
 
-    def test_get_scheme_milestone_revisions(
+    async def test_get_scheme_milestone_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -517,7 +517,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get("ATE00001")
+        scheme = await schemes.get("ATE00001")
 
         assert scheme
         milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
@@ -538,7 +538,7 @@ class TestDatabaseSchemeRepository:
             and milestone_revision2.source == DataSource.ATF4_BID
         )
 
-    def test_get_scheme_output_revisions(
+    async def test_get_scheme_output_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -567,7 +567,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get("ATE00001")
+        scheme = await schemes.get("ATE00001")
 
         assert scheme
         output_revision1, output_revision2 = scheme.outputs.output_revisions
@@ -586,7 +586,7 @@ class TestDatabaseSchemeRepository:
             and output_revision2.observation_type == ObservationType.PLANNED
         )
 
-    def test_get_scheme_authority_reviews(
+    async def test_get_scheme_authority_reviews(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -609,7 +609,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme = schemes.get("ATE00001")
+        scheme = await schemes.get("ATE00001")
 
         assert scheme
         authority_review1, authority_review2 = scheme.reviews.authority_reviews
@@ -624,16 +624,16 @@ class TestDatabaseSchemeRepository:
             and authority_review2.source == DataSource.PULSE_6
         )
 
-    def test_get_scheme_that_does_not_exist(
+    async def test_get_scheme_that_does_not_exist(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
             session.add(CapitalSchemeEntity(capital_scheme_id=1, scheme_reference="ATE00001"))
             session.commit()
 
-        assert schemes.get("ATE00002") is None
+        assert await schemes.get("ATE00002") is None
 
-    def test_get_all_schemes_by_authority(
+    async def test_get_all_schemes_by_authority(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -676,12 +676,12 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        scheme1, scheme2 = schemes.get_by_authority("LIV")
+        scheme1, scheme2 = await schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1 and scheme1.reference == "ATE00001"
         assert scheme2.id == 2 and scheme2.reference == "ATE00002"
 
-    def test_get_all_schemes_overview_revisions_by_authority(
+    async def test_get_all_schemes_overview_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -723,7 +723,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        (scheme1,) = schemes.get_by_authority("LIV")
+        (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         overview_revision1, overview_revision2 = scheme1.overview.overview_revisions
@@ -744,7 +744,7 @@ class TestDatabaseSchemeRepository:
             and overview_revision2.funding_programme == FundingProgrammes.ATF4
         )
 
-    def test_get_all_schemes_bid_status_revisions_by_authority(
+    async def test_get_all_schemes_bid_status_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -797,7 +797,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        (scheme1,) = schemes.get_by_authority("LIV")
+        (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         bid_status_revision1, bid_status_revision2 = scheme1.funding.bid_status_revisions
@@ -812,7 +812,7 @@ class TestDatabaseSchemeRepository:
             and bid_status_revision2.status == BidStatus.FUNDED
         )
 
-    def test_get_all_schemes_financial_revisions_by_authority(
+    async def test_get_all_schemes_financial_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -871,7 +871,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        (scheme1,) = schemes.get_by_authority("LIV")
+        (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         financial_revision1, financial_revision2 = scheme1.funding.financial_revisions
@@ -890,7 +890,7 @@ class TestDatabaseSchemeRepository:
             and financial_revision2.source == DataSource.ATF4_BID
         )
 
-    def test_get_all_schemes_milestone_revisions_by_authority(
+    async def test_get_all_schemes_milestone_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -952,7 +952,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        (scheme1,) = schemes.get_by_authority("LIV")
+        (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         milestone_revision1, milestone_revision2 = scheme1.milestones.milestone_revisions
@@ -973,7 +973,7 @@ class TestDatabaseSchemeRepository:
             and milestone_revision2.source == DataSource.ATF4_BID
         )
 
-    def test_get_all_schemes_output_revisions_by_authority(
+    async def test_get_all_schemes_output_revisions_by_authority(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -1032,7 +1032,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        (scheme1,) = schemes.get_by_authority("LIV")
+        (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         output_revision1, output_revision2 = scheme1.outputs.output_revisions
@@ -1051,7 +1051,7 @@ class TestDatabaseSchemeRepository:
             and output_revision2.observation_type == ObservationType.PLANNED
         )
 
-    def test_get_all_schemes_authority_reviews_by_authority(
+    async def test_get_all_schemes_authority_reviews_by_authority(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -1101,7 +1101,7 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        (scheme1,) = schemes.get_by_authority("LIV")
+        (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert scheme1.id == 1
         authority_review1, authority_review2 = scheme1.reviews.authority_reviews
@@ -1116,7 +1116,9 @@ class TestDatabaseSchemeRepository:
             and authority_review2.source == DataSource.ATF4_BID
         )
 
-    def test_clear_all_schemes(self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]) -> None:
+    async def test_clear_all_schemes(
+        self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
+    ) -> None:
         with session_maker() as session:
             session.add_all(
                 [
@@ -1169,12 +1171,12 @@ class TestDatabaseSchemeRepository:
             )
             session.commit()
 
-        schemes.clear()
+        await schemes.clear()
 
         with session_maker() as session:
             assert session.execute(select(func.count()).select_from(CapitalSchemeEntity)).scalar_one() == 0
 
-    def test_update_scheme_financial_revisions(
+    async def test_update_scheme_financial_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -1193,7 +1195,7 @@ class TestDatabaseSchemeRepository:
                 ]
             )
             session.commit()
-        scheme = schemes.get("ATE00001")
+        scheme = await schemes.get("ATE00001")
         assert scheme
         scheme.funding.financial_revisions[0].close(datetime(2020, 2, 1))
         scheme.funding.update_financial(
@@ -1206,7 +1208,7 @@ class TestDatabaseSchemeRepository:
             )
         )
 
-        schemes.update(scheme)
+        await schemes.update(scheme)
 
         with session_maker() as session:
             row = session.get_one(CapitalSchemeEntity, 1)
@@ -1227,7 +1229,7 @@ class TestDatabaseSchemeRepository:
             and capital_scheme_financial2.data_source_id == 16
         )
 
-    def test_update_scheme_milestone_revisions(
+    async def test_update_scheme_milestone_revisions(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -1247,7 +1249,7 @@ class TestDatabaseSchemeRepository:
                 ]
             )
             session.commit()
-        scheme = schemes.get("ATE00001")
+        scheme = await schemes.get("ATE00001")
         assert scheme
         scheme.milestones.milestone_revisions[0].close(datetime(2020, 2, 1))
         scheme.milestones.update_milestone(
@@ -1261,7 +1263,7 @@ class TestDatabaseSchemeRepository:
             ),
         )
 
-        schemes.update(scheme)
+        await schemes.update(scheme)
 
         with session_maker() as session:
             row = session.get_one(CapitalSchemeEntity, 1)
@@ -1283,7 +1285,7 @@ class TestDatabaseSchemeRepository:
             and capital_scheme_milestone2.data_source_id == 16
         )
 
-    def test_update_scheme_authority_reviews(
+    async def test_update_scheme_authority_reviews(
         self, schemes: DatabaseSchemeRepository, session_maker: sessionmaker[Session]
     ) -> None:
         with session_maker() as session:
@@ -1299,13 +1301,13 @@ class TestDatabaseSchemeRepository:
                 ]
             )
             session.commit()
-        scheme = schemes.get("ATE00001")
+        scheme = await schemes.get("ATE00001")
         assert scheme
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=3, review_date=datetime(2020, 1, 2), source=DataSource.AUTHORITY_UPDATE)
         )
 
-        schemes.update(scheme)
+        await schemes.update(scheme)
 
         with session_maker() as session:
             row = session.get_one(CapitalSchemeEntity, 1)

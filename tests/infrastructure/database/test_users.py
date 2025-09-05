@@ -21,8 +21,8 @@ class TestDatabaseUserRepository:
         return repository
 
     @pytest.fixture(name="authority", autouse=True)
-    def authority_fixture(self, authorities: DatabaseAuthorityRepository) -> None:
-        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+    async def authority_fixture(self, authorities: DatabaseAuthorityRepository) -> None:
+        await authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
 
     def test_add_users(self, users: DatabaseUserRepository, session_maker: sessionmaker[Session]) -> None:
         users.add(

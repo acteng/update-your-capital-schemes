@@ -21,8 +21,8 @@ class TestHeaderWhenAuthenticated:
         return dict(config) | {"GOVUK_PROFILE_URL": "https://example.com/profile"}
 
     @pytest.fixture(name="auth", autouse=True)
-    def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+    async def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
+        await authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
         users.add(User(email="boardman@example.com", authority_abbreviation="LIV"))
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}

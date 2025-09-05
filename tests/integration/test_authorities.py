@@ -12,7 +12,7 @@ class TestAuthoritiesApi:
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"API_KEY": "boardman"}
 
-    def test_add_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
+    async def test_add_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
         response = client.post(
             "/authorities",
             headers={"Authorization": "API-Key boardman"},
@@ -23,8 +23,8 @@ class TestAuthoritiesApi:
         )
 
         assert response.status_code == 201
-        authority1 = authorities.get("LIV")
-        authority2 = authorities.get("WYO")
+        authority1 = await authorities.get("LIV")
+        authority2 = await authorities.get("WYO")
         assert (
             authority1
             and authority1.abbreviation == "LIV"
@@ -34,7 +34,7 @@ class TestAuthoritiesApi:
             authority2 and authority2.abbreviation == "WYO" and authority2.name == "West Yorkshire Combined Authority"
         )
 
-    def test_cannot_add_authorities_when_no_credentials(
+    async def test_cannot_add_authorities_when_no_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
     ) -> None:
         response = client.post(
@@ -42,9 +42,9 @@ class TestAuthoritiesApi:
         )
 
         assert response.status_code == 401
-        assert not authorities.get("LIV")
+        assert not await authorities.get("LIV")
 
-    def test_cannot_add_authorities_when_incorrect_credentials(
+    async def test_cannot_add_authorities_when_incorrect_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
     ) -> None:
         response = client.post(
@@ -54,9 +54,9 @@ class TestAuthoritiesApi:
         )
 
         assert response.status_code == 401
-        assert not authorities.get("LIV")
+        assert not await authorities.get("LIV")
 
-    def test_cannot_add_authorities_with_invalid_repr(
+    async def test_cannot_add_authorities_with_invalid_repr(
         self, authorities: AuthorityRepository, client: FlaskClient
     ) -> None:
         response = client.post(
@@ -66,7 +66,7 @@ class TestAuthoritiesApi:
         )
 
         assert response.status_code == 400
-        assert not authorities.get("LIV")
+        assert not await authorities.get("LIV")
 
     def test_add_users(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -105,37 +105,37 @@ class TestAuthoritiesApi:
         assert response.status_code == 400
         assert not users.get("boardman@example.com")
 
-    def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+    async def test_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
+        await authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
 
         response = client.delete("/authorities", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 204
-        assert not authorities.get("LIV")
+        assert not await authorities.get("LIV")
 
-    def test_cannot_clear_authorities_when_no_credentials(
+    async def test_cannot_clear_authorities_when_no_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
     ) -> None:
-        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        await authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
 
         response = client.delete("/authorities")
 
         assert response.status_code == 401
-        assert authorities.get("LIV")
+        assert await authorities.get("LIV")
 
-    def test_cannot_clear_authorities_when_incorrect_credentials(
+    async def test_cannot_clear_authorities_when_incorrect_credentials(
         self, authorities: AuthorityRepository, client: FlaskClient
     ) -> None:
-        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        await authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
 
         response = client.delete("/authorities", headers={"Authorization": "API-Key obree"})
 
         assert response.status_code == 401
-        assert authorities.get("LIV")
+        assert await authorities.get("LIV")
 
 
 class TestAuthoritiesApiWhenDisabled:
-    def test_cannot_add_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
+    async def test_cannot_add_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
         response = client.post(
             "/authorities",
             headers={"Authorization": "API-Key boardman"},
@@ -143,7 +143,7 @@ class TestAuthoritiesApiWhenDisabled:
         )
 
         assert response.status_code == 401
-        assert not authorities.get("LIV")
+        assert not await authorities.get("LIV")
 
     def test_cannot_add_users(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
@@ -155,10 +155,10 @@ class TestAuthoritiesApiWhenDisabled:
         assert response.status_code == 401
         assert not users.get("boardman@example.com")
 
-    def test_cannot_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+    async def test_cannot_clear_authorities(self, authorities: AuthorityRepository, client: FlaskClient) -> None:
+        await authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
 
         response = client.delete("/authorities", headers={"Authorization": "API-Key boardman"})
 
         assert response.status_code == 401
-        assert authorities.get("LIV")
+        assert await authorities.get("LIV")

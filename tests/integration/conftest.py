@@ -1,4 +1,4 @@
-from typing import Any, Callable, Generator, Mapping
+from typing import Any, AsyncGenerator, Callable, Generator, Mapping
 
 import inject
 import pytest
@@ -62,10 +62,10 @@ def clock_fixture(app: Flask) -> Clock:
 
 
 @pytest.fixture(name="authorities")
-def authorities_fixture(app: Flask) -> Generator[AuthorityRepository, None, None]:
+async def authorities_fixture(app: Flask) -> AsyncGenerator[AuthorityRepository]:
     authorities = inject.instance(AuthorityRepository)
     yield authorities
-    authorities.clear()
+    await authorities.clear()
 
 
 @pytest.fixture(name="users")
@@ -76,10 +76,10 @@ def users_fixture(app: Flask) -> Generator[UserRepository, None, None]:
 
 
 @pytest.fixture(name="schemes")
-def schemes_fixture(app: Flask) -> Generator[SchemeRepository, None, None]:
+async def schemes_fixture(app: Flask) -> AsyncGenerator[SchemeRepository]:
     schemes = inject.instance(SchemeRepository)
     yield schemes
-    schemes.clear()
+    await schemes.clear()
 
 
 def _test_bindings(app: Flask) -> Callable[[Binder], None]:

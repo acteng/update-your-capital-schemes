@@ -1,16 +1,16 @@
-from authlib.integrations.base_client import BaseApp
-from requests import Response
+from typing import Any
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.infrastructure.api.base import BaseModel
+from schemes.oauth import AsyncBaseApp
 
 
 class ApiAuthorityRepository(AuthorityRepository):
-    def __init__(self, remote_app: BaseApp):
+    def __init__(self, remote_app: AsyncBaseApp):
         self._remote_app = remote_app
 
-    def get(self, abbreviation: str) -> Authority | None:
-        response: Response = self._remote_app.get(f"/authorities/{abbreviation}")
+    async def get(self, abbreviation: str) -> Authority | None:
+        response = await self._remote_app.get(f"/authorities/{abbreviation}", request=self._dummy_request())
 
         if response.status_code == 404:
             return None
@@ -18,6 +18,11 @@ class ApiAuthorityRepository(AuthorityRepository):
         response.raise_for_status()
         authority_model = AuthorityModel.model_validate(response.json())
         return authority_model.to_domain()
+
+    # See: https://github.com/authlib/authlib/issues/818#issuecomment-3257950062
+    @staticmethod
+    def _dummy_request() -> Any:
+        return object()
 
 
 class AuthorityModel(BaseModel):

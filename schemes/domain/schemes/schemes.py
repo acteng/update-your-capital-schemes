@@ -76,17 +76,17 @@ class Scheme:
 
 
 class SchemeRepository:
-    def add(self, *schemes: Scheme) -> None:
+    async def add(self, *schemes: Scheme) -> None:
         raise NotImplementedError()
 
-    def clear(self) -> None:
+    async def clear(self) -> None:
         raise NotImplementedError()
 
-    def get(self, reference: str) -> Scheme | None:
+    async def get(self, reference: str) -> Scheme | None:
         raise NotImplementedError()
 
-    def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
+    async def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         raise NotImplementedError()
 
-    def update(self, scheme: Scheme) -> None:
+    async def update(self, scheme: Scheme) -> None:
         raise NotImplementedError()

@@ -6,23 +6,23 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.users import UserRepository
-from schemes.views.auth.api_key import api_key_auth
+from schemes.views.auth.api_key import api_key_auth, async_api_key_auth
 from schemes.views.users import UserRepr
 
 bp = Blueprint("authorities", __name__)
 
 
 @bp.post("")
-@api_key_auth
+@async_api_key_auth
 @inject.autoparams()
-def add(authorities: AuthorityRepository, logger: Logger) -> Response:
+async def add(authorities: AuthorityRepository, logger: Logger) -> Response:
     try:
         authorities_repr = [AuthorityRepr.model_validate(item) for item in request.get_json()]
     except ValidationError as error:
         logger.error(error)
         abort(400)
 
-    authorities.add(*[authority_repr.to_domain() for authority_repr in authorities_repr])
+    await authorities.add(*[authority_repr.to_domain() for authority_repr in authorities_repr])
     return Response(status=201)
 
 
@@ -41,10 +41,10 @@ def add_users(users: UserRepository, logger: Logger, authority_abbreviation: str
 
 
 @bp.delete("")
-@api_key_auth
+@async_api_key_auth
 @inject.autoparams()
-def clear(authorities: AuthorityRepository) -> Response:
-    authorities.clear()
+async def clear(authorities: AuthorityRepository) -> Response:
+    await authorities.clear()
     return Response(status=204)
 
 

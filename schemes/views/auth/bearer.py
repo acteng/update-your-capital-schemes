@@ -1,6 +1,6 @@
 from functools import wraps
 from logging import Logger
-from typing import Callable
+from typing import Awaitable, Callable
 from urllib.parse import urlencode, urljoin
 
 import inject
@@ -72,12 +72,17 @@ def logout(logger: Logger) -> BaseResponse:
 def bearer_auth[**P, T](func: Callable[P, T]) -> Callable[P, T | Response]:
     @wraps(func)
     def decorated_function(*args: P.args, **kwargs: P.kwargs) -> T | Response:
-        if "user" not in session:
-            oauth = _get_oauth()
-            callback_url = url_for("auth.callback", _external=True)
-            response: Response = oauth.govuk.authorize_redirect(callback_url)
-            return response
-        return func(*args, **kwargs)
+        response = _check_bearer()
+        return response if response else func(*args, **kwargs)
+
+    return decorated_function
+
+
+def async_bearer_auth[**P, T](func: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T | Response]]:
+    @wraps(func)
+    async def decorated_function(*args: P.args, **kwargs: P.kwargs) -> T | Response:
+        response = _check_bearer()
+        return response if response else await func(*args, **kwargs)
 
     return decorated_function
 
@@ -98,3 +103,13 @@ def _is_authorized(users: UserRepository, user: UserInfo) -> bool:
 
 def _get_oauth() -> OAuth:
     return current_app.extensions["authlib.integrations.flask_client"]
+
+
+def _check_bearer() -> Response | None:
+    if "user" not in session:
+        oauth = _get_oauth()
+        callback_url = url_for("auth.callback", _external=True)
+        response: Response = oauth.govuk.authorize_redirect(callback_url)
+        return response
+
+    return None

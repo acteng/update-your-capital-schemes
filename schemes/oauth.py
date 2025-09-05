@@ -1,4 +1,4 @@
-from authlib.integrations.flask_client import OAuth
+from authlib.integrations.flask_client import FlaskOAuth2App, OAuth
 from authlib.integrations.requests_client import OAuth2Session
 from authlib.oauth2.rfc6749 import OAuth2Token
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
@@ -36,13 +36,15 @@ class _AccessTokenParamsOAuth2Session(OAuth2Session):  # type: ignore
         return False
 
 
+class _AccessTokenParamsFlaskOAuth2App(FlaskOAuth2App):  # type: ignore
+    # Workaround: https://github.com/authlib/authlib/issues/783
+    client_cls = _AccessTokenParamsOAuth2Session
+
+
 class OAuthExtension(OAuth):  # type: ignore
     def __init__(self, app: Flask):
         super().__init__(app)
         self._ate_token: OAuth2Token | None = None
-
-        # Workaround: https://github.com/authlib/authlib/issues/783
-        self.oauth2_client_cls.client_cls = _AccessTokenParamsOAuth2Session
 
         self.register(
             name="govuk",
@@ -59,6 +61,7 @@ class OAuthExtension(OAuth):  # type: ignore
             access_token_params = {"audience": app.config["ATE_AUDIENCE"]}
             self.register(
                 name="ate",
+                client_cls=_AccessTokenParamsFlaskOAuth2App,
                 fetch_token=self._fetch_ate_token,
                 update_token=self._update_ate_token,
                 client_id=app.config["ATE_CLIENT_ID"],

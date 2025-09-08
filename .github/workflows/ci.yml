@@ -80,6 +80,7 @@ jobs:
           images: europe-west1-docker.pkg.dev/dft-schemes-common/docker/schemes
           tags: |
             type=semver,pattern={{version}}
+            type=ref,event=branch
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push image

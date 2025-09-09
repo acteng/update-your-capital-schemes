@@ -90,6 +90,7 @@ class OAuthExtension(OAuth):  # type: ignore
                     "token_endpoint_auth_method": "client_secret_post",
                     # Workaround: https://github.com/authlib/authlib/issues/783
                     "access_token_params": access_token_params,
+                    "http2": True,
                 },
             )
 

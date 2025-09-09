@@ -96,6 +96,6 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       environment: Dev
-      tag: ${{ jobs.build.steps.meta.outputs.version }}
+      tag: ${{ needs.build.steps.meta.outputs.version }}
     secrets:
       GCP_CREDENTIALS_DEPLOY: ${{ secrets.GCP_CREDENTIALS_DEPLOY }}

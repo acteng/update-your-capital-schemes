@@ -57,6 +57,11 @@ class TestOAuthExtension:
         )
         return app
 
+    def test_ate_api_uses_http2(self, app: Flask) -> None:
+        oauth = OAuthExtension(app)
+
+        assert oauth.ate.client_kwargs.get("http2")
+
     @respx.mock
     async def test_ate_api_requests_access_token(
         self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer

@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from enum import Enum
 from typing import Annotated, Any
@@ -39,10 +40,12 @@ class ApiSchemeRepository(SchemeRepository):
             response.raise_for_status()
 
             collection_model = CollectionModel[AnyUrl].model_validate(response.json())
-            return [
-                await self._get_by_url(client, str(capital_scheme_url), funding_programmes)
-                for capital_scheme_url in collection_model.items
-            ]
+            return await asyncio.gather(
+                *[
+                    self._get_by_url(client, str(capital_scheme_url), funding_programmes)
+                    for capital_scheme_url in collection_model.items
+                ]
+            )
 
     async def _get_funding_programmes(self, remote_app: AsyncBaseApp) -> dict[str, FundingProgramme]:
         response = await remote_app.get(

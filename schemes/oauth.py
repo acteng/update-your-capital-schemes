@@ -1,14 +1,15 @@
-from typing import Any
+from contextlib import asynccontextmanager
+from typing import Any, AsyncIterator
 
 from authlib.integrations.base_client import InvalidTokenError
-from authlib.integrations.base_client.async_app import AsyncOAuth2Mixin
+from authlib.integrations.base_client.async_app import AsyncOAuth2Mixin, _http_request
 from authlib.integrations.base_client.async_openid import AsyncOpenIDMixin
 from authlib.integrations.flask_client import OAuth
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from flask import Flask, Request
-from httpx import Response
+from httpx import AsyncClient, Response
 
 
 class _AccessTokenParamsAsyncOAuth2Client(AsyncOAuth2Client):  # type: ignore
@@ -50,8 +51,35 @@ class AsyncBaseApp:
         return await self.request("GET", url, **kwargs)
 
 
+# Workaround: https://github.com/authlib/authlib/issues/822
+class ClientAsyncBaseApp(AsyncBaseApp):
+    @asynccontextmanager
+    def client(self) -> AsyncIterator[AsyncBaseApp]:
+        raise NotImplementedError()
+
+
+class _AsyncBaseAppAdapter(AsyncBaseApp):
+    def __init__(self, remote_app: AsyncOAuth2Mixin, client: AsyncClient):
+        self._remote_app = remote_app
+        self._client = client
+
+    async def request(self, method: str, url: str, token: OAuth2Token | None = None, **kwargs: Any) -> Response:
+        response: Response = await _http_request(self._remote_app, self._client, method, url, token, kwargs)
+        return response
+
+
+# Workaround: https://github.com/authlib/authlib/issues/822
+class ClientAsyncOAuth2Mixin(AsyncOAuth2Mixin):  # type: ignore
+    @asynccontextmanager
+    async def client(self) -> AsyncIterator[AsyncBaseApp]:
+        metadata = await self.load_server_metadata()
+        async with self._get_oauth_client(**metadata) as client:
+            yield _AsyncBaseAppAdapter(self, client)
+
+
 # Workaround: https://github.com/authlib/authlib/issues/818
-class _AccessTokenParamsAsyncFlaskOAuth2App(AsyncOAuth2Mixin, AsyncOpenIDMixin, AsyncBaseApp):  # type: ignore
+# Workaround: https://github.com/authlib/authlib/issues/822
+class _ClientAccessTokenParamsAsyncFlaskOAuth2App(ClientAsyncOAuth2Mixin, AsyncOpenIDMixin, ClientAsyncBaseApp):  # type: ignore
     # Workaround: https://github.com/authlib/authlib/issues/783
     client_cls = _AccessTokenParamsAsyncOAuth2Client
 
@@ -76,7 +104,7 @@ class OAuthExtension(OAuth):  # type: ignore
             access_token_params = {"audience": app.config["ATE_AUDIENCE"]}
             self.register(
                 name="ate",
-                client_cls=_AccessTokenParamsAsyncFlaskOAuth2App,
+                client_cls=_ClientAccessTokenParamsAsyncFlaskOAuth2App,
                 fetch_token=self._fetch_ate_token,
                 update_token=self._update_ate_token,
                 client_id=app.config["ATE_CLIENT_ID"],

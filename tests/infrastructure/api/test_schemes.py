@@ -17,12 +17,13 @@ from schemes.infrastructure.api.schemes import (
     CapitalSchemeOverviewModel,
     FundingProgrammeItemModel,
 )
-from schemes.oauth import AsyncBaseApp
+from schemes.oauth import ClientAsyncBaseApp
+from tests.infrastructure.api.conftest import StubRemoteApp
 
 
 class TestApiSchemeRepository:
     @pytest.fixture(name="schemes")
-    def schemes_fixture(self, remote_app: AsyncBaseApp) -> ApiSchemeRepository:
+    def schemes_fixture(self, remote_app: ClientAsyncBaseApp) -> ApiSchemeRepository:
         return ApiSchemeRepository(remote_app)
 
     @respx.mock
@@ -256,6 +257,38 @@ class TestApiSchemeRepository:
         (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert scheme1.reference == "ATE00001"
+
+    @respx.mock
+    async def test_get_by_authority_reuses_client(
+        self, api_base_url: str, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
+    ) -> None:
+        respx.get(f"{api_base_url}/funding-programmes").mock(
+            return_value=Response(200, json=_dummy_funding_programmes_json())
+        )
+        respx.get(f"{api_base_url}/capital-schemes/milestones").mock(
+            return_value=Response(200, json=_dummy_milestones_json())
+        )
+        respx.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").mock(
+            return_value=Response(
+                200,
+                json={
+                    "items": [
+                        f"{api_base_url}/capital-schemes/ATE00001",
+                        f"{api_base_url}/capital-schemes/ATE00002",
+                    ]
+                },
+            )
+        )
+        respx.get(f"{api_base_url}/capital-schemes/ATE00001").mock(
+            return_value=Response(200, json=_build_capital_scheme_json("ATE00001"))
+        )
+        respx.get(f"{api_base_url}/capital-schemes/ATE00002").mock(
+            return_value=Response(200, json=_build_capital_scheme_json("ATE00002"))
+        )
+
+        await schemes.get_by_authority("LIV")
+
+        assert remote_app.client_count == 1
 
 
 class TestFundingProgrammeItemModel:

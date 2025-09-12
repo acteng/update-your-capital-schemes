@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import pytest
 import respx
 from flask import Flask, request
+from httpx import Timeout
 
 from schemes.oauth import OAuthExtension
 from tests.oauth import StubAuthorizationServer
@@ -61,6 +62,11 @@ class TestOAuthExtension:
         oauth = OAuthExtension(app)
 
         assert oauth.ate.client_kwargs.get("http2")
+
+    def test_ate_api_uses_longer_timeout(self, app: Flask) -> None:
+        oauth = OAuthExtension(app)
+
+        assert oauth.ate.client_kwargs.get("timeout") == Timeout(10)
 
     @respx.mock
     async def test_ate_api_requests_access_token(

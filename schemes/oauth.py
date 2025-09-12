@@ -9,7 +9,7 @@ from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from flask import Flask, Request
-from httpx import AsyncClient, Response
+from httpx import AsyncClient, Response, Timeout
 
 
 class _AccessTokenParamsAsyncOAuth2Client(AsyncOAuth2Client):  # type: ignore
@@ -119,6 +119,7 @@ class OAuthExtension(OAuth):  # type: ignore
                     # Workaround: https://github.com/authlib/authlib/issues/783
                     "access_token_params": access_token_params,
                     "http2": True,
+                    "timeout": Timeout(10),
                 },
             )
 

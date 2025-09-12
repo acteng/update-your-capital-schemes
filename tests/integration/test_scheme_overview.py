@@ -13,19 +13,22 @@ from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
 from tests.builders import build_scheme
+from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import SchemePage
 
 
 class TestSchemeOverview:
     @pytest.fixture(name="auth", autouse=True)
-    def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
-        authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+    async def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
+        await authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
         users.add(User(email="boardman@example.com", authority_abbreviation="LIV"))
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
-    def test_scheme_shows_minimal_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
-        schemes.add(
+    async def test_scheme_shows_minimal_overview(
+        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
+    ) -> None:
+        await schemes.add(
             build_scheme(
                 id_=1,
                 reference="ATE00001",
@@ -36,7 +39,7 @@ class TestSchemeOverview:
             )
         )
 
-        scheme_page = SchemePage.open(client, reference="ATE00001")
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert (
             scheme_page.overview.reference == "ATE00001"
@@ -45,7 +48,7 @@ class TestSchemeOverview:
             and scheme_page.overview.current_milestone == ""
         )
 
-    def test_scheme_shows_overview(self, schemes: SchemeRepository, client: FlaskClient) -> None:
+    async def test_scheme_shows_overview(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(
             id_=1,
             reference="ATE00001",
@@ -67,9 +70,9 @@ class TestSchemeOverview:
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
-        schemes.add(scheme)
+        await schemes.add(scheme)
 
-        scheme_page = SchemePage.open(client, reference="ATE00001")
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert (
             scheme_page.overview.reference == "ATE00001"

@@ -1,7 +1,8 @@
-from typing import Any, Callable, Generator, Mapping
+from typing import Any, AsyncGenerator, Callable, Generator, Mapping
 
 import inject
 import pytest
+from asgiref.sync import sync_to_async
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.serialization import Encoding, NoEncryption, PrivateFormat, PublicFormat
@@ -9,6 +10,7 @@ from flask import Flask, session
 from flask.testing import FlaskClient
 from flask_wtf.csrf import generate_csrf
 from inject import Binder
+from werkzeug.test import TestResponse
 
 from schemes import bindings, create_app, destroy_app
 from schemes.annotations import Migrated
@@ -17,6 +19,23 @@ from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.fakes import MemoryAuthorityRepository, MemorySchemeRepository, MemoryUserRepository
+
+
+class AsyncFlaskClient:
+    def __init__(self, client: FlaskClient):
+        self._client = client
+
+    @sync_to_async
+    def get(self, *args: Any, **kwargs: Any) -> TestResponse:
+        return self._client.get(*args, **kwargs)
+
+    @sync_to_async
+    def post(self, *args: Any, **kwargs: Any) -> TestResponse:
+        return self._client.post(*args, **kwargs)
+
+    @sync_to_async
+    def delete(self, *args: Any, **kwargs: Any) -> TestResponse:
+        return self._client.delete(*args, **kwargs)
 
 
 @pytest.fixture(name="config", scope="class")
@@ -48,6 +67,11 @@ def client_fixture(app: Flask) -> FlaskClient:
     return app.test_client()
 
 
+@pytest.fixture(name="async_client")
+def async_client_fixture(client: FlaskClient) -> AsyncFlaskClient:
+    return AsyncFlaskClient(client)
+
+
 @pytest.fixture(name="csrf_token")
 def csrf_token_fixture(client: FlaskClient) -> str:
     with client.session_transaction() as client_session:
@@ -62,10 +86,10 @@ def clock_fixture(app: Flask) -> Clock:
 
 
 @pytest.fixture(name="authorities")
-def authorities_fixture(app: Flask) -> Generator[AuthorityRepository, None, None]:
+async def authorities_fixture(app: Flask) -> AsyncGenerator[AuthorityRepository]:
     authorities = inject.instance(AuthorityRepository)
     yield authorities
-    authorities.clear()
+    await authorities.clear()
 
 
 @pytest.fixture(name="users")
@@ -76,10 +100,10 @@ def users_fixture(app: Flask) -> Generator[UserRepository, None, None]:
 
 
 @pytest.fixture(name="schemes")
-def schemes_fixture(app: Flask) -> Generator[SchemeRepository, None, None]:
+async def schemes_fixture(app: Flask) -> AsyncGenerator[SchemeRepository]:
     schemes = inject.instance(SchemeRepository)
     yield schemes
-    schemes.clear()
+    await schemes.clear()
 
 
 def _test_bindings(app: Flask) -> Callable[[Binder], None]:

@@ -1,26 +1,27 @@
 import pytest
-from authlib.integrations.base_client import BaseApp
-from responses import RequestsMock
-from responses.matchers import header_matcher
+import respx
+from httpx import Response
 
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository, AuthorityModel
+from schemes.oauth import AsyncBaseApp
 
 
 class TestApiAuthorityRepository:
     @pytest.fixture(name="authorities")
-    def authorities_fixture(self, remote_app: BaseApp) -> ApiAuthorityRepository:
+    def authorities_fixture(self, remote_app: AsyncBaseApp) -> ApiAuthorityRepository:
         return ApiAuthorityRepository(remote_app)
 
-    def test_get_authority(
-        self, responses: RequestsMock, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
+    @respx.mock
+    async def test_get_authority(
+        self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
-        responses.get(
-            f"{api_base_url}/authorities/LIV",
-            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
-            json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority"},
+        respx.get(f"{api_base_url}/authorities/LIV", headers={"Authorization": f"Bearer {access_token}"}).mock(
+            return_value=Response(
+                200, json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority"}
+            )
         )
 
-        authority = authorities.get("LIV")
+        authority = await authorities.get("LIV")
 
         assert (
             authority
@@ -28,16 +29,17 @@ class TestApiAuthorityRepository:
             and authority.name == "Liverpool City Region Combined Authority"
         )
 
-    def test_get_authority_ignores_unknown_key(
-        self, responses: RequestsMock, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
+    @respx.mock
+    async def test_get_authority_ignores_unknown_key(
+        self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
-        responses.get(
-            f"{api_base_url}/authorities/LIV",
-            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
-            json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority", "foo": "bar"},
+        respx.get(f"{api_base_url}/authorities/LIV", headers={"Authorization": f"Bearer {access_token}"}).mock(
+            return_value=Response(
+                200, json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority", "foo": "bar"}
+            )
         )
 
-        authority = authorities.get("LIV")
+        authority = await authorities.get("LIV")
 
         assert (
             authority
@@ -45,16 +47,15 @@ class TestApiAuthorityRepository:
             and authority.name == "Liverpool City Region Combined Authority"
         )
 
-    def test_get_authority_that_does_not_exist(
-        self, responses: RequestsMock, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
+    @respx.mock
+    async def test_get_authority_that_does_not_exist(
+        self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
-        responses.get(
-            f"{api_base_url}/authorities/WYO",
-            match=[header_matcher({"Authorization": f"Bearer {access_token}"})],
-            status=404,
+        respx.get(f"{api_base_url}/authorities/WYO", headers={"Authorization": f"Bearer {access_token}"}).mock(
+            return_value=Response(404)
         )
 
-        assert authorities.get("WYO") is None
+        assert await authorities.get("WYO") is None
 
 
 class TestAuthorityModel:

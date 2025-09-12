@@ -16,8 +16,8 @@ from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes,
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
-from schemes.views.auth.api_key import api_key_auth
-from schemes.views.auth.bearer import bearer_auth
+from schemes.views.auth.api_key import async_api_key_auth
+from schemes.views.auth.bearer import async_bearer_auth
 from schemes.views.schemes.funding import (
     BidStatusRevisionRepr,
     ChangeSpendToDateContext,
@@ -40,21 +40,21 @@ bp = Blueprint("schemes", __name__)
 
 
 @bp.post("")
-@api_key_auth
+@async_api_key_auth
 @inject.autoparams()
-def add_schemes(schemes: SchemeRepository, logger: Logger) -> Response:
+async def add_schemes(schemes: SchemeRepository, logger: Logger) -> Response:
     try:
         schemes_repr = [SchemeRepr.model_validate(item) for item in request.get_json()]
     except ValidationError as error:
         logger.error(error)
         return abort(400)
 
-    schemes.add(*[scheme_repr.to_domain() for scheme_repr in schemes_repr])
+    await schemes.add(*[scheme_repr.to_domain() for scheme_repr in schemes_repr])
     return Response(status=201)
 
 
 @bp.get("")
-@bearer_auth
+@async_bearer_auth
 @inject.params(
     clock=Clock,
     users=UserRepository,
@@ -62,7 +62,7 @@ def add_schemes(schemes: SchemeRepository, logger: Logger) -> Response:
     authorities=(AuthorityRepository, Migrated),
     schemes=(SchemeRepository, Migrated),
 )
-def index(
+async def index(
     clock: Clock,
     users: UserRepository,
     reporting_window_service: ReportingWindowService,
@@ -74,9 +74,11 @@ def index(
     assert user
     now = clock.now
     reporting_window = reporting_window_service.get_by_date(now)
-    authority = authorities.get(user.authority_abbreviation)
+    authority = await authorities.get(user.authority_abbreviation)
     assert authority
-    authority_schemes = [scheme for scheme in schemes.get_by_authority(authority.abbreviation) if scheme.is_updateable]
+    authority_schemes = [
+        scheme for scheme in await schemes.get_by_authority(authority.abbreviation) if scheme.is_updateable
+    ]
 
     context = SchemesContext.from_domain(now, reporting_window, authority, authority_schemes)
     return render_template("schemes.html", **as_shallow_dict(context))
@@ -147,12 +149,12 @@ class SchemesContext:
 
 
 @bp.get("<reference>")
-def get(reference: str) -> Response:
+async def get(reference: str) -> Response:
     json = request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html
-    return get_json(reference) if json else get_html(reference)
+    return await get_json(reference) if json else await get_html(reference)
 
 
-@bearer_auth
+@async_bearer_auth
 @inject.params(
     clock=Clock,
     reporting_window_service=ReportingWindowService,
@@ -160,7 +162,7 @@ def get(reference: str) -> Response:
     authorities=(AuthorityRepository, Migrated),
     schemes=SchemeRepository,
 )
-def get_html(
+async def get_html(
     reference: str,
     clock: Clock,
     reporting_window_service: ReportingWindowService,
@@ -173,9 +175,9 @@ def get_html(
     assert user
     now = clock.now
     reporting_window = reporting_window_service.get_by_date(now)
-    authority = authorities.get(user.authority_abbreviation)
+    authority = await authorities.get(user.authority_abbreviation)
     assert authority
-    scheme = schemes.get(reference)
+    scheme = await schemes.get(reference)
 
     if not (scheme and scheme.is_updateable):
         abort(404)
@@ -188,10 +190,10 @@ def get_html(
     return Response(render_template("scheme/index.html", **as_shallow_dict(context)))
 
 
-@api_key_auth
+@async_api_key_auth
 @inject.autoparams("schemes")
-def get_json(reference: str, schemes: SchemeRepository) -> Response:
-    scheme = schemes.get(reference)
+async def get_json(reference: str, schemes: SchemeRepository) -> Response:
+    scheme = await schemes.get(reference)
     assert scheme
 
     response = make_response(SchemeRepr.from_domain(scheme).model_dump())
@@ -265,13 +267,13 @@ class SchemeContext:
 
 
 @bp.get("<reference>/spend-to-date")
-@bearer_auth
+@async_bearer_auth
 @inject.autoparams("users", "schemes")
-def spend_to_date_form(reference: str, users: UserRepository, schemes: SchemeRepository) -> str:
+async def spend_to_date_form(reference: str, users: UserRepository, schemes: SchemeRepository) -> str:
     user_info = session["user"]
     user = users.get(user_info["email"])
     assert user
-    scheme = schemes.get(reference)
+    scheme = await schemes.get(reference)
 
     if not (scheme and scheme.is_updateable):
         abort(404)
@@ -285,13 +287,13 @@ def spend_to_date_form(reference: str, users: UserRepository, schemes: SchemeRep
 
 
 @bp.post("<reference>/spend-to-date")
-@bearer_auth
+@async_bearer_auth
 @inject.autoparams("clock", "users", "schemes")
-def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
+async def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])
     assert user
-    scheme = schemes.get(reference)
+    scheme = await schemes.get(reference)
 
     if not (scheme and scheme.is_updateable):
         abort(404)
@@ -302,22 +304,22 @@ def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository
     form = ChangeSpendToDateForm.from_domain(scheme.funding)
 
     if not form.validate():
-        return spend_to_date_form(reference)
+        return await spend_to_date_form(reference)
 
     form.update_domain(scheme.funding, clock.now)
-    schemes.update(scheme)
+    await schemes.update(scheme)
 
     return redirect(url_for("schemes.get", reference=reference))
 
 
 @bp.get("<reference>/milestones")
-@bearer_auth
+@async_bearer_auth
 @inject.autoparams("clock", "users", "schemes")
-def milestones_form(reference: str, clock: Clock, users: UserRepository, schemes: SchemeRepository) -> str:
+async def milestones_form(reference: str, clock: Clock, users: UserRepository, schemes: SchemeRepository) -> str:
     user_info = session["user"]
     user = users.get(user_info["email"])
     assert user
-    scheme = schemes.get(reference)
+    scheme = await schemes.get(reference)
 
     if not (scheme and scheme.is_updateable):
         abort(404)
@@ -331,13 +333,13 @@ def milestones_form(reference: str, clock: Clock, users: UserRepository, schemes
 
 
 @bp.post("<reference>/milestones")
-@bearer_auth
+@async_bearer_auth
 @inject.autoparams("clock", "users", "schemes")
-def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
+async def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])
     assert user
-    scheme = schemes.get(reference)
+    scheme = await schemes.get(reference)
 
     if not (scheme and scheme.is_updateable):
         abort(404)
@@ -349,22 +351,22 @@ def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, r
     form = ChangeMilestoneDatesForm.from_domain(scheme, now)
 
     if not form.validate():
-        return milestones_form(reference)
+        return await milestones_form(reference)
 
     form.update_domain(scheme, now)
-    schemes.update(scheme)
+    await schemes.update(scheme)
 
     return redirect(url_for("schemes.get", reference=reference))
 
 
 @bp.post("<reference>")
-@bearer_auth
+@async_bearer_auth
 @inject.autoparams("clock", "users", "schemes")
-def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
+async def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])
     assert user
-    scheme = schemes.get(reference)
+    scheme = await schemes.get(reference)
 
     if not (scheme and scheme.is_updateable):
         abort(404)
@@ -375,20 +377,20 @@ def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, refer
     form = SchemeReviewForm()
 
     if not form.validate():
-        return get(reference)
+        return await get(reference)
 
     form.update_domain(scheme.reviews, clock.now)
-    schemes.update(scheme)
+    await schemes.update(scheme)
 
     flash(f"{scheme.overview.name} has been reviewed")
     return redirect(url_for("schemes.index"))
 
 
 @bp.delete("")
-@api_key_auth
+@async_api_key_auth
 @inject.autoparams()
-def clear(schemes: SchemeRepository) -> Response:
-    schemes.clear()
+async def clear(schemes: SchemeRepository) -> Response:
+    await schemes.clear()
     return Response(status=204)
 
 

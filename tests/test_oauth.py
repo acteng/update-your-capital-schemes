@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
 import pytest
-import responses
-from flask import Flask
-from responses.matchers import header_matcher
+import respx
+from flask import Flask, request
+from httpx import Timeout
 
 from schemes.oauth import OAuthExtension
 from tests.oauth import StubAuthorizationServer
@@ -58,64 +58,88 @@ class TestOAuthExtension:
         )
         return app
 
-    @responses.activate
-    def test_ate_api_requests_access_token(
+    def test_ate_api_uses_http2(self, app: Flask) -> None:
+        oauth = OAuthExtension(app)
+
+        assert oauth.ate.client_kwargs.get("http2")
+
+    def test_ate_api_uses_longer_timeout(self, app: Flask) -> None:
+        oauth = OAuthExtension(app)
+
+        assert oauth.ate.client_kwargs.get("timeout") == Timeout(10)
+
+    @respx.mock
+    async def test_ate_api_uses_compression(
         self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
-        api_response = responses.get(api_server.url, match=[header_matcher({"Authorization": "Bearer dummy_jwt"})])
+        api_response = respx.get(api_server.url)
 
         with app.app_context():
-            oauth.ate.get("/")
+            await oauth.ate.get("/", request=request)
+
+        accept_encoding = api_response.calls.last.request.headers["Accept-Encoding"]
+        assert "gzip" in [encoding.strip() for encoding in accept_encoding.split(",")]
+
+    @respx.mock
+    async def test_ate_api_requests_access_token(
+        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+    ) -> None:
+        oauth = OAuthExtension(app)
+        authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
+        api_response = respx.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
+
+        with app.app_context():
+            await oauth.ate.get("/", request=request)
 
         assert api_response.call_count == 1
 
-    @responses.activate
-    def test_ate_api_caches_access_token_within_request(
+    @respx.mock
+    async def test_ate_api_caches_access_token_within_request(
         self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
     ) -> None:
         oauth = OAuthExtension(app)
         token_response = authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
-        responses.get(api_server.url, match=[header_matcher({"Authorization": "Bearer dummy_jwt"})])
+        respx.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
 
         with app.app_context():
-            oauth.ate.get("/")
-            oauth.ate.get("/")
+            await oauth.ate.get("/", request=request)
+            await oauth.ate.get("/", request=request)
 
         assert token_response.call_count == 1
 
-    @responses.activate
-    def test_ate_api_caches_access_token_across_requests(
+    @respx.mock
+    async def test_ate_api_caches_access_token_across_requests(
         self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
     ) -> None:
         oauth = OAuthExtension(app)
         token_response = authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
-        responses.get(api_server.url, match=[header_matcher({"Authorization": "Bearer dummy_jwt"})])
+        respx.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
 
         with app.app_context():
-            oauth.ate.get("/")
+            await oauth.ate.get("/", request=request)
         with app.app_context():
-            oauth.ate.get("/")
+            await oauth.ate.get("/", request=request)
 
         assert token_response.call_count == 1
 
-    @responses.activate
-    def test_ate_api_refreshes_access_token_when_expired(
+    @respx.mock
+    async def test_ate_api_refreshes_access_token_when_expired(
         self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("expired_jwt", expires_in=1 * 60)
         authorization_server.given_token_endpoint_returns_access_token("refreshed_jwt", expires_in=15 * 60)
-        api_response = responses.get(api_server.url, match=[header_matcher({"Authorization": "Bearer refreshed_jwt"})])
+        api_response = respx.get(api_server.url, headers={"Authorization": "Bearer refreshed_jwt"})
 
         with app.app_context():
-            oauth.ate.get("/")
+            await oauth.ate.get("/", request=request)
 
         assert api_response.call_count == 1
 
-    @responses.activate
-    def test_ate_api_uses_refreshed_access_token_across_requests(
+    @respx.mock
+    async def test_ate_api_uses_refreshed_access_token_across_requests(
         self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
     ) -> None:
         oauth = OAuthExtension(app)
@@ -123,11 +147,11 @@ class TestOAuthExtension:
         token_response = authorization_server.given_token_endpoint_returns_access_token(
             "refreshed_jwt", expires_in=15 * 60
         )
-        api_response = responses.get(api_server.url, match=[header_matcher({"Authorization": "Bearer refreshed_jwt"})])
+        api_response = respx.get(api_server.url, headers={"Authorization": "Bearer refreshed_jwt"})
 
         with app.app_context():
-            oauth.ate.get("/")
+            await oauth.ate.get("/", request=request)
         with app.app_context():
-            oauth.ate.get("/")
+            await oauth.ate.get("/", request=request)
 
-        assert token_response.call_count == 1 and api_response.call_count == 2
+        assert token_response.call_count == 2 and api_response.call_count == 2

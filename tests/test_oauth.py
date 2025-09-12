@@ -69,6 +69,20 @@ class TestOAuthExtension:
         assert oauth.ate.client_kwargs.get("timeout") == Timeout(10)
 
     @respx.mock
+    async def test_ate_api_uses_compression(
+        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+    ) -> None:
+        oauth = OAuthExtension(app)
+        authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
+        api_response = respx.get(api_server.url)
+
+        with app.app_context():
+            await oauth.ate.get("/", request=request)
+
+        accept_encoding = api_response.calls.last.request.headers["Accept-Encoding"]
+        assert "gzip" in [encoding.strip() for encoding in accept_encoding.split(",")]
+
+    @respx.mock
     async def test_ate_api_requests_access_token(
         self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
     ) -> None:

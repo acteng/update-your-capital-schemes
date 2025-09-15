@@ -4,6 +4,8 @@ $govuk-font-family: arial, sans-serif;
 
 @import "../../../node_modules/govuk-frontend/dist/govuk/index";
 
+// Workaround: https://github.com/alphagov/govuk-design-system/issues/4877
+
 .govuk-notification-banner {
   border-color: govuk-colour("blue");
   background-color: govuk-colour("blue");

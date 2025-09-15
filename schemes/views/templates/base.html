@@ -1,5 +1,6 @@
 {% extends "govuk_frontend_jinja/template.html" %}
 {% from "govuk_frontend_jinja/components/phase-banner/macro.html" import govukPhaseBanner -%}
+{% from "ate_footer/macro.html" import ateFooter -%}
 {% from "ate_header/macro.html" import ateHeader -%}
 
 {% block pageTitle -%}
@@ -41,7 +42,7 @@
 {% endblock %}
 
 {% block footer %}
-    {{ govukFooter({
+    {{ ateFooter({
         "meta": {
             "items": [
                 {

@@ -44,10 +44,12 @@ To upgrade packages to their latest minor or major version:
 
 ### Upgrading GOV.UK Frontend Jinja Macros package
 
-GOV.UK Frontend [doesn't allow the crown logo to be customised in the header](https://github.com/alphagov/govuk-frontend/issues/1639),
-so we maintain a copy of the template to replace it with the ATE logo.
+#### GOV.UK header component
 
-After upgrading GOV.UK Frontend Jinja Macros, update the template:
+GOV.UK Frontend [doesn't allow the crown logo to be customised in the header](https://github.com/alphagov/govuk-frontend/issues/1639),
+so we maintain a copy of the header template to replace it with the ATE logo.
+
+After upgrading GOV.UK Frontend Jinja Macros, update the header template:
 
 1. Copy the contents of [the header template](../.venv/lib/python3.13/site-packages/govuk_frontend_jinja/templates/components/header/macro.html)
    to [schemes/views/templates/ate_header/macro.html](../schemes/views/templates/ate_header/macro.html) and rename the
@@ -69,6 +71,34 @@ After upgrading GOV.UK Frontend Jinja Macros, update the template:
    -        }) | trim | indent(8) }}
    +        <img class="govuk-header__logotype ate-header__logotype" src="{{ url_for('static', filename='ate-header/ATE_Lesser_Arms_Landscape_White.png') }}" alt="Active Travel England"/>
    +        <img class="govuk-header__logotype ate-header__logotype--focus" src="{{ url_for('static', filename='ate-header/ATE_Lesser_Arms_Landscape_Black.png') }}" alt="Active Travel England"/>
+   ```
+
+#### GOV.UK footer component
+
+GOV.UK Frontend [doesn't allow the crown logo to be removed from the footer](https://github.com/alphagov/govuk-frontend/issues/5952),
+so we maintain a copy of the footer template to remove it ourselves.
+
+After upgrading GOV.UK Frontend Jinja Macros, update the footer template:
+
+1. Copy the contents of [the footer template](../.venv/lib/python3.13/site-packages/govuk_frontend_jinja/templates/components/footer/macro.html)
+   to [schemes/views/templates/ate_footer/macro.html](../schemes/views/templates/ate_footer/macro.html) and rename the
+   macro by applying the following patch:
+
+   ```diff
+   -{% macro govukFooter(params) %}
+   +{% macro ateFooter(params) %}
+   ```
+
+1. Remove the crown logo by applying the following patch:
+
+   ```diff
+   -    {% if _rebrand %}
+   -      {{- govukLogo({
+   -        'classes': 'govuk-footer__crown',
+   -        'rebrand': true,
+   -        'useLogotype': false
+   -      }) }}
+   -    {% endif %}
    ```
 
 ### Upgrading Playwright package

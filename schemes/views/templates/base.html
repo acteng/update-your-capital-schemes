@@ -7,6 +7,14 @@
     Update your capital schemes - Active Travel England - GOV.UK
 {%- endblock %}
 
+{% block headIcons %}
+    <link rel="icon" sizes="48x48" href="{{ url_for('static', filename='ate-icons/images/favicon.ico') }}">
+    <link rel="icon" sizes="any" href="{{ url_for('static', filename='ate-icons/images/favicon.svg') }}" type="image/svg+xml">
+    <link rel="mask-icon" href="{{ url_for('static', filename='ate-icons/images/ate-icon-mask.svg') }}" color="{{ themeColor }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='ate-icons/images/ate-icon-180.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='ate-icons/manifest.json') }}">
+{% endblock %}
+
 {% block head %}
     <link href="{{ url_for('static', filename='govuk-frontend/govuk-frontend.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='application.min.css') }}" rel="stylesheet">

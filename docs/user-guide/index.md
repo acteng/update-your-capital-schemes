@@ -6,6 +6,7 @@ geometry:
 - margin=20mm
 toc: true
 toc-title: Update your capital schemes
+toccolor: black
 ---
 
 \pagebreak

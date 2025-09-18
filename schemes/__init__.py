@@ -249,6 +249,7 @@ def _configure_govuk_frontend(app: Flask) -> None:
             "assetPath": url_for("static", filename="govuk-frontend/assets/rebrand"),
             "govukRebrand": True,
             "themeColor": "#006853",
+            "opengraphImageUrl": url_for("static", filename="ate-icons/images/ate-opengraph-image.png", _external=True),
             "oneLoginLink": app.config["GOVUK_PROFILE_URL"],
         }
 

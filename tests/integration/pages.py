@@ -9,6 +9,11 @@ from werkzeug.test import TestResponse
 from tests.integration.conftest import AsyncFlaskClient
 
 
+class PageMetadata:
+    def __init__(self, head: Tag):
+        self.image_url = one(head.select("meta[property='og:image']"))["content"]
+
+
 class PageObject:
     def __init__(self, response: TestResponse):
         self._response = response
@@ -17,6 +22,10 @@ class PageObject:
     @property
     def title(self) -> str:
         return one(self._soup.select("head > title")).get_text()
+
+    @property
+    def metadata(self) -> PageMetadata:
+        return PageMetadata(one(self._soup.select("head")))
 
 
 class HeaderComponent:

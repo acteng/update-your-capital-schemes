@@ -41,4 +41,4 @@ def test_pounds(value: int, expected_value: str) -> None:
     ],
 )
 def test_remove_exponent(value: Decimal, expected_value: Decimal) -> None:
-    assert remove_exponent(value) == expected_value
+    assert remove_exponent(value).compare_total(expected_value) == Decimal(0)

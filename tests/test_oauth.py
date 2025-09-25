@@ -31,9 +31,11 @@ class TestOAuthExtension:
         return _ResourceServer(url="https://api.example", identifier="https://api.example")
 
     @pytest.fixture(name="authorization_server")
-    def authorization_server_fixture(self, api_server: _ResourceServer, api_client: _Client) -> StubAuthorizationServer:
+    def authorization_server_fixture(
+        self, respx_mock: MockRouter, api_server: _ResourceServer, api_client: _Client
+    ) -> StubAuthorizationServer:
         authorization_server = StubAuthorizationServer(
-            api_server.identifier, api_client.client_id, api_client.client_secret
+            respx_mock, api_server.identifier, api_client.client_id, api_client.client_secret
         )
         authorization_server.given_configuration_endpoint_returns_configuration()
         return authorization_server

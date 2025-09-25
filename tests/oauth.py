@@ -1,12 +1,14 @@
 from typing import Iterator, cast
 
-import respx
 from httpx import Response
-from respx import Route
+from respx import MockRouter, Route
 
 
 class StubAuthorizationServer:
-    def __init__(self, resource_server_identifier: str, client_id: str, client_secret: str) -> None:
+    def __init__(
+        self, respx_mock: MockRouter, resource_server_identifier: str, client_id: str, client_secret: str
+    ) -> None:
+        self._respx_mock = respx_mock
         self._url = "https://identity.example"
         self._resource_server_identifier = resource_server_identifier
         self._client_id = client_id
@@ -21,14 +23,14 @@ class StubAuthorizationServer:
         return f"{self._url}/token"
 
     def given_configuration_endpoint_returns_configuration(self) -> None:
-        respx.get(self.configuration_endpoint).respond(200, json={"token_endpoint": self.token_endpoint})
+        self._respx_mock.get(self.configuration_endpoint).respond(200, json={"token_endpoint": self.token_endpoint})
 
     def given_token_endpoint_returns_access_token(self, access_token: str, expires_in: int) -> Route:
         # Support multiple method calls to mock different responses
-        route = respx.pop("token_endpoint", default=None)
+        route = self._respx_mock.pop("token_endpoint", default=None)
         side_effects = list(cast(Iterator[Response], route.side_effect)) if route else []
 
-        return respx.post(
+        return self._respx_mock.post(
             self.token_endpoint,
             name="token_endpoint",
             data={

@@ -25,7 +25,7 @@ class TestApiSchemeRepository:
     def schemes_fixture(self, remote_app: ClientAsyncBaseApp) -> ApiSchemeRepository:
         return ApiSchemeRepository(remote_app)
 
-    async def test_get_by_authority(
+    async def test_get_schemes_by_authority(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
@@ -42,7 +42,7 @@ class TestApiSchemeRepository:
         assert scheme1.reference == "ATE00001"
         assert scheme2.reference == "ATE00002"
 
-    async def test_get_by_authority_sets_overview_revision(
+    async def test_get_schemes_by_authority_sets_overview_revision(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(
@@ -73,7 +73,7 @@ class TestApiSchemeRepository:
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
         )
 
-    async def test_get_by_authority_sets_bid_status_revision(
+    async def test_get_schemes_by_authority_sets_bid_status_revision(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
@@ -96,7 +96,7 @@ class TestApiSchemeRepository:
         (bid_status_revision1,) = scheme1.funding.bid_status_revisions
         assert bid_status_revision1.status == BidStatus.FUNDED
 
-    async def test_get_by_authority_sets_authority_review(
+    async def test_get_schemes_by_authority_sets_authority_review(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
@@ -120,7 +120,7 @@ class TestApiSchemeRepository:
         (authority_review1,) = scheme1.reviews.authority_reviews
         assert authority_review1.review_date == datetime(2020, 1, 2)
 
-    async def test_get_by_authority_filters_by_funding_programme_eligible_for_authority_update(
+    async def test_get_schemes_by_authority_filters_by_funding_programme_eligible_for_authority_update(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes", params={"eligible-for-authority-update": "true"}).respond(
@@ -152,7 +152,7 @@ class TestApiSchemeRepository:
 
         assert scheme1.reference == "ATE00001"
 
-    async def test_get_by_authority_filters_by_bid_status_funded(
+    async def test_get_schemes_by_authority_filters_by_bid_status_funded(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
@@ -166,7 +166,7 @@ class TestApiSchemeRepository:
 
         assert scheme1.reference == "ATE00001"
 
-    async def test_get_by_authority_filters_by_current_milestone_active_and_incomplete(
+    async def test_get_schemes_by_authority_filters_by_current_milestone_active_and_incomplete(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
@@ -183,7 +183,7 @@ class TestApiSchemeRepository:
 
         assert scheme1.reference == "ATE00001"
 
-    async def test_get_by_authority_reuses_client(
+    async def test_get_schemes_by_authority_reuses_client(
         self, api_mock: MockRouter, api_base_url: str, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())

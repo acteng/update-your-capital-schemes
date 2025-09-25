@@ -1,9 +1,11 @@
-from typing import Any
+from typing import Any, Generator
 
 import pytest
+import respx
 from authlib.integrations.base_client import FrameworkIntegration
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
+from respx import MockRouter
 
 from schemes.oauth import ClientAsyncBaseApp, ClientAsyncOAuth2Mixin
 
@@ -25,6 +27,12 @@ def access_token_fixture() -> str:
 @pytest.fixture(name="api_base_url")
 def api_base_url_fixture() -> str:
     return "https://api.example"
+
+
+@pytest.fixture(name="api_mock")
+def api_mock_fixture(api_base_url: str) -> Generator[MockRouter]:
+    with respx.mock(base_url=api_base_url) as respx_mock:
+        yield respx_mock
 
 
 @pytest.fixture(name="remote_app")

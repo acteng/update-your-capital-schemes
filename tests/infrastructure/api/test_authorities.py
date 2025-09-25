@@ -10,10 +10,8 @@ class TestApiAuthorityRepository:
     def authorities_fixture(self, remote_app: AsyncBaseApp) -> ApiAuthorityRepository:
         return ApiAuthorityRepository(remote_app)
 
-    async def test_get_authority(
-        self, respx_mock: MockRouter, api_base_url: str, authorities: ApiAuthorityRepository
-    ) -> None:
-        respx_mock.get(f"{api_base_url}/authorities/LIV").respond(
+    async def test_get_authority(self, api_mock: MockRouter, authorities: ApiAuthorityRepository) -> None:
+        api_mock.get("/authorities/LIV").respond(
             200, json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority"}
         )
 
@@ -26,9 +24,9 @@ class TestApiAuthorityRepository:
         )
 
     async def test_get_authority_ignores_unknown_key(
-        self, respx_mock: MockRouter, api_base_url: str, authorities: ApiAuthorityRepository
+        self, api_mock: MockRouter, authorities: ApiAuthorityRepository
     ) -> None:
-        respx_mock.get(f"{api_base_url}/authorities/LIV").respond(
+        api_mock.get("/authorities/LIV").respond(
             200, json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority", "foo": "bar"}
         )
 
@@ -41,9 +39,9 @@ class TestApiAuthorityRepository:
         )
 
     async def test_get_authority_that_does_not_exist(
-        self, respx_mock: MockRouter, api_base_url: str, authorities: ApiAuthorityRepository
+        self, api_mock: MockRouter, authorities: ApiAuthorityRepository
     ) -> None:
-        respx_mock.get(f"{api_base_url}/authorities/WYO").respond(404)
+        api_mock.get("/authorities/WYO").respond(404)
 
         assert await authorities.get("WYO") is None
 

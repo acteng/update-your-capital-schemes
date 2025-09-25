@@ -11,10 +11,8 @@ class TestApiAuthorityRepository:
         return ApiAuthorityRepository(remote_app)
 
     @respx.mock
-    async def test_get_authority(
-        self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
-    ) -> None:
-        respx.get(f"{api_base_url}/authorities/LIV", headers={"Authorization": f"Bearer {access_token}"}).respond(
+    async def test_get_authority(self, api_base_url: str, authorities: ApiAuthorityRepository) -> None:
+        respx.get(f"{api_base_url}/authorities/LIV").respond(
             200, json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority"}
         )
 
@@ -28,9 +26,9 @@ class TestApiAuthorityRepository:
 
     @respx.mock
     async def test_get_authority_ignores_unknown_key(
-        self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
+        self, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
-        respx.get(f"{api_base_url}/authorities/LIV", headers={"Authorization": f"Bearer {access_token}"}).respond(
+        respx.get(f"{api_base_url}/authorities/LIV").respond(
             200, json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority", "foo": "bar"}
         )
 
@@ -44,9 +42,9 @@ class TestApiAuthorityRepository:
 
     @respx.mock
     async def test_get_authority_that_does_not_exist(
-        self, access_token: str, api_base_url: str, authorities: ApiAuthorityRepository
+        self, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
-        respx.get(f"{api_base_url}/authorities/WYO", headers={"Authorization": f"Bearer {access_token}"}).respond(404)
+        respx.get(f"{api_base_url}/authorities/WYO").respond(404)
 
         assert await authorities.get("WYO") is None
 

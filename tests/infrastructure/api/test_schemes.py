@@ -26,26 +26,15 @@ class TestApiSchemeRepository:
         return ApiSchemeRepository(remote_app)
 
     @respx.mock
-    async def test_get_by_authority(self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository) -> None:
-        respx.get(f"{api_base_url}/funding-programmes", headers={"Authorization": f"Bearer {access_token}"}).respond(
-            200, json=_dummy_funding_programmes_json()
-        )
-        respx.get(
-            f"{api_base_url}/capital-schemes/milestones", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(200, json=_dummy_milestones_json())
-        respx.get(
-            f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
-            headers={"Authorization": f"Bearer {access_token}"},
-        ).respond(
+    async def test_get_by_authority(self, api_base_url: str, schemes: ApiSchemeRepository) -> None:
+        respx.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        respx.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
             json={"items": [f"{api_base_url}/capital-schemes/ATE00001", f"{api_base_url}/capital-schemes/ATE00002"]},
         )
-        respx.get(
-            f"{api_base_url}/capital-schemes/ATE00001", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(200, json=_build_capital_scheme_json("ATE00001"))
-        respx.get(
-            f"{api_base_url}/capital-schemes/ATE00002", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(200, json=_build_capital_scheme_json("ATE00002"))
+        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json("ATE00001"))
+        respx.get(f"{api_base_url}/capital-schemes/ATE00002").respond(200, json=_build_capital_scheme_json("ATE00002"))
 
         scheme1, scheme2 = await schemes.get_by_authority("LIV")
 
@@ -54,21 +43,16 @@ class TestApiSchemeRepository:
 
     @respx.mock
     async def test_get_by_authority_sets_overview_revision(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes", headers={"Authorization": f"Bearer {access_token}"}).respond(
+        respx.get(f"{api_base_url}/funding-programmes").respond(
             200, json={"items": [{"@id": f"{api_base_url}/funding-programmes/ATF4", "code": "ATF4"}]}
         )
-        respx.get(
-            f"{api_base_url}/capital-schemes/milestones", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(200, json=_dummy_milestones_json())
-        respx.get(
-            f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
-            headers={"Authorization": f"Bearer {access_token}"},
-        ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
-        respx.get(
-            f"{api_base_url}/capital-schemes/ATE00001", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(
+        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        respx.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
+            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
+        )
+        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
             200,
             json={
                 "reference": "ATE00001",
@@ -91,22 +75,14 @@ class TestApiSchemeRepository:
 
     @respx.mock
     async def test_get_by_authority_sets_bid_status_revision(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes", headers={"Authorization": f"Bearer {access_token}"}).respond(
-            200, json=_dummy_funding_programmes_json()
+        respx.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        respx.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
+            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
-        respx.get(
-            f"{api_base_url}/capital-schemes/milestones", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(200, json=_dummy_milestones_json())
-        respx.get(
-            f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
-            headers={"Authorization": f"Bearer {access_token}"},
-        ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
-        respx.get(
-            f"{api_base_url}/capital-schemes/ATE00001",
-            headers={"Authorization": f"Bearer {access_token}"},
-        ).respond(
+        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
             200,
             json={
                 "reference": "ATE00001",
@@ -123,21 +99,14 @@ class TestApiSchemeRepository:
 
     @respx.mock
     async def test_get_by_authority_sets_authority_review(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes", headers={"Authorization": f"Bearer {access_token}"}).respond(
-            200, json=_dummy_funding_programmes_json()
+        respx.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        respx.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
+            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
-        respx.get(
-            f"{api_base_url}/capital-schemes/milestones", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(200, json=_dummy_milestones_json())
-        respx.get(
-            f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
-            headers={"Authorization": f"Bearer {access_token}"},
-        ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
-        respx.get(
-            f"{api_base_url}/capital-schemes/ATE00001", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(
+        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
             200,
             json={
                 "reference": "ATE00001",
@@ -155,13 +124,9 @@ class TestApiSchemeRepository:
 
     @respx.mock
     async def test_get_by_authority_filters_by_funding_programme_eligible_for_authority_update(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(
-            f"{api_base_url}/funding-programmes",
-            params={"eligible-for-authority-update": "true"},
-            headers={"Authorization": f"Bearer {access_token}"},
-        ).respond(
+        respx.get(f"{api_base_url}/funding-programmes", params={"eligible-for-authority-update": "true"}).respond(
             200,
             json={
                 "items": [
@@ -170,17 +135,12 @@ class TestApiSchemeRepository:
                 ]
             },
         )
-        respx.get(
-            f"{api_base_url}/capital-schemes/milestones", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(200, json=_dummy_milestones_json())
+        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
         respx.get(
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
             params={"funding-programme-code": ["ATF3", "ATF4"]},
-            headers={"Authorization": f"Bearer {access_token}"},
         ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
-        respx.get(
-            f"{api_base_url}/capital-schemes/ATE00001", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(
+        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
             200,
             json={
                 "reference": "ATE00001",
@@ -198,22 +158,14 @@ class TestApiSchemeRepository:
 
     @respx.mock
     async def test_get_by_authority_filters_by_bid_status_funded(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes", headers={"Authorization": f"Bearer {access_token}"}).respond(
-            200, json=_dummy_funding_programmes_json()
-        )
+        respx.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
         respx.get(
-            f"{api_base_url}/capital-schemes/milestones", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(200, json=_dummy_milestones_json())
-        respx.get(
-            f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
-            params={"bid-status": "funded"},
-            headers={"Authorization": f"Bearer {access_token}"},
+            f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting", params={"bid-status": "funded"}
         ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
-        respx.get(
-            f"{api_base_url}/capital-schemes/ATE00001", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(200, json=_build_capital_scheme_json("ATE00001"))
+        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json("ATE00001"))
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
@@ -221,24 +173,17 @@ class TestApiSchemeRepository:
 
     @respx.mock
     async def test_get_by_authority_filters_by_current_milestone_active_and_incomplete(
-        self, access_token: str, api_base_url: str, schemes: ApiSchemeRepository
+        self, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes", headers={"Authorization": f"Bearer {access_token}"}).respond(
-            200, json=_dummy_funding_programmes_json()
+        respx.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        respx.get(f"{api_base_url}/capital-schemes/milestones", params={"active": "true", "complete": "false"}).respond(
+            200, json={"items": ["detailed design completed", "construction started"]}
         )
-        respx.get(
-            f"{api_base_url}/capital-schemes/milestones",
-            params={"active": "true", "complete": "false"},
-            headers={"Authorization": f"Bearer {access_token}"},
-        ).respond(200, json={"items": ["detailed design completed", "construction started"]})
         respx.get(
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
             params={"current-milestone": ["detailed design completed", "construction started", ""]},
-            headers={"Authorization": f"Bearer {access_token}"},
         ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
-        respx.get(
-            f"{api_base_url}/capital-schemes/ATE00001", headers={"Authorization": f"Bearer {access_token}"}
-        ).respond(200, json=_build_capital_scheme_json("ATE00001"))
+        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json("ATE00001"))
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 

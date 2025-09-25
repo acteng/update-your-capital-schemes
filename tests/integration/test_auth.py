@@ -28,7 +28,7 @@ class TestAuth:
         return dict(config) | {"GOVUK_CLIENT_ID": client_id, "GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
 
     @pytest.fixture(name="oauth")
-    def oauth_fixture(self) -> Generator[OAuth, None, None]:
+    def oauth_fixture(self) -> Generator[OAuth]:
         oauth = current_app.extensions["authlib.integrations.flask_client"]
         oauth_app = oauth.govuk
         previous_server_metadata = oauth_app.server_metadata

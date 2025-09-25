@@ -55,7 +55,7 @@ def config_fixture() -> Mapping[str, Any]:
 
 
 @pytest.fixture(name="app", scope="class")
-def app_fixture(config: Mapping[str, Any]) -> Generator[Flask, Any, Any]:
+def app_fixture(config: Mapping[str, Any]) -> Generator[Flask]:
     app = create_app(config)
     inject.clear_and_configure(_test_bindings(app), bind_in_runtime=False, allow_override=True)
     yield app
@@ -93,7 +93,7 @@ async def authorities_fixture(app: Flask) -> AsyncGenerator[AuthorityRepository]
 
 
 @pytest.fixture(name="users")
-def users_fixture(app: Flask) -> Generator[UserRepository, None, None]:
+def users_fixture(app: Flask) -> Generator[UserRepository]:
     users = inject.instance(UserRepository)
     yield users
     users.clear()

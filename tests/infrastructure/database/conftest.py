@@ -10,7 +10,7 @@ from schemes.infrastructure.database import Base
 
 
 @pytest.fixture(name="engine")
-def engine_fixture() -> Generator[Engine, None, None]:
+def engine_fixture() -> Generator[Engine]:
     engine = create_engine("sqlite+pysqlite:///:memory:")
     event.listen(Engine, "connect", _enforce_sqlite_foreign_keys)
     _create_schemas(engine)

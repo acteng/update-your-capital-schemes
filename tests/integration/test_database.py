@@ -11,7 +11,7 @@ from schemes.infrastructure.database import CapitalSchemeEntity
 @pytest.mark.usefixtures("client")
 class TestProdDatabase:
     @pytest.fixture(name="monkeypatch", scope="class")
-    def monkeypatch_fixture(self) -> Generator[MonkeyPatch, None, None]:
+    def monkeypatch_fixture(self) -> Generator[MonkeyPatch]:
         with pytest.MonkeyPatch.context() as monkeypatch:
             yield monkeypatch
 

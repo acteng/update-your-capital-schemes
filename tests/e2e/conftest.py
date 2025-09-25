@@ -63,7 +63,7 @@ def app_fixture(
     authorization_server: LiveServer,
     resource_server: _ResourceServer,
     app_oauth_client: _Client,
-) -> Generator[Flask, Any, Any]:
+) -> Generator[Flask]:
     port = _get_random_port()
     client_id = "app"
     private_key, public_key = _generate_key_pair()
@@ -108,7 +108,7 @@ def app_fixture(
 
 
 @pytest.fixture(name="app_client")
-def app_client_fixture(live_server: LiveServer, api_key: str) -> Generator[AppClient, Any, Any]:
+def app_client_fixture(live_server: LiveServer, api_key: str) -> Generator[AppClient]:
     client = AppClient(_get_url(live_server), api_key)
     yield client
     client.clear_schemes()
@@ -123,7 +123,7 @@ def oidc_server_app_fixture(debug: bool) -> OidcServerApp:
 
 
 @pytest.fixture(name="oidc_server", scope="package")
-def oidc_server_fixture(oidc_server_app: OidcServerApp, request: FixtureRequest) -> Generator[LiveServer, Any, Any]:
+def oidc_server_fixture(oidc_server_app: OidcServerApp, request: FixtureRequest) -> Generator[LiveServer]:
     server = LiveServer(oidc_server_app, "localhost", _get_port(oidc_server_app), 5, True)
     server.start()
     request.addfinalizer(server.stop)
@@ -131,7 +131,7 @@ def oidc_server_fixture(oidc_server_app: OidcServerApp, request: FixtureRequest)
 
 
 @pytest.fixture(name="oidc_client")
-def oidc_client_fixture(oidc_server: LiveServer) -> Generator[OidcClient, Any, Any]:
+def oidc_client_fixture(oidc_server: LiveServer) -> Generator[OidcClient]:
     client = OidcClient(_get_url(oidc_server))
     yield client
     client.clear_users()
@@ -233,7 +233,7 @@ def custom_browser_context_args_fixture(
 
 
 @pytest.fixture(name="context")
-def browser_context_fixture(context: BrowserContext) -> Generator[BrowserContext, None, None]:
+def browser_context_fixture(context: BrowserContext) -> Generator[BrowserContext]:
     context.set_default_timeout(5_000)
     yield context
 
@@ -242,7 +242,7 @@ def browser_context_fixture(context: BrowserContext) -> Generator[BrowserContext
 # See: https://github.com/microsoft/playwright-pytest/issues/167
 # See: https://github.com/microsoft/playwright-pytest/issues/289
 @pytest.fixture(name="playwright", scope="package")
-def playwright_fixture() -> Generator[Playwright, None, None]:
+def playwright_fixture() -> Generator[Playwright]:
     pw = sync_playwright().start()
     yield pw
     pw.stop()
@@ -289,7 +289,7 @@ def launch_browser_fixture(
 # See: https://github.com/microsoft/playwright-pytest/issues/167
 # See: https://github.com/microsoft/playwright-pytest/issues/289
 @pytest.fixture(name="browser", scope="package")
-def browser_fixture(launch_browser: Callable[[], Browser]) -> Generator[Browser, None, None]:
+def browser_fixture(launch_browser: Callable[[], Browser]) -> Generator[Browser]:
     browser = launch_browser()
     yield browser
     browser.close()

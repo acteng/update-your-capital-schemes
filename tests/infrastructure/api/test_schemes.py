@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 from typing import Any
 
 import pytest
-import respx
 from pydantic import AnyUrl
+from respx import MockRouter
 
 from schemes.domain.schemes.funding import BidStatus
 from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes
@@ -25,34 +25,38 @@ class TestApiSchemeRepository:
     def schemes_fixture(self, remote_app: ClientAsyncBaseApp) -> ApiSchemeRepository:
         return ApiSchemeRepository(remote_app)
 
-    @respx.mock
-    async def test_get_by_authority(self, api_base_url: str, schemes: ApiSchemeRepository) -> None:
-        respx.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
-        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
-        respx.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
+    async def test_get_by_authority(
+        self, respx_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
+    ) -> None:
+        respx_mock.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        respx_mock.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        respx_mock.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
             json={"items": [f"{api_base_url}/capital-schemes/ATE00001", f"{api_base_url}/capital-schemes/ATE00002"]},
         )
-        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json("ATE00001"))
-        respx.get(f"{api_base_url}/capital-schemes/ATE00002").respond(200, json=_build_capital_scheme_json("ATE00002"))
+        respx_mock.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
+            200, json=_build_capital_scheme_json("ATE00001")
+        )
+        respx_mock.get(f"{api_base_url}/capital-schemes/ATE00002").respond(
+            200, json=_build_capital_scheme_json("ATE00002")
+        )
 
         scheme1, scheme2 = await schemes.get_by_authority("LIV")
 
         assert scheme1.reference == "ATE00001"
         assert scheme2.reference == "ATE00002"
 
-    @respx.mock
     async def test_get_by_authority_sets_overview_revision(
-        self, api_base_url: str, schemes: ApiSchemeRepository
+        self, respx_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes").respond(
+        respx_mock.get(f"{api_base_url}/funding-programmes").respond(
             200, json={"items": [{"@id": f"{api_base_url}/funding-programmes/ATF4", "code": "ATF4"}]}
         )
-        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
-        respx.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
+        respx_mock.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        respx_mock.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
-        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
+        respx_mock.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
             200,
             json={
                 "reference": "ATE00001",
@@ -73,16 +77,15 @@ class TestApiSchemeRepository:
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
         )
 
-    @respx.mock
     async def test_get_by_authority_sets_bid_status_revision(
-        self, api_base_url: str, schemes: ApiSchemeRepository
+        self, respx_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
-        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
-        respx.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
+        respx_mock.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        respx_mock.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        respx_mock.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
-        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
+        respx_mock.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
             200,
             json={
                 "reference": "ATE00001",
@@ -97,16 +100,15 @@ class TestApiSchemeRepository:
         (bid_status_revision1,) = scheme1.funding.bid_status_revisions
         assert bid_status_revision1.status == BidStatus.FUNDED
 
-    @respx.mock
     async def test_get_by_authority_sets_authority_review(
-        self, api_base_url: str, schemes: ApiSchemeRepository
+        self, respx_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
-        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
-        respx.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
+        respx_mock.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        respx_mock.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        respx_mock.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
-        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
+        respx_mock.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
             200,
             json={
                 "reference": "ATE00001",
@@ -122,11 +124,10 @@ class TestApiSchemeRepository:
         (authority_review1,) = scheme1.reviews.authority_reviews
         assert authority_review1.review_date == datetime(2020, 1, 2)
 
-    @respx.mock
     async def test_get_by_authority_filters_by_funding_programme_eligible_for_authority_update(
-        self, api_base_url: str, schemes: ApiSchemeRepository
+        self, respx_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes", params={"eligible-for-authority-update": "true"}).respond(
+        respx_mock.get(f"{api_base_url}/funding-programmes", params={"eligible-for-authority-update": "true"}).respond(
             200,
             json={
                 "items": [
@@ -135,12 +136,12 @@ class TestApiSchemeRepository:
                 ]
             },
         )
-        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
-        respx.get(
+        respx_mock.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        respx_mock.get(
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
             params={"funding-programme-code": ["ATF3", "ATF4"]},
         ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
-        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
+        respx_mock.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
             200,
             json={
                 "reference": "ATE00001",
@@ -156,51 +157,56 @@ class TestApiSchemeRepository:
 
         assert scheme1.reference == "ATE00001"
 
-    @respx.mock
     async def test_get_by_authority_filters_by_bid_status_funded(
-        self, api_base_url: str, schemes: ApiSchemeRepository
+        self, respx_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
-        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
-        respx.get(
+        respx_mock.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        respx_mock.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        respx_mock.get(
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting", params={"bid-status": "funded"}
         ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
-        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json("ATE00001"))
+        respx_mock.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
+            200, json=_build_capital_scheme_json("ATE00001")
+        )
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert scheme1.reference == "ATE00001"
 
-    @respx.mock
     async def test_get_by_authority_filters_by_current_milestone_active_and_incomplete(
-        self, api_base_url: str, schemes: ApiSchemeRepository
+        self, respx_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
-        respx.get(f"{api_base_url}/capital-schemes/milestones", params={"active": "true", "complete": "false"}).respond(
-            200, json={"items": ["detailed design completed", "construction started"]}
-        )
-        respx.get(
+        respx_mock.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        respx_mock.get(
+            f"{api_base_url}/capital-schemes/milestones", params={"active": "true", "complete": "false"}
+        ).respond(200, json={"items": ["detailed design completed", "construction started"]})
+        respx_mock.get(
             f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
             params={"current-milestone": ["detailed design completed", "construction started", ""]},
         ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
-        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json("ATE00001"))
+        respx_mock.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
+            200, json=_build_capital_scheme_json("ATE00001")
+        )
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert scheme1.reference == "ATE00001"
 
-    @respx.mock
     async def test_get_by_authority_reuses_client(
-        self, api_base_url: str, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
+        self, respx_mock: MockRouter, api_base_url: str, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
-        respx.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
-        respx.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
-        respx.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
+        respx_mock.get(f"{api_base_url}/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        respx_mock.get(f"{api_base_url}/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        respx_mock.get(f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
             json={"items": [f"{api_base_url}/capital-schemes/ATE00001", f"{api_base_url}/capital-schemes/ATE00002"]},
         )
-        respx.get(f"{api_base_url}/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json("ATE00001"))
-        respx.get(f"{api_base_url}/capital-schemes/ATE00002").respond(200, json=_build_capital_scheme_json("ATE00002"))
+        respx_mock.get(f"{api_base_url}/capital-schemes/ATE00001").respond(
+            200, json=_build_capital_scheme_json("ATE00001")
+        )
+        respx_mock.get(f"{api_base_url}/capital-schemes/ATE00002").respond(
+            200, json=_build_capital_scheme_json("ATE00002")
+        )
 
         await schemes.get_by_authority("LIV")
 

@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
 import pytest
-import respx
 from flask import Flask, request
 from httpx import Timeout
+from respx import MockRouter
 
 from schemes.oauth import OAuthExtension
 from tests.oauth import StubAuthorizationServer
@@ -68,13 +68,16 @@ class TestOAuthExtension:
 
         assert oauth.ate.client_kwargs.get("timeout") == Timeout(10)
 
-    @respx.mock
     async def test_ate_api_uses_compression(
-        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+        self,
+        respx_mock: MockRouter,
+        app: Flask,
+        authorization_server: StubAuthorizationServer,
+        api_server: _ResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
-        api_response = respx.get(api_server.url)
+        api_response = respx_mock.get(api_server.url)
 
         with app.app_context():
             await oauth.ate.get("/", request=request)
@@ -82,26 +85,32 @@ class TestOAuthExtension:
         accept_encoding = api_response.calls.last.request.headers["Accept-Encoding"]
         assert "gzip" in [encoding.strip() for encoding in accept_encoding.split(",")]
 
-    @respx.mock
     async def test_ate_api_requests_access_token(
-        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+        self,
+        respx_mock: MockRouter,
+        app: Flask,
+        authorization_server: StubAuthorizationServer,
+        api_server: _ResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
-        api_response = respx.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
+        api_response = respx_mock.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
 
         with app.app_context():
             await oauth.ate.get("/", request=request)
 
         assert api_response.call_count == 1
 
-    @respx.mock
     async def test_ate_api_caches_access_token_within_request(
-        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+        self,
+        respx_mock: MockRouter,
+        app: Flask,
+        authorization_server: StubAuthorizationServer,
+        api_server: _ResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         token_response = authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
-        respx.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
+        respx_mock.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
 
         with app.app_context():
             await oauth.ate.get("/", request=request)
@@ -109,13 +118,16 @@ class TestOAuthExtension:
 
         assert token_response.call_count == 1
 
-    @respx.mock
     async def test_ate_api_caches_access_token_across_requests(
-        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+        self,
+        respx_mock: MockRouter,
+        app: Flask,
+        authorization_server: StubAuthorizationServer,
+        api_server: _ResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         token_response = authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
-        respx.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
+        respx_mock.get(api_server.url, headers={"Authorization": "Bearer dummy_jwt"})
 
         with app.app_context():
             await oauth.ate.get("/", request=request)
@@ -124,30 +136,36 @@ class TestOAuthExtension:
 
         assert token_response.call_count == 1
 
-    @respx.mock
     async def test_ate_api_refreshes_access_token_when_expired(
-        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+        self,
+        respx_mock: MockRouter,
+        app: Flask,
+        authorization_server: StubAuthorizationServer,
+        api_server: _ResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("expired_jwt", expires_in=1 * 60)
         authorization_server.given_token_endpoint_returns_access_token("refreshed_jwt", expires_in=15 * 60)
-        api_response = respx.get(api_server.url, headers={"Authorization": "Bearer refreshed_jwt"})
+        api_response = respx_mock.get(api_server.url, headers={"Authorization": "Bearer refreshed_jwt"})
 
         with app.app_context():
             await oauth.ate.get("/", request=request)
 
         assert api_response.call_count == 1
 
-    @respx.mock
     async def test_ate_api_uses_refreshed_access_token_across_requests(
-        self, app: Flask, authorization_server: StubAuthorizationServer, api_server: _ResourceServer
+        self,
+        respx_mock: MockRouter,
+        app: Flask,
+        authorization_server: StubAuthorizationServer,
+        api_server: _ResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("expired_jwt", expires_in=1 * 60)
         token_response = authorization_server.given_token_endpoint_returns_access_token(
             "refreshed_jwt", expires_in=15 * 60
         )
-        api_response = respx.get(api_server.url, headers={"Authorization": "Bearer refreshed_jwt"})
+        api_response = respx_mock.get(api_server.url, headers={"Authorization": "Bearer refreshed_jwt"})
 
         with app.app_context():
             await oauth.ate.get("/", request=request)

@@ -1,5 +1,5 @@
 import pytest
-import respx
+from respx import MockRouter
 
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository, AuthorityModel
 from schemes.oauth import AsyncBaseApp
@@ -10,9 +10,10 @@ class TestApiAuthorityRepository:
     def authorities_fixture(self, remote_app: AsyncBaseApp) -> ApiAuthorityRepository:
         return ApiAuthorityRepository(remote_app)
 
-    @respx.mock
-    async def test_get_authority(self, api_base_url: str, authorities: ApiAuthorityRepository) -> None:
-        respx.get(f"{api_base_url}/authorities/LIV").respond(
+    async def test_get_authority(
+        self, respx_mock: MockRouter, api_base_url: str, authorities: ApiAuthorityRepository
+    ) -> None:
+        respx_mock.get(f"{api_base_url}/authorities/LIV").respond(
             200, json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority"}
         )
 
@@ -24,11 +25,10 @@ class TestApiAuthorityRepository:
             and authority.name == "Liverpool City Region Combined Authority"
         )
 
-    @respx.mock
     async def test_get_authority_ignores_unknown_key(
-        self, api_base_url: str, authorities: ApiAuthorityRepository
+        self, respx_mock: MockRouter, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
-        respx.get(f"{api_base_url}/authorities/LIV").respond(
+        respx_mock.get(f"{api_base_url}/authorities/LIV").respond(
             200, json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority", "foo": "bar"}
         )
 
@@ -40,11 +40,10 @@ class TestApiAuthorityRepository:
             and authority.name == "Liverpool City Region Combined Authority"
         )
 
-    @respx.mock
     async def test_get_authority_that_does_not_exist(
-        self, api_base_url: str, authorities: ApiAuthorityRepository
+        self, respx_mock: MockRouter, api_base_url: str, authorities: ApiAuthorityRepository
     ) -> None:
-        respx.get(f"{api_base_url}/authorities/WYO").respond(404)
+        respx_mock.get(f"{api_base_url}/authorities/WYO").respond(404)
 
         assert await authorities.get("WYO") is None
 

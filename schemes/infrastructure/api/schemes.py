@@ -92,23 +92,14 @@ class ApiSchemeRepository(SchemeRepository):
     async def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         async with self._remote_app.client() as client:
             funding_programme_item_models = await self._get_funding_programme_item_models(client)
+            funding_programme_codes = [
+                funding_programme_item_model.code for funding_programme_item_model in funding_programme_item_models
+            ]
             milestones = await self._get_milestones(client)
 
-            response = await client.get(
-                f"/authorities/{authority_abbreviation}/capital-schemes/bid-submitting",
-                params={
-                    "funding-programme-code": [
-                        funding_programme_item_model.code
-                        for funding_programme_item_model in funding_programme_item_models
-                    ],
-                    "bid-status": "funded",
-                    "current-milestone": milestones,
-                },
-                request=self._dummy_request(),
+            collection_model = await self._get_capital_scheme_urls_by_authority(
+                client, authority_abbreviation, funding_programme_codes, milestones
             )
-            response.raise_for_status()
-
-            collection_model = CollectionModel[AnyUrl].model_validate(response.json())
             capital_scheme_models = await asyncio.gather(
                 *[
                     self._get_capital_scheme_model_by_url(client, str(capital_scheme_url))
@@ -138,6 +129,27 @@ class ApiSchemeRepository(SchemeRepository):
         collection_model = CollectionModel[str].model_validate(response.json())
         no_milestone = ""
         return collection_model.items + [no_milestone]
+
+    async def _get_capital_scheme_urls_by_authority(
+        self,
+        remote_app: AsyncBaseApp,
+        authority_abbreviation: str,
+        funding_programme_codes: list[str],
+        current_milestones: list[str],
+    ) -> CollectionModel[AnyUrl]:
+        response = await remote_app.get(
+            f"/authorities/{authority_abbreviation}/capital-schemes/bid-submitting",
+            params={
+                "funding-programme-code": funding_programme_codes,
+                "bid-status": "funded",
+                "current-milestone": current_milestones,
+            },
+            request=self._dummy_request(),
+        )
+        response.raise_for_status()
+
+        collection_model = CollectionModel[AnyUrl].model_validate(response.json())
+        return collection_model
 
     async def _get_capital_scheme_model_by_url(self, remote_app: AsyncBaseApp, url: str) -> CapitalSchemeModel:
         response = await remote_app.get(url, request=self._dummy_request())

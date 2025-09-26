@@ -56,8 +56,8 @@ class ApiSchemeRepository(SchemeRepository):
 
         collection_model = CollectionModel[FundingProgrammeItemModel].model_validate(response.json())
         return {
-            str(funding_programme_item.id): funding_programme_item.to_domain()
-            for funding_programme_item in collection_model.items
+            str(funding_programme_item_model.id): funding_programme_item_model.to_domain()
+            for funding_programme_item_model in collection_model.items
         }
 
     async def _get_milestones(self, remote_app: AsyncBaseApp) -> list[str]:

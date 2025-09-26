@@ -5,16 +5,18 @@ from typing import Any
 
 from pydantic import AnyUrl
 
+from schemes.domain.authorities import Authority
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import BidStatus, BidStatusRevision
 from schemes.domain.schemes.overview import FundingProgramme, OverviewRevision, SchemeType
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
+from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.dates import zoned_to_local
-from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
+from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel, FundingProgrammeModel
 from schemes.oauth import AsyncBaseApp, ClientAsyncBaseApp
 
 
@@ -22,8 +24,30 @@ class ApiSchemeRepository(SchemeRepository):
     def __init__(self, remote_app: ClientAsyncBaseApp):
         self._remote_app = remote_app
 
+    async def get(self, reference: str) -> Scheme | None:
+        async with self._remote_app.client() as client:
+            response = await client.get(f"/capital-schemes/{reference}", request=self._dummy_request())
+
+            if response.status_code == 404:
+                return None
+
+            response.raise_for_status()
+            capital_scheme_model = CapitalSchemeModel.model_validate(response.json())
+
+            authority_url = capital_scheme_model.overview.bid_submitting_authority
+            authorities = {str(authority_url): await self._get_authority_by_url(client, str(authority_url))}
+
+            funding_programme_url = capital_scheme_model.overview.funding_programme
+            funding_programmes = {
+                str(funding_programme_url): await self._get_funding_programme_by_url(client, str(funding_programme_url))
+            }
+
+            return capital_scheme_model.to_domain(authorities, funding_programmes)
+
     async def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         async with self._remote_app.client() as client:
+            authority_url = f"/authorities/{authority_abbreviation}"
+            authorities = {authority_url: await self._get_authority_by_url(client, authority_url)}
             funding_programmes = await self._get_funding_programmes(client)
             milestones = await self._get_milestones(client)
 
@@ -43,7 +67,7 @@ class ApiSchemeRepository(SchemeRepository):
             collection_model = CollectionModel[AnyUrl].model_validate(response.json())
             return await asyncio.gather(
                 *[
-                    self._get_by_url(client, str(capital_scheme_url), funding_programmes)
+                    self._get_by_url(client, str(capital_scheme_url), authorities, funding_programmes)
                     for capital_scheme_url in collection_model.items
                 ]
             )
@@ -60,6 +84,13 @@ class ApiSchemeRepository(SchemeRepository):
             for funding_programme_item in collection_model.items
         }
 
+    async def _get_funding_programme_by_url(self, remote_app: AsyncBaseApp, url: str) -> FundingProgramme:
+        response = await remote_app.get(url, request=self._dummy_request())
+        response.raise_for_status()
+
+        funding_programme_model = FundingProgrammeModel.model_validate(response.json())
+        return funding_programme_model.to_domain()
+
     async def _get_milestones(self, remote_app: AsyncBaseApp) -> list[str]:
         response = await remote_app.get(
             "/capital-schemes/milestones", params={"active": "true", "complete": "false"}, request=self._dummy_request()
@@ -71,13 +102,24 @@ class ApiSchemeRepository(SchemeRepository):
         return collection_model.items + [no_milestone]
 
     async def _get_by_url(
-        self, remote_app: AsyncBaseApp, url: str, funding_programmes: dict[str, FundingProgramme]
+        self,
+        remote_app: AsyncBaseApp,
+        url: str,
+        authorities: dict[str, Authority],
+        funding_programmes: dict[str, FundingProgramme],
     ) -> Scheme:
         response = await remote_app.get(url, request=self._dummy_request())
         response.raise_for_status()
 
         capital_scheme_model = CapitalSchemeModel.model_validate(response.json())
-        return capital_scheme_model.to_domain(funding_programmes)
+        return capital_scheme_model.to_domain(authorities, funding_programmes)
+
+    async def _get_authority_by_url(self, remote_app: AsyncBaseApp, url: str) -> Authority:
+        response = await remote_app.get(url, request=self._dummy_request())
+        response.raise_for_status()
+
+        authority_model = AuthorityModel.model_validate(response.json())
+        return authority_model.to_domain()
 
     # See: https://github.com/authlib/authlib/issues/818#issuecomment-3257950062
     @staticmethod
@@ -87,15 +129,18 @@ class ApiSchemeRepository(SchemeRepository):
 
 class CapitalSchemeOverviewModel(BaseModel):
     name: str
+    bid_submitting_authority: AnyUrl
     funding_programme: AnyUrl
 
-    def to_domain(self, funding_programmes: dict[str, FundingProgramme]) -> OverviewRevision:
-        # TODO: id, effective, authority_abbreviation, type
+    def to_domain(
+        self, authorities: dict[str, Authority], funding_programmes: dict[str, FundingProgramme]
+    ) -> OverviewRevision:
+        # TODO: id, effective, type
         return OverviewRevision(
             id_=None,
             effective=DateRange(date_from=datetime.min, date_to=None),
             name=self.name,
-            authority_abbreviation="",
+            authority_abbreviation=authorities[str(self.bid_submitting_authority)].abbreviation,
             type_=SchemeType.DEVELOPMENT,
             funding_programme=funding_programmes[str(self.funding_programme)],
         )
@@ -136,10 +181,10 @@ class CapitalSchemeModel(BaseModel):
     bid_status_details: CapitalSchemeBidStatusDetailsModel
     authority_review: CapitalSchemeAuthorityReviewModel | None = None
 
-    def to_domain(self, funding_programmes: dict[str, FundingProgramme]) -> Scheme:
+    def to_domain(self, authorities: dict[str, Authority], funding_programmes: dict[str, FundingProgramme]) -> Scheme:
         # TODO: id
         scheme = Scheme(id_=0, reference=self.reference)
-        scheme.overview.update_overview(self.overview.to_domain(funding_programmes))
+        scheme.overview.update_overview(self.overview.to_domain(authorities, funding_programmes))
         scheme.funding.update_bid_status(self.bid_status_details.to_domain())
 
         if self.authority_review:

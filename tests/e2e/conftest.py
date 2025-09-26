@@ -39,7 +39,7 @@ class _ResourceServer:
 
 @pytest.fixture(name="debug", scope="package")
 def debug_fixture() -> bool:
-    return False
+    return True
 
 
 @pytest.fixture(name="configure_live_server", scope="package", autouse=True)

@@ -14,7 +14,6 @@ from schemes.infrastructure.api.schemes import (
     CapitalSchemeBidStatusDetailsModel,
     CapitalSchemeModel,
     CapitalSchemeOverviewModel,
-    FundingProgrammeItemModel,
 )
 from schemes.oauth import ClientAsyncBaseApp
 from tests.infrastructure.api.conftest import StubRemoteApp
@@ -198,17 +197,6 @@ class TestApiSchemeRepository:
         await schemes.get_by_authority("LIV")
 
         assert remote_app.client_count == 1
-
-
-class TestFundingProgrammeItemModel:
-    def test_to_domain(self) -> None:
-        funding_programme_item_model = FundingProgrammeItemModel(
-            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
-        )
-
-        funding_programme = funding_programme_item_model.to_domain()
-
-        assert funding_programme == FundingProgrammes.ATF4
 
 
 class TestCapitalSchemeOverviewModel:

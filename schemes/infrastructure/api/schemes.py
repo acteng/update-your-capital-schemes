@@ -1,9 +1,9 @@
 import asyncio
 from datetime import datetime
 from enum import Enum
-from typing import Annotated, Any
+from typing import Any
 
-from pydantic import AnyUrl, Field
+from pydantic import AnyUrl
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
@@ -14,6 +14,7 @@ from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.dates import zoned_to_local
+from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
 from schemes.oauth import AsyncBaseApp, ClientAsyncBaseApp
 
 
@@ -82,15 +83,6 @@ class ApiSchemeRepository(SchemeRepository):
     @staticmethod
     def _dummy_request() -> Any:
         return object()
-
-
-class FundingProgrammeItemModel(BaseModel):
-    id: Annotated[AnyUrl, Field(alias="@id")]
-    code: str
-
-    def to_domain(self) -> FundingProgramme:
-        # TODO: is_under_embargo, is_eligible_for_authority_update
-        return FundingProgramme(code=self.code, is_under_embargo=False, is_eligible_for_authority_update=True)
 
 
 class CapitalSchemeOverviewModel(BaseModel):

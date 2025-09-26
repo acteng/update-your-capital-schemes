@@ -116,9 +116,7 @@ class ApiSchemeRepository(SchemeRepository):
             "/funding-programmes", params={"eligible-for-authority-update": "true"}, request=self._dummy_request()
         )
         response.raise_for_status()
-
-        collection_model = CollectionModel[FundingProgrammeItemModel].model_validate(response.json())
-        return collection_model.items
+        return CollectionModel[FundingProgrammeItemModel].model_validate(response.json()).items
 
     async def _get_milestones(self, remote_app: AsyncBaseApp) -> list[str]:
         response = await remote_app.get(
@@ -147,16 +145,12 @@ class ApiSchemeRepository(SchemeRepository):
             request=self._dummy_request(),
         )
         response.raise_for_status()
-
-        collection_model = CollectionModel[AnyUrl].model_validate(response.json())
-        return collection_model
+        return CollectionModel[AnyUrl].model_validate(response.json())
 
     async def _get_capital_scheme_model_by_url(self, remote_app: AsyncBaseApp, url: str) -> CapitalSchemeModel:
         response = await remote_app.get(url, request=self._dummy_request())
         response.raise_for_status()
-
-        capital_scheme_model = CapitalSchemeModel.model_validate(response.json())
-        return capital_scheme_model
+        return CapitalSchemeModel.model_validate(response.json())
 
     # See: https://github.com/authlib/authlib/issues/818#issuecomment-3257950062
     @staticmethod

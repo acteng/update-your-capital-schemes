@@ -6,7 +6,8 @@ from pydantic import AnyUrl
 from respx import MockRouter
 
 from schemes.domain.schemes.funding import BidStatus
-from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes
+from schemes.domain.schemes.overview import FundingProgrammes
+from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
 from schemes.infrastructure.api.schemes import (
     ApiSchemeRepository,
     BidStatusModel,
@@ -27,7 +28,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programme_items_json())
         api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
@@ -75,7 +76,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_sets_bid_status_revision(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programme_items_json())
         api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
@@ -98,7 +99,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_sets_authority_review(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programme_items_json())
         api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
@@ -154,7 +155,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_filters_by_bid_status_funded(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programme_items_json())
         api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting", params={"bid-status": "funded"}).respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
@@ -168,7 +169,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_filters_by_current_milestone_active_and_incomplete(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programme_items_json())
         api_mock.get("/capital-schemes/milestones", params={"active": "true", "complete": "false"}).respond(
             200, json={"items": ["detailed design completed", "construction started"]}
         )
@@ -185,7 +186,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_reuses_client(
         self, api_mock: MockRouter, api_base_url: str, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programmes_json())
+        api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programme_items_json())
         api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
@@ -201,12 +202,14 @@ class TestApiSchemeRepository:
 
 class TestCapitalSchemeOverviewModel:
     def test_to_domain(self) -> None:
-        funding_programmes = {"https://api.example/funding-programmes/ATF4": FundingProgrammes.ATF4}
+        funding_programme_item_model = FundingProgrammeItemModel(
+            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
+        )
         overview_model = CapitalSchemeOverviewModel(
             name="Wirral Package", funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4")
         )
 
-        overview_revision = overview_model.to_domain(funding_programmes)
+        overview_revision = overview_model.to_domain([funding_programme_item_model])
 
         assert (
             overview_revision.name == "Wirral Package" and overview_revision.funding_programme == FundingProgrammes.ATF4
@@ -247,7 +250,9 @@ class TestCapitalSchemeAuthorityReviewModel:
 
 class TestCapitalSchemeModel:
     def test_to_domain(self) -> None:
-        funding_programmes = {"https://api.example/funding-programmes/ATF4": FundingProgrammes.ATF4}
+        funding_programme_item_model = FundingProgrammeItemModel(
+            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
+        )
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
             overview=CapitalSchemeOverviewModel(
@@ -256,7 +261,7 @@ class TestCapitalSchemeModel:
             bid_status_details=_dummy_bid_status_details_model(),
         )
 
-        scheme = capital_scheme_model.to_domain(funding_programmes)
+        scheme = capital_scheme_model.to_domain([funding_programme_item_model])
 
         assert scheme.reference == "ATE00001"
         (overview_revision1,) = scheme.overview.overview_revisions
@@ -274,27 +279,23 @@ class TestCapitalSchemeModel:
             authority_review=CapitalSchemeAuthorityReviewModel(review_date=datetime(2020, 1, 2)),
         )
 
-        scheme = capital_scheme_model.to_domain(_dummy_funding_programmes())
+        scheme = capital_scheme_model.to_domain([_dummy_funding_programme_item_model()])
 
         assert scheme.reference == "ATE00001"
         (authority_review1,) = scheme.reviews.authority_reviews
         assert authority_review1.review_date == datetime(2020, 1, 2)
 
 
-def _dummy_funding_programme_url() -> str:
-    return "https://api.example/funding-programmes/dummy"
+def _dummy_funding_programme_item_model() -> FundingProgrammeItemModel:
+    return FundingProgrammeItemModel(id=AnyUrl("https://api.example/funding-programmes/dummy"), code="dummy")
 
 
-def _dummy_funding_programme() -> FundingProgramme:
-    return FundingProgramme(code="dummy", is_under_embargo=False, is_eligible_for_authority_update=True)
-
-
-def _dummy_funding_programmes() -> dict[str, FundingProgramme]:
-    return {_dummy_funding_programme_url(): _dummy_funding_programme()}
-
-
-def _dummy_funding_programmes_json() -> dict[str, Any]:
-    return {"items": [{"@id": _dummy_funding_programme_url(), "code": _dummy_funding_programme().code}]}
+def _dummy_funding_programme_items_json() -> dict[str, Any]:
+    return {
+        "items": [
+            {"@id": str(_dummy_funding_programme_item_model().id), "code": _dummy_funding_programme_item_model().code}
+        ]
+    }
 
 
 def _dummy_milestones_json() -> dict[str, Any]:
@@ -302,11 +303,11 @@ def _dummy_milestones_json() -> dict[str, Any]:
 
 
 def _dummy_overview_model() -> CapitalSchemeOverviewModel:
-    return CapitalSchemeOverviewModel(name="", funding_programme=AnyUrl(_dummy_funding_programme_url()))
+    return CapitalSchemeOverviewModel(name="", funding_programme=_dummy_funding_programme_item_model().id)
 
 
 def _dummy_overview_json() -> dict[str, Any]:
-    return {"name": "", "fundingProgramme": _dummy_funding_programme_url()}
+    return {"name": "", "fundingProgramme": str(_dummy_funding_programme_item_model().id)}
 
 
 def _dummy_bid_status_details_model() -> CapitalSchemeBidStatusDetailsModel:

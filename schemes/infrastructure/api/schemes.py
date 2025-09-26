@@ -109,12 +109,16 @@ class ApiSchemeRepository(SchemeRepository):
             response.raise_for_status()
 
             collection_model = CollectionModel[AnyUrl].model_validate(response.json())
-            return await asyncio.gather(
+            capital_scheme_models = await asyncio.gather(
                 *[
-                    self._get_by_url(client, str(capital_scheme_url), funding_programme_item_models)
+                    self._get_capital_scheme_model_by_url(client, str(capital_scheme_url))
                     for capital_scheme_url in collection_model.items
                 ]
             )
+            return [
+                capital_scheme_model.to_domain(funding_programme_item_models)
+                for capital_scheme_model in capital_scheme_models
+            ]
 
     async def _get_funding_programme_item_models(self, remote_app: AsyncBaseApp) -> list[FundingProgrammeItemModel]:
         response = await remote_app.get(
@@ -135,14 +139,12 @@ class ApiSchemeRepository(SchemeRepository):
         no_milestone = ""
         return collection_model.items + [no_milestone]
 
-    async def _get_by_url(
-        self, remote_app: AsyncBaseApp, url: str, funding_programme_item_models: list[FundingProgrammeItemModel]
-    ) -> Scheme:
+    async def _get_capital_scheme_model_by_url(self, remote_app: AsyncBaseApp, url: str) -> CapitalSchemeModel:
         response = await remote_app.get(url, request=self._dummy_request())
         response.raise_for_status()
 
         capital_scheme_model = CapitalSchemeModel.model_validate(response.json())
-        return capital_scheme_model.to_domain(funding_programme_item_models)
+        return capital_scheme_model
 
     # See: https://github.com/authlib/authlib/issues/818#issuecomment-3257950062
     @staticmethod

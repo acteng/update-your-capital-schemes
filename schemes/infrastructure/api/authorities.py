@@ -5,6 +5,14 @@ from schemes.infrastructure.api.base import BaseModel
 from schemes.oauth import AsyncBaseApp
 
 
+class AuthorityModel(BaseModel):
+    abbreviation: str
+    full_name: str
+
+    def to_domain(self) -> Authority:
+        return Authority(abbreviation=self.abbreviation, name=self.full_name)
+
+
 class ApiAuthorityRepository(AuthorityRepository):
     def __init__(self, remote_app: AsyncBaseApp):
         self._remote_app = remote_app
@@ -23,11 +31,3 @@ class ApiAuthorityRepository(AuthorityRepository):
     @staticmethod
     def _dummy_request() -> Any:
         return object()
-
-
-class AuthorityModel(BaseModel):
-    abbreviation: str
-    full_name: str
-
-    def to_domain(self) -> Authority:
-        return Authority(abbreviation=self.abbreviation, name=self.full_name)

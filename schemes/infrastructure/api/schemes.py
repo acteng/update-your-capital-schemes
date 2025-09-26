@@ -18,71 +18,6 @@ from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemMo
 from schemes.oauth import AsyncBaseApp, ClientAsyncBaseApp
 
 
-class ApiSchemeRepository(SchemeRepository):
-    def __init__(self, remote_app: ClientAsyncBaseApp):
-        self._remote_app = remote_app
-
-    async def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
-        async with self._remote_app.client() as client:
-            funding_programme_item_models = await self._get_funding_programme_item_models(client)
-            milestones = await self._get_milestones(client)
-
-            response = await client.get(
-                f"/authorities/{authority_abbreviation}/capital-schemes/bid-submitting",
-                params={
-                    "funding-programme-code": [
-                        funding_programme_item_model.code
-                        for funding_programme_item_model in funding_programme_item_models
-                    ],
-                    "bid-status": "funded",
-                    "current-milestone": milestones,
-                },
-                request=self._dummy_request(),
-            )
-            response.raise_for_status()
-
-            collection_model = CollectionModel[AnyUrl].model_validate(response.json())
-            return await asyncio.gather(
-                *[
-                    self._get_by_url(client, str(capital_scheme_url), funding_programme_item_models)
-                    for capital_scheme_url in collection_model.items
-                ]
-            )
-
-    async def _get_funding_programme_item_models(self, remote_app: AsyncBaseApp) -> list[FundingProgrammeItemModel]:
-        response = await remote_app.get(
-            "/funding-programmes", params={"eligible-for-authority-update": "true"}, request=self._dummy_request()
-        )
-        response.raise_for_status()
-
-        collection_model = CollectionModel[FundingProgrammeItemModel].model_validate(response.json())
-        return collection_model.items
-
-    async def _get_milestones(self, remote_app: AsyncBaseApp) -> list[str]:
-        response = await remote_app.get(
-            "/capital-schemes/milestones", params={"active": "true", "complete": "false"}, request=self._dummy_request()
-        )
-        response.raise_for_status()
-
-        collection_model = CollectionModel[str].model_validate(response.json())
-        no_milestone = ""
-        return collection_model.items + [no_milestone]
-
-    async def _get_by_url(
-        self, remote_app: AsyncBaseApp, url: str, funding_programme_item_models: list[FundingProgrammeItemModel]
-    ) -> Scheme:
-        response = await remote_app.get(url, request=self._dummy_request())
-        response.raise_for_status()
-
-        capital_scheme_model = CapitalSchemeModel.model_validate(response.json())
-        return capital_scheme_model.to_domain(funding_programme_item_models)
-
-    # See: https://github.com/authlib/authlib/issues/818#issuecomment-3257950062
-    @staticmethod
-    def _dummy_request() -> Any:
-        return object()
-
-
 class CapitalSchemeOverviewModel(BaseModel):
     name: str
     funding_programme: AnyUrl
@@ -148,3 +83,68 @@ class CapitalSchemeModel(BaseModel):
             scheme.reviews.update_authority_review(self.authority_review.to_domain())
 
         return scheme
+
+
+class ApiSchemeRepository(SchemeRepository):
+    def __init__(self, remote_app: ClientAsyncBaseApp):
+        self._remote_app = remote_app
+
+    async def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
+        async with self._remote_app.client() as client:
+            funding_programme_item_models = await self._get_funding_programme_item_models(client)
+            milestones = await self._get_milestones(client)
+
+            response = await client.get(
+                f"/authorities/{authority_abbreviation}/capital-schemes/bid-submitting",
+                params={
+                    "funding-programme-code": [
+                        funding_programme_item_model.code
+                        for funding_programme_item_model in funding_programme_item_models
+                    ],
+                    "bid-status": "funded",
+                    "current-milestone": milestones,
+                },
+                request=self._dummy_request(),
+            )
+            response.raise_for_status()
+
+            collection_model = CollectionModel[AnyUrl].model_validate(response.json())
+            return await asyncio.gather(
+                *[
+                    self._get_by_url(client, str(capital_scheme_url), funding_programme_item_models)
+                    for capital_scheme_url in collection_model.items
+                ]
+            )
+
+    async def _get_funding_programme_item_models(self, remote_app: AsyncBaseApp) -> list[FundingProgrammeItemModel]:
+        response = await remote_app.get(
+            "/funding-programmes", params={"eligible-for-authority-update": "true"}, request=self._dummy_request()
+        )
+        response.raise_for_status()
+
+        collection_model = CollectionModel[FundingProgrammeItemModel].model_validate(response.json())
+        return collection_model.items
+
+    async def _get_milestones(self, remote_app: AsyncBaseApp) -> list[str]:
+        response = await remote_app.get(
+            "/capital-schemes/milestones", params={"active": "true", "complete": "false"}, request=self._dummy_request()
+        )
+        response.raise_for_status()
+
+        collection_model = CollectionModel[str].model_validate(response.json())
+        no_milestone = ""
+        return collection_model.items + [no_milestone]
+
+    async def _get_by_url(
+        self, remote_app: AsyncBaseApp, url: str, funding_programme_item_models: list[FundingProgrammeItemModel]
+    ) -> Scheme:
+        response = await remote_app.get(url, request=self._dummy_request())
+        response.raise_for_status()
+
+        capital_scheme_model = CapitalSchemeModel.model_validate(response.json())
+        return capital_scheme_model.to_domain(funding_programme_item_models)
+
+    # See: https://github.com/authlib/authlib/issues/818#issuecomment-3257950062
+    @staticmethod
+    def _dummy_request() -> Any:
+        return object()

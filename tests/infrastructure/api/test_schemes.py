@@ -65,7 +65,7 @@ class TestApiSchemeRepository:
                     "name": "Wirral Package",
                     "fundingProgramme": f"{api_base_url}/funding-programmes/ATF4",
                 },
-                "bidStatusDetails": _dummy_bid_status_details_json(),
+                "bidStatusDetails": _build_bid_status_details_json(),
             },
         )
 
@@ -91,7 +91,7 @@ class TestApiSchemeRepository:
             json={
                 "reference": "ATE00001",
                 "overview": _dummy_overview_json(),
-                "bidStatusDetails": {"bidStatus": "funded"},
+                "bidStatusDetails": _build_bid_status_details_json(bid_status="funded"),
             },
         )
 
@@ -114,7 +114,7 @@ class TestApiSchemeRepository:
             json={
                 "reference": "ATE00001",
                 "overview": _dummy_overview_json(),
-                "bidStatusDetails": _dummy_bid_status_details_json(),
+                "bidStatusDetails": _build_bid_status_details_json(),
                 "authorityReview": {"reviewDate": "2020-01-02T00:00:00Z"},
             },
         )
@@ -149,7 +149,7 @@ class TestApiSchemeRepository:
                     "name": "Wirral Package",
                     "fundingProgramme": f"{api_base_url}/funding-programmes/ATF4",
                 },
-                "bidStatusDetails": _dummy_bid_status_details_json(),
+                "bidStatusDetails": _build_bid_status_details_json(),
             },
         )
 
@@ -299,15 +299,15 @@ def _dummy_overview_json() -> dict[str, Any]:
     return {"name": "dummy", "fundingProgramme": "https://api.example/funding-programmes/dummy"}
 
 
-def _dummy_bid_status_details_json() -> dict[str, Any]:
-    return {"bidStatus": "submitted"}
+def _build_bid_status_details_json(bid_status: str | None = None) -> dict[str, Any]:
+    return {"bidStatus": bid_status or "submitted"}
 
 
 def _build_capital_scheme_json(reference: str) -> dict[str, Any]:
     return {
         "reference": reference,
         "overview": _dummy_overview_json(),
-        "bidStatusDetails": _dummy_bid_status_details_json(),
+        "bidStatusDetails": _build_bid_status_details_json(),
     }
 
 

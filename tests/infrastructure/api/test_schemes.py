@@ -29,7 +29,7 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programme_items_json())
-        api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
             json={"items": [f"{api_base_url}/capital-schemes/ATE00001", f"{api_base_url}/capital-schemes/ATE00002"]},
@@ -48,7 +48,7 @@ class TestApiSchemeRepository:
         api_mock.get("/funding-programmes").respond(
             200, json={"items": [{"@id": f"{api_base_url}/funding-programmes/ATF4", "code": "ATF4"}]}
         )
-        api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
@@ -77,7 +77,7 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programme_items_json())
-        api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
@@ -100,7 +100,7 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programme_items_json())
-        api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
@@ -132,7 +132,7 @@ class TestApiSchemeRepository:
                 ]
             },
         )
-        api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get(
             "/authorities/LIV/capital-schemes/bid-submitting", params={"funding-programme-code": ["ATF3", "ATF4"]}
         ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
@@ -156,7 +156,7 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programme_items_json())
-        api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting", params={"bid-status": "funded"}).respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
@@ -187,7 +187,7 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, api_base_url: str, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json=_dummy_funding_programme_items_json())
-        api_mock.get("/capital-schemes/milestones").respond(200, json=_dummy_milestones_json())
+        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
             json={"items": [f"{api_base_url}/capital-schemes/ATE00001", f"{api_base_url}/capital-schemes/ATE00002"]},
@@ -288,10 +288,6 @@ class TestCapitalSchemeModel:
 
 def _dummy_funding_programme_items_json() -> dict[str, Any]:
     return {"items": [{"@id": "https://api.example/funding-programmes/dummy", "code": "dummy"}]}
-
-
-def _dummy_milestones_json() -> dict[str, Any]:
-    return {"items": []}
 
 
 def _dummy_overview_json() -> dict[str, Any]:

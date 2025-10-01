@@ -311,7 +311,9 @@ def _dummy_funding_programme_item_model() -> FundingProgrammeItemModel:
 
 
 def _dummy_overview_model() -> CapitalSchemeOverviewModel:
-    return CapitalSchemeOverviewModel(name="dummy", funding_programme=_dummy_funding_programme_item_model().id)
+    return CapitalSchemeOverviewModel(
+        name="dummy", funding_programme=AnyUrl("https://api.example/funding-programmes/dummy")
+    )
 
 
 def _dummy_bid_status_details_model() -> CapitalSchemeBidStatusDetailsModel:

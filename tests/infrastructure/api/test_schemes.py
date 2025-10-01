@@ -28,7 +28,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json={"items": [_dummy_funding_programme_item_json()]})
+        api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
@@ -46,7 +46,12 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(
-            200, json={"items": [{"@id": f"{api_base_url}/funding-programmes/ATF4", "code": "ATF4"}]}
+            200,
+            json={
+                "items": [
+                    _build_funding_programme_item_json(id_=f"{api_base_url}/funding-programmes/ATF4", code="ATF4")
+                ]
+            },
         )
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
@@ -76,7 +81,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_sets_bid_status_revision(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json={"items": [_dummy_funding_programme_item_json()]})
+        api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
@@ -99,7 +104,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_sets_authority_review(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json={"items": [_dummy_funding_programme_item_json()]})
+        api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
@@ -127,8 +132,8 @@ class TestApiSchemeRepository:
             200,
             json={
                 "items": [
-                    {"@id": f"{api_base_url}/funding-programmes/ATF3", "code": "ATF3"},
-                    {"@id": f"{api_base_url}/funding-programmes/ATF4", "code": "ATF4"},
+                    _build_funding_programme_item_json(id_=f"{api_base_url}/funding-programmes/ATF3", code="ATF3"),
+                    _build_funding_programme_item_json(id_=f"{api_base_url}/funding-programmes/ATF4", code="ATF4"),
                 ]
             },
         )
@@ -155,7 +160,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_filters_by_bid_status_funded(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json={"items": [_dummy_funding_programme_item_json()]})
+        api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting", params={"bid-status": "funded"}).respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
@@ -169,7 +174,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_filters_by_current_milestone_active_and_incomplete(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json={"items": [_dummy_funding_programme_item_json()]})
+        api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
         api_mock.get("/capital-schemes/milestones", params={"active": "true", "complete": "false"}).respond(
             200, json={"items": ["detailed design completed", "construction started"]}
         )
@@ -186,7 +191,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_reuses_client(
         self, api_mock: MockRouter, api_base_url: str, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json={"items": [_dummy_funding_programme_item_json()]})
+        api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
@@ -286,8 +291,8 @@ class TestCapitalSchemeModel:
         assert authority_review1.review_date == datetime(2020, 1, 2)
 
 
-def _dummy_funding_programme_item_json() -> dict[str, Any]:
-    return {"@id": "https://api.example/funding-programmes/dummy", "code": "dummy"}
+def _build_funding_programme_item_json(id_: str | None = None, code: str | None = None) -> dict[str, Any]:
+    return {"@id": id_ or "https://api.example/funding-programmes/dummy", "code": code or "dummy"}
 
 
 def _dummy_overview_json() -> dict[str, Any]:

@@ -61,10 +61,9 @@ class TestApiSchemeRepository:
             200,
             json={
                 "reference": "ATE00001",
-                "overview": {
-                    "name": "Wirral Package",
-                    "fundingProgramme": f"{api_base_url}/funding-programmes/ATF4",
-                },
+                "overview": _build_overview_json(
+                    name="Wirral Package", funding_programme=f"{api_base_url}/funding-programmes/ATF4"
+                ),
                 "bidStatusDetails": _build_bid_status_details_json(),
             },
         )
@@ -90,7 +89,7 @@ class TestApiSchemeRepository:
             200,
             json={
                 "reference": "ATE00001",
-                "overview": _dummy_overview_json(),
+                "overview": _build_overview_json(),
                 "bidStatusDetails": _build_bid_status_details_json(bid_status="funded"),
             },
         )
@@ -113,7 +112,7 @@ class TestApiSchemeRepository:
             200,
             json={
                 "reference": "ATE00001",
-                "overview": _dummy_overview_json(),
+                "overview": _build_overview_json(),
                 "bidStatusDetails": _build_bid_status_details_json(),
                 "authorityReview": {"reviewDate": "2020-01-02T00:00:00Z"},
             },
@@ -145,10 +144,7 @@ class TestApiSchemeRepository:
             200,
             json={
                 "reference": "ATE00001",
-                "overview": {
-                    "name": "Wirral Package",
-                    "fundingProgramme": f"{api_base_url}/funding-programmes/ATF4",
-                },
+                "overview": _build_overview_json(funding_programme=f"{api_base_url}/funding-programmes/ATF4"),
                 "bidStatusDetails": _build_bid_status_details_json(),
             },
         )
@@ -295,8 +291,11 @@ def _build_funding_programme_item_json(id_: str | None = None, code: str | None 
     return {"@id": id_ or "https://api.example/funding-programmes/dummy", "code": code or "dummy"}
 
 
-def _dummy_overview_json() -> dict[str, Any]:
-    return {"name": "dummy", "fundingProgramme": "https://api.example/funding-programmes/dummy"}
+def _build_overview_json(name: str | None = None, funding_programme: str | None = None) -> dict[str, Any]:
+    return {
+        "name": name or "dummy",
+        "fundingProgramme": funding_programme or "https://api.example/funding-programmes/dummy",
+    }
 
 
 def _build_bid_status_details_json(bid_status: str | None = None) -> dict[str, Any]:
@@ -306,7 +305,7 @@ def _build_bid_status_details_json(bid_status: str | None = None) -> dict[str, A
 def _build_capital_scheme_json(reference: str) -> dict[str, Any]:
     return {
         "reference": reference,
-        "overview": _dummy_overview_json(),
+        "overview": _build_overview_json(),
         "bidStatusDetails": _build_bid_status_details_json(),
     }
 

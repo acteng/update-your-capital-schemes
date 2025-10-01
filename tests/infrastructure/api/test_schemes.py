@@ -59,13 +59,9 @@ class TestApiSchemeRepository:
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
-            json={
-                "reference": "ATE00001",
-                "overview": _build_overview_json(
-                    name="Wirral Package", funding_programme=f"{api_base_url}/funding-programmes/ATF4"
-                ),
-                "bidStatusDetails": _build_bid_status_details_json(),
-            },
+            json=_build_capital_scheme_json(
+                reference="ATE00001", name="Wirral Package", funding_programme=f"{api_base_url}/funding-programmes/ATF4"
+            ),
         )
 
         (scheme1,) = await schemes.get_by_authority("LIV")
@@ -86,12 +82,7 @@ class TestApiSchemeRepository:
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
-            200,
-            json={
-                "reference": "ATE00001",
-                "overview": _build_overview_json(),
-                "bidStatusDetails": _build_bid_status_details_json(bid_status="funded"),
-            },
+            200, json=_build_capital_scheme_json(reference="ATE00001", bid_status="funded")
         )
 
         (scheme1,) = await schemes.get_by_authority("LIV")
@@ -109,13 +100,7 @@ class TestApiSchemeRepository:
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
-            200,
-            json={
-                "reference": "ATE00001",
-                "overview": _build_overview_json(),
-                "bidStatusDetails": _build_bid_status_details_json(),
-                "authorityReview": _build_authority_review_json(review_date="2020-01-02T00:00:00Z"),
-            },
+            200, json=_build_capital_scheme_json(reference="ATE00001", review_date="2020-01-02T00:00:00Z")
         )
 
         (scheme1,) = await schemes.get_by_authority("LIV")
@@ -142,11 +127,9 @@ class TestApiSchemeRepository:
         ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
-            json={
-                "reference": "ATE00001",
-                "overview": _build_overview_json(funding_programme=f"{api_base_url}/funding-programmes/ATF4"),
-                "bidStatusDetails": _build_bid_status_details_json(),
-            },
+            json=_build_capital_scheme_json(
+                reference="ATE00001", funding_programme=f"{api_base_url}/funding-programmes/ATF4"
+            ),
         )
 
         (scheme1,) = await schemes.get_by_authority("LIV")
@@ -306,11 +289,18 @@ def _build_authority_review_json(review_date: str | None = None) -> dict[str, An
     return {"reviewDate": review_date or "1970-01-01T00:00:00Z"}
 
 
-def _build_capital_scheme_json(reference: str) -> dict[str, Any]:
+def _build_capital_scheme_json(
+    reference: str | None = None,
+    name: str | None = None,
+    funding_programme: str | None = None,
+    bid_status: str | None = None,
+    review_date: str | None = None,
+) -> dict[str, Any]:
     return {
-        "reference": reference,
-        "overview": _build_overview_json(),
-        "bidStatusDetails": _build_bid_status_details_json(),
+        "reference": reference or "dummy",
+        "overview": _build_overview_json(name=name, funding_programme=funding_programme),
+        "bidStatusDetails": _build_bid_status_details_json(bid_status=bid_status),
+        "authorityReview": _build_authority_review_json(review_date=review_date) if review_date else None,
     }
 
 

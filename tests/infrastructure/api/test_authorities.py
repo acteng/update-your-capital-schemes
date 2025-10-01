@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 from respx import MockRouter
 
@@ -12,7 +14,7 @@ class TestApiAuthorityRepository:
 
     async def test_get_authority(self, api_mock: MockRouter, authorities: ApiAuthorityRepository) -> None:
         api_mock.get("/authorities/LIV").respond(
-            200, json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority"}
+            200, json=_build_authority_json(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
 
         authority = await authorities.get("LIV")
@@ -27,7 +29,9 @@ class TestApiAuthorityRepository:
         self, api_mock: MockRouter, authorities: ApiAuthorityRepository
     ) -> None:
         api_mock.get("/authorities/LIV").respond(
-            200, json={"abbreviation": "LIV", "fullName": "Liverpool City Region Combined Authority", "foo": "bar"}
+            200,
+            json=_build_authority_json(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+            | {"foo": "bar"},
         )
 
         authority = await authorities.get("LIV")
@@ -53,3 +57,7 @@ class TestAuthorityModel:
         authority = authority_model.to_domain()
 
         assert authority.abbreviation == "LIV" and authority.name == "Liverpool City Region Combined Authority"
+
+
+def _build_authority_json(abbreviation: str | None = None, full_name: str | None = None) -> dict[str, Any]:
+    return {"abbreviation": abbreviation or "dummy", "fullName": full_name or "dummy"}

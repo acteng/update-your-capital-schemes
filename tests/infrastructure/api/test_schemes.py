@@ -114,7 +114,7 @@ class TestApiSchemeRepository:
                 "reference": "ATE00001",
                 "overview": _build_overview_json(),
                 "bidStatusDetails": _build_bid_status_details_json(),
-                "authorityReview": {"reviewDate": "2020-01-02T00:00:00Z"},
+                "authorityReview": _build_authority_review_json(review_date="2020-01-02T00:00:00Z"),
             },
         )
 
@@ -300,6 +300,10 @@ def _build_overview_json(name: str | None = None, funding_programme: str | None 
 
 def _build_bid_status_details_json(bid_status: str | None = None) -> dict[str, Any]:
     return {"bidStatus": bid_status or "submitted"}
+
+
+def _build_authority_review_json(review_date: str | None = None) -> dict[str, Any]:
+    return {"reviewDate": review_date or "1970-01-01T00:00:00Z"}
 
 
 def _build_capital_scheme_json(reference: str) -> dict[str, Any]:

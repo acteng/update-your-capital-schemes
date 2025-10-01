@@ -291,7 +291,7 @@ def _dummy_funding_programme_item_json() -> dict[str, Any]:
 
 
 def _dummy_overview_json() -> dict[str, Any]:
-    return {"name": "", "fundingProgramme": "https://api.example/funding-programmes/dummy"}
+    return {"name": "dummy", "fundingProgramme": "https://api.example/funding-programmes/dummy"}
 
 
 def _dummy_bid_status_details_json() -> dict[str, Any]:
@@ -311,7 +311,7 @@ def _dummy_funding_programme_item_model() -> FundingProgrammeItemModel:
 
 
 def _dummy_overview_model() -> CapitalSchemeOverviewModel:
-    return CapitalSchemeOverviewModel(name="", funding_programme=_dummy_funding_programme_item_model().id)
+    return CapitalSchemeOverviewModel(name="dummy", funding_programme=_dummy_funding_programme_item_model().id)
 
 
 def _dummy_bid_status_details_model() -> CapitalSchemeBidStatusDetailsModel:

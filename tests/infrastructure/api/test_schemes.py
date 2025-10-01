@@ -286,10 +286,6 @@ class TestCapitalSchemeModel:
         assert authority_review1.review_date == datetime(2020, 1, 2)
 
 
-def _dummy_funding_programme_item_model() -> FundingProgrammeItemModel:
-    return FundingProgrammeItemModel(id=AnyUrl("https://api.example/funding-programmes/dummy"), code="dummy")
-
-
 def _dummy_funding_programme_items_json() -> dict[str, Any]:
     return {"items": [{"@id": "https://api.example/funding-programmes/dummy", "code": "dummy"}]}
 
@@ -298,16 +294,8 @@ def _dummy_milestones_json() -> dict[str, Any]:
     return {"items": []}
 
 
-def _dummy_overview_model() -> CapitalSchemeOverviewModel:
-    return CapitalSchemeOverviewModel(name="", funding_programme=_dummy_funding_programme_item_model().id)
-
-
 def _dummy_overview_json() -> dict[str, Any]:
     return {"name": "", "fundingProgramme": "https://api.example/funding-programmes/dummy"}
-
-
-def _dummy_bid_status_details_model() -> CapitalSchemeBidStatusDetailsModel:
-    return CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.SUBMITTED)
 
 
 def _dummy_bid_status_details_json() -> dict[str, Any]:
@@ -320,3 +308,15 @@ def _build_capital_scheme_json(reference: str) -> dict[str, Any]:
         "overview": _dummy_overview_json(),
         "bidStatusDetails": _dummy_bid_status_details_json(),
     }
+
+
+def _dummy_funding_programme_item_model() -> FundingProgrammeItemModel:
+    return FundingProgrammeItemModel(id=AnyUrl("https://api.example/funding-programmes/dummy"), code="dummy")
+
+
+def _dummy_overview_model() -> CapitalSchemeOverviewModel:
+    return CapitalSchemeOverviewModel(name="", funding_programme=_dummy_funding_programme_item_model().id)
+
+
+def _dummy_bid_status_details_model() -> CapitalSchemeBidStatusDetailsModel:
+    return CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.SUBMITTED)

@@ -34,8 +34,8 @@ class TestApiSchemeRepository:
             200,
             json={"items": [f"{api_base_url}/capital-schemes/ATE00001", f"{api_base_url}/capital-schemes/ATE00002"]},
         )
-        api_mock.get("/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json("ATE00001"))
-        api_mock.get("/capital-schemes/ATE00002").respond(200, json=_build_capital_scheme_json("ATE00002"))
+        api_mock.get("/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json(reference="ATE00001"))
+        api_mock.get("/capital-schemes/ATE00002").respond(200, json=_build_capital_scheme_json(reference="ATE00002"))
 
         scheme1, scheme2 = await schemes.get_by_authority("LIV")
 
@@ -160,7 +160,7 @@ class TestApiSchemeRepository:
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting", params={"bid-status": "funded"}).respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
         )
-        api_mock.get("/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json("ATE00001"))
+        api_mock.get("/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json(reference="ATE00001"))
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
@@ -177,7 +177,7 @@ class TestApiSchemeRepository:
             "/authorities/LIV/capital-schemes/bid-submitting",
             params={"current-milestone": ["detailed design completed", "construction started", ""]},
         ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
-        api_mock.get("/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json("ATE00001"))
+        api_mock.get("/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json(reference="ATE00001"))
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
@@ -192,8 +192,8 @@ class TestApiSchemeRepository:
             200,
             json={"items": [f"{api_base_url}/capital-schemes/ATE00001", f"{api_base_url}/capital-schemes/ATE00002"]},
         )
-        api_mock.get("/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json("ATE00001"))
-        api_mock.get("/capital-schemes/ATE00002").respond(200, json=_build_capital_scheme_json("ATE00002"))
+        api_mock.get("/capital-schemes/ATE00001").respond(200, json=_build_capital_scheme_json(reference="ATE00001"))
+        api_mock.get("/capital-schemes/ATE00002").respond(200, json=_build_capital_scheme_json(reference="ATE00002"))
 
         await schemes.get_by_authority("LIV")
 

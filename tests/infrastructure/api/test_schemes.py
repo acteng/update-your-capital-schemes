@@ -291,11 +291,7 @@ def _dummy_funding_programme_item_model() -> FundingProgrammeItemModel:
 
 
 def _dummy_funding_programme_items_json() -> dict[str, Any]:
-    return {
-        "items": [
-            {"@id": str(_dummy_funding_programme_item_model().id), "code": _dummy_funding_programme_item_model().code}
-        ]
-    }
+    return {"items": [{"@id": "https://api.example/funding-programmes/dummy", "code": "dummy"}]}
 
 
 def _dummy_milestones_json() -> dict[str, Any]:
@@ -307,7 +303,7 @@ def _dummy_overview_model() -> CapitalSchemeOverviewModel:
 
 
 def _dummy_overview_json() -> dict[str, Any]:
-    return {"name": "", "fundingProgramme": str(_dummy_funding_programme_item_model().id)}
+    return {"name": "", "fundingProgramme": "https://api.example/funding-programmes/dummy"}
 
 
 def _dummy_bid_status_details_model() -> CapitalSchemeBidStatusDetailsModel:

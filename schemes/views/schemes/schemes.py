@@ -160,7 +160,7 @@ async def get(reference: str) -> Response:
     reporting_window_service=ReportingWindowService,
     users=UserRepository,
     authorities=(AuthorityRepository, Migrated),
-    schemes=SchemeRepository,
+    schemes=(SchemeRepository, Migrated),
 )
 async def get_html(
     reference: str,

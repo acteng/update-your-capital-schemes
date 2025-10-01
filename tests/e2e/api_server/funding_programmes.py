@@ -10,6 +10,7 @@ from tests.e2e.api_server.requests import parse_bool
 
 
 class FundingProgrammeModel(BaseModel):
+    id: Annotated[AnyUrl | None, Field(alias="@id")] = None
     code: str
     eligible_for_authority_update: bool
 
@@ -27,6 +28,12 @@ funding_programmes: dict[str, FundingProgrammeModel] = {}
 def add_funding_programmes() -> Response:
     for element in request.get_json():
         funding_programme = FundingProgrammeModel.model_validate(element)
+
+        if not funding_programme.id:
+            funding_programme.id = AnyUrl(
+                url_for("funding_programmes.get_funding_programme", code=funding_programme.code, _external=True)
+            )
+
         funding_programmes[funding_programme.code] = funding_programme
 
     return Response(status=201)

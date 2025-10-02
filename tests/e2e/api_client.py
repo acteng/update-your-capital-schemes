@@ -20,6 +20,7 @@ class CapitalSchemeOverviewModel:
     name: str
     bidSubmittingAuthority: str
     fundingProgramme: str
+    type: str
 
 
 @dataclass(frozen=True)

@@ -19,10 +19,19 @@ from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemMo
 from schemes.oauth import AsyncBaseApp, ClientAsyncBaseApp
 
 
+class CapitalSchemeTypeModel(str, Enum):
+    DEVELOPMENT = "development"
+    CONSTRUCTION = "construction"
+
+    def to_domain(self) -> SchemeType:
+        return SchemeType[self.name]
+
+
 class CapitalSchemeOverviewModel(BaseModel):
     name: str
     bid_submitting_authority: AnyUrl
     funding_programme: AnyUrl
+    type: CapitalSchemeTypeModel
 
     def to_domain(
         self,
@@ -39,7 +48,7 @@ class CapitalSchemeOverviewModel(BaseModel):
                 for authority_model in authority_models
                 if authority_model.id == self.bid_submitting_authority
             ),
-            type_=SchemeType.DEVELOPMENT,
+            type_=self.type.to_domain(),
             funding_programme=next(
                 funding_programme_item_model.to_domain()
                 for funding_programme_item_model in funding_programme_item_models

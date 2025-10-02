@@ -6,7 +6,7 @@ from pydantic import AnyUrl
 from respx import MockRouter
 
 from schemes.domain.schemes.funding import BidStatus
-from schemes.domain.schemes.overview import FundingProgrammes
+from schemes.domain.schemes.overview import FundingProgrammes, SchemeType
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
 from schemes.infrastructure.api.schemes import (
@@ -16,9 +16,22 @@ from schemes.infrastructure.api.schemes import (
     CapitalSchemeBidStatusDetailsModel,
     CapitalSchemeModel,
     CapitalSchemeOverviewModel,
+    CapitalSchemeTypeModel,
 )
 from schemes.oauth import ClientAsyncBaseApp
 from tests.infrastructure.api.conftest import StubRemoteApp
+
+
+class TestCapitalSchemeTypeModel:
+    @pytest.mark.parametrize(
+        "type_model, expected_type",
+        [
+            (CapitalSchemeTypeModel.DEVELOPMENT, SchemeType.DEVELOPMENT),
+            (CapitalSchemeTypeModel.CONSTRUCTION, SchemeType.CONSTRUCTION),
+        ],
+    )
+    def test_to_domain(self, type_model: CapitalSchemeTypeModel, expected_type: SchemeType) -> None:
+        assert type_model.to_domain() == expected_type
 
 
 class TestCapitalSchemeOverviewModel:
@@ -36,6 +49,7 @@ class TestCapitalSchemeOverviewModel:
             name="Wirral Package",
             bid_submitting_authority=AnyUrl("https://api.example/authorities/LIV"),
             funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
+            type=CapitalSchemeTypeModel.CONSTRUCTION,
         )
 
         overview_revision = overview_model.to_domain([authority_model], [funding_programme_item_model])
@@ -44,6 +58,7 @@ class TestCapitalSchemeOverviewModel:
             overview_revision.name == "Wirral Package"
             and overview_revision.authority_abbreviation == "LIV"
             and overview_revision.funding_programme == FundingProgrammes.ATF4
+            and overview_revision.type == SchemeType.CONSTRUCTION
         )
 
 
@@ -106,6 +121,7 @@ class TestCapitalSchemeModel:
                 name="Wirral Package",
                 bid_submitting_authority=AnyUrl("https://api.example/authorities/LIV"),
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
+                type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
             bid_status_details=CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED),
         )
@@ -523,6 +539,7 @@ def _dummy_overview_model() -> CapitalSchemeOverviewModel:
         name="dummy",
         bid_submitting_authority=AnyUrl("https://api.example/authorities/dummy"),
         funding_programme=AnyUrl("https://api.example/funding-programmes/dummy"),
+        type=CapitalSchemeTypeModel.DEVELOPMENT,
     )
 
 
@@ -554,12 +571,16 @@ def _build_authority_json(
 
 
 def _build_overview_json(
-    name: str | None = None, bid_submitting_authority: str | None = None, funding_programme: str | None = None
+    name: str | None = None,
+    bid_submitting_authority: str | None = None,
+    funding_programme: str | None = None,
+    type_: str | None = None,
 ) -> dict[str, Any]:
     return {
         "name": name or "dummy",
         "bidSubmittingAuthority": bid_submitting_authority or "https://api.example/authorities/dummy",
         "fundingProgramme": funding_programme or "https://api.example/funding-programmes/dummy",
+        "type": type_ or "development",
     }
 
 

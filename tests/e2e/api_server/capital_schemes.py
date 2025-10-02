@@ -12,6 +12,7 @@ class CapitalSchemeOverviewModel(BaseModel):
     name: str
     bid_submitting_authority: str
     funding_programme: str
+    type: str
 
 
 class CapitalSchemeBidStatusDetailsModel(BaseModel):

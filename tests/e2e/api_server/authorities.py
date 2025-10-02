@@ -13,6 +13,7 @@ class AuthorityModel(BaseModel):
     id: Annotated[AnyUrl | None, Field(alias="@id")] = None
     abbreviation: str
     full_name: str
+    bid_submitting_capital_schemes: AnyUrl | None = None
 
 
 bp = Blueprint("authorities", __name__)
@@ -27,6 +28,15 @@ def add_authorities() -> Response:
         if not authority.id:
             authority.id = AnyUrl(
                 url_for("authorities.get_authority", abbreviation=authority.abbreviation, _external=True)
+            )
+
+        if not authority.bid_submitting_capital_schemes:
+            authority.bid_submitting_capital_schemes = AnyUrl(
+                url_for(
+                    "authorities.get_authority_bid_submitting_capital_schemes",
+                    abbreviation=authority.abbreviation,
+                    _external=True,
+                )
             )
 
         authorities[authority.abbreviation] = authority

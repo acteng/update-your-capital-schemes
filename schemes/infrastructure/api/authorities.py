@@ -11,6 +11,7 @@ class AuthorityModel(BaseModel):
     id: Annotated[AnyUrl, Field(alias="@id")]
     abbreviation: str
     full_name: str
+    bid_submitting_capital_schemes: AnyUrl
 
     def to_domain(self) -> Authority:
         return Authority(abbreviation=self.abbreviation, name=self.full_name)

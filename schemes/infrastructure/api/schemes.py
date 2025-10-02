@@ -126,15 +126,15 @@ class ApiSchemeRepository(SchemeRepository):
     async def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         async with self._remote_app.client() as client:
             authority_url = f"/authorities/{authority_abbreviation}"
-            authority_models = [await self._get_authority_model_by_url(client, authority_url)]
+            authority_model = await self._get_authority_model_by_url(client, authority_url)
             funding_programme_item_models = await self._get_funding_programme_item_models(client)
             funding_programme_codes = [
                 funding_programme_item_model.code for funding_programme_item_model in funding_programme_item_models
             ]
             milestones = await self._get_milestones(client)
 
-            collection_model = await self._get_capital_scheme_urls_by_authority(
-                client, authority_abbreviation, funding_programme_codes, milestones
+            collection_model = await self._get_capital_scheme_urls_by_url(
+                client, str(authority_model.bid_submitting_capital_schemes), funding_programme_codes, milestones
             )
             capital_scheme_models = await asyncio.gather(
                 *[
@@ -143,7 +143,7 @@ class ApiSchemeRepository(SchemeRepository):
                 ]
             )
             return [
-                capital_scheme_model.to_domain(authority_models, funding_programme_item_models)
+                capital_scheme_model.to_domain([authority_model], funding_programme_item_models)
                 for capital_scheme_model in capital_scheme_models
             ]
 
@@ -169,15 +169,15 @@ class ApiSchemeRepository(SchemeRepository):
         no_milestone = ""
         return collection_model.items + [no_milestone]
 
-    async def _get_capital_scheme_urls_by_authority(
+    async def _get_capital_scheme_urls_by_url(
         self,
         remote_app: AsyncBaseApp,
-        authority_abbreviation: str,
+        url: str,
         funding_programme_codes: list[str],
         current_milestones: list[str],
     ) -> CollectionModel[AnyUrl]:
         response = await remote_app.get(
-            f"/authorities/{authority_abbreviation}/capital-schemes/bid-submitting",
+            url,
             params={
                 "funding-programme-code": funding_programme_codes,
                 "bid-status": "funded",

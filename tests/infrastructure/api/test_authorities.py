@@ -57,6 +57,7 @@ class TestAuthorityModel:
             id=AnyUrl("https://api.example/authorities/LIV"),
             abbreviation="LIV",
             full_name="Liverpool City Region Combined Authority",
+            bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/LIV/capital-schemes/bid-submitting"),
         )
 
         authority = authority_model.to_domain()
@@ -65,10 +66,15 @@ class TestAuthorityModel:
 
 
 def _build_authority_json(
-    id_: str | None = None, abbreviation: str | None = None, full_name: str | None = None
+    id_: str | None = None,
+    abbreviation: str | None = None,
+    full_name: str | None = None,
+    bid_submitting_capital_schemes: str | None = None,
 ) -> dict[str, Any]:
     return {
         "@id": id_ or "https://api.example/authorities/dummy",
         "abbreviation": abbreviation or "dummy",
         "fullName": full_name or "dummy",
+        "bidSubmittingCapitalSchemes": bid_submitting_capital_schemes
+        or "https://api.example/authorities/dummy/capital-schemes/bid-submitting",
     }

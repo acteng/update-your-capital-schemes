@@ -27,6 +27,7 @@ class TestCapitalSchemeOverviewModel:
             id=AnyUrl("https://api.example/authorities/LIV"),
             abbreviation="LIV",
             full_name="Liverpool City Region Combined Authority",
+            bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/LIV/capital-schemes/bid-submitting"),
         )
         funding_programme_item_model = FundingProgrammeItemModel(
             id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
@@ -94,6 +95,7 @@ class TestCapitalSchemeModel:
             id=AnyUrl("https://api.example/authorities/LIV"),
             abbreviation="LIV",
             full_name="Liverpool City Region Combined Authority",
+            bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/LIV/capital-schemes/bid-submitting"),
         )
         funding_programme_item_model = FundingProgrammeItemModel(
             id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
@@ -241,7 +243,12 @@ class TestApiSchemeRepository:
         api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
-            200, json=_build_authority_json(id_=f"{api_base_url}/authorities/LIV", abbreviation="LIV")
+            200,
+            json=_build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
@@ -278,7 +285,12 @@ class TestApiSchemeRepository:
         )
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
-            200, json=_build_authority_json(id_=f"{api_base_url}/authorities/LIV", abbreviation="LIV")
+            200,
+            json=_build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
@@ -309,7 +321,12 @@ class TestApiSchemeRepository:
         api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
-            200, json=_build_authority_json(id_=f"{api_base_url}/authorities/LIV", abbreviation="LIV")
+            200,
+            json=_build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
@@ -333,7 +350,12 @@ class TestApiSchemeRepository:
         api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
-            200, json=_build_authority_json(id_=f"{api_base_url}/authorities/LIV", abbreviation="LIV")
+            200,
+            json=_build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
@@ -367,7 +389,12 @@ class TestApiSchemeRepository:
         )
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
-            200, json=_build_authority_json(id_=f"{api_base_url}/authorities/LIV", abbreviation="LIV")
+            200,
+            json=_build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            ),
         )
         api_mock.get(
             "/authorities/LIV/capital-schemes/bid-submitting", params={"funding-programme-code": ["ATF3", "ATF4"]}
@@ -391,7 +418,12 @@ class TestApiSchemeRepository:
         api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
-            200, json=_build_authority_json(id_=f"{api_base_url}/authorities/LIV", abbreviation="LIV")
+            200,
+            json=_build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting", params={"bid-status": "funded"}).respond(
             200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
@@ -415,7 +447,12 @@ class TestApiSchemeRepository:
             200, json={"items": ["detailed design completed", "construction started"]}
         )
         api_mock.get("/authorities/LIV").respond(
-            200, json=_build_authority_json(id_=f"{api_base_url}/authorities/LIV", abbreviation="LIV")
+            200,
+            json=_build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            ),
         )
         api_mock.get(
             "/authorities/LIV/capital-schemes/bid-submitting",
@@ -438,7 +475,12 @@ class TestApiSchemeRepository:
         api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
         api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
-            200, json=_build_authority_json(id_=f"{api_base_url}/authorities/LIV", abbreviation="LIV")
+            200,
+            json=_build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
@@ -471,12 +513,17 @@ def _build_funding_programme_item_json(id_: str | None = None, code: str | None 
 
 
 def _build_authority_json(
-    id_: str | None = None, abbreviation: str | None = None, full_name: str | None = None
+    id_: str | None = None,
+    abbreviation: str | None = None,
+    full_name: str | None = None,
+    bid_submitting_capital_schemes: str | None = None,
 ) -> dict[str, Any]:
     return {
         "@id": id_ or "https://api.example/authorities/dummy",
         "abbreviation": abbreviation or "dummy",
         "fullName": full_name or "dummy",
+        "bidSubmittingCapitalSchemes": bid_submitting_capital_schemes
+        or "https://api.example/authorities/dummy/capital-schemes/bid-submitting",
     }
 
 
@@ -521,7 +568,12 @@ def _dummy_funding_programme_item_model() -> FundingProgrammeItemModel:
 
 
 def _dummy_authority_model() -> AuthorityModel:
-    return AuthorityModel(id=AnyUrl("https://api.example/authorities/dummy"), abbreviation="dummy", full_name="dummy")
+    return AuthorityModel(
+        id=AnyUrl("https://api.example/authorities/dummy"),
+        abbreviation="dummy",
+        full_name="dummy",
+        bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/dummy/capital-schemes/bid-submitting"),
+    )
 
 
 def _dummy_overview_model() -> CapitalSchemeOverviewModel:

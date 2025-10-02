@@ -1,6 +1,7 @@
 import pytest
 from playwright.sync_api import Page
 
+from schemes.infrastructure.api.schemes import CapitalSchemeTypeModel
 from tests.e2e.api_client import (
     ApiClient,
     AuthorityModel,
@@ -41,6 +42,7 @@ def test_scheme(app_client: AppClient, api_client: ApiClient, oidc_client: OidcC
                 name="Wirral Package",
                 bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
                 fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF2",
+                type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
             bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
             milestones=CapitalSchemeMilestonesModel(currentMilestone=None),

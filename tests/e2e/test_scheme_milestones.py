@@ -131,6 +131,7 @@ def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_change_milestones(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
     app_client.set_clock("2023-08-01T13:00:00")
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
@@ -188,6 +189,40 @@ def test_change_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
                 ),
             ],
         ),
+    )
+    api_client.add_schemes(
+        CapitalSchemeModel(
+            reference="ATE00001",
+            overview=CapitalSchemeOverviewModel(
+                name="Wirral Package",
+                bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
+                fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF2",
+                type="construction",
+            ),
+            bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
+            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            milestones=CapitalSchemeMilestonesModel(
+                currentMilestone=None,
+                items=[
+                    CapitalSchemeMilestoneModel(
+                        milestone="feasibility design completed", observationType="actual", statusDate="2020-11-30"
+                    ),
+                    CapitalSchemeMilestoneModel(
+                        milestone="preliminary design completed", observationType="actual", statusDate="2022-06-30"
+                    ),
+                    CapitalSchemeMilestoneModel(
+                        milestone="detailed design completed", observationType="actual", statusDate="2022-06-30"
+                    ),
+                    CapitalSchemeMilestoneModel(
+                        milestone="construction started", observationType="planned", statusDate="2023-06-05"
+                    ),
+                    CapitalSchemeMilestoneModel(
+                        milestone="construction completed", observationType="planned", statusDate="2023-08-31"
+                    ),
+                ],
+            ),
+            authorityReview=None,
+        )
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 

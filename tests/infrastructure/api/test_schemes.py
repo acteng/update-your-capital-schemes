@@ -37,8 +37,18 @@ class TestCapitalSchemeOverviewModel:
 
 
 class TestBidStatusModel:
-    def test_to_domain(self) -> None:
-        assert BidStatusModel.FUNDED.to_domain() == BidStatus.FUNDED
+    @pytest.mark.parametrize(
+        "bid_status_model, expected_bid_status",
+        [
+            (BidStatusModel.SUBMITTED, BidStatus.SUBMITTED),
+            (BidStatusModel.FUNDED, BidStatus.FUNDED),
+            (BidStatusModel.NOT_FUNDED, BidStatus.NOT_FUNDED),
+            (BidStatusModel.SPLIT, BidStatus.SPLIT),
+            (BidStatusModel.DELETED, BidStatus.DELETED),
+        ],
+    )
+    def test_to_domain(self, bid_status_model: BidStatusModel, expected_bid_status: BidStatus) -> None:
+        assert bid_status_model.to_domain() == expected_bid_status
 
 
 class TestCapitalSchemeBidStatusDetailsModel:

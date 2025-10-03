@@ -7,9 +7,11 @@ from tests.e2e.api_client import (
     AuthorityModel,
     CapitalSchemeAuthorityReviewModel,
     CapitalSchemeBidStatusDetailsModel,
+    CapitalSchemeFinancialModel,
     CapitalSchemeMilestonesModel,
     CapitalSchemeModel,
     CapitalSchemeOverviewModel,
+    CollectionModel,
     FundingProgrammeModel,
 )
 from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, UserRepr
@@ -45,6 +47,7 @@ def test_scheme(app_client: AppClient, api_client: ApiClient, oidc_client: OidcC
                 type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
             bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
+            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CapitalSchemeMilestonesModel(currentMilestone=None),
             authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2023-01-02T00:00:00Z"),
         )

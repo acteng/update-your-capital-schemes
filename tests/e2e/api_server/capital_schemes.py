@@ -19,6 +19,11 @@ class CapitalSchemeBidStatusDetailsModel(BaseModel):
     bid_status: str
 
 
+class CapitalSchemeFinancialModel(BaseModel):
+    type: str
+    amount: int
+
+
 class CapitalSchemeMilestonesModel(BaseModel):
     current_milestone: str | None
 
@@ -31,6 +36,7 @@ class CapitalSchemeModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
     bid_status_details: CapitalSchemeBidStatusDetailsModel
+    financials: CollectionModel[CapitalSchemeFinancialModel]
     milestones: CapitalSchemeMilestonesModel
     authority_review: CapitalSchemeAuthorityReviewModel | None
 

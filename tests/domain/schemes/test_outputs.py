@@ -142,14 +142,14 @@ class TestOutputTypeMeasure:
             ),
             (OutputType.NEW_TEMPORARY_FOOTWAY, OutputMeasure.MILES, OutputTypeMeasure.NEW_TEMPORARY_FOOTWAY_MILES),
             (
-                OutputType.NEW_SHARED_USE_FACILITIES,
+                OutputType.NEW_SHARED_USE_WALKING_AND_CYCLING_FACILITIES,
                 OutputMeasure.MILES,
-                OutputTypeMeasure.NEW_SHARED_USE_FACILITIES_MILES,
+                OutputTypeMeasure.NEW_SHARED_USE_WALKING_AND_CYCLING_FACILITIES_MILES,
             ),
             (
-                OutputType.NEW_SHARED_USE_FACILITIES_WHEELING,
+                OutputType.NEW_SHARED_USE_WALKING_WHEELING_AND_CYCLING_FACILITIES,
                 OutputMeasure.MILES,
-                OutputTypeMeasure.NEW_SHARED_USE_FACILITIES_WHEELING_MILES,
+                OutputTypeMeasure.NEW_SHARED_USE_WALKING_WHEELING_AND_CYCLING_FACILITIES_MILES,
             ),
             (
                 OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE,

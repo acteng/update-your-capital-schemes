@@ -94,8 +94,14 @@ class TestOutputTypeContext:
             (OutputType.NEW_JUNCTION_TREATMENT, "New junction treatment"),
             (OutputType.NEW_PERMANENT_FOOTWAY, "New permanent footway"),
             (OutputType.NEW_TEMPORARY_FOOTWAY, "New temporary footway"),
-            (OutputType.NEW_SHARED_USE_FACILITIES, "New shared use (walking and cycling) facilities"),
-            (OutputType.NEW_SHARED_USE_FACILITIES_WHEELING, "New shared use (walking, wheeling & cycling) facilities"),
+            (
+                OutputType.NEW_SHARED_USE_WALKING_AND_CYCLING_FACILITIES,
+                "New shared use (walking and cycling) facilities",
+            ),
+            (
+                OutputType.NEW_SHARED_USE_WALKING_WHEELING_AND_CYCLING_FACILITIES,
+                "New shared use (walking, wheeling & cycling) facilities",
+            ),
             (OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE, "Improvements to make an existing walking/cycle route safer"),
             (
                 OutputType.AREA_WIDE_TRAFFIC_MANAGEMENT,
@@ -232,8 +238,11 @@ class TestOutputRevisionRepr:
         (OutputType.NEW_JUNCTION_TREATMENT, "new junction treatment"),
         (OutputType.NEW_PERMANENT_FOOTWAY, "new permanent footway"),
         (OutputType.NEW_TEMPORARY_FOOTWAY, "new temporary footway"),
-        (OutputType.NEW_SHARED_USE_FACILITIES, "new shared use (walking and cycling) facilities"),
-        (OutputType.NEW_SHARED_USE_FACILITIES_WHEELING, "new shared use (walking, wheeling & cycling) facilities"),
+        (OutputType.NEW_SHARED_USE_WALKING_AND_CYCLING_FACILITIES, "new shared use (walking and cycling) facilities"),
+        (
+            OutputType.NEW_SHARED_USE_WALKING_WHEELING_AND_CYCLING_FACILITIES,
+            "new shared use (walking, wheeling & cycling) facilities",
+        ),
         (OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE, "improvements to make an existing walking/cycle route safer"),
         (
             OutputType.AREA_WIDE_TRAFFIC_MANAGEMENT,

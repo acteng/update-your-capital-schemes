@@ -25,8 +25,8 @@ class OutputTypeContext:
         OutputType.NEW_JUNCTION_TREATMENT: "New junction treatment",
         OutputType.NEW_PERMANENT_FOOTWAY: "New permanent footway",
         OutputType.NEW_TEMPORARY_FOOTWAY: "New temporary footway",
-        OutputType.NEW_SHARED_USE_FACILITIES: "New shared use (walking and cycling) facilities",
-        OutputType.NEW_SHARED_USE_FACILITIES_WHEELING: "New shared use (walking, wheeling & cycling) facilities",
+        OutputType.NEW_SHARED_USE_WALKING_AND_CYCLING_FACILITIES: "New shared use (walking and cycling) facilities",
+        OutputType.NEW_SHARED_USE_WALKING_WHEELING_AND_CYCLING_FACILITIES: "New shared use (walking, wheeling & cycling) facilities",
         OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE: "Improvements to make an existing walking/cycle route safer",
         OutputType.AREA_WIDE_TRAFFIC_MANAGEMENT: "Area-wide traffic management (including by TROs (both permanent and experimental))",
         OutputType.BUS_PRIORITY_MEASURES: "Bus priority measures that also enable active travel (for example, bus gates)",
@@ -112,8 +112,8 @@ class OutputTypeRepr(str, Enum):
     NEW_JUNCTION_TREATMENT = "new junction treatment"
     NEW_PERMANENT_FOOTWAY = "new permanent footway"
     NEW_TEMPORARY_FOOTWAY = "new temporary footway"
-    NEW_SHARED_USE_FACILITIES = "new shared use (walking and cycling) facilities"
-    NEW_SHARED_USE_FACILITIES_WHEELING = "new shared use (walking, wheeling & cycling) facilities"
+    NEW_SHARED_USE_WALKING_AND_CYCLING_FACILITIES = "new shared use (walking and cycling) facilities"
+    NEW_SHARED_USE_WALKING_WHEELING_AND_CYCLING_FACILITIES = "new shared use (walking, wheeling & cycling) facilities"
     IMPROVEMENTS_TO_EXISTING_ROUTE = "improvements to make an existing walking/cycle route safer"
     AREA_WIDE_TRAFFIC_MANAGEMENT = "area-wide traffic management (including by TROs (both permanent and experimental))"
     BUS_PRIORITY_MEASURES = "bus priority measures that also enable active travel (for example, bus gates)"
@@ -143,8 +143,8 @@ class OutputTypeRepr(str, Enum):
             OutputType.NEW_JUNCTION_TREATMENT: OutputTypeRepr.NEW_JUNCTION_TREATMENT,
             OutputType.NEW_PERMANENT_FOOTWAY: OutputTypeRepr.NEW_PERMANENT_FOOTWAY,
             OutputType.NEW_TEMPORARY_FOOTWAY: OutputTypeRepr.NEW_TEMPORARY_FOOTWAY,
-            OutputType.NEW_SHARED_USE_FACILITIES: OutputTypeRepr.NEW_SHARED_USE_FACILITIES,
-            OutputType.NEW_SHARED_USE_FACILITIES_WHEELING: OutputTypeRepr.NEW_SHARED_USE_FACILITIES_WHEELING,
+            OutputType.NEW_SHARED_USE_WALKING_AND_CYCLING_FACILITIES: OutputTypeRepr.NEW_SHARED_USE_WALKING_AND_CYCLING_FACILITIES,
+            OutputType.NEW_SHARED_USE_WALKING_WHEELING_AND_CYCLING_FACILITIES: OutputTypeRepr.NEW_SHARED_USE_WALKING_WHEELING_AND_CYCLING_FACILITIES,
             OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE: OutputTypeRepr.IMPROVEMENTS_TO_EXISTING_ROUTE,
             OutputType.AREA_WIDE_TRAFFIC_MANAGEMENT: OutputTypeRepr.AREA_WIDE_TRAFFIC_MANAGEMENT,
             OutputType.BUS_PRIORITY_MEASURES: OutputTypeRepr.BUS_PRIORITY_MEASURES,

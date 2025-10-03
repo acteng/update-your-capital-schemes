@@ -59,7 +59,7 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
             ),
             bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
-            milestones=CapitalSchemeMilestonesModel(currentMilestone="detailed design completed"),
+            milestones=CapitalSchemeMilestonesModel(currentMilestone="detailed design completed", items=[]),
             authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T00:00:00Z"),
         )
     )

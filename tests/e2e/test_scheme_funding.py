@@ -68,7 +68,7 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
                     CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
                 ]
             ),
-            milestones=CapitalSchemeMilestonesModel(currentMilestone=None),
+            milestones=CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
             authorityReview=None,
         )
     )
@@ -108,7 +108,7 @@ def test_change_spend_to_date(
                     CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
                 ]
             ),
-            milestones=CapitalSchemeMilestonesModel(currentMilestone=None),
+            milestones=CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
             authorityReview=None,
         )
     )

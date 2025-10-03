@@ -72,7 +72,7 @@ class TestAuthenticated:
                 ),
                 bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
                 financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
-                milestones=CapitalSchemeMilestonesModel(currentMilestone="detailed design completed"),
+                milestones=CapitalSchemeMilestonesModel(currentMilestone="detailed design completed", items=[]),
                 authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T00:00:00Z"),
             ),
             CapitalSchemeModel(
@@ -85,7 +85,7 @@ class TestAuthenticated:
                 ),
                 bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
                 financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
-                milestones=CapitalSchemeMilestonesModel(currentMilestone="construction started"),
+                milestones=CapitalSchemeMilestonesModel(currentMilestone="construction started", items=[]),
                 authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-03T00:00:00Z"),
             ),
         )

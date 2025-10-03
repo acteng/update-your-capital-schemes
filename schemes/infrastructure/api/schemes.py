@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 from typing import Any
 
@@ -8,6 +8,7 @@ from pydantic import AnyUrl
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType
+from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.overview import OverviewRevision, SchemeType
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
@@ -16,6 +17,7 @@ from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.dates import zoned_to_local
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel, FundingProgrammeModel
+from schemes.infrastructure.api.observation_types import ObservationTypeModel
 from schemes.oauth import AsyncBaseApp, ClientAsyncBaseApp
 
 
@@ -104,6 +106,41 @@ class CapitalSchemeFinancialModel(BaseModel):
         )
 
 
+class MilestoneModel(str, Enum):
+    PUBLIC_CONSULTATION_COMPLETED = "public consultation completed"
+    FEASIBILITY_DESIGN_STARTED = "feasibility design started"
+    FEASIBILITY_DESIGN_COMPLETED = "feasibility design completed"
+    PRELIMINARY_DESIGN_COMPLETED = "preliminary design completed"
+    OUTLINE_DESIGN_COMPLETED = "outline design completed"
+    DETAILED_DESIGN_COMPLETED = "detailed design completed"
+    CONSTRUCTION_STARTED = "construction started"
+    CONSTRUCTION_COMPLETED = "construction completed"
+    FUNDING_COMPLETED = "funding completed"
+    NOT_PROGRESSED = "not progressed"
+    SUPERSEDED = "superseded"
+    REMOVED = "removed"
+
+    def to_domain(self) -> Milestone:
+        return Milestone[self.name]
+
+
+class CapitalSchemeMilestoneModel(BaseModel):
+    milestone: MilestoneModel
+    observation_type: ObservationTypeModel
+    status_date: date
+
+    def to_domain(self) -> MilestoneRevision:
+        # TODO: id, effective, source
+        return MilestoneRevision(
+            id_=None,
+            effective=DateRange(date_from=datetime.min, date_to=None),
+            milestone=self.milestone.to_domain(),
+            observation_type=self.observation_type.to_domain(),
+            status_date=self.status_date,
+            source=DataSource.PULSE_5,
+        )
+
+
 class CapitalSchemeAuthorityReviewModel(BaseModel):
     review_date: datetime
 
@@ -117,6 +154,7 @@ class CapitalSchemeModel(BaseModel):
     overview: CapitalSchemeOverviewModel
     bid_status_details: CapitalSchemeBidStatusDetailsModel
     financials: CollectionModel[CapitalSchemeFinancialModel]
+    milestones: CollectionModel[CapitalSchemeMilestoneModel]
     authority_review: CapitalSchemeAuthorityReviewModel | None = None
 
     def to_domain(
@@ -129,6 +167,7 @@ class CapitalSchemeModel(BaseModel):
         scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
         scheme.funding.update_bid_status(self.bid_status_details.to_domain())
         scheme.funding.update_financials(*[financial.to_domain() for financial in self.financials.items])
+        scheme.milestones.update_milestones(*[milestone.to_domain() for milestone in self.milestones.items])
 
         if self.authority_review:
             scheme.reviews.update_authority_review(self.authority_review.to_domain())

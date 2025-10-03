@@ -87,9 +87,30 @@ def test_change_spend_to_date(
     app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.set_clock("2020-01-31T13:00:00")
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
+    api_client.add_schemes(
+        CapitalSchemeModel(
+            reference="ATE00001",
+            overview=CapitalSchemeOverviewModel(
+                name="Wirral Package",
+                bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
+                fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF2",
+                type="construction",
+            ),
+            bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
+            financials=CollectionModel[CapitalSchemeFinancialModel](
+                items=[
+                    CapitalSchemeFinancialModel(type="funding allocation", amount=100_000),
+                    CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
+                ]
+            ),
+            milestones=CapitalSchemeMilestonesModel(currentMilestone=None),
+            authorityReview=None,
+        )
+    )
     app_client.add_schemes(
         build_scheme(
             id_=1,

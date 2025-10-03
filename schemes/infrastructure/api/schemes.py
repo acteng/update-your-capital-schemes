@@ -7,7 +7,7 @@ from pydantic import AnyUrl
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import BidStatus, BidStatusRevision
+from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType
 from schemes.domain.schemes.overview import OverviewRevision, SchemeType
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
@@ -78,6 +78,32 @@ class CapitalSchemeBidStatusDetailsModel(BaseModel):
         )
 
 
+class FinancialTypeModel(str, Enum):
+    EXPECTED_COST = "expected cost"
+    ACTUAL_COST = "actual cost"
+    FUNDING_ALLOCATION = "funding allocation"
+    SPEND_TO_DATE = "spend to date"
+    FUNDING_REQUEST = "funding request"
+
+    def to_domain(self) -> FinancialType:
+        return FinancialType[self.name]
+
+
+class CapitalSchemeFinancialModel(BaseModel):
+    type: FinancialTypeModel
+    amount: int
+
+    def to_domain(self) -> FinancialRevision:
+        # TODO: id, effective, source
+        return FinancialRevision(
+            id_=None,
+            effective=DateRange(date_from=datetime.min, date_to=None),
+            type_=self.type.to_domain(),
+            amount=self.amount,
+            source=DataSource.PULSE_5,
+        )
+
+
 class CapitalSchemeAuthorityReviewModel(BaseModel):
     review_date: datetime
 
@@ -90,6 +116,7 @@ class CapitalSchemeModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
     bid_status_details: CapitalSchemeBidStatusDetailsModel
+    financials: CollectionModel[CapitalSchemeFinancialModel]
     authority_review: CapitalSchemeAuthorityReviewModel | None = None
 
     def to_domain(
@@ -101,6 +128,7 @@ class CapitalSchemeModel(BaseModel):
         scheme = Scheme(id_=0, reference=self.reference)
         scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
         scheme.funding.update_bid_status(self.bid_status_details.to_domain())
+        scheme.funding.update_financials(*[financial.to_domain() for financial in self.financials.items])
 
         if self.authority_review:
             scheme.reviews.update_authority_review(self.authority_review.to_domain())

@@ -5,18 +5,21 @@ import pytest
 from pydantic import AnyUrl
 from respx import MockRouter
 
-from schemes.domain.schemes.funding import BidStatus
+from schemes.domain.schemes.funding import BidStatus, FinancialType
 from schemes.domain.schemes.overview import FundingProgrammes, SchemeType
 from schemes.infrastructure.api.authorities import AuthorityModel
+from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
 from schemes.infrastructure.api.schemes import (
     ApiSchemeRepository,
     BidStatusModel,
     CapitalSchemeAuthorityReviewModel,
     CapitalSchemeBidStatusDetailsModel,
+    CapitalSchemeFinancialModel,
     CapitalSchemeModel,
     CapitalSchemeOverviewModel,
     CapitalSchemeTypeModel,
+    FinancialTypeModel,
 )
 from schemes.oauth import ClientAsyncBaseApp
 from tests.infrastructure.api.conftest import StubRemoteApp
@@ -86,6 +89,30 @@ class TestCapitalSchemeBidStatusDetailsModel:
         assert bid_status_revision.status == BidStatus.FUNDED
 
 
+class TestFinancialTypeModel:
+    @pytest.mark.parametrize(
+        "type_model, expected_type",
+        [
+            (FinancialTypeModel.EXPECTED_COST, FinancialType.EXPECTED_COST),
+            (FinancialTypeModel.ACTUAL_COST, FinancialType.ACTUAL_COST),
+            (FinancialTypeModel.FUNDING_ALLOCATION, FinancialType.FUNDING_ALLOCATION),
+            (FinancialTypeModel.SPEND_TO_DATE, FinancialType.SPEND_TO_DATE),
+            (FinancialTypeModel.FUNDING_REQUEST, FinancialType.FUNDING_REQUEST),
+        ],
+    )
+    def test_to_domain(self, type_model: FinancialTypeModel, expected_type: FinancialType) -> None:
+        assert type_model.to_domain() == expected_type
+
+
+class TestCapitalSchemeFinancialModel:
+    def test_to_domain(self) -> None:
+        financial_model = CapitalSchemeFinancialModel(type=FinancialTypeModel.FUNDING_ALLOCATION, amount=100_000)
+
+        financial_revision = financial_model.to_domain()
+
+        assert financial_revision.type == FinancialType.FUNDING_ALLOCATION and financial_revision.amount == 100_000
+
+
 class TestCapitalSchemeAuthorityReviewModel:
     def test_to_domain(self) -> None:
         authority_review_model = CapitalSchemeAuthorityReviewModel(review_date=datetime(2020, 1, 2))
@@ -123,6 +150,7 @@ class TestCapitalSchemeModel:
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
                 type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
+            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             bid_status_details=CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED),
         )
 
@@ -137,13 +165,35 @@ class TestCapitalSchemeModel:
         )
         (bid_status_revision1,) = scheme.funding.bid_status_revisions
         assert bid_status_revision1.status == BidStatus.FUNDED
+        assert not scheme.funding.financial_revisions
         assert not scheme.reviews.authority_reviews
+
+    def test_to_domain_sets_financial_revisions(self) -> None:
+        capital_scheme_model = CapitalSchemeModel(
+            reference="ATE00001",
+            overview=_dummy_overview_model(),
+            bid_status_details=_dummy_bid_status_details_model(),
+            financials=CollectionModel[CapitalSchemeFinancialModel](
+                items=[
+                    CapitalSchemeFinancialModel(type=FinancialTypeModel.FUNDING_ALLOCATION, amount=100_000),
+                    CapitalSchemeFinancialModel(type=FinancialTypeModel.SPEND_TO_DATE, amount=50_000),
+                ]
+            ),
+        )
+
+        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+
+        assert scheme.reference == "ATE00001"
+        (financial_revision1, financial_revision2) = scheme.funding.financial_revisions
+        assert financial_revision1.type == FinancialType.FUNDING_ALLOCATION and financial_revision1.amount == 100_000
+        assert financial_revision2.type == FinancialType.SPEND_TO_DATE and financial_revision2.amount == 50_000
 
     def test_to_domain_sets_authority_review(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
             overview=_dummy_overview_model(),
             bid_status_details=_dummy_bid_status_details_model(),
+            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             authority_review=CapitalSchemeAuthorityReviewModel(review_date=datetime(2020, 1, 2)),
         )
 
@@ -211,6 +261,29 @@ class TestApiSchemeRepository:
         assert scheme and scheme.reference == "ATE00001"
         (bid_status_revision1,) = scheme.funding.bid_status_revisions
         assert bid_status_revision1.status == BidStatus.FUNDED
+
+    async def test_get_scheme_sets_financial_revisions(
+        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
+    ) -> None:
+        api_mock.get(_build_funding_programme_json()["@id"]).respond(200, json=_build_funding_programme_json())
+        api_mock.get(_build_authority_json()["@id"]).respond(200, json=_build_authority_json())
+        api_mock.get("/capital-schemes/ATE00001").respond(
+            200,
+            json=_build_capital_scheme_json(
+                reference="ATE00001",
+                financials=[
+                    _build_financial_json(type_="funding allocation", amount=100_000),
+                    _build_financial_json(type_="spend to date", amount=50_000),
+                ],
+            ),
+        )
+
+        scheme = await schemes.get("ATE00001")
+
+        assert scheme and scheme.reference == "ATE00001"
+        (financial_revision1, financial_revision2) = scheme.funding.financial_revisions
+        assert financial_revision1.type == FinancialType.FUNDING_ALLOCATION and financial_revision1.amount == 100_000
+        assert financial_revision2.type == FinancialType.SPEND_TO_DATE and financial_revision2.amount == 50_000
 
     async def test_get_scheme_sets_authority_review(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
@@ -360,6 +433,41 @@ class TestApiSchemeRepository:
         assert scheme1.reference == "ATE00001"
         (bid_status_revision1,) = scheme1.funding.bid_status_revisions
         assert bid_status_revision1.status == BidStatus.FUNDED
+
+    async def test_get_schemes_by_authority_sets_financial_revisions(
+        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
+    ) -> None:
+        api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
+        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
+        api_mock.get("/authorities/LIV").respond(
+            200,
+            json=_build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            ),
+        )
+        api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
+            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
+        )
+        api_mock.get("/capital-schemes/ATE00001").respond(
+            200,
+            json=_build_capital_scheme_json(
+                reference="ATE00001",
+                bid_submitting_authority=f"{api_base_url}/authorities/LIV",
+                financials=[
+                    _build_financial_json(type_="funding allocation", amount=100_000),
+                    _build_financial_json(type_="spend to date", amount=50_000),
+                ],
+            ),
+        )
+
+        (scheme1,) = await schemes.get_by_authority("LIV")
+
+        assert scheme1.reference == "ATE00001"
+        (financial_revision1, financial_revision2) = scheme1.funding.financial_revisions
+        assert financial_revision1.type == FinancialType.FUNDING_ALLOCATION and financial_revision1.amount == 100_000
+        assert financial_revision2.type == FinancialType.SPEND_TO_DATE and financial_revision2.amount == 50_000
 
     async def test_get_schemes_by_authority_sets_authority_review(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
@@ -588,6 +696,10 @@ def _build_bid_status_details_json(bid_status: str | None = None) -> dict[str, A
     return {"bidStatus": bid_status or "submitted"}
 
 
+def _build_financial_json(type_: str | None = None, amount: int | None = None) -> dict[str, Any]:
+    return {"type": type_ or "expected cost", "amount": amount or 0}
+
+
 def _build_authority_review_json(review_date: str | None = None) -> dict[str, Any]:
     return {"reviewDate": review_date or "1970-01-01T00:00:00Z"}
 
@@ -598,6 +710,7 @@ def _build_capital_scheme_json(
     bid_submitting_authority: str | None = None,
     funding_programme: str | None = None,
     bid_status: str | None = None,
+    financials: list[dict[str, Any]] | None = None,
     review_date: str | None = None,
 ) -> dict[str, Any]:
     return {
@@ -606,5 +719,6 @@ def _build_capital_scheme_json(
             name=name, bid_submitting_authority=bid_submitting_authority, funding_programme=funding_programme
         ),
         "bidStatusDetails": _build_bid_status_details_json(bid_status=bid_status),
+        "financials": {"items": financials or []},
         "authorityReview": _build_authority_review_json(review_date=review_date) if review_date else None,
     }

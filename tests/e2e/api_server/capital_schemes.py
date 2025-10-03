@@ -24,7 +24,13 @@ class CapitalSchemeFinancialModel(BaseModel):
     amount: int
 
 
-class CapitalSchemeMilestonesModel(BaseModel):
+class CapitalSchemeMilestoneModel(BaseModel):
+    milestone: str
+    observation_type: str
+    status_date: str
+
+
+class CapitalSchemeMilestonesModel(CollectionModel[CapitalSchemeMilestoneModel]):
     current_milestone: str | None
 
 

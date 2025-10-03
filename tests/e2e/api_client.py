@@ -40,7 +40,14 @@ class CapitalSchemeFinancialModel:
 
 
 @dataclass(frozen=True)
-class CapitalSchemeMilestonesModel:
+class CapitalSchemeMilestoneModel:
+    milestone: str
+    observationType: str
+    statusDate: str
+
+
+@dataclass(frozen=True)
+class CapitalSchemeMilestonesModel(CollectionModel[CapitalSchemeMilestoneModel]):
     currentMilestone: str | None
 
 

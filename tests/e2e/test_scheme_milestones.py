@@ -1,4 +1,5 @@
 import pytest
+from flask import Flask
 from playwright.sync_api import Page
 
 from tests.e2e.api_client import (
@@ -129,7 +130,9 @@ def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_change_milestones(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
+def test_change_milestones(
+    app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+) -> None:
     app_client.set_clock("2023-08-01T13:00:00")
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
@@ -235,10 +238,12 @@ def test_change_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
     )
 
     assert scheme_page.heading.text == "Wirral Package"
-    assert (
-        scheme_page.milestones.milestones["Construction started"].actual == "5 Jul 2023"
-        and scheme_page.milestones.milestones["Construction completed"].planned == "30 Sep 2023"
-    )
+    # TODO: reinstate when https://github.com/acteng/update-your-capital-schemes/issues/190 resolved
+    if "ATE_URL" not in app.config:
+        assert (
+            scheme_page.milestones.milestones["Construction started"].actual == "5 Jul 2023"
+            and scheme_page.milestones.milestones["Construction completed"].planned == "30 Sep 2023"
+        )
     assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
         MilestoneRevisionRepr(
             id=1,

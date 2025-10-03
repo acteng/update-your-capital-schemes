@@ -78,7 +78,7 @@ class TestCapitalSchemeModel:
             overview=CapitalSchemeOverviewModel(
                 name="Wirral Package", funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4")
             ),
-            bid_status_details=_dummy_bid_status_details_model(),
+            bid_status_details=CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED),
         )
 
         scheme = capital_scheme_model.to_domain([funding_programme_item_model])
@@ -89,6 +89,8 @@ class TestCapitalSchemeModel:
             overview_revision1.name == "Wirral Package"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
         )
+        (bid_status_revision1,) = scheme.funding.bid_status_revisions
+        assert bid_status_revision1.status == BidStatus.FUNDED
         assert not scheme.reviews.authority_reviews
 
     def test_to_domain_sets_authority_review(self) -> None:

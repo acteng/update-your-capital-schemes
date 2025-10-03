@@ -10,6 +10,7 @@ from tests.e2e.api_client import (
     CapitalSchemeMilestoneModel,
     CapitalSchemeMilestonesModel,
     CapitalSchemeModel,
+    CapitalSchemeOutputModel,
     CapitalSchemeOverviewModel,
     CollectionModel,
     FundingProgrammeModel,
@@ -68,6 +69,7 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
                     )
                 ],
             ),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
             authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T00:00:00Z"),
         )
     )

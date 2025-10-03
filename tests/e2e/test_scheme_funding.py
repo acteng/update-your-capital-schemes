@@ -9,6 +9,7 @@ from tests.e2e.api_client import (
     CapitalSchemeFinancialModel,
     CapitalSchemeMilestonesModel,
     CapitalSchemeModel,
+    CapitalSchemeOutputModel,
     CapitalSchemeOverviewModel,
     CollectionModel,
     FundingProgrammeModel,
@@ -69,6 +70,7 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
                 ]
             ),
             milestones=CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
             authorityReview=None,
         )
     )
@@ -109,6 +111,7 @@ def test_change_spend_to_date(
                 ]
             ),
             milestones=CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
             authorityReview=None,
         )
     )

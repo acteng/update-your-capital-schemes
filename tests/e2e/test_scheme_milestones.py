@@ -10,6 +10,7 @@ from tests.e2e.api_client import (
     CapitalSchemeMilestoneModel,
     CapitalSchemeMilestonesModel,
     CapitalSchemeModel,
+    CapitalSchemeOutputModel,
     CapitalSchemeOverviewModel,
     CollectionModel,
     FundingProgrammeModel,
@@ -113,6 +114,7 @@ def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
                     ),
                 ],
             ),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
             authorityReview=None,
         )
     )
@@ -224,6 +226,7 @@ def test_change_milestones(
                     ),
                 ],
             ),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
             authorityReview=None,
         )
     )

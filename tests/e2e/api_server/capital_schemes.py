@@ -34,6 +34,13 @@ class CapitalSchemeMilestonesModel(CollectionModel[CapitalSchemeMilestoneModel])
     current_milestone: str | None
 
 
+class CapitalSchemeOutputModel(BaseModel):
+    type: str
+    measure: str
+    observation_type: str
+    value: str
+
+
 class CapitalSchemeAuthorityReviewModel(BaseModel):
     review_date: str
 
@@ -44,6 +51,7 @@ class CapitalSchemeModel(BaseModel):
     bid_status_details: CapitalSchemeBidStatusDetailsModel
     financials: CollectionModel[CapitalSchemeFinancialModel]
     milestones: CapitalSchemeMilestonesModel
+    outputs: CollectionModel[CapitalSchemeOutputModel]
     authority_review: CapitalSchemeAuthorityReviewModel | None
 
 

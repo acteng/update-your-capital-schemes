@@ -1,4 +1,5 @@
 from datetime import date, datetime, timezone
+from decimal import Decimal
 from typing import Any
 
 import pytest
@@ -8,6 +9,7 @@ from respx import MockRouter
 from schemes.domain.schemes.funding import BidStatus, FinancialType
 from schemes.domain.schemes.milestones import Milestone
 from schemes.domain.schemes.observations import ObservationType
+from schemes.domain.schemes.outputs import OutputMeasure, OutputType, OutputTypeMeasure
 from schemes.domain.schemes.overview import FundingProgrammes, SchemeType
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.collections import CollectionModel
@@ -21,10 +23,13 @@ from schemes.infrastructure.api.schemes import (
     CapitalSchemeFinancialModel,
     CapitalSchemeMilestoneModel,
     CapitalSchemeModel,
+    CapitalSchemeOutputModel,
     CapitalSchemeOverviewModel,
     CapitalSchemeTypeModel,
     FinancialTypeModel,
     MilestoneModel,
+    OutputMeasureModel,
+    OutputTypeModel,
 )
 from schemes.oauth import ClientAsyncBaseApp
 from tests.infrastructure.api.conftest import StubRemoteApp
@@ -157,6 +162,87 @@ class TestCapitalSchemeMilestoneModel:
         )
 
 
+class TestOutputTypeModel:
+    @pytest.mark.parametrize(
+        "type_model, expected_type",
+        [
+            (OutputTypeModel.NEW_SEGREGATED_CYCLING_FACILITY, OutputType.NEW_SEGREGATED_CYCLING_FACILITY),
+            (
+                OutputTypeModel.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY,
+                OutputType.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY,
+            ),
+            (OutputTypeModel.NEW_JUNCTION_TREATMENT, OutputType.NEW_JUNCTION_TREATMENT),
+            (OutputTypeModel.NEW_PERMANENT_FOOTWAY, OutputType.NEW_PERMANENT_FOOTWAY),
+            (OutputTypeModel.NEW_TEMPORARY_FOOTWAY, OutputType.NEW_TEMPORARY_FOOTWAY),
+            (
+                OutputTypeModel.NEW_SHARED_USE_WALKING_AND_CYCLING_FACILITIES,
+                OutputType.NEW_SHARED_USE_WALKING_AND_CYCLING_FACILITIES,
+            ),
+            (
+                OutputTypeModel.NEW_SHARED_USE_WALKING_WHEELING_AND_CYCLING_FACILITIES,
+                OutputType.NEW_SHARED_USE_WALKING_WHEELING_AND_CYCLING_FACILITIES,
+            ),
+            (OutputTypeModel.IMPROVEMENTS_TO_EXISTING_ROUTE, OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE),
+            (OutputTypeModel.AREA_WIDE_TRAFFIC_MANAGEMENT, OutputType.AREA_WIDE_TRAFFIC_MANAGEMENT),
+            (OutputTypeModel.BUS_PRIORITY_MEASURES, OutputType.BUS_PRIORITY_MEASURES),
+            (OutputTypeModel.SECURE_CYCLE_PARKING, OutputType.SECURE_CYCLE_PARKING),
+            (OutputTypeModel.NEW_ROAD_CROSSINGS, OutputType.NEW_ROAD_CROSSINGS),
+            (
+                OutputTypeModel.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY,
+                OutputType.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY,
+            ),
+            (OutputTypeModel.SCHOOL_STREETS, OutputType.SCHOOL_STREETS),
+            (OutputTypeModel.UPGRADES_TO_EXISTING_FACILITIES, OutputType.UPGRADES_TO_EXISTING_FACILITIES),
+            (OutputTypeModel.E_SCOOTER_TRIALS, OutputType.E_SCOOTER_TRIALS),
+            (OutputTypeModel.PARK_AND_CYCLE_STRIDE_FACILITIES, OutputType.PARK_AND_CYCLE_STRIDE_FACILITIES),
+            (OutputTypeModel.TRAFFIC_CALMING, OutputType.TRAFFIC_CALMING),
+            (OutputTypeModel.WIDENING_EXISTING_FOOTWAY, OutputType.WIDENING_EXISTING_FOOTWAY),
+            (OutputTypeModel.OTHER_INTERVENTIONS, OutputType.OTHER_INTERVENTIONS),
+        ],
+    )
+    def test_to_domain(self, type_model: OutputTypeModel, expected_type: OutputType) -> None:
+        assert type_model.to_domain() == expected_type
+
+
+class TestOutputMeasureModel:
+    @pytest.mark.parametrize(
+        "measure_model, expected_measure",
+        [
+            (OutputMeasureModel.MILES, OutputMeasure.MILES),
+            (OutputMeasureModel.NUMBER_OF_JUNCTIONS, OutputMeasure.NUMBER_OF_JUNCTIONS),
+            (OutputMeasureModel.SIZE_OF_AREA, OutputMeasure.SIZE_OF_AREA),
+            (OutputMeasureModel.NUMBER_OF_PARKING_SPACES, OutputMeasure.NUMBER_OF_PARKING_SPACES),
+            (OutputMeasureModel.NUMBER_OF_CROSSINGS, OutputMeasure.NUMBER_OF_CROSSINGS),
+            (OutputMeasureModel.NUMBER_OF_SCHOOL_STREETS, OutputMeasure.NUMBER_OF_SCHOOL_STREETS),
+            (OutputMeasureModel.NUMBER_OF_TRIALS, OutputMeasure.NUMBER_OF_TRIALS),
+            (OutputMeasureModel.NUMBER_OF_BUS_GATES, OutputMeasure.NUMBER_OF_BUS_GATES),
+            (OutputMeasureModel.NUMBER_OF_UPGRADES, OutputMeasure.NUMBER_OF_UPGRADES),
+            (OutputMeasureModel.NUMBER_OF_CHILDREN_AFFECTED, OutputMeasure.NUMBER_OF_CHILDREN_AFFECTED),
+            (OutputMeasureModel.NUMBER_OF_MEASURES_PLANNED, OutputMeasure.NUMBER_OF_MEASURES_PLANNED),
+        ],
+    )
+    def test_to_domain(self, measure_model: OutputMeasureModel, expected_measure: OutputMeasure) -> None:
+        assert measure_model.to_domain() == expected_measure
+
+
+class TestCapitalSchemeOutputModel:
+    def test_to_domain(self) -> None:
+        output_model = CapitalSchemeOutputModel(
+            type=OutputTypeModel.WIDENING_EXISTING_FOOTWAY,
+            measure=OutputMeasureModel.MILES,
+            observation_type=ObservationTypeModel.ACTUAL,
+            value=Decimal(1.5),
+        )
+
+        output_revision = output_model.to_domain()
+
+        assert (
+            output_revision.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
+            and output_revision.observation_type == ObservationType.ACTUAL
+            and output_revision.value == Decimal(1.5)
+        )
+
+
 class TestCapitalSchemeAuthorityReviewModel:
     def test_to_domain(self) -> None:
         authority_review_model = CapitalSchemeAuthorityReviewModel(review_date=datetime(2020, 1, 2))
@@ -196,6 +282,7 @@ class TestCapitalSchemeModel:
             ),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
             bid_status_details=CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED),
         )
 
@@ -212,6 +299,7 @@ class TestCapitalSchemeModel:
         assert bid_status_revision1.status == BidStatus.FUNDED
         assert not scheme.funding.financial_revisions
         assert not scheme.milestones.milestone_revisions
+        assert not scheme.outputs.output_revisions
         assert not scheme.reviews.authority_reviews
 
     def test_to_domain_sets_financial_revisions(self) -> None:
@@ -226,6 +314,7 @@ class TestCapitalSchemeModel:
                 ]
             ),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
@@ -255,6 +344,7 @@ class TestCapitalSchemeModel:
                     ),
                 ]
             ),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
@@ -272,6 +362,46 @@ class TestCapitalSchemeModel:
             and milestone_revision2.status_date == date(2020, 3, 1)
         )
 
+    def test_to_domain_sets_output_revisions(self) -> None:
+        capital_scheme_model = CapitalSchemeModel(
+            reference="ATE00001",
+            overview=_dummy_overview_model(),
+            bid_status_details=_dummy_bid_status_details_model(),
+            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
+            outputs=CollectionModel[CapitalSchemeOutputModel](
+                items=[
+                    CapitalSchemeOutputModel(
+                        type=OutputTypeModel.WIDENING_EXISTING_FOOTWAY,
+                        measure=OutputMeasureModel.MILES,
+                        observation_type=ObservationTypeModel.ACTUAL,
+                        value=Decimal(1.5),
+                    ),
+                    CapitalSchemeOutputModel(
+                        type=OutputTypeModel.NEW_SEGREGATED_CYCLING_FACILITY,
+                        measure=OutputMeasureModel.MILES,
+                        observation_type=ObservationTypeModel.ACTUAL,
+                        value=Decimal(2),
+                    ),
+                ]
+            ),
+        )
+
+        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+
+        assert scheme.reference == "ATE00001"
+        (output_revision1, output_revision2) = scheme.outputs.output_revisions
+        assert (
+            output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
+            and output_revision1.observation_type == ObservationType.ACTUAL
+            and output_revision1.value == Decimal(1.5)
+        )
+        assert (
+            output_revision2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
+            and output_revision2.observation_type == ObservationType.ACTUAL
+            and output_revision2.value == Decimal(2)
+        )
+
     def test_to_domain_sets_authority_review(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
@@ -279,6 +409,7 @@ class TestCapitalSchemeModel:
             bid_status_details=_dummy_bid_status_details_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
             authority_review=CapitalSchemeAuthorityReviewModel(review_date=datetime(2020, 1, 2)),
         )
 
@@ -403,6 +534,44 @@ class TestApiSchemeRepository:
             milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
+        )
+
+    async def test_get_scheme_sets_output_revisions(
+        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
+    ) -> None:
+        api_mock.get(_build_funding_programme_json()["@id"]).respond(200, json=_build_funding_programme_json())
+        api_mock.get(_build_authority_json()["@id"]).respond(200, json=_build_authority_json())
+        api_mock.get("/capital-schemes/ATE00001").respond(
+            200,
+            json=_build_capital_scheme_json(
+                reference="ATE00001",
+                outputs=[
+                    _build_output_json(
+                        type_="widening existing footway", measure="miles", observation_type="actual", value="1.500000"
+                    ),
+                    _build_output_json(
+                        type_="new segregated cycling facility",
+                        measure="miles",
+                        observation_type="actual",
+                        value="2.000000",
+                    ),
+                ],
+            ),
+        )
+
+        scheme = await schemes.get("ATE00001")
+
+        assert scheme and scheme.reference == "ATE00001"
+        (output_revision1, output_revision2) = scheme.outputs.output_revisions
+        assert (
+            output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
+            and output_revision1.observation_type == ObservationType.ACTUAL
+            and output_revision1.value == Decimal(1.5)
+        )
+        assert (
+            output_revision2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
+            and output_revision2.observation_type == ObservationType.ACTUAL
+            and output_revision2.value == Decimal(2)
         )
 
     async def test_get_scheme_sets_authority_review(
@@ -634,6 +803,56 @@ class TestApiSchemeRepository:
             milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
+        )
+
+    async def test_get_schemes_by_authority_sets_output_revisions(
+        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
+    ) -> None:
+        api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
+        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
+        api_mock.get("/authorities/LIV").respond(
+            200,
+            json=_build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            ),
+        )
+        api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
+            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
+        )
+        api_mock.get("/capital-schemes/ATE00001").respond(
+            200,
+            json=_build_capital_scheme_json(
+                reference="ATE00001",
+                bid_submitting_authority=f"{api_base_url}/authorities/LIV",
+                outputs=[
+                    _build_output_json(
+                        type_="widening existing footway", measure="miles", observation_type="actual", value="1.500000"
+                    ),
+                    _build_output_json(
+                        type_="new segregated cycling facility",
+                        measure="miles",
+                        observation_type="actual",
+                        value="2.000000",
+                    ),
+                ],
+            ),
+        )
+
+        (scheme1,) = await schemes.get_by_authority("LIV")
+
+        assert scheme1.reference == "ATE00001"
+        (output_revision1, output_revision2) = scheme1.outputs.output_revisions
+        assert (
+            output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
+            and output_revision1.observation_type == ObservationType.ACTUAL
+            and output_revision1.value == Decimal(1.5)
+        )
+        assert (
+            output_revision2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
+            and output_revision2.observation_type == ObservationType.ACTUAL
+            and output_revision2.value == Decimal(2)
         )
 
     async def test_get_schemes_by_authority_sets_authority_review(
@@ -877,6 +1096,17 @@ def _build_milestone_json(
     }
 
 
+def _build_output_json(
+    type_: str | None = None, measure: str | None = None, observation_type: str | None = None, value: str | None = None
+) -> dict[str, Any]:
+    return {
+        "type": type_ or "new segregated cycling facility",
+        "measure": measure or "miles",
+        "observationType": observation_type or "planned",
+        "value": value or "0.000000",
+    }
+
+
 def _build_authority_review_json(review_date: str | None = None) -> dict[str, Any]:
     return {"reviewDate": review_date or "1970-01-01T00:00:00Z"}
 
@@ -889,6 +1119,7 @@ def _build_capital_scheme_json(
     bid_status: str | None = None,
     financials: list[dict[str, Any]] | None = None,
     milestones: list[dict[str, Any]] | None = None,
+    outputs: list[dict[str, Any]] | None = None,
     review_date: str | None = None,
 ) -> dict[str, Any]:
     return {
@@ -899,5 +1130,6 @@ def _build_capital_scheme_json(
         "bidStatusDetails": _build_bid_status_details_json(bid_status=bid_status),
         "financials": {"items": financials or []},
         "milestones": {"items": milestones or []},
+        "outputs": {"items": outputs or []},
         "authorityReview": _build_authority_review_json(review_date=review_date) if review_date else None,
     }

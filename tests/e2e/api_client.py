@@ -52,6 +52,14 @@ class CapitalSchemeMilestonesModel(CollectionModel[CapitalSchemeMilestoneModel])
 
 
 @dataclass(frozen=True)
+class CapitalSchemeOutputModel:
+    type: str
+    measure: str
+    observationType: str
+    value: str
+
+
+@dataclass(frozen=True)
 class CapitalSchemeAuthorityReviewModel:
     reviewDate: str
 
@@ -63,6 +71,7 @@ class CapitalSchemeModel:
     bidStatusDetails: CapitalSchemeBidStatusDetailsModel
     financials: CollectionModel[CapitalSchemeFinancialModel]
     milestones: CapitalSchemeMilestonesModel
+    outputs: CollectionModel[CapitalSchemeOutputModel]
     authorityReview: CapitalSchemeAuthorityReviewModel | None
 
 

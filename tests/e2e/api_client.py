@@ -43,7 +43,7 @@ class CapitalSchemeModel:
     overview: CapitalSchemeOverviewModel
     bidStatusDetails: CapitalSchemeBidStatusDetailsModel
     milestones: CapitalSchemeMilestonesModel
-    authorityReview: CapitalSchemeAuthorityReviewModel
+    authorityReview: CapitalSchemeAuthorityReviewModel | None
 
 
 @dataclass(frozen=True)

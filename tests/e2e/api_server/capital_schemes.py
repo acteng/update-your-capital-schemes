@@ -31,7 +31,7 @@ class CapitalSchemeModel(BaseModel):
     overview: CapitalSchemeOverviewModel
     bid_status_details: CapitalSchemeBidStatusDetailsModel
     milestones: CapitalSchemeMilestonesModel
-    authority_review: CapitalSchemeAuthorityReviewModel
+    authority_review: CapitalSchemeAuthorityReviewModel | None
 
 
 class MilestoneModel(BaseModel):

@@ -20,6 +20,92 @@ from schemes.oauth import ClientAsyncBaseApp
 from tests.infrastructure.api.conftest import StubRemoteApp
 
 
+class TestCapitalSchemeOverviewModel:
+    def test_to_domain(self) -> None:
+        funding_programme_item_model = FundingProgrammeItemModel(
+            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
+        )
+        overview_model = CapitalSchemeOverviewModel(
+            name="Wirral Package", funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4")
+        )
+
+        overview_revision = overview_model.to_domain([funding_programme_item_model])
+
+        assert (
+            overview_revision.name == "Wirral Package" and overview_revision.funding_programme == FundingProgrammes.ATF4
+        )
+
+
+class TestBidStatusModel:
+    def test_to_domain(self) -> None:
+        assert BidStatusModel.FUNDED.to_domain() == BidStatus.FUNDED
+
+
+class TestCapitalSchemeBidStatusDetailsModel:
+    def test_to_domain(self) -> None:
+        bid_status_details_model = CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED)
+
+        bid_status_revision = bid_status_details_model.to_domain()
+
+        assert bid_status_revision.status == BidStatus.FUNDED
+
+
+class TestCapitalSchemeAuthorityReviewModel:
+    def test_to_domain(self) -> None:
+        authority_review_model = CapitalSchemeAuthorityReviewModel(review_date=datetime(2020, 1, 2))
+
+        authority_review = authority_review_model.to_domain()
+
+        assert authority_review.review_date == datetime(2020, 1, 2)
+
+    def test_to_domain_converts_dates_to_local_europe_london(self) -> None:
+        authority_review_model = CapitalSchemeAuthorityReviewModel(
+            review_date=datetime(2020, 6, 1, 12, tzinfo=timezone.utc)
+        )
+
+        authority_review = authority_review_model.to_domain()
+
+        assert authority_review.review_date == datetime(2020, 6, 1, 13)
+
+
+class TestCapitalSchemeModel:
+    def test_to_domain(self) -> None:
+        funding_programme_item_model = FundingProgrammeItemModel(
+            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
+        )
+        capital_scheme_model = CapitalSchemeModel(
+            reference="ATE00001",
+            overview=CapitalSchemeOverviewModel(
+                name="Wirral Package", funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4")
+            ),
+            bid_status_details=_dummy_bid_status_details_model(),
+        )
+
+        scheme = capital_scheme_model.to_domain([funding_programme_item_model])
+
+        assert scheme.reference == "ATE00001"
+        (overview_revision1,) = scheme.overview.overview_revisions
+        assert (
+            overview_revision1.name == "Wirral Package"
+            and overview_revision1.funding_programme == FundingProgrammes.ATF4
+        )
+        assert not scheme.reviews.authority_reviews
+
+    def test_to_domain_sets_authority_review(self) -> None:
+        capital_scheme_model = CapitalSchemeModel(
+            reference="ATE00001",
+            overview=_dummy_overview_model(),
+            bid_status_details=_dummy_bid_status_details_model(),
+            authority_review=CapitalSchemeAuthorityReviewModel(review_date=datetime(2020, 1, 2)),
+        )
+
+        scheme = capital_scheme_model.to_domain([_dummy_funding_programme_item_model()])
+
+        assert scheme.reference == "ATE00001"
+        (authority_review1,) = scheme.reviews.authority_reviews
+        assert authority_review1.review_date == datetime(2020, 1, 2)
+
+
 class TestApiSchemeRepository:
     @pytest.fixture(name="schemes")
     def schemes_fixture(self, remote_app: ClientAsyncBaseApp) -> ApiSchemeRepository:
@@ -182,92 +268,6 @@ class TestApiSchemeRepository:
         await schemes.get_by_authority("LIV")
 
         assert remote_app.client_count == 1
-
-
-class TestCapitalSchemeOverviewModel:
-    def test_to_domain(self) -> None:
-        funding_programme_item_model = FundingProgrammeItemModel(
-            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
-        )
-        overview_model = CapitalSchemeOverviewModel(
-            name="Wirral Package", funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4")
-        )
-
-        overview_revision = overview_model.to_domain([funding_programme_item_model])
-
-        assert (
-            overview_revision.name == "Wirral Package" and overview_revision.funding_programme == FundingProgrammes.ATF4
-        )
-
-
-class TestBidStatusModel:
-    def test_to_domain(self) -> None:
-        assert BidStatusModel.FUNDED.to_domain() == BidStatus.FUNDED
-
-
-class TestCapitalSchemeBidStatusDetailsModel:
-    def test_to_domain(self) -> None:
-        bid_status_details_model = CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED)
-
-        bid_status_revision = bid_status_details_model.to_domain()
-
-        assert bid_status_revision.status == BidStatus.FUNDED
-
-
-class TestCapitalSchemeAuthorityReviewModel:
-    def test_to_domain(self) -> None:
-        authority_review_model = CapitalSchemeAuthorityReviewModel(review_date=datetime(2020, 1, 2))
-
-        authority_review = authority_review_model.to_domain()
-
-        assert authority_review.review_date == datetime(2020, 1, 2)
-
-    def test_to_domain_converts_dates_to_local_europe_london(self) -> None:
-        authority_review_model = CapitalSchemeAuthorityReviewModel(
-            review_date=datetime(2020, 6, 1, 12, tzinfo=timezone.utc)
-        )
-
-        authority_review = authority_review_model.to_domain()
-
-        assert authority_review.review_date == datetime(2020, 6, 1, 13)
-
-
-class TestCapitalSchemeModel:
-    def test_to_domain(self) -> None:
-        funding_programme_item_model = FundingProgrammeItemModel(
-            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
-        )
-        capital_scheme_model = CapitalSchemeModel(
-            reference="ATE00001",
-            overview=CapitalSchemeOverviewModel(
-                name="Wirral Package", funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4")
-            ),
-            bid_status_details=_dummy_bid_status_details_model(),
-        )
-
-        scheme = capital_scheme_model.to_domain([funding_programme_item_model])
-
-        assert scheme.reference == "ATE00001"
-        (overview_revision1,) = scheme.overview.overview_revisions
-        assert (
-            overview_revision1.name == "Wirral Package"
-            and overview_revision1.funding_programme == FundingProgrammes.ATF4
-        )
-        assert not scheme.reviews.authority_reviews
-
-    def test_to_domain_sets_authority_review(self) -> None:
-        capital_scheme_model = CapitalSchemeModel(
-            reference="ATE00001",
-            overview=_dummy_overview_model(),
-            bid_status_details=_dummy_bid_status_details_model(),
-            authority_review=CapitalSchemeAuthorityReviewModel(review_date=datetime(2020, 1, 2)),
-        )
-
-        scheme = capital_scheme_model.to_domain([_dummy_funding_programme_item_model()])
-
-        assert scheme.reference == "ATE00001"
-        (authority_review1,) = scheme.reviews.authority_reviews
-        assert authority_review1.review_date == datetime(2020, 1, 2)
 
 
 def _build_funding_programme_item_json(id_: str | None = None, code: str | None = None) -> dict[str, Any]:

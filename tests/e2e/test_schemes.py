@@ -1,7 +1,6 @@
 import pytest
 from playwright.sync_api import Page
 
-from schemes.infrastructure.api.schemes import CapitalSchemeTypeModel
 from tests.e2e.api_client import (
     ApiClient,
     AuthorityModel,
@@ -69,7 +68,7 @@ class TestAuthenticated:
                     name="Wirral Package",
                     bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
                     fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF3",
-                    type=CapitalSchemeTypeModel.CONSTRUCTION,
+                    type="construction",
                 ),
                 bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
                 financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
@@ -83,7 +82,7 @@ class TestAuthenticated:
                     name="School Streets",
                     bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
                     fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF4",
-                    type=CapitalSchemeTypeModel.CONSTRUCTION,
+                    type="construction",
                 ),
                 bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
                 financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),

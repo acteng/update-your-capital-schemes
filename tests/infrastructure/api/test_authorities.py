@@ -1,6 +1,7 @@
 from typing import Any
 
 import pytest
+from pydantic import AnyUrl
 from respx import MockRouter
 
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository, AuthorityModel
@@ -52,12 +53,28 @@ class TestApiAuthorityRepository:
 
 class TestAuthorityModel:
     def test_to_domain(self) -> None:
-        authority_model = AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+        authority_model = AuthorityModel(
+            id=AnyUrl("https://api.example/authorities/LIV"),
+            abbreviation="LIV",
+            full_name="Liverpool City Region Combined Authority",
+            bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/LIV/capital-schemes/bid-submitting"),
+        )
 
         authority = authority_model.to_domain()
 
         assert authority.abbreviation == "LIV" and authority.name == "Liverpool City Region Combined Authority"
 
 
-def _build_authority_json(abbreviation: str | None = None, full_name: str | None = None) -> dict[str, Any]:
-    return {"abbreviation": abbreviation or "dummy", "fullName": full_name or "dummy"}
+def _build_authority_json(
+    id_: str | None = None,
+    abbreviation: str | None = None,
+    full_name: str | None = None,
+    bid_submitting_capital_schemes: str | None = None,
+) -> dict[str, Any]:
+    return {
+        "@id": id_ or "https://api.example/authorities/dummy",
+        "abbreviation": abbreviation or "dummy",
+        "fullName": full_name or "dummy",
+        "bidSubmittingCapitalSchemes": bid_submitting_capital_schemes
+        or "https://api.example/authorities/dummy/capital-schemes/bid-submitting",
+    }

@@ -12,14 +12,33 @@ class CapitalSchemeOverviewModel(BaseModel):
     name: str
     bid_submitting_authority: str
     funding_programme: str
+    type: str
 
 
 class CapitalSchemeBidStatusDetailsModel(BaseModel):
     bid_status: str
 
 
-class CapitalSchemeMilestonesModel(BaseModel):
+class CapitalSchemeFinancialModel(BaseModel):
+    type: str
+    amount: int
+
+
+class CapitalSchemeMilestoneModel(BaseModel):
+    milestone: str
+    observation_type: str
+    status_date: str
+
+
+class CapitalSchemeMilestonesModel(CollectionModel[CapitalSchemeMilestoneModel]):
     current_milestone: str | None
+
+
+class CapitalSchemeOutputModel(BaseModel):
+    type: str
+    measure: str
+    observation_type: str
+    value: str
 
 
 class CapitalSchemeAuthorityReviewModel(BaseModel):
@@ -30,7 +49,9 @@ class CapitalSchemeModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
     bid_status_details: CapitalSchemeBidStatusDetailsModel
+    financials: CollectionModel[CapitalSchemeFinancialModel]
     milestones: CapitalSchemeMilestonesModel
+    outputs: CollectionModel[CapitalSchemeOutputModel]
     authority_review: CapitalSchemeAuthorityReviewModel | None
 
 

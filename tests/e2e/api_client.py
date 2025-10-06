@@ -4,6 +4,11 @@ import requests
 
 
 @dataclass(frozen=True)
+class CollectionModel[T]:
+    items: list[T]
+
+
+@dataclass(frozen=True)
 class FundingProgrammeModel:
     code: str
     eligibleForAuthorityUpdate: bool
@@ -20,6 +25,7 @@ class CapitalSchemeOverviewModel:
     name: str
     bidSubmittingAuthority: str
     fundingProgramme: str
+    type: str
 
 
 @dataclass(frozen=True)
@@ -28,8 +34,29 @@ class CapitalSchemeBidStatusDetailsModel:
 
 
 @dataclass(frozen=True)
-class CapitalSchemeMilestonesModel:
+class CapitalSchemeFinancialModel:
+    type: str
+    amount: int
+
+
+@dataclass(frozen=True)
+class CapitalSchemeMilestoneModel:
+    milestone: str
+    observationType: str
+    statusDate: str
+
+
+@dataclass(frozen=True)
+class CapitalSchemeMilestonesModel(CollectionModel[CapitalSchemeMilestoneModel]):
     currentMilestone: str | None
+
+
+@dataclass(frozen=True)
+class CapitalSchemeOutputModel:
+    type: str
+    measure: str
+    observationType: str
+    value: str
 
 
 @dataclass(frozen=True)
@@ -42,7 +69,9 @@ class CapitalSchemeModel:
     reference: str
     overview: CapitalSchemeOverviewModel
     bidStatusDetails: CapitalSchemeBidStatusDetailsModel
+    financials: CollectionModel[CapitalSchemeFinancialModel]
     milestones: CapitalSchemeMilestonesModel
+    outputs: CollectionModel[CapitalSchemeOutputModel]
     authorityReview: CapitalSchemeAuthorityReviewModel | None
 
 

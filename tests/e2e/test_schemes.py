@@ -1,14 +1,18 @@
 import pytest
 from playwright.sync_api import Page
 
+from schemes.infrastructure.api.schemes import CapitalSchemeTypeModel
 from tests.e2e.api_client import (
     ApiClient,
     AuthorityModel,
     CapitalSchemeAuthorityReviewModel,
     CapitalSchemeBidStatusDetailsModel,
+    CapitalSchemeFinancialModel,
     CapitalSchemeMilestonesModel,
     CapitalSchemeModel,
+    CapitalSchemeOutputModel,
     CapitalSchemeOverviewModel,
+    CollectionModel,
     FundingProgrammeModel,
     MilestoneModel,
 )
@@ -65,9 +69,12 @@ class TestAuthenticated:
                     name="Wirral Package",
                     bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
                     fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF3",
+                    type=CapitalSchemeTypeModel.CONSTRUCTION,
                 ),
                 bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
-                milestones=CapitalSchemeMilestonesModel(currentMilestone="detailed design completed"),
+                financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+                milestones=CapitalSchemeMilestonesModel(currentMilestone="detailed design completed", items=[]),
+                outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
                 authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T00:00:00Z"),
             ),
             CapitalSchemeModel(
@@ -76,9 +83,12 @@ class TestAuthenticated:
                     name="School Streets",
                     bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
                     fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF4",
+                    type=CapitalSchemeTypeModel.CONSTRUCTION,
                 ),
                 bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
-                milestones=CapitalSchemeMilestonesModel(currentMilestone="construction started"),
+                financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+                milestones=CapitalSchemeMilestonesModel(currentMilestone="construction started", items=[]),
+                outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
                 authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-03T00:00:00Z"),
             ),
         )

@@ -1,4 +1,6 @@
-from typing import Any
+from typing import Annotated, Any
+
+from pydantic import AnyUrl, Field
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.infrastructure.api.base import BaseModel
@@ -6,8 +8,10 @@ from schemes.oauth import AsyncBaseApp
 
 
 class AuthorityModel(BaseModel):
+    id: Annotated[AnyUrl, Field(alias="@id")]
     abbreviation: str
     full_name: str
+    bid_submitting_capital_schemes: AnyUrl
 
     def to_domain(self) -> Authority:
         return Authority(abbreviation=self.abbreviation, name=self.full_name)

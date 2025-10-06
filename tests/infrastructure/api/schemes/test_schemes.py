@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 
@@ -15,36 +15,15 @@ from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
+from schemes.infrastructure.api.schemes.authority_reviews import CapitalSchemeAuthorityReviewModel
 from schemes.infrastructure.api.schemes.bid_statuses import BidStatusModel, CapitalSchemeBidStatusDetailsModel
 from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel, FinancialTypeModel
 from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel, MilestoneModel
 from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel, OutputMeasureModel, OutputTypeModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel, CapitalSchemeTypeModel
-from schemes.infrastructure.api.schemes.schemes import (
-    ApiSchemeRepository,
-    CapitalSchemeAuthorityReviewModel,
-    CapitalSchemeModel,
-)
+from schemes.infrastructure.api.schemes.schemes import ApiSchemeRepository, CapitalSchemeModel
 from schemes.oauth import ClientAsyncBaseApp
 from tests.infrastructure.api.conftest import StubRemoteApp
-
-
-class TestCapitalSchemeAuthorityReviewModel:
-    def test_to_domain(self) -> None:
-        authority_review_model = CapitalSchemeAuthorityReviewModel(review_date=datetime(2020, 1, 2))
-
-        authority_review = authority_review_model.to_domain()
-
-        assert authority_review.review_date == datetime(2020, 1, 2)
-
-    def test_to_domain_converts_dates_to_local_europe_london(self) -> None:
-        authority_review_model = CapitalSchemeAuthorityReviewModel(
-            review_date=datetime(2020, 6, 1, 12, tzinfo=timezone.utc)
-        )
-
-        authority_review = authority_review_model.to_domain()
-
-        assert authority_review.review_date == datetime(2020, 6, 1, 13)
 
 
 class TestCapitalSchemeModel:

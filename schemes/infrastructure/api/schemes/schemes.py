@@ -1,31 +1,20 @@
 import asyncio
-from datetime import datetime
 from typing import Any
 
 from pydantic import AnyUrl
 
-from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
-from schemes.infrastructure.api.dates import zoned_to_local
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel, FundingProgrammeModel
+from schemes.infrastructure.api.schemes.authority_reviews import CapitalSchemeAuthorityReviewModel
 from schemes.infrastructure.api.schemes.bid_statuses import CapitalSchemeBidStatusDetailsModel
 from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel
 from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel
 from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel
 from schemes.oauth import AsyncBaseApp, ClientAsyncBaseApp
-
-
-class CapitalSchemeAuthorityReviewModel(BaseModel):
-    review_date: datetime
-
-    def to_domain(self) -> AuthorityReview:
-        # TODO: id, source
-        return AuthorityReview(id_=None, review_date=zoned_to_local(self.review_date), source=DataSource.PULSE_5)
 
 
 class CapitalSchemeModel(BaseModel):

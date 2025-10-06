@@ -16,45 +16,20 @@ from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
 from schemes.infrastructure.api.schemes.bid_statuses import BidStatusModel, CapitalSchemeBidStatusDetailsModel
+from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel, FinancialTypeModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel, CapitalSchemeTypeModel
 from schemes.infrastructure.api.schemes.schemes import (
     ApiSchemeRepository,
     CapitalSchemeAuthorityReviewModel,
-    CapitalSchemeFinancialModel,
     CapitalSchemeMilestoneModel,
     CapitalSchemeModel,
     CapitalSchemeOutputModel,
-    FinancialTypeModel,
     MilestoneModel,
     OutputMeasureModel,
     OutputTypeModel,
 )
 from schemes.oauth import ClientAsyncBaseApp
 from tests.infrastructure.api.conftest import StubRemoteApp
-
-
-class TestFinancialTypeModel:
-    @pytest.mark.parametrize(
-        "type_model, expected_type",
-        [
-            (FinancialTypeModel.EXPECTED_COST, FinancialType.EXPECTED_COST),
-            (FinancialTypeModel.ACTUAL_COST, FinancialType.ACTUAL_COST),
-            (FinancialTypeModel.FUNDING_ALLOCATION, FinancialType.FUNDING_ALLOCATION),
-            (FinancialTypeModel.SPEND_TO_DATE, FinancialType.SPEND_TO_DATE),
-            (FinancialTypeModel.FUNDING_REQUEST, FinancialType.FUNDING_REQUEST),
-        ],
-    )
-    def test_to_domain(self, type_model: FinancialTypeModel, expected_type: FinancialType) -> None:
-        assert type_model.to_domain() == expected_type
-
-
-class TestCapitalSchemeFinancialModel:
-    def test_to_domain(self) -> None:
-        financial_model = CapitalSchemeFinancialModel(type=FinancialTypeModel.FUNDING_ALLOCATION, amount=100_000)
-
-        financial_revision = financial_model.to_domain()
-
-        assert financial_revision.type == FinancialType.FUNDING_ALLOCATION and financial_revision.amount == 100_000
 
 
 class TestMilestoneModel:

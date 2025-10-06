@@ -8,7 +8,7 @@ from pydantic import AnyUrl
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType
+from schemes.domain.schemes.funding import FinancialRevision, FinancialType
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, OutputType, OutputTypeMeasure
 from schemes.domain.schemes.reviews import AuthorityReview
@@ -19,29 +19,9 @@ from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.dates import zoned_to_local
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel, FundingProgrammeModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
+from schemes.infrastructure.api.schemes.bid_statuses import CapitalSchemeBidStatusDetailsModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel
 from schemes.oauth import AsyncBaseApp, ClientAsyncBaseApp
-
-
-class BidStatusModel(str, Enum):
-    SUBMITTED = "submitted"
-    FUNDED = "funded"
-    NOT_FUNDED = "not funded"
-    SPLIT = "split"
-    DELETED = "deleted"
-
-    def to_domain(self) -> BidStatus:
-        return BidStatus[self.name]
-
-
-class CapitalSchemeBidStatusDetailsModel(BaseModel):
-    bid_status: BidStatusModel
-
-    def to_domain(self) -> BidStatusRevision:
-        # TODO: id, effective
-        return BidStatusRevision(
-            id_=None, effective=DateRange(date_from=datetime.min, date_to=None), status=self.bid_status.to_domain()
-        )
 
 
 class FinancialTypeModel(str, Enum):

@@ -15,12 +15,11 @@ from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
+from schemes.infrastructure.api.schemes.bid_statuses import BidStatusModel, CapitalSchemeBidStatusDetailsModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel, CapitalSchemeTypeModel
 from schemes.infrastructure.api.schemes.schemes import (
     ApiSchemeRepository,
-    BidStatusModel,
     CapitalSchemeAuthorityReviewModel,
-    CapitalSchemeBidStatusDetailsModel,
     CapitalSchemeFinancialModel,
     CapitalSchemeMilestoneModel,
     CapitalSchemeModel,
@@ -32,30 +31,6 @@ from schemes.infrastructure.api.schemes.schemes import (
 )
 from schemes.oauth import ClientAsyncBaseApp
 from tests.infrastructure.api.conftest import StubRemoteApp
-
-
-class TestBidStatusModel:
-    @pytest.mark.parametrize(
-        "bid_status_model, expected_bid_status",
-        [
-            (BidStatusModel.SUBMITTED, BidStatus.SUBMITTED),
-            (BidStatusModel.FUNDED, BidStatus.FUNDED),
-            (BidStatusModel.NOT_FUNDED, BidStatus.NOT_FUNDED),
-            (BidStatusModel.SPLIT, BidStatus.SPLIT),
-            (BidStatusModel.DELETED, BidStatus.DELETED),
-        ],
-    )
-    def test_to_domain(self, bid_status_model: BidStatusModel, expected_bid_status: BidStatus) -> None:
-        assert bid_status_model.to_domain() == expected_bid_status
-
-
-class TestCapitalSchemeBidStatusDetailsModel:
-    def test_to_domain(self) -> None:
-        bid_status_details_model = CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED)
-
-        bid_status_revision = bid_status_details_model.to_domain()
-
-        assert bid_status_revision.status == BidStatus.FUNDED
 
 
 class TestFinancialTypeModel:

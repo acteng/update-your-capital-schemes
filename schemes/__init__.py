@@ -28,7 +28,7 @@ from schemes.domain.reporting_window import DefaultReportingWindowService, Repor
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository
-from schemes.infrastructure.api.schemes import ApiSchemeRepository
+from schemes.infrastructure.api.schemes.schemes import ApiSchemeRepository
 from schemes.infrastructure.clock import Clock, FakeClock, SystemClock
 from schemes.infrastructure.database import (
     AuthorityEntity,

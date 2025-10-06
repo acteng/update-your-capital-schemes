@@ -15,7 +15,7 @@ from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
-from schemes.infrastructure.api.schemes import (
+from schemes.infrastructure.api.schemes.schemes import (
     ApiSchemeRepository,
     BidStatusModel,
     CapitalSchemeAuthorityReviewModel,

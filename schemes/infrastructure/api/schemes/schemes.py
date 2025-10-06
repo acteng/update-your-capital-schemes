@@ -11,7 +11,6 @@ from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, OutputType, OutputTypeMeasure
-from schemes.domain.schemes.overview import OverviewRevision, SchemeType
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.authorities import AuthorityModel
@@ -20,45 +19,8 @@ from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.dates import zoned_to_local
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel, FundingProgrammeModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
+from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel
 from schemes.oauth import AsyncBaseApp, ClientAsyncBaseApp
-
-
-class CapitalSchemeTypeModel(str, Enum):
-    DEVELOPMENT = "development"
-    CONSTRUCTION = "construction"
-
-    def to_domain(self) -> SchemeType:
-        return SchemeType[self.name]
-
-
-class CapitalSchemeOverviewModel(BaseModel):
-    name: str
-    bid_submitting_authority: AnyUrl
-    funding_programme: AnyUrl
-    type: CapitalSchemeTypeModel
-
-    def to_domain(
-        self,
-        authority_models: list[AuthorityModel],
-        funding_programme_item_models: list[FundingProgrammeModel] | list[FundingProgrammeItemModel],
-    ) -> OverviewRevision:
-        # TODO: id, effective, type
-        return OverviewRevision(
-            id_=None,
-            effective=DateRange(date_from=datetime.min, date_to=None),
-            name=self.name,
-            authority_abbreviation=next(
-                authority_model.abbreviation
-                for authority_model in authority_models
-                if authority_model.id == self.bid_submitting_authority
-            ),
-            type_=self.type.to_domain(),
-            funding_programme=next(
-                funding_programme_item_model.to_domain()
-                for funding_programme_item_model in funding_programme_item_models
-                if funding_programme_item_model.id == self.funding_programme
-            ),
-        )
 
 
 class BidStatusModel(str, Enum):

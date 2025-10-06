@@ -1,5 +1,5 @@
 import asyncio
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Any
@@ -8,7 +8,6 @@ from pydantic import AnyUrl
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, OutputType, OutputTypeMeasure
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
@@ -20,43 +19,9 @@ from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemMo
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
 from schemes.infrastructure.api.schemes.bid_statuses import CapitalSchemeBidStatusDetailsModel
 from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel
+from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel
 from schemes.oauth import AsyncBaseApp, ClientAsyncBaseApp
-
-
-class MilestoneModel(str, Enum):
-    PUBLIC_CONSULTATION_COMPLETED = "public consultation completed"
-    FEASIBILITY_DESIGN_STARTED = "feasibility design started"
-    FEASIBILITY_DESIGN_COMPLETED = "feasibility design completed"
-    PRELIMINARY_DESIGN_COMPLETED = "preliminary design completed"
-    OUTLINE_DESIGN_COMPLETED = "outline design completed"
-    DETAILED_DESIGN_COMPLETED = "detailed design completed"
-    CONSTRUCTION_STARTED = "construction started"
-    CONSTRUCTION_COMPLETED = "construction completed"
-    FUNDING_COMPLETED = "funding completed"
-    NOT_PROGRESSED = "not progressed"
-    SUPERSEDED = "superseded"
-    REMOVED = "removed"
-
-    def to_domain(self) -> Milestone:
-        return Milestone[self.name]
-
-
-class CapitalSchemeMilestoneModel(BaseModel):
-    milestone: MilestoneModel
-    observation_type: ObservationTypeModel
-    status_date: date
-
-    def to_domain(self) -> MilestoneRevision:
-        # TODO: id, effective, source
-        return MilestoneRevision(
-            id_=None,
-            effective=DateRange(date_from=datetime.min, date_to=None),
-            milestone=self.milestone.to_domain(),
-            observation_type=self.observation_type.to_domain(),
-            status_date=self.status_date,
-            source=DataSource.PULSE_5,
-        )
 
 
 class OutputTypeModel(str, Enum):

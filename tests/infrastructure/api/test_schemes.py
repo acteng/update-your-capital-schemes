@@ -282,6 +282,20 @@ class TestApiSchemeRepository:
         assert remote_app.client_count == 1
 
 
+def _dummy_funding_programme_item_model() -> FundingProgrammeItemModel:
+    return FundingProgrammeItemModel(id=AnyUrl("https://api.example/funding-programmes/dummy"), code="dummy")
+
+
+def _dummy_overview_model() -> CapitalSchemeOverviewModel:
+    return CapitalSchemeOverviewModel(
+        name="dummy", funding_programme=AnyUrl("https://api.example/funding-programmes/dummy")
+    )
+
+
+def _dummy_bid_status_details_model() -> CapitalSchemeBidStatusDetailsModel:
+    return CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.SUBMITTED)
+
+
 def _build_funding_programme_item_json(id_: str | None = None, code: str | None = None) -> dict[str, Any]:
     return {"@id": id_ or "https://api.example/funding-programmes/dummy", "code": code or "dummy"}
 
@@ -314,17 +328,3 @@ def _build_capital_scheme_json(
         "bidStatusDetails": _build_bid_status_details_json(bid_status=bid_status),
         "authorityReview": _build_authority_review_json(review_date=review_date) if review_date else None,
     }
-
-
-def _dummy_funding_programme_item_model() -> FundingProgrammeItemModel:
-    return FundingProgrammeItemModel(id=AnyUrl("https://api.example/funding-programmes/dummy"), code="dummy")
-
-
-def _dummy_overview_model() -> CapitalSchemeOverviewModel:
-    return CapitalSchemeOverviewModel(
-        name="dummy", funding_programme=AnyUrl("https://api.example/funding-programmes/dummy")
-    )
-
-
-def _dummy_bid_status_details_model() -> CapitalSchemeBidStatusDetailsModel:
-    return CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.SUBMITTED)

@@ -60,7 +60,7 @@ def get_authority(abbreviation: str) -> dict[str, Any]:
 def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str, Any]:
     funding_programme_codes = request.args.getlist("funding-programme-code")
     bid_status = request.args.get("bid-status")
-    current_milestones = request.args.getlist("current-milestone")
+    current_milestones = request.args.getlist("current-milestone", lambda value: value or None)
 
     authority_url = url_for("authorities.get_authority", abbreviation=abbreviation, _external=True)
     funding_programme_urls = [

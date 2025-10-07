@@ -94,27 +94,6 @@ def test_change_spend_to_date(
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
-    api_client.add_schemes(
-        CapitalSchemeModel(
-            reference="ATE00001",
-            overview=CapitalSchemeOverviewModel(
-                name="Wirral Package",
-                bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
-                fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF2",
-                type="construction",
-            ),
-            bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
-            financials=CollectionModel[CapitalSchemeFinancialModel](
-                items=[
-                    CapitalSchemeFinancialModel(type="funding allocation", amount=100_000),
-                    CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
-                ]
-            ),
-            milestones=CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
-            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
-            authorityReview=None,
-        )
-    )
     app_client.add_schemes(
         build_scheme(
             id_=1,
@@ -140,6 +119,27 @@ def test_change_spend_to_date(
                 ),
             ],
         ),
+    )
+    api_client.add_schemes(
+        CapitalSchemeModel(
+            reference="ATE00001",
+            overview=CapitalSchemeOverviewModel(
+                name="Wirral Package",
+                bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
+                fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF2",
+                type="construction",
+            ),
+            bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
+            financials=CollectionModel[CapitalSchemeFinancialModel](
+                items=[
+                    CapitalSchemeFinancialModel(type="funding allocation", amount=100_000),
+                    CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
+                ]
+            ),
+            milestones=CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
+            authorityReview=None,
+        )
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 

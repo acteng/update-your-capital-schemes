@@ -62,3 +62,9 @@ def get_funding_programmes() -> dict[str, Any]:
 @jwt_bearer_auth
 def get_funding_programme(code: str) -> dict[str, Any]:
     return funding_programmes[code].model_dump(mode="json")
+
+
+@bp.delete("")
+def clear_funding_programmes() -> Response:
+    funding_programmes.clear()
+    return Response(status=204)

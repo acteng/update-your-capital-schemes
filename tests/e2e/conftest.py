@@ -166,6 +166,7 @@ def api_client_fixture(api_server: LiveServer) -> Generator[ApiClient]:
     client.clear_schemes()
     client.clear_milestones()
     client.clear_authorities()
+    client.clear_funding_programmes()
 
 
 @pytest.fixture(name="resource_server", scope="package")

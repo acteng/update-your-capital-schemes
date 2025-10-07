@@ -98,6 +98,10 @@ class ApiClient:
         response = self._session.post(f"{self._url}/funding-programmes", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
+    def clear_funding_programmes(self) -> None:
+        response = self._session.delete(f"{self._url}/funding-programmes", timeout=self.DEFAULT_TIMEOUT)
+        response.raise_for_status()
+
     def add_authorities(self, *authorities: AuthorityModel) -> None:
         json = [asdict(authority) for authority in authorities]
         response = self._session.post(f"{self._url}/authorities", json=json, timeout=self.DEFAULT_TIMEOUT)

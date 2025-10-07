@@ -86,6 +86,12 @@ def get_capital_scheme(reference: str) -> dict[str, Any]:
     return capital_scheme.model_dump(mode="json")
 
 
+@bp.delete("")
+def clear_authorities() -> Response:
+    capital_schemes.clear()
+    return Response(status=204)
+
+
 @bp.post("milestones")
 def add_milestones() -> Response:
     for element in request.get_json():

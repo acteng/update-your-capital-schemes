@@ -100,6 +100,7 @@ class TestAuthenticated:
         assert forbidden_page.is_visible
 
     def test_scheme_shows_scheme(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
@@ -107,6 +108,14 @@ class TestAuthenticated:
         app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         app_client.add_schemes(
             build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        )
+        api_client.add_schemes(
+            build_capital_scheme_model(
+                reference="ATE00001",
+                name="Wirral Package",
+                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            )
         )
 
         scheme_page = SchemesPage.open(page).schemes["ATE00001"].open()
@@ -117,6 +126,7 @@ class TestAuthenticated:
         self, app_client: AppClient, api_client: ApiClient, page: Page
     ) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
@@ -130,6 +140,14 @@ class TestAuthenticated:
                 authority_abbreviation="LIV",
                 authority_reviews=[AuthorityReviewRepr(id=1, review_date="2023-01-02", source="ATF4 bid")],
             ),
+        )
+        api_client.add_schemes(
+            build_capital_scheme_model(
+                reference="ATE00001",
+                name="Wirral Package",
+                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            )
         )
 
         schemes_page = SchemesPage.open(page)

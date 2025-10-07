@@ -298,6 +298,7 @@ def test_change_milestones(
 def test_cannot_change_milestones_when_error(
     app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
@@ -355,6 +356,34 @@ def test_cannot_change_milestones_when_error(
                 ),
             ],
         ),
+    )
+    api_client.add_schemes(
+        build_capital_scheme_model(
+            reference="ATE00001",
+            name="Wirral Package",
+            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            milestones=CapitalSchemeMilestonesModel(
+                currentMilestone=None,
+                items=[
+                    CapitalSchemeMilestoneModel(
+                        milestone="feasibility design completed", observationType="actual", statusDate="2020-11-30"
+                    ),
+                    CapitalSchemeMilestoneModel(
+                        milestone="preliminary design completed", observationType="actual", statusDate="2022-06-30"
+                    ),
+                    CapitalSchemeMilestoneModel(
+                        milestone="detailed design completed", observationType="actual", statusDate="2022-06-30"
+                    ),
+                    CapitalSchemeMilestoneModel(
+                        milestone="construction started", observationType="planned", statusDate="2023-06-05"
+                    ),
+                    CapitalSchemeMilestoneModel(
+                        milestone="construction completed", observationType="planned", statusDate="2023-08-31"
+                    ),
+                ],
+            ),
+        )
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 

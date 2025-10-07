@@ -163,6 +163,7 @@ def api_server_fixture(api_server_app: Flask, request: FixtureRequest) -> LiveSe
 def api_client_fixture(api_server: LiveServer) -> Generator[ApiClient]:
     client = ApiClient(_get_url(api_server))
     yield client
+    client.clear_schemes()
     client.clear_authorities()
 
 

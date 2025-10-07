@@ -112,6 +112,10 @@ class ApiClient:
         response = self._session.post(f"{self._url}/capital-schemes", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
+    def clear_schemes(self) -> None:
+        response = self._session.delete(f"{self._url}/capital-schemes", timeout=self.DEFAULT_TIMEOUT)
+        response.raise_for_status()
+
     def add_milestones(self, *milestones: MilestoneModel) -> None:
         json = [asdict(milestone) for milestone in milestones]
         response = self._session.post(

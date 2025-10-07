@@ -2,9 +2,9 @@ import pytest
 from flask import Flask
 from playwright.sync_api import Page
 
-from tests.e2e.api_client import ApiClient, AuthorityModel
+from tests.e2e.api_client import ApiClient, AuthorityModel, CapitalSchemeAuthorityReviewModel, FundingProgrammeModel
 from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, UserRepr
-from tests.e2e.builders import build_scheme
+from tests.e2e.builders import build_capital_scheme_model, build_scheme
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
@@ -15,6 +15,7 @@ def test_scheme_review(
     app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.set_clock("2023-04-24T13:00:00")
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
@@ -25,6 +26,15 @@ def test_scheme_review(
             name="Wirral Package",
             authority_abbreviation="LIV",
             authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid")],
+        ),
+    )
+    api_client.add_schemes(
+        build_capital_scheme_model(
+            reference="ATE00001",
+            name="Wirral Package",
+            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            authority_review=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T12:00:00"),
         ),
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
@@ -46,6 +56,7 @@ def test_scheme_cannot_review_when_error(
     app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.set_clock("2023-04-24T13:00:00")
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
@@ -56,6 +67,15 @@ def test_scheme_cannot_review_when_error(
             name="Wirral Package",
             authority_abbreviation="LIV",
             authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid")],
+        ),
+    )
+    api_client.add_schemes(
+        build_capital_scheme_model(
+            reference="ATE00001",
+            name="Wirral Package",
+            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            authority_review=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T12:00:00"),
         ),
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

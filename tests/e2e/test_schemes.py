@@ -5,6 +5,7 @@ from tests.e2e.api_client import (
     ApiClient,
     AuthorityModel,
     CapitalSchemeAuthorityReviewModel,
+    CapitalSchemeMilestonesModel,
     FundingProgrammeModel,
     MilestoneModel,
 )
@@ -60,6 +61,7 @@ class TestAuthenticated:
                 name="Wirral Package",
                 bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
                 funding_programme=f"{api_client.base_url}/funding-programmes/ATF3",
+                milestones=CapitalSchemeMilestonesModel(currentMilestone="detailed design completed", items=[]),
                 authority_review=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T00:00:00Z"),
             ),
             build_capital_scheme_model(
@@ -67,6 +69,7 @@ class TestAuthenticated:
                 name="School Streets",
                 bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
                 funding_programme=f"{api_client.base_url}/funding-programmes/ATF4",
+                milestones=CapitalSchemeMilestonesModel(currentMilestone="construction started", items=[]),
                 authority_review=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-03T00:00:00Z"),
             ),
         )

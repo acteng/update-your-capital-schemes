@@ -4,12 +4,11 @@ from playwright.sync_api import Page
 from tests.e2e.api_client import (
     ApiClient,
     AuthorityModel,
-    CapitalSchemeAuthorityReviewModel,
     CapitalSchemeMilestoneModel,
     CapitalSchemeMilestonesModel,
     FundingProgrammeModel,
 )
-from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, MilestoneRevisionRepr, UserRepr
+from tests.e2e.app_client import AppClient, AuthorityRepr, MilestoneRevisionRepr, UserRepr
 from tests.e2e.builders import build_capital_scheme_model, build_scheme
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
@@ -41,7 +40,6 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
                     source="ATF4 bid",
                 )
             ],
-            authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02", source="ATF4 bid")],
         ),
     )
     api_client.add_schemes(
@@ -59,7 +57,6 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
                     )
                 ],
             ),
-            authority_review=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T00:00:00Z"),
         )
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

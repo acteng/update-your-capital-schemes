@@ -1,3 +1,13 @@
+from tests.e2e.api_client import (
+    CapitalSchemeAuthorityReviewModel,
+    CapitalSchemeBidStatusDetailsModel,
+    CapitalSchemeFinancialModel,
+    CapitalSchemeMilestonesModel,
+    CapitalSchemeModel,
+    CapitalSchemeOutputModel,
+    CapitalSchemeOverviewModel,
+    CollectionModel,
+)
 from tests.e2e.app_client import (
     AuthorityReviewRepr,
     BidStatusRevisionRepr,
@@ -43,4 +53,32 @@ def build_scheme(
         milestone_revisions=milestone_revisions or [],
         output_revisions=output_revisions or [],
         authority_reviews=authority_reviews or [],
+    )
+
+
+def build_capital_scheme_model(
+    reference: str,
+    name: str,
+    bid_submitting_authority: str,
+    funding_programme: str,
+    type_: str = "construction",
+    bid_status_details: CapitalSchemeBidStatusDetailsModel | None = None,
+    financials: list[CapitalSchemeFinancialModel] | None = None,
+    milestones: CapitalSchemeMilestonesModel | None = None,
+    outputs: list[CapitalSchemeOutputModel] | None = None,
+    authority_review: CapitalSchemeAuthorityReviewModel | None = None,
+) -> CapitalSchemeModel:
+    return CapitalSchemeModel(
+        reference=reference,
+        overview=CapitalSchemeOverviewModel(
+            name=name,
+            bidSubmittingAuthority=bid_submitting_authority,
+            fundingProgramme=funding_programme,
+            type=type_,
+        ),
+        bidStatusDetails=bid_status_details or CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
+        financials=CollectionModel[CapitalSchemeFinancialModel](items=financials or []),
+        milestones=milestones or CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
+        outputs=CollectionModel[CapitalSchemeOutputModel](items=outputs or []),
+        authorityReview=authority_review,
     )

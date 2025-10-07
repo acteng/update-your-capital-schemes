@@ -1,21 +1,9 @@
 import pytest
 from playwright.sync_api import Page
 
-from tests.e2e.api_client import (
-    ApiClient,
-    AuthorityModel,
-    CapitalSchemeAuthorityReviewModel,
-    CapitalSchemeBidStatusDetailsModel,
-    CapitalSchemeFinancialModel,
-    CapitalSchemeMilestonesModel,
-    CapitalSchemeModel,
-    CapitalSchemeOutputModel,
-    CapitalSchemeOverviewModel,
-    CollectionModel,
-    FundingProgrammeModel,
-)
+from tests.e2e.api_client import ApiClient, AuthorityModel, CapitalSchemeAuthorityReviewModel, FundingProgrammeModel
 from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, UserRepr
-from tests.e2e.builders import build_scheme
+from tests.e2e.builders import build_capital_scheme_model, build_scheme
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
@@ -38,19 +26,12 @@ def test_scheme(app_client: AppClient, api_client: ApiClient, oidc_client: OidcC
         ),
     )
     api_client.add_schemes(
-        CapitalSchemeModel(
+        build_capital_scheme_model(
             reference="ATE00001",
-            overview=CapitalSchemeOverviewModel(
-                name="Wirral Package",
-                bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
-                fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF2",
-                type="construction",
-            ),
-            bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
-            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
-            milestones=CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
-            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
-            authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2023-01-02T00:00:00Z"),
+            name="Wirral Package",
+            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            authority_review=CapitalSchemeAuthorityReviewModel(reviewDate="2023-01-02T00:00:00Z"),
         )
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

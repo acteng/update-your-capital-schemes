@@ -5,18 +5,12 @@ from tests.e2e.api_client import (
     ApiClient,
     AuthorityModel,
     CapitalSchemeAuthorityReviewModel,
-    CapitalSchemeBidStatusDetailsModel,
-    CapitalSchemeFinancialModel,
     CapitalSchemeMilestoneModel,
     CapitalSchemeMilestonesModel,
-    CapitalSchemeModel,
-    CapitalSchemeOutputModel,
-    CapitalSchemeOverviewModel,
-    CollectionModel,
     FundingProgrammeModel,
 )
 from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, MilestoneRevisionRepr, UserRepr
-from tests.e2e.builders import build_scheme
+from tests.e2e.builders import build_capital_scheme_model, build_scheme
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
@@ -51,16 +45,12 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
         ),
     )
     api_client.add_schemes(
-        CapitalSchemeModel(
+        build_capital_scheme_model(
             reference="ATE00001",
-            overview=CapitalSchemeOverviewModel(
-                name="Wirral Package",
-                bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
-                fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF4",
-                type="construction",
-            ),
-            bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
-            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            name="Wirral Package",
+            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+            funding_programme=f"{api_client.base_url}/funding-programmes/ATF4",
+            type_="construction",
             milestones=CapitalSchemeMilestonesModel(
                 currentMilestone="detailed design completed",
                 items=[
@@ -69,8 +59,7 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
                     )
                 ],
             ),
-            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
-            authorityReview=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T00:00:00Z"),
+            authority_review=CapitalSchemeAuthorityReviewModel(reviewDate="2020-01-02T00:00:00Z"),
         )
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

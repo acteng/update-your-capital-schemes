@@ -2,20 +2,9 @@ import pytest
 from flask import Flask
 from playwright.sync_api import Page
 
-from tests.e2e.api_client import (
-    ApiClient,
-    AuthorityModel,
-    CapitalSchemeBidStatusDetailsModel,
-    CapitalSchemeFinancialModel,
-    CapitalSchemeMilestonesModel,
-    CapitalSchemeModel,
-    CapitalSchemeOutputModel,
-    CapitalSchemeOverviewModel,
-    CollectionModel,
-    FundingProgrammeModel,
-)
+from tests.e2e.api_client import ApiClient, AuthorityModel, CapitalSchemeFinancialModel, FundingProgrammeModel
 from tests.e2e.app_client import AppClient, AuthorityRepr, FinancialRevisionRepr, UserRepr
-from tests.e2e.builders import build_scheme
+from tests.e2e.builders import build_capital_scheme_model, build_scheme
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
@@ -54,24 +43,15 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
         ),
     )
     api_client.add_schemes(
-        CapitalSchemeModel(
+        build_capital_scheme_model(
             reference="ATE00001",
-            overview=CapitalSchemeOverviewModel(
-                name="Wirral Package",
-                bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
-                fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF2",
-                type="construction",
-            ),
-            bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
-            financials=CollectionModel[CapitalSchemeFinancialModel](
-                items=[
-                    CapitalSchemeFinancialModel(type="funding allocation", amount=100_000),
-                    CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
-                ]
-            ),
-            milestones=CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
-            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
-            authorityReview=None,
+            name="Wirral Package",
+            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            financials=[
+                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000),
+                CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
+            ],
         )
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
@@ -121,24 +101,15 @@ def test_change_spend_to_date(
         ),
     )
     api_client.add_schemes(
-        CapitalSchemeModel(
+        build_capital_scheme_model(
             reference="ATE00001",
-            overview=CapitalSchemeOverviewModel(
-                name="Wirral Package",
-                bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
-                fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF2",
-                type="construction",
-            ),
-            bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
-            financials=CollectionModel[CapitalSchemeFinancialModel](
-                items=[
-                    CapitalSchemeFinancialModel(type="funding allocation", amount=100_000),
-                    CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
-                ]
-            ),
-            milestones=CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
-            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
-            authorityReview=None,
+            name="Wirral Package",
+            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            financials=[
+                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000),
+                CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
+            ],
         )
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

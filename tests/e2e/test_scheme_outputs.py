@@ -1,20 +1,9 @@
 import pytest
 from playwright.sync_api import Page
 
-from tests.e2e.api_client import (
-    ApiClient,
-    AuthorityModel,
-    CapitalSchemeBidStatusDetailsModel,
-    CapitalSchemeFinancialModel,
-    CapitalSchemeMilestonesModel,
-    CapitalSchemeModel,
-    CapitalSchemeOutputModel,
-    CapitalSchemeOverviewModel,
-    CollectionModel,
-    FundingProgrammeModel,
-)
+from tests.e2e.api_client import ApiClient, AuthorityModel, CapitalSchemeOutputModel, FundingProgrammeModel
 from tests.e2e.app_client import AppClient, AuthorityRepr, OutputRevisionRepr, UserRepr
-from tests.e2e.builders import build_scheme
+from tests.e2e.builders import build_capital_scheme_model, build_scheme
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
@@ -55,34 +44,22 @@ def test_scheme_outputs(app_client: AppClient, api_client: ApiClient, oidc_clien
         ),
     )
     api_client.add_schemes(
-        CapitalSchemeModel(
+        build_capital_scheme_model(
             reference="ATE00001",
-            overview=CapitalSchemeOverviewModel(
-                name="Wirral Package",
-                bidSubmittingAuthority=f"{api_client.base_url}/authorities/LIV",
-                fundingProgramme=f"{api_client.base_url}/funding-programmes/ATF2",
-                type="construction",
-            ),
-            bidStatusDetails=CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
-            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
-            milestones=CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
-            outputs=CollectionModel[CapitalSchemeOutputModel](
-                items=[
-                    CapitalSchemeOutputModel(
-                        type="new segregated cycling facility",
-                        measure="miles",
-                        observationType="planned",
-                        value="3.000000",
-                    ),
-                    CapitalSchemeOutputModel(
-                        type="improvements to make an existing walking/cycle route safer",
-                        measure="number of junctions",
-                        observationType="planned",
-                        value="2.600000",
-                    ),
-                ]
-            ),
-            authorityReview=None,
+            name="Wirral Package",
+            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            outputs=[
+                CapitalSchemeOutputModel(
+                    type="new segregated cycling facility", measure="miles", observationType="planned", value="3.000000"
+                ),
+                CapitalSchemeOutputModel(
+                    type="improvements to make an existing walking/cycle route safer",
+                    measure="number of junctions",
+                    observationType="planned",
+                    value="2.600000",
+                ),
+            ],
         )
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

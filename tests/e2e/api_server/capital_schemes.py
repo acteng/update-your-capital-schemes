@@ -113,3 +113,9 @@ def get_milestones() -> dict[str, Any]:
         if (active is None or milestone.active == active) and (complete is None or milestone.complete == complete)
     ]
     return CollectionModel[str](items=milestone_names).model_dump(mode="json")
+
+
+@bp.delete("milestones")
+def clear_milestones() -> Response:
+    milestones.clear()
+    return Response(status=204)

@@ -122,3 +122,7 @@ class ApiClient:
             f"{self._url}/capital-schemes/milestones", json=json, timeout=self.DEFAULT_TIMEOUT
         )
         response.raise_for_status()
+
+    def clear_milestones(self) -> None:
+        response = self._session.delete(f"{self._url}/capital-schemes/milestones", timeout=self.DEFAULT_TIMEOUT)
+        response.raise_for_status()

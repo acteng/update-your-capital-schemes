@@ -164,6 +164,7 @@ def api_client_fixture(api_server: LiveServer) -> Generator[ApiClient]:
     client = ApiClient(_get_url(api_server))
     yield client
     client.clear_schemes()
+    client.clear_milestones()
     client.clear_authorities()
 
 

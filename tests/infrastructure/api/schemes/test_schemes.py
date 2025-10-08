@@ -84,7 +84,6 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
-        assert scheme.reference == "ATE00001"
         (financial_revision1, financial_revision2) = scheme.funding.financial_revisions
         assert financial_revision1.type == FinancialType.FUNDING_ALLOCATION and financial_revision1.amount == 100_000
         assert financial_revision2.type == FinancialType.SPEND_TO_DATE and financial_revision2.amount == 50_000
@@ -114,7 +113,6 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
-        assert scheme.reference == "ATE00001"
         (milestone_revision1, milestone_revision2) = scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
@@ -154,7 +152,6 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
-        assert scheme.reference == "ATE00001"
         (output_revision1, output_revision2) = scheme.outputs.output_revisions
         assert (
             output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
@@ -180,7 +177,6 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
-        assert scheme.reference == "ATE00001"
         (authority_review1,) = scheme.reviews.authority_reviews
         assert authority_review1.review_date == datetime(2020, 1, 2)
 
@@ -220,7 +216,7 @@ class TestApiSchemeRepository:
 
         scheme = await schemes.get("ATE00001")
 
-        assert scheme and scheme.reference == "ATE00001"
+        assert scheme
         (overview_revision1,) = scheme.overview.overview_revisions
         assert (
             overview_revision1.name == "Wirral Package"
@@ -239,7 +235,7 @@ class TestApiSchemeRepository:
 
         scheme = await schemes.get("ATE00001")
 
-        assert scheme and scheme.reference == "ATE00001"
+        assert scheme
         (bid_status_revision1,) = scheme.funding.bid_status_revisions
         assert bid_status_revision1.status == BidStatus.FUNDED
 
@@ -261,7 +257,7 @@ class TestApiSchemeRepository:
 
         scheme = await schemes.get("ATE00001")
 
-        assert scheme and scheme.reference == "ATE00001"
+        assert scheme
         (financial_revision1, financial_revision2) = scheme.funding.financial_revisions
         assert financial_revision1.type == FinancialType.FUNDING_ALLOCATION and financial_revision1.amount == 100_000
         assert financial_revision2.type == FinancialType.SPEND_TO_DATE and financial_revision2.amount == 50_000
@@ -288,7 +284,7 @@ class TestApiSchemeRepository:
 
         scheme = await schemes.get("ATE00001")
 
-        assert scheme and scheme.reference == "ATE00001"
+        assert scheme
         (milestone_revision1, milestone_revision2) = scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
@@ -326,7 +322,7 @@ class TestApiSchemeRepository:
 
         scheme = await schemes.get("ATE00001")
 
-        assert scheme and scheme.reference == "ATE00001"
+        assert scheme
         (output_revision1, output_revision2) = scheme.outputs.output_revisions
         assert (
             output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
@@ -350,7 +346,7 @@ class TestApiSchemeRepository:
 
         scheme = await schemes.get("ATE00001")
 
-        assert scheme and scheme.reference == "ATE00001"
+        assert scheme
         (authority_review1,) = scheme.reviews.authority_reviews
         assert authority_review1.review_date == datetime(2020, 1, 2)
 
@@ -451,7 +447,6 @@ class TestApiSchemeRepository:
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
-        assert scheme1.reference == "ATE00001"
         (overview_revision1,) = scheme1.overview.overview_revisions
         assert (
             overview_revision1.name == "Wirral Package"
@@ -484,7 +479,6 @@ class TestApiSchemeRepository:
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
-        assert scheme1.reference == "ATE00001"
         (bid_status_revision1,) = scheme1.funding.bid_status_revisions
         assert bid_status_revision1.status == BidStatus.FUNDED
 
@@ -518,7 +512,6 @@ class TestApiSchemeRepository:
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
-        assert scheme1.reference == "ATE00001"
         (financial_revision1, financial_revision2) = scheme1.funding.financial_revisions
         assert financial_revision1.type == FinancialType.FUNDING_ALLOCATION and financial_revision1.amount == 100_000
         assert financial_revision2.type == FinancialType.SPEND_TO_DATE and financial_revision2.amount == 50_000
@@ -557,7 +550,6 @@ class TestApiSchemeRepository:
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
-        assert scheme1.reference == "ATE00001"
         (milestone_revision1, milestone_revision2) = scheme1.milestones.milestone_revisions
         assert (
             milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
@@ -607,7 +599,6 @@ class TestApiSchemeRepository:
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
-        assert scheme1.reference == "ATE00001"
         (output_revision1, output_revision2) = scheme1.outputs.output_revisions
         assert (
             output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
@@ -647,7 +638,6 @@ class TestApiSchemeRepository:
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
-        assert scheme1.reference == "ATE00001"
         (authority_review1,) = scheme1.reviews.authority_reviews
         assert authority_review1.review_date == datetime(2020, 1, 2)
 

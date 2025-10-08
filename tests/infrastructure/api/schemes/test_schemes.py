@@ -28,6 +28,39 @@ from tests.infrastructure.api.conftest import StubRemoteApp
 
 class TestCapitalSchemeModel:
     def test_to_domain(self) -> None:
+        capital_scheme_model = CapitalSchemeModel(
+            reference="ATE00001",
+            overview=_dummy_overview_model(),
+            bid_status_details=_dummy_bid_status_details_model(),
+            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
+        )
+
+        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+
+        assert scheme.reference == "ATE00001"
+        assert not scheme.funding.financial_revisions
+        assert not scheme.milestones.milestone_revisions
+        assert not scheme.outputs.output_revisions
+        assert not scheme.reviews.authority_reviews
+
+    def test_to_domain_sets_bid_status_revision(self) -> None:
+        capital_scheme_model = CapitalSchemeModel(
+            reference="ATE00001",
+            overview=_dummy_overview_model(),
+            bid_status_details=CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED),
+            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
+        )
+
+        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+
+        (bid_status_revision1,) = scheme.funding.bid_status_revisions
+        assert bid_status_revision1.status == BidStatus.FUNDED
+
+    def test_to_domain_sets_overview_revision(self) -> None:
         authority_model = AuthorityModel(
             id=AnyUrl("https://api.example/authorities/LIV"),
             abbreviation="LIV",
@@ -45,7 +78,7 @@ class TestCapitalSchemeModel:
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
                 type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
-            bid_status_details=CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED),
+            bid_status_details=_dummy_bid_status_details_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
@@ -53,19 +86,12 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain([authority_model], [funding_programme_item_model])
 
-        assert scheme.reference == "ATE00001"
         (overview_revision1,) = scheme.overview.overview_revisions
         assert (
             overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
         )
-        (bid_status_revision1,) = scheme.funding.bid_status_revisions
-        assert bid_status_revision1.status == BidStatus.FUNDED
-        assert not scheme.funding.financial_revisions
-        assert not scheme.milestones.milestone_revisions
-        assert not scheme.outputs.output_revisions
-        assert not scheme.reviews.authority_reviews
 
     def test_to_domain_sets_financial_revisions(self) -> None:
         capital_scheme_model = CapitalSchemeModel(

@@ -45,10 +45,10 @@ class TestCapitalSchemeModel:
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
                 type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
+            bid_status_details=CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
-            bid_status_details=CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED),
         )
 
         scheme = capital_scheme_model.to_domain([authority_model], [funding_programme_item_model])

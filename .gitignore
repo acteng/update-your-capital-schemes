@@ -10,6 +10,9 @@ __pycache__/
 # npm
 /node_modules/
 
+# User guide
+/docs/user-guide/index.pdf
+
 # Application assets
 /schemes/views/static/application.min.css*
 

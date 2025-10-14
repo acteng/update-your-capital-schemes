@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
 
 _LOCAL_TIMEZONE = ZoneInfo("Europe/London")
@@ -9,4 +9,4 @@ def zoned_to_local(zoned: datetime) -> datetime:
 
 
 def local_to_zoned(local: datetime) -> datetime:
-    return local.replace(tzinfo=_LOCAL_TIMEZONE).astimezone(timezone.utc)
+    return local.replace(tzinfo=_LOCAL_TIMEZONE).astimezone(UTC)

@@ -49,6 +49,16 @@ To restore a backup to a local or proxied database:
    gunzip $ARCHIVE.gz
    ```
 
+1. (Optional) Create a local database for the backup, if necessary:
+
+   ```bash
+   docker run -d \
+       --network=host \
+       -e POSTGRES_USER=schemes \
+       -e POSTGRES_PASSWORD=$PGPASSWORD \
+       postgres:16
+   ```
+
 1. Restore the backup:
 
    ```bash

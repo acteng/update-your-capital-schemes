@@ -1,32 +1,31 @@
 from functools import wraps
-from typing import Callable
+from typing import Any, Callable
 
-from authlib.jose import jwt
-from flask import current_app, request
+from authlib.integrations.flask_client import OAuth
+from authlib.integrations.flask_oauth2 import ResourceProtector
+from authlib.oauth2.rfc9068 import JWTBearerTokenValidator
+from flask import current_app
 
 
-def jwt_bearer_auth[T, **P](func: Callable[P, T]) -> Callable[P, T]:
+class ApiJwtBearerTokenValidator(JWTBearerTokenValidator):  # type: ignore
+    def get_jwks(self) -> Any:
+        return _get_oauth().auth.fetch_jwk_set()
+
+
+def require_oauth[T, **P](func: Callable[P, T]) -> Callable[P, T]:
     @wraps(func)
     def decorated_function(*args: P.args, **kwargs: P.kwargs) -> T:
-        _validate_jwt()
-        return func(*args, **kwargs)
+        server_metadata = _get_oauth().auth.load_server_metadata()
+        issuer = server_metadata.get("issuer")
+        resource_server_identifier = current_app.config["RESOURCE_SERVER_IDENTIFIER"]
+
+        resource_protector = ResourceProtector()
+        resource_protector.register_token_validator(ApiJwtBearerTokenValidator(issuer, resource_server_identifier))
+        response: T = resource_protector()(func)(*args, **kwargs)
+        return response
 
     return decorated_function
 
 
-def _validate_jwt() -> None:
-    assert request.authorization
-
-    oauth = current_app.extensions["authlib.integrations.flask_client"]
-    server_metadata = oauth.auth.load_server_metadata()
-    jwks = oauth.auth.fetch_jwk_set()
-
-    claims = jwt.decode(
-        request.authorization.token,
-        key=jwks,
-        claims_options={
-            "iss": {"value": server_metadata.get("issuer")},
-            "aud": {"value": current_app.config["RESOURCE_SERVER_IDENTIFIER"]},
-        },
-    )
-    claims.validate()
+def _get_oauth() -> OAuth:
+    return current_app.extensions["authlib.integrations.flask_client"]

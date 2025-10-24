@@ -4,7 +4,7 @@ from flask import Blueprint, Response, abort, request, url_for
 from pydantic import AnyUrl, Field
 
 from schemes.infrastructure.api.base import BaseModel
-from tests.e2e.api_server.auth import jwt_bearer_auth
+from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.capital_schemes import capital_schemes
 from tests.e2e.api_server.collections import CollectionModel
 
@@ -45,7 +45,7 @@ def add_authorities() -> Response:
 
 
 @bp.get("<abbreviation>")
-@jwt_bearer_auth
+@require_oauth
 def get_authority(abbreviation: str) -> dict[str, Any]:
     authority = authorities.get(abbreviation)
 
@@ -56,7 +56,7 @@ def get_authority(abbreviation: str) -> dict[str, Any]:
 
 
 @bp.get("<abbreviation>/capital-schemes/bid-submitting")
-@jwt_bearer_auth
+@require_oauth
 def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str, Any]:
     funding_programme_codes = request.args.getlist("funding-programme-code")
     bid_status = request.args.get("bid-status")

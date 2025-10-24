@@ -22,6 +22,7 @@ class CapitalSchemeBidStatusDetailsModel(BaseModel):
 class CapitalSchemeFinancialModel(BaseModel):
     type: str
     amount: int
+    source: str
 
 
 class CapitalSchemeMilestoneModel(BaseModel):

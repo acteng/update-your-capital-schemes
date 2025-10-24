@@ -37,6 +37,7 @@ class CapitalSchemeBidStatusDetailsModel:
 class CapitalSchemeFinancialModel:
     type: str
     amount: int
+    source: str
 
 
 @dataclass(frozen=True)

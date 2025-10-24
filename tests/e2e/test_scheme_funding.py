@@ -49,8 +49,8 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
             bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             financials=[
-                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000),
-                CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
+                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
+                CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
             ],
         )
     )
@@ -107,8 +107,8 @@ def test_change_spend_to_date(
             bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             financials=[
-                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000),
-                CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
+                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
+                CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
             ],
         )
     )
@@ -191,8 +191,8 @@ def test_cannot_change_spend_to_date_when_error(
             bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             financials=[
-                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000),
-                CapitalSchemeFinancialModel(type="spend to date", amount=50_000),
+                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
+                CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
             ],
         )
     )

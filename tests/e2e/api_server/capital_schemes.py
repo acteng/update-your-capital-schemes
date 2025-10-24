@@ -3,7 +3,7 @@ from typing import Any
 from flask import Blueprint, Response, abort, request
 
 from schemes.infrastructure.api.base import BaseModel
-from tests.e2e.api_server.auth import jwt_bearer_auth
+from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.collections import CollectionModel
 from tests.e2e.api_server.requests import parse_bool
 
@@ -77,7 +77,7 @@ def add_capital_schemes() -> Response:
 
 
 @bp.get("<reference>")
-@jwt_bearer_auth
+@require_oauth
 def get_capital_scheme(reference: str) -> dict[str, Any]:
     capital_scheme = capital_schemes.get(reference)
 
@@ -103,7 +103,7 @@ def add_milestones() -> Response:
 
 
 @bp.get("milestones")
-@jwt_bearer_auth
+@require_oauth
 def get_milestones() -> dict[str, Any]:
     active = request.args.get("active", type=parse_bool)
     complete = request.args.get("complete", type=parse_bool)

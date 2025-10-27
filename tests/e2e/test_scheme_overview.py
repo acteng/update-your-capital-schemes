@@ -17,9 +17,9 @@ from tests.e2e.pages import SchemePage
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF4", eligibleForAuthorityUpdate=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-    api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
+    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(
@@ -50,10 +50,10 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF4",
             type_="construction",
             milestones=CapitalSchemeMilestonesModel(
-                currentMilestone="detailed design completed",
+                current_milestone="detailed design completed",
                 items=[
                     CapitalSchemeMilestoneModel(
-                        milestone="detailed design completed", observationType="actual", statusDate="2020-01-01"
+                        milestone="detailed design completed", observation_type="actual", status_date="2020-01-01"
                     )
                 ],
             ),

@@ -1,83 +1,81 @@
-from dataclasses import asdict, dataclass
+from typing import Any
 
+from pydantic import BaseModel as pydantic_BaseModel
+from pydantic import ConfigDict
+from pydantic.alias_generators import to_camel
 from requests import Session
 
 
-@dataclass(frozen=True)
-class CollectionModel[T]:
+class BaseModel(pydantic_BaseModel):
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+    def to_json(self) -> dict[str, Any]:
+        return self.model_dump(mode="json", by_alias=True)
+
+
+class CollectionModel[T](BaseModel):
     items: list[T]
 
 
-@dataclass(frozen=True)
-class FundingProgrammeModel:
+class FundingProgrammeModel(BaseModel):
     code: str
-    eligibleForAuthorityUpdate: bool
+    eligible_for_authority_update: bool
 
 
-@dataclass(frozen=True)
-class AuthorityModel:
+class AuthorityModel(BaseModel):
     abbreviation: str
-    fullName: str
+    full_name: str
 
 
-@dataclass(frozen=True)
-class CapitalSchemeOverviewModel:
+class CapitalSchemeOverviewModel(BaseModel):
     name: str
-    bidSubmittingAuthority: str
-    fundingProgramme: str
+    bid_submitting_authority: str
+    funding_programme: str
     type: str
 
 
-@dataclass(frozen=True)
-class CapitalSchemeBidStatusDetailsModel:
-    bidStatus: str
+class CapitalSchemeBidStatusDetailsModel(BaseModel):
+    bid_status: str
 
 
-@dataclass(frozen=True)
-class CapitalSchemeFinancialModel:
+class CapitalSchemeFinancialModel(BaseModel):
     type: str
     amount: int
     source: str
 
 
-@dataclass(frozen=True)
-class CapitalSchemeMilestoneModel:
+class CapitalSchemeMilestoneModel(BaseModel):
     milestone: str
-    observationType: str
-    statusDate: str
+    observation_type: str
+    status_date: str
 
 
-@dataclass(frozen=True)
 class CapitalSchemeMilestonesModel(CollectionModel[CapitalSchemeMilestoneModel]):
-    currentMilestone: str | None
+    current_milestone: str | None
 
 
-@dataclass(frozen=True)
-class CapitalSchemeOutputModel:
+class CapitalSchemeOutputModel(BaseModel):
     type: str
     measure: str
-    observationType: str
+    observation_type: str
     value: str
 
 
-@dataclass(frozen=True)
-class CapitalSchemeAuthorityReviewModel:
-    reviewDate: str
+class CapitalSchemeAuthorityReviewModel(BaseModel):
+    review_date: str
 
 
-@dataclass(frozen=True)
-class CapitalSchemeModel:
+class CapitalSchemeModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
-    bidStatusDetails: CapitalSchemeBidStatusDetailsModel
+    bid_status_details: CapitalSchemeBidStatusDetailsModel
     financials: CollectionModel[CapitalSchemeFinancialModel]
     milestones: CapitalSchemeMilestonesModel
     outputs: CollectionModel[CapitalSchemeOutputModel]
-    authorityReview: CapitalSchemeAuthorityReviewModel | None
+    authority_review: CapitalSchemeAuthorityReviewModel | None
 
 
-@dataclass(frozen=True)
-class MilestoneModel:
+class MilestoneModel(BaseModel):
     name: str
     active: bool
     complete: bool
@@ -95,7 +93,7 @@ class ApiClient:
         return self._url
 
     def add_funding_programmes(self, *funding_programmes: FundingProgrammeModel) -> None:
-        json = [asdict(funding_programme) for funding_programme in funding_programmes]
+        json = [funding_programme.to_json() for funding_programme in funding_programmes]
         response = self._session.post(f"{self._url}/funding-programmes", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
@@ -104,7 +102,7 @@ class ApiClient:
         response.raise_for_status()
 
     def add_authorities(self, *authorities: AuthorityModel) -> None:
-        json = [asdict(authority) for authority in authorities]
+        json = [authority.to_json() for authority in authorities]
         response = self._session.post(f"{self._url}/authorities", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
@@ -113,7 +111,7 @@ class ApiClient:
         response.raise_for_status()
 
     def add_schemes(self, *capital_schemes: CapitalSchemeModel) -> None:
-        json = [asdict(capital_scheme) for capital_scheme in capital_schemes]
+        json = [capital_scheme.to_json() for capital_scheme in capital_schemes]
         response = self._session.post(f"{self._url}/capital-schemes", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
@@ -122,7 +120,7 @@ class ApiClient:
         response.raise_for_status()
 
     def add_milestones(self, *milestones: MilestoneModel) -> None:
-        json = [asdict(milestone) for milestone in milestones]
+        json = [milestone.to_json() for milestone in milestones]
         response = self._session.post(
             f"{self._url}/capital-schemes/milestones", json=json, timeout=self.DEFAULT_TIMEOUT
         )

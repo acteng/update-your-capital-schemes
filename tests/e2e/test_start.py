@@ -32,7 +32,7 @@ class TestAuthenticated:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
         app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
         api_client.add_authorities(
-            AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority")
+            AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
         app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
         start_page = StartPage.open(page)

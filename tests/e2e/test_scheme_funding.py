@@ -12,9 +12,9 @@ from tests.e2e.pages import SchemePage
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-    api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
+    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(
@@ -70,9 +70,9 @@ def test_change_spend_to_date(
     app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.set_clock("2020-01-31T13:00:00")
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-    api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
+    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(
@@ -154,9 +154,9 @@ def test_change_spend_to_date(
 def test_cannot_change_spend_to_date_when_error(
     app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-    api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
+    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(

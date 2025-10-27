@@ -18,9 +18,9 @@ from tests.e2e.pages import SchemePage
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-    api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
+    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(
@@ -84,22 +84,22 @@ def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
             bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             milestones=CapitalSchemeMilestonesModel(
-                currentMilestone=None,
+                current_milestone=None,
                 items=[
                     CapitalSchemeMilestoneModel(
-                        milestone="feasibility design completed", observationType="actual", statusDate="2020-11-30"
+                        milestone="feasibility design completed", observation_type="actual", status_date="2020-11-30"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="preliminary design completed", observationType="actual", statusDate="2022-06-30"
+                        milestone="preliminary design completed", observation_type="actual", status_date="2022-06-30"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="detailed design completed", observationType="actual", statusDate="2022-06-30"
+                        milestone="detailed design completed", observation_type="actual", status_date="2022-06-30"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction started", observationType="planned", statusDate="2023-06-05"
+                        milestone="construction started", observation_type="planned", status_date="2023-06-05"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction completed", observationType="planned", statusDate="2023-08-31"
+                        milestone="construction completed", observation_type="planned", status_date="2023-08-31"
                     ),
                 ],
             ),
@@ -123,9 +123,9 @@ def test_change_milestones(
     app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.set_clock("2023-08-01T13:00:00")
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-    api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
+    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(
@@ -189,22 +189,22 @@ def test_change_milestones(
             bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             milestones=CapitalSchemeMilestonesModel(
-                currentMilestone=None,
+                current_milestone=None,
                 items=[
                     CapitalSchemeMilestoneModel(
-                        milestone="feasibility design completed", observationType="actual", statusDate="2020-11-30"
+                        milestone="feasibility design completed", observation_type="actual", status_date="2020-11-30"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="preliminary design completed", observationType="actual", statusDate="2022-06-30"
+                        milestone="preliminary design completed", observation_type="actual", status_date="2022-06-30"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="detailed design completed", observationType="actual", statusDate="2022-06-30"
+                        milestone="detailed design completed", observation_type="actual", status_date="2022-06-30"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction started", observationType="planned", statusDate="2023-06-05"
+                        milestone="construction started", observation_type="planned", status_date="2023-06-05"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction completed", observationType="planned", statusDate="2023-08-31"
+                        milestone="construction completed", observation_type="planned", status_date="2023-08-31"
                     ),
                 ],
             ),
@@ -298,9 +298,9 @@ def test_change_milestones(
 def test_cannot_change_milestones_when_error(
     app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligibleForAuthorityUpdate=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-    api_client.add_authorities(AuthorityModel(abbreviation="LIV", fullName="Liverpool City Region Combined Authority"))
+    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     app_client.add_schemes(
         build_scheme(
@@ -364,22 +364,22 @@ def test_cannot_change_milestones_when_error(
             bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             milestones=CapitalSchemeMilestonesModel(
-                currentMilestone=None,
+                current_milestone=None,
                 items=[
                     CapitalSchemeMilestoneModel(
-                        milestone="feasibility design completed", observationType="actual", statusDate="2020-11-30"
+                        milestone="feasibility design completed", observation_type="actual", status_date="2020-11-30"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="preliminary design completed", observationType="actual", statusDate="2022-06-30"
+                        milestone="preliminary design completed", observation_type="actual", status_date="2022-06-30"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="detailed design completed", observationType="actual", statusDate="2022-06-30"
+                        milestone="detailed design completed", observation_type="actual", status_date="2022-06-30"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction started", observationType="planned", statusDate="2023-06-05"
+                        milestone="construction started", observation_type="planned", status_date="2023-06-05"
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction completed", observationType="planned", statusDate="2023-08-31"
+                        milestone="construction completed", observation_type="planned", status_date="2023-08-31"
                     ),
                 ],
             ),

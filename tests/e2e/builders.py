@@ -72,13 +72,13 @@ def build_capital_scheme_model(
         reference=reference,
         overview=CapitalSchemeOverviewModel(
             name=name,
-            bidSubmittingAuthority=bid_submitting_authority,
-            fundingProgramme=funding_programme,
+            bid_submitting_authority=bid_submitting_authority,
+            funding_programme=funding_programme,
             type=type_,
         ),
-        bidStatusDetails=bid_status_details or CapitalSchemeBidStatusDetailsModel(bidStatus="funded"),
+        bid_status_details=bid_status_details or CapitalSchemeBidStatusDetailsModel(bid_status="funded"),
         financials=CollectionModel[CapitalSchemeFinancialModel](items=financials or []),
-        milestones=milestones or CapitalSchemeMilestonesModel(currentMilestone=None, items=[]),
+        milestones=milestones or CapitalSchemeMilestonesModel(current_milestone=None, items=[]),
         outputs=CollectionModel[CapitalSchemeOutputModel](items=outputs or []),
-        authorityReview=authority_review,
+        authority_review=authority_review,
     )

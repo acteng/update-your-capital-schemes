@@ -55,13 +55,13 @@ def get_funding_programmes() -> dict[str, Any]:
             or funding_programme.eligible_for_authority_update == eligible_for_authority_update
         )
     ]
-    return CollectionModel[FundingProgrammeItemModel](items=funding_programme_item_models).model_dump(mode="json")
+    return CollectionModel[FundingProgrammeItemModel](items=funding_programme_item_models).to_json()
 
 
 @bp.get("<code>")
 @require_oauth
 def get_funding_programme(code: str) -> dict[str, Any]:
-    return funding_programmes[code].model_dump(mode="json")
+    return funding_programmes[code].to_json()
 
 
 @bp.delete("")

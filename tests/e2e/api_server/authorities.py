@@ -52,7 +52,7 @@ def get_authority(abbreviation: str) -> dict[str, Any]:
     if not authority:
         abort(404)
 
-    return authority.model_dump(mode="json")
+    return authority.to_json()
 
 
 @bp.get("<abbreviation>/capital-schemes/bid-submitting")
@@ -80,7 +80,7 @@ def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str,
         AnyUrl(url_for("capital_schemes.get_capital_scheme", reference=reference, _external=True))
         for reference in references
     ]
-    return CollectionModel[AnyUrl](items=capital_scheme_urls).model_dump(mode="json")
+    return CollectionModel[AnyUrl](items=capital_scheme_urls).to_json()
 
 
 @bp.delete("")

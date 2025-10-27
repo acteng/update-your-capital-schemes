@@ -84,7 +84,7 @@ def get_capital_scheme(reference: str) -> dict[str, Any]:
     if not capital_scheme:
         abort(404)
 
-    return capital_scheme.model_dump(mode="json")
+    return capital_scheme.to_json()
 
 
 @bp.delete("")
@@ -113,7 +113,7 @@ def get_milestones() -> dict[str, Any]:
         for milestone in milestones.values()
         if (active is None or milestone.active == active) and (complete is None or milestone.complete == complete)
     ]
-    return CollectionModel[str](items=milestone_names).model_dump(mode="json")
+    return CollectionModel[str](items=milestone_names).to_json()
 
 
 @bp.delete("milestones")

@@ -3,8 +3,8 @@ from typing import Annotated, Any
 from flask import Blueprint, Response, abort, request, url_for
 from pydantic import AnyUrl, Field
 
-from schemes.infrastructure.api.base import BaseModel
 from tests.e2e.api_server.auth import require_oauth
+from tests.e2e.api_server.base import BaseModel
 from tests.e2e.api_server.capital_schemes import capital_schemes
 from tests.e2e.api_server.collections import CollectionModel
 

@@ -2,8 +2,8 @@ from typing import Any
 
 from flask import Blueprint, Response, abort, request
 
-from schemes.infrastructure.api.base import BaseModel
 from tests.e2e.api_server.auth import require_oauth
+from tests.e2e.api_server.base import BaseModel
 from tests.e2e.api_server.collections import CollectionModel
 from tests.e2e.api_server.requests import parse_bool
 

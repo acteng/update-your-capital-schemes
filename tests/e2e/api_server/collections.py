@@ -1,4 +1,4 @@
-from schemes.infrastructure.api.base import BaseModel
+from tests.e2e.api_server.base import BaseModel
 
 
 class CollectionModel[T](BaseModel):

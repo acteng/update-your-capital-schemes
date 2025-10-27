@@ -187,8 +187,7 @@ def authorization_server_app_fixture(debug: bool, app_oauth_client: _Client, res
             "DEBUG": debug,
             "TESTING": True,
             "SERVER_NAME": f"localhost:{port}",
-            "CLIENT_ID": app_oauth_client.client_id,
-            "CLIENT_SECRET": app_oauth_client.client_secret,
+            "CLIENTS": [{"clientId": app_oauth_client.client_id, "clientSecret": app_oauth_client.client_secret}],
             "RESOURCE_SERVER_IDENTIFIER": resource_server.identifier,
         }
     )

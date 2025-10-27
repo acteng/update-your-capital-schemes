@@ -1,6 +1,6 @@
 from dataclasses import asdict, dataclass
 
-import requests
+from requests import Session
 
 
 @dataclass(frozen=True)
@@ -88,7 +88,7 @@ class ApiClient:
 
     def __init__(self, url: str):
         self._url = url
-        self._session = requests.Session()
+        self._session = Session()
 
     @property
     def base_url(self) -> str:

@@ -1,5 +1,5 @@
-import requests
 from pydantic import BaseModel
+from requests import Session
 
 
 class AuthorityRepr(BaseModel):
@@ -79,7 +79,7 @@ class AppClient:
 
     def __init__(self, url: str, api_key: str):
         self._url = url
-        self._session = requests.Session()
+        self._session = Session()
         self._session.headers.update({"Authorization": f"API-Key {api_key}"})
 
     def set_clock(self, now: str) -> None:

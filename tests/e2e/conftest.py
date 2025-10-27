@@ -159,9 +159,20 @@ def api_server_fixture(api_server_app: Flask, request: FixtureRequest) -> LiveSe
     return server
 
 
-@pytest.fixture(name="api_client")
-def api_client_fixture(api_server: LiveServer) -> Generator[ApiClient]:
-    client = ApiClient(_get_url(api_server))
+@pytest.fixture(name="api_client", scope="package")
+def api_client_fixture(
+    api_server: LiveServer,
+    authorization_server: LiveServer,
+    resource_server: _ResourceServer,
+    tests_oauth_client: _Client,
+) -> Generator[ApiClient]:
+    client = ApiClient(
+        url=_get_url(api_server),
+        client_id=tests_oauth_client.client_id,
+        client_secret=tests_oauth_client.client_secret,
+        token_endpoint=authorization_server.app.url_for("token", _external=True),
+        audience=resource_server.identifier,
+    )
     yield client
     client.clear_schemes()
     client.clear_milestones()
@@ -179,15 +190,25 @@ def app_oauth_client_fixture() -> _Client:
     return _Client(client_id="app", client_secret="secret")
 
 
+@pytest.fixture(name="tests_oauth_client", scope="package")
+def tests_oauth_client_fixture() -> _Client:
+    return _Client(client_id="tests", client_secret="secret")
+
+
 @pytest.fixture(name="authorization_server_app", scope="package")
-def authorization_server_app_fixture(debug: bool, app_oauth_client: _Client, resource_server: _ResourceServer) -> Flask:
+def authorization_server_app_fixture(
+    debug: bool, app_oauth_client: _Client, tests_oauth_client: _Client, resource_server: _ResourceServer
+) -> Flask:
     port = _get_random_port()
     return authorization_server_create_app(
         {
             "DEBUG": debug,
             "TESTING": True,
             "SERVER_NAME": f"localhost:{port}",
-            "CLIENTS": [{"clientId": app_oauth_client.client_id, "clientSecret": app_oauth_client.client_secret}],
+            "CLIENTS": [
+                {"clientId": app_oauth_client.client_id, "clientSecret": app_oauth_client.client_secret},
+                {"clientId": tests_oauth_client.client_id, "clientSecret": tests_oauth_client.client_secret},
+            ],
             "RESOURCE_SERVER_IDENTIFIER": resource_server.identifier,
         }
     )

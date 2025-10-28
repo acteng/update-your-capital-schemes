@@ -21,6 +21,7 @@ authorities: dict[str, AuthorityModel] = {}
 
 
 @bp.post("")
+@require_oauth("tests")
 def add_authorities() -> Response:
     for element in request.get_json():
         authority = AuthorityModel.model_validate(element)
@@ -84,6 +85,7 @@ def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str,
 
 
 @bp.delete("")
+@require_oauth("tests")
 def clear_authorities() -> Response:
     authorities.clear()
     return Response(status=204)

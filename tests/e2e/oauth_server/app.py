@@ -16,7 +16,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
 
     clients = ClientRepository()
     for client in app.config["CLIENTS"]:
-        clients.add(StubClient(client["clientId"], client["clientSecret"]))
+        clients.add(StubClient(client["clientId"], client["clientSecret"], client["scope"]))
 
     def _save_token(token: dict[str, str], oauth2_request: OAuth2Request) -> None:
         # JWT Bearer tokens do not require saving

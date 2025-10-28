@@ -7,9 +7,14 @@ from authlib.oauth2.rfc6749.models import ClientMixin
 class StubClient(ClientMixin):  # type: ignore
     client_id: str
     client_secret: str
+    scope: str
 
     def get_client_id(self) -> str:
         return self.client_id
+
+    def get_allowed_scope(self, scope: str) -> str:
+        allowed_scope = [s for s in scope.split() if s in self.scope]
+        return " ".join(allowed_scope)
 
     def check_client_secret(self, client_secret: str) -> bool:
         return self.client_secret == client_secret

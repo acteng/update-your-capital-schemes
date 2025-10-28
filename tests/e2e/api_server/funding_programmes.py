@@ -25,6 +25,7 @@ funding_programmes: dict[str, FundingProgrammeModel] = {}
 
 
 @bp.post("")
+@require_oauth("tests")
 def add_funding_programmes() -> Response:
     for element in request.get_json():
         funding_programme = FundingProgrammeModel.model_validate(element)
@@ -65,6 +66,7 @@ def get_funding_programme(code: str) -> dict[str, Any]:
 
 
 @bp.delete("")
+@require_oauth("tests")
 def clear_funding_programmes() -> Response:
     funding_programmes.clear()
     return Response(status=204)

@@ -84,10 +84,13 @@ class MilestoneModel(BaseModel):
 class ApiClient:
     DEFAULT_TIMEOUT = 10
 
-    def __init__(self, url: str, client_id: str, client_secret: str, token_endpoint: str, audience: str):
+    def __init__(self, url: str, client_id: str, client_secret: str, token_endpoint: str, scope: str, audience: str):
         self._url = url
         self._session = OAuth2Session(
-            client_id=client_id, client_secret=client_secret, token_endpoint_auth_method="client_secret_post"
+            client_id=client_id,
+            client_secret=client_secret,
+            token_endpoint_auth_method="client_secret_post",
+            scope=scope,
         )
         self._session.fetch_token(token_endpoint, grant_type="client_credentials", audience=audience)
 

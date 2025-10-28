@@ -68,6 +68,7 @@ milestones: dict[str, MilestoneModel] = {}
 
 
 @bp.post("")
+@require_oauth("tests")
 def add_capital_schemes() -> Response:
     for element in request.get_json():
         capital_scheme = CapitalSchemeModel.model_validate(element)
@@ -88,12 +89,14 @@ def get_capital_scheme(reference: str) -> dict[str, Any]:
 
 
 @bp.delete("")
+@require_oauth("tests")
 def clear_authorities() -> Response:
     capital_schemes.clear()
     return Response(status=204)
 
 
 @bp.post("milestones")
+@require_oauth("tests")
 def add_milestones() -> Response:
     for element in request.get_json():
         milestone = MilestoneModel.model_validate(element)
@@ -117,6 +120,7 @@ def get_milestones() -> dict[str, Any]:
 
 
 @bp.delete("milestones")
+@require_oauth("tests")
 def clear_milestones() -> Response:
     milestones.clear()
     return Response(status=204)

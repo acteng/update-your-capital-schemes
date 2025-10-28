@@ -30,6 +30,7 @@ from tests.e2e.oidc_server.web_client import OidcClient
 class _Client:
     client_id: str
     client_secret: str
+    scope: str
 
 
 @dataclass(frozen=True)
@@ -171,6 +172,7 @@ def api_client_fixture(
         client_id=tests_oauth_client.client_id,
         client_secret=tests_oauth_client.client_secret,
         token_endpoint=authorization_server.app.url_for("token", _external=True),
+        scope="tests",
         audience=resource_server.identifier,
     )
     yield client
@@ -187,12 +189,12 @@ def resource_server_fixture() -> _ResourceServer:
 
 @pytest.fixture(name="app_oauth_client", scope="package")
 def app_oauth_client_fixture() -> _Client:
-    return _Client(client_id="app", client_secret="secret")
+    return _Client(client_id="app", client_secret="secret", scope="")
 
 
 @pytest.fixture(name="tests_oauth_client", scope="package")
 def tests_oauth_client_fixture() -> _Client:
-    return _Client(client_id="tests", client_secret="secret")
+    return _Client(client_id="tests", client_secret="secret", scope="tests")
 
 
 @pytest.fixture(name="authorization_server_app", scope="package")
@@ -206,8 +208,16 @@ def authorization_server_app_fixture(
             "TESTING": True,
             "SERVER_NAME": f"localhost:{port}",
             "CLIENTS": [
-                {"clientId": app_oauth_client.client_id, "clientSecret": app_oauth_client.client_secret},
-                {"clientId": tests_oauth_client.client_id, "clientSecret": tests_oauth_client.client_secret},
+                {
+                    "clientId": app_oauth_client.client_id,
+                    "clientSecret": app_oauth_client.client_secret,
+                    "scope": app_oauth_client.scope,
+                },
+                {
+                    "clientId": tests_oauth_client.client_id,
+                    "clientSecret": tests_oauth_client.client_secret,
+                    "scope": tests_oauth_client.scope,
+                },
             ],
             "RESOURCE_SERVER_IDENTIFIER": resource_server.identifier,
         }

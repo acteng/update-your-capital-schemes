@@ -1,6 +1,8 @@
 import pytest
 
+from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import FinancialType
+from schemes.infrastructure.api.data_sources import DataSourceModel
 from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel, FinancialTypeModel
 
 
@@ -21,8 +23,14 @@ class TestFinancialTypeModel:
 
 class TestCapitalSchemeFinancialModel:
     def test_to_domain(self) -> None:
-        financial_model = CapitalSchemeFinancialModel(type=FinancialTypeModel.FUNDING_ALLOCATION, amount=100_000)
+        financial_model = CapitalSchemeFinancialModel(
+            type=FinancialTypeModel.FUNDING_ALLOCATION, amount=100_000, source=DataSourceModel.ATF4_BID
+        )
 
         financial_revision = financial_model.to_domain()
 
-        assert financial_revision.type == FinancialType.FUNDING_ALLOCATION and financial_revision.amount == 100_000
+        assert (
+            financial_revision.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision.amount == 100_000
+            and financial_revision.source == DataSource.ATF4_BID
+        )

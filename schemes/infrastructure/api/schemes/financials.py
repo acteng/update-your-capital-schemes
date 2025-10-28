@@ -2,9 +2,9 @@ from datetime import datetime
 from enum import Enum
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import FinancialRevision, FinancialType
 from schemes.infrastructure.api.base import BaseModel
+from schemes.infrastructure.api.data_sources import DataSourceModel
 
 
 class FinancialTypeModel(str, Enum):
@@ -21,13 +21,14 @@ class FinancialTypeModel(str, Enum):
 class CapitalSchemeFinancialModel(BaseModel):
     type: FinancialTypeModel
     amount: int
+    source: DataSourceModel
 
     def to_domain(self) -> FinancialRevision:
-        # TODO: id, effective, source
+        # TODO: id, effective
         return FinancialRevision(
             id_=None,
             effective=DateRange(date_from=datetime.min, date_to=None),
             type_=self.type.to_domain(),
             amount=self.amount,
-            source=DataSource.PULSE_5,
+            source=self.source.to_domain(),
         )

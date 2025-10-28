@@ -6,6 +6,7 @@ import pytest
 from pydantic import AnyUrl
 from respx import MockRouter
 
+from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import BidStatus, FinancialType
 from schemes.domain.schemes.milestones import Milestone
 from schemes.domain.schemes.observations import ObservationType
@@ -13,6 +14,7 @@ from schemes.domain.schemes.outputs import OutputTypeMeasure
 from schemes.domain.schemes.overview import FundingProgrammes
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.collections import CollectionModel
+from schemes.infrastructure.api.data_sources import DataSourceModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
 from schemes.infrastructure.api.schemes.authority_reviews import CapitalSchemeAuthorityReviewModel
@@ -100,8 +102,12 @@ class TestCapitalSchemeModel:
             bid_status_details=_dummy_bid_status_details_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](
                 items=[
-                    CapitalSchemeFinancialModel(type=FinancialTypeModel.FUNDING_ALLOCATION, amount=100_000),
-                    CapitalSchemeFinancialModel(type=FinancialTypeModel.SPEND_TO_DATE, amount=50_000),
+                    CapitalSchemeFinancialModel(
+                        type=FinancialTypeModel.FUNDING_ALLOCATION, amount=100_000, source=DataSourceModel.ATF4_BID
+                    ),
+                    CapitalSchemeFinancialModel(
+                        type=FinancialTypeModel.SPEND_TO_DATE, amount=50_000, source=DataSourceModel.ATF4_BID
+                    ),
                 ]
             ),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
@@ -111,8 +117,16 @@ class TestCapitalSchemeModel:
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
         (financial_revision1, financial_revision2) = scheme.funding.financial_revisions
-        assert financial_revision1.type == FinancialType.FUNDING_ALLOCATION and financial_revision1.amount == 100_000
-        assert financial_revision2.type == FinancialType.SPEND_TO_DATE and financial_revision2.amount == 50_000
+        assert (
+            financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision1.amount == 100_000
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
+        assert (
+            financial_revision2.type == FinancialType.SPEND_TO_DATE
+            and financial_revision2.amount == 50_000
+            and financial_revision2.source == DataSource.ATF4_BID
+        )
 
     def test_to_domain_sets_milestone_revisions(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
@@ -275,8 +289,8 @@ class TestApiSchemeRepository:
             json=_build_capital_scheme_json(
                 reference="ATE00001",
                 financials=[
-                    _build_financial_json(type_="funding allocation", amount=100_000),
-                    _build_financial_json(type_="spend to date", amount=50_000),
+                    _build_financial_json(type_="funding allocation", amount=100_000, source="ATF4 bid"),
+                    _build_financial_json(type_="spend to date", amount=50_000, source="ATF4 bid"),
                 ],
             ),
         )
@@ -285,8 +299,16 @@ class TestApiSchemeRepository:
 
         assert scheme
         (financial_revision1, financial_revision2) = scheme.funding.financial_revisions
-        assert financial_revision1.type == FinancialType.FUNDING_ALLOCATION and financial_revision1.amount == 100_000
-        assert financial_revision2.type == FinancialType.SPEND_TO_DATE and financial_revision2.amount == 50_000
+        assert (
+            financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision1.amount == 100_000
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
+        assert (
+            financial_revision2.type == FinancialType.SPEND_TO_DATE
+            and financial_revision2.amount == 50_000
+            and financial_revision2.source == DataSource.ATF4_BID
+        )
 
     async def test_get_scheme_sets_milestone_revisions(
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
@@ -526,8 +548,8 @@ class TestApiSchemeRepository:
                 reference="ATE00001",
                 bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                 financials=[
-                    _build_financial_json(type_="funding allocation", amount=100_000),
-                    _build_financial_json(type_="spend to date", amount=50_000),
+                    _build_financial_json(type_="funding allocation", amount=100_000, source="ATF4 bid"),
+                    _build_financial_json(type_="spend to date", amount=50_000, source="ATF4 bid"),
                 ],
             ),
         )
@@ -535,8 +557,16 @@ class TestApiSchemeRepository:
         (scheme1,) = await schemes.get_by_authority("LIV")
 
         (financial_revision1, financial_revision2) = scheme1.funding.financial_revisions
-        assert financial_revision1.type == FinancialType.FUNDING_ALLOCATION and financial_revision1.amount == 100_000
-        assert financial_revision2.type == FinancialType.SPEND_TO_DATE and financial_revision2.amount == 50_000
+        assert (
+            financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            and financial_revision1.amount == 100_000
+            and financial_revision1.source == DataSource.ATF4_BID
+        )
+        assert (
+            financial_revision2.type == FinancialType.SPEND_TO_DATE
+            and financial_revision2.amount == 50_000
+            and financial_revision2.source == DataSource.ATF4_BID
+        )
 
     async def test_get_schemes_by_authority_sets_milestone_revisions(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
@@ -859,8 +889,10 @@ def _build_bid_status_details_json(bid_status: str | None = None) -> dict[str, A
     return {"bidStatus": bid_status or "submitted"}
 
 
-def _build_financial_json(type_: str | None = None, amount: int | None = None) -> dict[str, Any]:
-    return {"type": type_ or "expected cost", "amount": amount or 0}
+def _build_financial_json(
+    type_: str | None = None, amount: int | None = None, source: str | None = None
+) -> dict[str, Any]:
+    return {"type": type_ or "expected cost", "amount": amount or 0, "source": source or "Pulse 5"}
 
 
 def _build_milestone_json(

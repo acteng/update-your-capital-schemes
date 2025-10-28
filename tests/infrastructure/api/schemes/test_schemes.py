@@ -199,12 +199,14 @@ class TestCapitalSchemeModel:
 
         (output_revision1, output_revision2) = scheme.outputs.output_revisions
         assert (
-            output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
+            output_revision1.id is not None
+            and output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
             and output_revision1.observation_type == ObservationType.ACTUAL
             and output_revision1.value == Decimal(1.5)
         )
         assert (
-            output_revision2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
+            output_revision2.id is not None
+            and output_revision2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
             and output_revision2.observation_type == ObservationType.ACTUAL
             and output_revision2.value == Decimal(2)
         )
@@ -381,12 +383,14 @@ class TestApiSchemeRepository:
         assert scheme
         (output_revision1, output_revision2) = scheme.outputs.output_revisions
         assert (
-            output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
+            output_revision1.id is not None
+            and output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
             and output_revision1.observation_type == ObservationType.ACTUAL
             and output_revision1.value == Decimal(1.5)
         )
         assert (
-            output_revision2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
+            output_revision2.id is not None
+            and output_revision2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
             and output_revision2.observation_type == ObservationType.ACTUAL
             and output_revision2.value == Decimal(2)
         )
@@ -668,12 +672,14 @@ class TestApiSchemeRepository:
 
         (output_revision1, output_revision2) = scheme1.outputs.output_revisions
         assert (
-            output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
+            output_revision1.id is not None
+            and output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
             and output_revision1.observation_type == ObservationType.ACTUAL
             and output_revision1.value == Decimal(1.5)
         )
         assert (
-            output_revision2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
+            output_revision2.id is not None
+            and output_revision2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
             and output_revision2.observation_type == ObservationType.ACTUAL
             and output_revision2.value == Decimal(2)
         )

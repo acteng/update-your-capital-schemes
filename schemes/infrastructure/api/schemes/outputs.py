@@ -60,7 +60,7 @@ class CapitalSchemeOutputModel(BaseModel):
     def to_domain(self) -> OutputRevision:
         # TODO: id, effective
         return OutputRevision(
-            id_=None,
+            id_=0,
             effective=DateRange(date_from=datetime.min, date_to=None),
             type_measure=OutputTypeMeasure.from_type_and_measure(self.type.to_domain(), self.measure.to_domain()),
             value=self.value,

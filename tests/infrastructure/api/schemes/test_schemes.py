@@ -251,7 +251,7 @@ class TestApiSchemeRepository:
         )
 
     async def test_get_scheme_sets_bid_status_revision(
-        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
+        self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get(_build_funding_programme_json()["@id"]).respond(200, json=_build_funding_programme_json())
         api_mock.get(_build_authority_json()["@id"]).respond(200, json=_build_authority_json())
@@ -266,7 +266,7 @@ class TestApiSchemeRepository:
         assert bid_status_revision1.status == BidStatus.FUNDED
 
     async def test_get_scheme_sets_financial_revisions(
-        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
+        self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get(_build_funding_programme_json()["@id"]).respond(200, json=_build_funding_programme_json())
         api_mock.get(_build_authority_json()["@id"]).respond(200, json=_build_authority_json())
@@ -289,7 +289,7 @@ class TestApiSchemeRepository:
         assert financial_revision2.type == FinancialType.SPEND_TO_DATE and financial_revision2.amount == 50_000
 
     async def test_get_scheme_sets_milestone_revisions(
-        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
+        self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get(_build_funding_programme_json()["@id"]).respond(200, json=_build_funding_programme_json())
         api_mock.get(_build_authority_json()["@id"]).respond(200, json=_build_authority_json())
@@ -323,9 +323,7 @@ class TestApiSchemeRepository:
             and milestone_revision2.status_date == date(2020, 3, 1)
         )
 
-    async def test_get_scheme_sets_output_revisions(
-        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
-    ) -> None:
+    async def test_get_scheme_sets_output_revisions(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
         api_mock.get(_build_funding_programme_json()["@id"]).respond(200, json=_build_funding_programme_json())
         api_mock.get(_build_authority_json()["@id"]).respond(200, json=_build_authority_json())
         api_mock.get("/capital-schemes/ATE00001").respond(
@@ -361,9 +359,7 @@ class TestApiSchemeRepository:
             and output_revision2.value == Decimal(2)
         )
 
-    async def test_get_scheme_sets_authority_review(
-        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
-    ) -> None:
+    async def test_get_scheme_sets_authority_review(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
         api_mock.get(_build_funding_programme_json()["@id"]).respond(200, json=_build_funding_programme_json())
         api_mock.get(_build_authority_json()["@id"]).respond(200, json=_build_authority_json())
         api_mock.get("/capital-schemes/ATE00001").respond(

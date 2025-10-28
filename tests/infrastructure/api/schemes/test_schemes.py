@@ -225,7 +225,7 @@ class TestCapitalSchemeModel:
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
         (authority_review1,) = scheme.reviews.authority_reviews
-        assert authority_review1.review_date == datetime(2020, 1, 2)
+        assert authority_review1.id is not None and authority_review1.review_date == datetime(2020, 1, 2)
 
 
 class TestApiSchemeRepository:
@@ -406,7 +406,7 @@ class TestApiSchemeRepository:
 
         assert scheme
         (authority_review1,) = scheme.reviews.authority_reviews
-        assert authority_review1.review_date == datetime(2020, 1, 2)
+        assert authority_review1.id is not None and authority_review1.review_date == datetime(2020, 1, 2)
 
     async def test_get_scheme_ignores_unknown_key(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
         api_mock.get(_build_funding_programme_json()["@id"]).respond(200, json=_build_funding_programme_json())
@@ -712,7 +712,7 @@ class TestApiSchemeRepository:
         (scheme1,) = await schemes.get_by_authority("LIV")
 
         (authority_review1,) = scheme1.reviews.authority_reviews
-        assert authority_review1.review_date == datetime(2020, 1, 2)
+        assert authority_review1.id is not None and authority_review1.review_date == datetime(2020, 1, 2)
 
     async def test_get_schemes_by_authority_filters_by_funding_programme_eligible_for_authority_update(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository

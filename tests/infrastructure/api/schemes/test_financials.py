@@ -30,7 +30,8 @@ class TestCapitalSchemeFinancialModel:
         financial_revision = financial_model.to_domain()
 
         assert (
-            financial_revision.type == FinancialType.FUNDING_ALLOCATION
+            financial_revision.id is not None
+            and financial_revision.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision.amount == 100_000
             and financial_revision.source == DataSource.ATF4_BID
         )

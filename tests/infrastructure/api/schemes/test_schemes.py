@@ -119,12 +119,14 @@ class TestCapitalSchemeModel:
 
         (financial_revision1, financial_revision2) = scheme.funding.financial_revisions
         assert (
-            financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            financial_revision1.id is not None
+            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
             and financial_revision1.source == DataSource.ATF4_BID
         )
         assert (
-            financial_revision2.type == FinancialType.SPEND_TO_DATE
+            financial_revision2.id is not None
+            and financial_revision2.type == FinancialType.SPEND_TO_DATE
             and financial_revision2.amount == 50_000
             and financial_revision2.source == DataSource.ATF4_BID
         )
@@ -302,12 +304,14 @@ class TestApiSchemeRepository:
         assert scheme
         (financial_revision1, financial_revision2) = scheme.funding.financial_revisions
         assert (
-            financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            financial_revision1.id is not None
+            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
             and financial_revision1.source == DataSource.ATF4_BID
         )
         assert (
-            financial_revision2.type == FinancialType.SPEND_TO_DATE
+            financial_revision2.id is not None
+            and financial_revision2.type == FinancialType.SPEND_TO_DATE
             and financial_revision2.amount == 50_000
             and financial_revision2.source == DataSource.ATF4_BID
         )
@@ -561,12 +565,14 @@ class TestApiSchemeRepository:
 
         (financial_revision1, financial_revision2) = scheme1.funding.financial_revisions
         assert (
-            financial_revision1.type == FinancialType.FUNDING_ALLOCATION
+            financial_revision1.id is not None
+            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
             and financial_revision1.amount == 100_000
             and financial_revision1.source == DataSource.ATF4_BID
         )
         assert (
-            financial_revision2.type == FinancialType.SPEND_TO_DATE
+            financial_revision2.id is not None
+            and financial_revision2.type == FinancialType.SPEND_TO_DATE
             and financial_revision2.amount == 50_000
             and financial_revision2.source == DataSource.ATF4_BID
         )

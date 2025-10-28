@@ -26,7 +26,7 @@ class CapitalSchemeFinancialModel(BaseModel):
     def to_domain(self) -> FinancialRevision:
         # TODO: id, effective
         return FinancialRevision(
-            id_=None,
+            id_=0,
             effective=DateRange(date_from=datetime.min, date_to=None),
             type_=self.type.to_domain(),
             amount=self.amount,

@@ -41,7 +41,7 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
-        assert scheme.reference == "ATE00001"
+        assert scheme.id is not None and scheme.reference == "ATE00001"
         assert not scheme.funding.financial_revisions
         assert not scheme.milestones.milestone_revisions
         assert not scheme.outputs.output_revisions
@@ -233,7 +233,7 @@ class TestApiSchemeRepository:
 
         scheme = await schemes.get("ATE00001")
 
-        assert scheme and scheme.reference == "ATE00001"
+        assert scheme and scheme.id is not None and scheme.reference == "ATE00001"
 
     async def test_get_scheme_sets_overview_revision(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
@@ -453,8 +453,8 @@ class TestApiSchemeRepository:
 
         scheme1, scheme2 = await schemes.get_by_authority("LIV")
 
-        assert scheme1.reference == "ATE00001"
-        assert scheme2.reference == "ATE00002"
+        assert scheme1.id is not None and scheme1.reference == "ATE00001"
+        assert scheme2.id is not None and scheme2.reference == "ATE00002"
 
     async def test_get_schemes_by_authority_sets_overview_revision(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository

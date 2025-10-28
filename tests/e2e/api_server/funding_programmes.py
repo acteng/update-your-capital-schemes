@@ -40,7 +40,7 @@ def add_funding_programmes() -> Response:
 
 
 @bp.get("")
-@require_oauth
+@require_oauth()
 def get_funding_programmes() -> dict[str, Any]:
     eligible_for_authority_update = request.args.get("eligible-for-authority-update", type=parse_bool)
 
@@ -59,7 +59,7 @@ def get_funding_programmes() -> dict[str, Any]:
 
 
 @bp.get("<code>")
-@require_oauth
+@require_oauth()
 def get_funding_programme(code: str) -> dict[str, Any]:
     return funding_programmes[code].to_json()
 

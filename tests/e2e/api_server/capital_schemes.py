@@ -77,7 +77,7 @@ def add_capital_schemes() -> Response:
 
 
 @bp.get("<reference>")
-@require_oauth
+@require_oauth()
 def get_capital_scheme(reference: str) -> dict[str, Any]:
     capital_scheme = capital_schemes.get(reference)
 
@@ -103,7 +103,7 @@ def add_milestones() -> Response:
 
 
 @bp.get("milestones")
-@require_oauth
+@require_oauth()
 def get_milestones() -> dict[str, Any]:
     active = request.args.get("active", type=parse_bool)
     complete = request.args.get("complete", type=parse_bool)

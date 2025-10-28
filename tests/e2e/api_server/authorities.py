@@ -45,7 +45,7 @@ def add_authorities() -> Response:
 
 
 @bp.get("<abbreviation>")
-@require_oauth
+@require_oauth()
 def get_authority(abbreviation: str) -> dict[str, Any]:
     authority = authorities.get(abbreviation)
 
@@ -56,7 +56,7 @@ def get_authority(abbreviation: str) -> dict[str, Any]:
 
 
 @bp.get("<abbreviation>/capital-schemes/bid-submitting")
-@require_oauth
+@require_oauth()
 def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str, Any]:
     funding_programme_codes = request.args.getlist("funding-programme-code")
     bid_status = request.args.get("bid-status")

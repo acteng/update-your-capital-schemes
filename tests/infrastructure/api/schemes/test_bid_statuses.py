@@ -25,4 +25,4 @@ class TestCapitalSchemeBidStatusDetailsModel:
 
         bid_status_revision = bid_status_details_model.to_domain()
 
-        assert bid_status_revision.status == BidStatus.FUNDED
+        assert bid_status_revision.id is not None and bid_status_revision.status == BidStatus.FUNDED

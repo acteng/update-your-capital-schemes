@@ -1200,7 +1200,7 @@ class TestDatabaseSchemeRepository:
         scheme.funding.financial_revisions[0].close(datetime(2020, 2, 1))
         scheme.funding.update_financial(
             FinancialRevision(
-                id_=3,
+                id_=None,
                 effective=DateRange(datetime(2020, 2, 1), None),
                 type_=FinancialType.SPEND_TO_DATE,
                 amount=60_000,
@@ -1220,7 +1220,7 @@ class TestDatabaseSchemeRepository:
             and capital_scheme_financial1.effective_date_to == datetime(2020, 2, 1)
         )
         assert (
-            capital_scheme_financial2.capital_scheme_financial_id == 3
+            capital_scheme_financial2.capital_scheme_financial_id is not None
             and capital_scheme_financial2.capital_scheme_id == 1
             and capital_scheme_financial2.effective_date_from == datetime(2020, 2, 1)
             and capital_scheme_financial2.effective_date_to is None
@@ -1254,7 +1254,7 @@ class TestDatabaseSchemeRepository:
         scheme.milestones.milestone_revisions[0].close(datetime(2020, 2, 1))
         scheme.milestones.update_milestone(
             MilestoneRevision(
-                id_=3,
+                id_=None,
                 effective=DateRange(datetime(2020, 2, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
@@ -1275,7 +1275,7 @@ class TestDatabaseSchemeRepository:
             and capital_scheme_milestone1.effective_date_to == datetime(2020, 2, 1)
         )
         assert (
-            capital_scheme_milestone2.capital_scheme_milestone_id == 3
+            capital_scheme_milestone2.capital_scheme_milestone_id is not None
             and capital_scheme_milestone2.capital_scheme_id == 1
             and capital_scheme_milestone2.effective_date_from == datetime(2020, 2, 1)
             and capital_scheme_milestone2.effective_date_to is None
@@ -1304,7 +1304,7 @@ class TestDatabaseSchemeRepository:
         scheme = await schemes.get("ATE00001")
         assert scheme
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=3, review_date=datetime(2020, 1, 2), source=DataSource.AUTHORITY_UPDATE)
+            AuthorityReview(id_=None, review_date=datetime(2020, 1, 2), source=DataSource.AUTHORITY_UPDATE)
         )
 
         await schemes.update(scheme)
@@ -1315,7 +1315,7 @@ class TestDatabaseSchemeRepository:
             capital_scheme_authority_review2: CapitalSchemeAuthorityReviewEntity
             capital_scheme_authority_review1, capital_scheme_authority_review2 = row.capital_scheme_authority_reviews
         assert (
-            capital_scheme_authority_review2.capital_scheme_authority_review_id == 3
+            capital_scheme_authority_review2.capital_scheme_authority_review_id is not None
             and capital_scheme_authority_review2.capital_scheme_id == 1
             and capital_scheme_authority_review2.review_date == datetime(2020, 1, 2)
             and capital_scheme_authority_review2.data_source_id == 16

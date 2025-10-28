@@ -158,12 +158,14 @@ class TestCapitalSchemeModel:
 
         (milestone_revision1, milestone_revision2) = scheme.milestones.milestone_revisions
         assert (
-            milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            milestone_revision1.id is not None
+            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
         )
         assert (
-            milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
+            milestone_revision2.id is not None
+            and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
         )
@@ -341,12 +343,14 @@ class TestApiSchemeRepository:
         assert scheme
         (milestone_revision1, milestone_revision2) = scheme.milestones.milestone_revisions
         assert (
-            milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            milestone_revision1.id is not None
+            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
         )
         assert (
-            milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
+            milestone_revision2.id is not None
+            and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
         )
@@ -613,12 +617,14 @@ class TestApiSchemeRepository:
 
         (milestone_revision1, milestone_revision2) = scheme1.milestones.milestone_revisions
         assert (
-            milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            milestone_revision1.id is not None
+            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
         )
         assert (
-            milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
+            milestone_revision2.id is not None
+            and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
         )

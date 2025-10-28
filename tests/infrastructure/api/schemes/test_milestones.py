@@ -41,7 +41,8 @@ class TestCapitalSchemeMilestoneModel:
         milestone_revision = milestone_model.to_domain()
 
         assert (
-            milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            milestone_revision.id is not None
+            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision.observation_type == ObservationType.PLANNED
             and milestone_revision.status_date == date(2020, 2, 1)
         )

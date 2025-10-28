@@ -34,7 +34,7 @@ class CapitalSchemeMilestoneModel(BaseModel):
     def to_domain(self) -> MilestoneRevision:
         # TODO: id, effective, source
         return MilestoneRevision(
-            id_=None,
+            id_=0,
             effective=DateRange(date_from=datetime.min, date_to=None),
             milestone=self.milestone.to_domain(),
             observation_type=self.observation_type.to_domain(),

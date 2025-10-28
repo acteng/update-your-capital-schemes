@@ -90,7 +90,7 @@ def get_capital_scheme(reference: str) -> dict[str, Any]:
 
 @bp.delete("")
 @require_oauth("tests")
-def clear_authorities() -> Response:
+def clear_capital_schemes() -> Response:
     capital_schemes.clear()
     return Response(status=204)
 

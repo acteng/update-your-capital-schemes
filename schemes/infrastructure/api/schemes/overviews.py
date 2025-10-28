@@ -29,7 +29,7 @@ class CapitalSchemeOverviewModel(BaseModel):
         authority_models: list[AuthorityModel],
         funding_programme_item_models: list[FundingProgrammeModel] | list[FundingProgrammeItemModel],
     ) -> OverviewRevision:
-        # TODO: id, effective, type
+        # TODO: id, effective
         return OverviewRevision(
             id_=None,
             effective=DateRange(date_from=datetime.min, date_to=None),

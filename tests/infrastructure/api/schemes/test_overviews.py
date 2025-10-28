@@ -40,7 +40,8 @@ class TestCapitalSchemeOverviewModel:
         overview_revision = overview_model.to_domain([authority_model], [funding_programme_item_model])
 
         assert (
-            overview_revision.name == "Wirral Package"
+            overview_revision.id is not None
+            and overview_revision.name == "Wirral Package"
             and overview_revision.authority_abbreviation == "LIV"
             and overview_revision.funding_programme == FundingProgrammes.ATF4
             and overview_revision.type == SchemeType.CONSTRUCTION

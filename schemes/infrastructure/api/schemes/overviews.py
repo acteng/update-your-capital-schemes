@@ -31,7 +31,7 @@ class CapitalSchemeOverviewModel(BaseModel):
     ) -> OverviewRevision:
         # TODO: id, effective
         return OverviewRevision(
-            id_=None,
+            id_=0,
             effective=DateRange(date_from=datetime.min, date_to=None),
             name=self.name,
             authority_abbreviation=next(

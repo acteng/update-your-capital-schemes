@@ -119,40 +119,44 @@ def test_change_spend_to_date(
     )
 
     assert scheme_page.heading.text == "Wirral Package"
-    # TODO: reinstate when https://github.com/acteng/update-your-capital-schemes/issues/189 resolved
+    assert scheme_page.funding.spend_to_date == "£60,000"
     if "ATE_URL" not in app.config:
-        assert scheme_page.funding.spend_to_date == "£60,000"
-    assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
-        FinancialRevisionRepr(
-            id=1,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            type="funding allocation",
-            amount=100_000,
-            source="ATF4 bid",
-        ),
-        FinancialRevisionRepr(
-            id=2,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to="2020-01-31T13:00:00",
-            type="spend to date",
-            amount=50_000,
-            source="ATF4 bid",
-        ),
-        FinancialRevisionRepr(
-            id=3,
-            effective_date_from="2020-01-31T13:00:00",
-            effective_date_to=None,
-            type="spend to date",
-            amount=60_000,
-            source="authority update",
-        ),
-    ]
+        assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
+            FinancialRevisionRepr(
+                id=1,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                type="funding allocation",
+                amount=100_000,
+                source="ATF4 bid",
+            ),
+            FinancialRevisionRepr(
+                id=2,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to="2020-01-31T13:00:00",
+                type="spend to date",
+                amount=50_000,
+                source="ATF4 bid",
+            ),
+            FinancialRevisionRepr(
+                id=3,
+                effective_date_from="2020-01-31T13:00:00",
+                effective_date_to=None,
+                type="spend to date",
+                amount=60_000,
+                source="authority update",
+            ),
+        ]
+    else:
+        assert api_client.get_scheme(reference="ATE00001").financials.items == [
+            CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
+            CapitalSchemeFinancialModel(type="spend to date", amount=60_000, source="authority update"),
+        ]
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_cannot_change_spend_to_date_when_error(
-    app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+    app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
@@ -215,21 +219,27 @@ def test_cannot_change_spend_to_date_when_error(
         and change_spend_to_date_page.form.amount.error == "Error: Enter spend to date"
         and change_spend_to_date_page.form.amount.value == ""
     )
-    assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
-        FinancialRevisionRepr(
-            id=1,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            type="funding allocation",
-            amount=100_000,
-            source="ATF4 bid",
-        ),
-        FinancialRevisionRepr(
-            id=2,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            type="spend to date",
-            amount=50_000,
-            source="ATF4 bid",
-        ),
-    ]
+    if "ATE_URL" not in app.config:
+        assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
+            FinancialRevisionRepr(
+                id=1,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                type="funding allocation",
+                amount=100_000,
+                source="ATF4 bid",
+            ),
+            FinancialRevisionRepr(
+                id=2,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                type="spend to date",
+                amount=50_000,
+                source="ATF4 bid",
+            ),
+        ]
+    else:
+        assert api_client.get_scheme(reference="ATE00001").financials.items == [
+            CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
+            CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
+        ]

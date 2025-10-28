@@ -50,6 +50,9 @@ class AsyncBaseApp:
     async def get(self, url: str, **kwargs: Any) -> Response:
         return await self.request("GET", url, **kwargs)
 
+    async def post(self, url: str, **kwargs: Any) -> Response:
+        return await self.request("POST", url, **kwargs)
+
 
 # Workaround: https://github.com/authlib/authlib/issues/822
 class ClientAsyncBaseApp(AsyncBaseApp):

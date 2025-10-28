@@ -6,8 +6,9 @@ import pytest
 from pydantic import AnyUrl
 from respx import MockRouter
 
+from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import BidStatus, FinancialType
+from schemes.domain.schemes.funding import BidStatus, FinancialRevision, FinancialType
 from schemes.domain.schemes.milestones import Milestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure
@@ -25,6 +26,7 @@ from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel,
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel, CapitalSchemeTypeModel
 from schemes.infrastructure.api.schemes.schemes import ApiSchemeRepository, CapitalSchemeModel
 from schemes.oauth import ClientAsyncBaseApp
+from tests.builders import build_scheme
 from tests.infrastructure.api.conftest import StubRemoteApp
 
 
@@ -839,6 +841,84 @@ class TestApiSchemeRepository:
         )
 
         await schemes.get_by_authority("LIV")
+
+        assert remote_app.client_count == 1
+
+    async def test_update_scheme_financials(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme.funding.update_financials(
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
+                type_=FinancialType.SPEND_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                id_=None,
+                effective=DateRange(datetime(2020, 2, 1), None),
+                type_=FinancialType.SPEND_TO_DATE,
+                amount=60_000,
+                source=DataSource.AUTHORITY_UPDATE,
+            ),
+        )
+        create_financial_response = api_mock.post(
+            "/capital-schemes/ATE00001/financials",
+            json=_build_financial_json(type_="spend to date", amount=60_000, source="authority update"),
+        ).respond(201)
+
+        await schemes.update(scheme)
+
+        assert create_financial_response.call_count == 1
+
+    async def test_update_scheme_financials_when_no_changes(
+        self, api_mock: MockRouter, schemes: ApiSchemeRepository
+    ) -> None:
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme.funding.update_financials(
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                type_=FinancialType.SPEND_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        await schemes.update(scheme)
+
+        assert not api_mock.calls.called
+
+    async def test_update_scheme_reuses_client(
+        self, api_mock: MockRouter, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
+    ) -> None:
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme.funding.update_financials(
+            FinancialRevision(
+                id_=None,
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
+                type_=FinancialType.SPEND_TO_DATE,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                id_=None,
+                effective=DateRange(datetime(2020, 2, 1), None),
+                type_=FinancialType.SPEND_TO_DATE,
+                amount=60_000,
+                source=DataSource.AUTHORITY_UPDATE,
+            ),
+        )
+        api_mock.post(
+            "/capital-schemes/ATE00001/financials",
+            json=_build_financial_json(type_="spend to date", amount=50_000, source="ATF4 bid"),
+        ).respond(201)
+        api_mock.post(
+            "/capital-schemes/ATE00001/financials",
+            json=_build_financial_json(type_="spend to date", amount=60_000, source="authority update"),
+        ).respond(201)
+
+        await schemes.update(scheme)
 
         assert remote_app.client_count == 1
 

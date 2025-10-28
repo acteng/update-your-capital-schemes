@@ -268,7 +268,7 @@ class SchemeContext:
 
 @bp.get("<reference>/spend-to-date")
 @async_bearer_auth
-@inject.autoparams("users", "schemes")
+@inject.params(users=UserRepository, schemes=(SchemeRepository, Migrated))
 async def spend_to_date_form(reference: str, users: UserRepository, schemes: SchemeRepository) -> str:
     user_info = session["user"]
     user = users.get(user_info["email"])
@@ -288,7 +288,7 @@ async def spend_to_date_form(reference: str, users: UserRepository, schemes: Sch
 
 @bp.post("<reference>/spend-to-date")
 @async_bearer_auth
-@inject.autoparams("clock", "users", "schemes")
+@inject.params(clock=Clock, users=UserRepository, schemes=(SchemeRepository, Migrated))
 async def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])

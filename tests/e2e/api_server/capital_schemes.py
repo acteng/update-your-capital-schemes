@@ -88,6 +88,22 @@ def get_capital_scheme(reference: str) -> dict[str, Any]:
     return capital_scheme.to_json()
 
 
+@bp.post("<reference>/financials")
+@require_oauth()
+def add_financial(reference: str) -> Response:
+    capital_scheme = capital_schemes.get(reference)
+
+    if not capital_scheme:
+        abort(404)
+
+    financial = CapitalSchemeFinancialModel.model_validate(request.get_json())
+    # remove current financials of same type
+    capital_scheme.financials.items = [f for f in capital_scheme.financials.items if f.type != financial.type]
+    capital_scheme.financials.items.append(financial)
+
+    return Response(financial.to_json(), status=201, content_type="application/json")
+
+
 @bp.delete("")
 @require_oauth("tests")
 def clear_capital_schemes() -> Response:

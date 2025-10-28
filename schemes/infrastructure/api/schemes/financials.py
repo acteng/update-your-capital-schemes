@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from typing import Self
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.funding import FinancialRevision, FinancialType
@@ -14,6 +15,10 @@ class FinancialTypeModel(str, Enum):
     SPEND_TO_DATE = "spend to date"
     FUNDING_REQUEST = "funding request"
 
+    @classmethod
+    def from_domain(cls, type_: FinancialType) -> Self:
+        return cls[type_.name]
+
     def to_domain(self) -> FinancialType:
         return FinancialType[self.name]
 
@@ -22,6 +27,14 @@ class CapitalSchemeFinancialModel(BaseModel):
     type: FinancialTypeModel
     amount: int
     source: DataSourceModel
+
+    @classmethod
+    def from_domain(cls, financial_revision: FinancialRevision) -> Self:
+        return cls(
+            type=FinancialTypeModel.from_domain(financial_revision.type),
+            amount=financial_revision.amount,
+            source=DataSourceModel.from_domain(financial_revision.source),
+        )
 
     def to_domain(self) -> FinancialRevision:
         # TODO: id, effective

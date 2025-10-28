@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Self
 
 from schemes.domain.schemes.data_sources import DataSource
 
@@ -29,6 +30,10 @@ class DataSourceModel(str, Enum):
     CRSTS_QUARTERLY_UPDATE = "CRSTS quarterly update"
     MRN_SCHEME_LIST = "MRN scheme list"
     MRN_QUARTERLY_UPDATE = "MRN quarterly update"
+
+    @classmethod
+    def from_domain(cls, data_source: DataSource) -> Self:
+        return cls[data_source.name]
 
     def to_domain(self) -> DataSource:
         return DataSource[self.name]

@@ -121,6 +121,11 @@ class ApiClient:
         response = self._session.post(f"{self._url}/capital-schemes", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
+    def get_scheme(self, reference: str) -> CapitalSchemeModel:
+        response = self._session.get(f"{self._url}/capital-schemes/{reference}", timeout=self.DEFAULT_TIMEOUT)
+        response.raise_for_status()
+        return CapitalSchemeModel.model_validate(response.json())
+
     def clear_schemes(self) -> None:
         response = self._session.delete(f"{self._url}/capital-schemes", timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()

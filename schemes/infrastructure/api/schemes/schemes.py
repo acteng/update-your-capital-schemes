@@ -93,6 +93,10 @@ class ApiSchemeRepository(SchemeRepository):
                 for capital_scheme_model in capital_scheme_models
             ]
 
+    async def update(self, scheme: Scheme) -> None:
+        async with self._remote_app.client() as client:
+            await self._update_financials(client, scheme)
+
     async def _get_funding_programme_item_models(self, remote_app: AsyncBaseApp) -> list[FundingProgrammeItemModel]:
         response = await remote_app.get(
             "/funding-programmes", params={"eligible-for-authority-update": "true"}, request=self._dummy_request()
@@ -143,6 +147,23 @@ class ApiSchemeRepository(SchemeRepository):
         response = await remote_app.get(url, request=self._dummy_request())
         response.raise_for_status()
         return AuthorityModel.model_validate(response.json())
+
+    async def _update_financials(self, remote_app: AsyncBaseApp, scheme: Scheme) -> None:
+        for financial_revision in scheme.funding.financial_revisions:
+            if financial_revision.id is None:
+                financial_model = CapitalSchemeFinancialModel.from_domain(financial_revision)
+                await self._create_financial(remote_app, scheme.reference, financial_model)
+
+    async def _create_financial(
+        self, remote_app: AsyncBaseApp, capital_scheme_reference: str, financial_model: CapitalSchemeFinancialModel
+    ) -> None:
+        financial_json = financial_model.model_dump(mode="json", by_alias=True)
+        response = await remote_app.post(
+            f"/capital-schemes/{capital_scheme_reference}/financials",
+            json=financial_json,
+            request=self._dummy_request(),
+        )
+        response.raise_for_status()
 
     # See: https://github.com/authlib/authlib/issues/818#issuecomment-3257950062
     @staticmethod

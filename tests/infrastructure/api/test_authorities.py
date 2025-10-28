@@ -8,6 +8,20 @@ from schemes.infrastructure.api.authorities import ApiAuthorityRepository, Autho
 from schemes.oauth import AsyncBaseApp
 
 
+class TestAuthorityModel:
+    def test_to_domain(self) -> None:
+        authority_model = AuthorityModel(
+            id=AnyUrl("https://api.example/authorities/LIV"),
+            abbreviation="LIV",
+            full_name="Liverpool City Region Combined Authority",
+            bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/LIV/capital-schemes/bid-submitting"),
+        )
+
+        authority = authority_model.to_domain()
+
+        assert authority.abbreviation == "LIV" and authority.name == "Liverpool City Region Combined Authority"
+
+
 class TestApiAuthorityRepository:
     @pytest.fixture(name="authorities")
     def authorities_fixture(self, remote_app: AsyncBaseApp) -> ApiAuthorityRepository:
@@ -49,20 +63,6 @@ class TestApiAuthorityRepository:
         api_mock.get("/authorities/WYO").respond(404)
 
         assert await authorities.get("WYO") is None
-
-
-class TestAuthorityModel:
-    def test_to_domain(self) -> None:
-        authority_model = AuthorityModel(
-            id=AnyUrl("https://api.example/authorities/LIV"),
-            abbreviation="LIV",
-            full_name="Liverpool City Region Combined Authority",
-            bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/LIV/capital-schemes/bid-submitting"),
-        )
-
-        authority = authority_model.to_domain()
-
-        assert authority.abbreviation == "LIV" and authority.name == "Liverpool City Region Combined Authority"
 
 
 def _build_authority_json(

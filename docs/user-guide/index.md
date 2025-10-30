@@ -175,13 +175,11 @@ You will then be returned to your schemes and the “Needs review” tag will no
 
 # Sign out of the service
 
-1. To sign out of the service click “Sign out” in the header:
+To sign out of the service click “Sign out” in the header:
 
    ![Your schemes](schemes.png)
 
-1. \pagebreak You will then be signed out of the service and GOV.UK One Login:
-
-   ![You have signed out](signed-out.png)
+You will then be signed out of the service and GOV.UK One Login.
 
 \pagebreak
 

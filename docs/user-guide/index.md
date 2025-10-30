@@ -47,7 +47,7 @@ toccolor: black
 
    ![Set up an authenticator app](create-qr-code.png)
 
-1. \pagebreak Optionally, if you are using a password manager or web authenticator application you can click the
+1. \pagebreak Alternatively, if you are using a password manager or web authenticator application you can click the
    “I cannot scan the QR code” link to show a secret key that you can copy and paste into an authenticator app. This
    will allow the app to generate the required security code. 
 

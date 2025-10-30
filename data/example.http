@@ -1,0 +1,102 @@
+# Create authority
+POST http://127.0.0.1:5000/authorities
+Authorization: API-Key {{$env.FLASK_API_KEY}}
+Content-Type: application/json
+
+[
+  {
+    "abbreviation": "LIV",
+    "name": "Liverpool City Region Combined Authority"
+  }
+]
+
+> resource-created.js
+
+###
+
+# Add users
+POST http://127.0.0.1:5000/authorities/LIV/users
+Authorization: API-Key {{$env.FLASK_API_KEY}}
+Content-Type: application/json
+
+[
+  { "email": "alex.coleman@activetravelengland.gov.uk" },
+  { "email": "mark.hobson@activetravelengland.gov.uk" }
+]
+
+> resource-created.js
+
+###
+
+# Create schemes
+POST http://127.0.0.1:5000/schemes
+Authorization: API-Key {{$env.FLASK_API_KEY}}
+Content-Type: application/json
+
+[
+  {
+    "id": 123,
+    "reference": "ATE00123",
+    "overview_revisions": [
+      {
+        "effective_date_from": "2025-01-01T00:00:00",
+        "effective_date_to": null,
+        "name": "School Streets",
+        "authority_abbreviation": "LIV",
+        "type": "construction",
+        "funding_programme": "ATF4"
+      }
+    ],
+    "bid_status_revisions": [
+      {
+        "effective_date_from": "2025-01-01T00:00:00",
+        "effective_date_to": null,
+        "status": "funded"
+      }
+    ],
+    "financial_revisions": [
+      {
+        "effective_date_from": "2025-01-01T00:00:00",
+        "effective_date_to": null,
+        "type": "funding allocation",
+        "amount": 500000,
+        "source": "authority update"
+      },
+      {
+        "effective_date_from": "2025-01-01T00:00:00",
+        "effective_date_to": null,
+        "type": "spend to date",
+        "amount": 400000,
+        "source": "authority update"
+      }
+    ],
+    "milestone_revisions": [
+      {
+        "effective_date_from": "2025-01-01T00:00:00",
+        "effective_date_to": null,
+        "milestone": "feasibility design completed",
+        "observation_type": "planned",
+        "status_date": "2025-01-01",
+        "source": "authority update"
+      }
+    ],
+    "output_revisions": [
+      {
+        "effective_date_from": "2025-01-01T00:00:00",
+        "effective_date_to": null,
+        "type": "new segregated cycling facility",
+        "measure": "number of junctions",
+        "value": "1.000000",
+        "observation_type": "planned"
+      }
+    ],
+    "authority_reviews": [
+      {
+        "review_date": "2025-01-01T00:00:00",
+        "source": "authority update"
+      }
+    ]
+  }
+]
+
+> resource-created.js

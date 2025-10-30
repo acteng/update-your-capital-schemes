@@ -129,6 +129,10 @@ To run the server as a container using a PostgreSQL database:
    
 1. Open http://127.0.0.1:5000
 
+## Loading a dataset
+
+To use the service you will first need to [load a dataset](data/README.md).
+
 ## Running formatters and linters
 
 1. Run the formatters:

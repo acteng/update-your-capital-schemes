@@ -6,7 +6,7 @@ Digital service for local authorities to provide updates about capital schemes t
 
 ## Prerequisites
 
-1. Install Python 3.13
+1. Install Python 3.14
 1. Install Node 22
 1. Install Docker and Compose plugin
 1. Install Google Cloud CLI and authenticate using ADCs:
@@ -52,7 +52,7 @@ The application can also be configured with the following environment variables:
 1. Create a virtual environment:
 
    ```bash
-   python3.13 -m venv --prompt . --upgrade-deps .venv
+   python3.14 -m venv --prompt . --upgrade-deps .venv
    ```
 
 1. Activate the virtual environment:

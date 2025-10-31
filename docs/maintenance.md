@@ -51,7 +51,7 @@ We replace the GOV.UK icons with the ATE logo.
 
 After upgrading GOV.UK Frontend Jinja Macros, update the page template:
 
-1. Copy the contents of the `headIcons` block in [the page template](../.venv/lib/python3.13/site-packages/govuk_frontend_jinja/templates/template.html)
+1. Copy the contents of the `headIcons` block in [the page template](../.venv/lib/python3.14/site-packages/govuk_frontend_jinja/templates/template.html)
    to the corresponding block in [schemes/views/templates/base.html](../schemes/views/templates/base.html) 
 
 1. Update the GOV.UK icon hrefs to point to the corresponding ATE icons by applying the following patch:
@@ -76,7 +76,7 @@ so we maintain a copy of the header template to replace it with the ATE logo.
 
 After upgrading GOV.UK Frontend Jinja Macros, update the header template:
 
-1. Copy the contents of [the header template](../.venv/lib/python3.13/site-packages/govuk_frontend_jinja/templates/components/header/macro.html)
+1. Copy the contents of [the header template](../.venv/lib/python3.14/site-packages/govuk_frontend_jinja/templates/components/header/macro.html)
    to [schemes/views/templates/ate_header/macro.html](../schemes/views/templates/ate_header/macro.html) and rename the
    macro by applying the following patch:
 
@@ -103,7 +103,7 @@ so we maintain a copy of the footer template to remove it ourselves.
 
 After upgrading GOV.UK Frontend Jinja Macros, update the footer template:
 
-1. Copy the contents of [the footer template](../.venv/lib/python3.13/site-packages/govuk_frontend_jinja/templates/components/footer/macro.html)
+1. Copy the contents of [the footer template](../.venv/lib/python3.14/site-packages/govuk_frontend_jinja/templates/components/footer/macro.html)
    to [schemes/views/templates/ate_footer/macro.html](../schemes/views/templates/ate_footer/macro.html) and rename the
    macro by applying the following patch:
 

@@ -2,7 +2,7 @@
 name = "schemes"
 version = "1.0.0"
 description = "Update your capital schemes service."
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
     "alembic~=1.18.0",
     "authlib~=1.6.0",
@@ -50,7 +50,7 @@ script_location = "schemes:infrastructure/database/migrations"
 
 [tool.black]
 line-length = 120
-target-version = ["py313"]
+target-version = ["py314"]
 
 # isort
 

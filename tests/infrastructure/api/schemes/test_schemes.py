@@ -16,11 +16,12 @@ from schemes.domain.schemes.overview import FundingProgrammes
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.data_sources import DataSourceModel
+from schemes.infrastructure.api.financial_types import FinancialTypeModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
 from schemes.infrastructure.api.schemes.authority_reviews import CapitalSchemeAuthorityReviewModel
 from schemes.infrastructure.api.schemes.bid_statuses import BidStatusModel, CapitalSchemeBidStatusDetailsModel
-from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel, FinancialTypeModel
+from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel
 from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel, MilestoneModel
 from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel, OutputMeasureModel, OutputTypeModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel, CapitalSchemeTypeModel

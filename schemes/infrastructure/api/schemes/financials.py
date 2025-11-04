@@ -1,26 +1,11 @@
 from datetime import datetime
-from enum import Enum
 from typing import Self
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes.funding import FinancialRevision, FinancialType
+from schemes.domain.schemes.funding import FinancialRevision
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.data_sources import DataSourceModel
-
-
-class FinancialTypeModel(str, Enum):
-    EXPECTED_COST = "expected cost"
-    ACTUAL_COST = "actual cost"
-    FUNDING_ALLOCATION = "funding allocation"
-    SPEND_TO_DATE = "spend to date"
-    FUNDING_REQUEST = "funding request"
-
-    @classmethod
-    def from_domain(cls, type_: FinancialType) -> Self:
-        return cls[type_.name]
-
-    def to_domain(self) -> FinancialType:
-        return FinancialType[self.name]
+from schemes.infrastructure.api.financial_types import FinancialTypeModel
 
 
 class CapitalSchemeFinancialModel(BaseModel):

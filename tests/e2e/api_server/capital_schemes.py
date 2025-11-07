@@ -1,6 +1,6 @@
 from typing import Any
 
-from flask import Blueprint, Response, abort, request
+from flask import Blueprint, Response, abort, make_response, request
 
 from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.base import BaseModel
@@ -101,7 +101,7 @@ def add_financial(reference: str) -> Response:
     capital_scheme.financials.items = [f for f in capital_scheme.financials.items if f.type != financial.type]
     capital_scheme.financials.items.append(financial)
 
-    return Response(financial.to_json(), status=201, content_type="application/json")
+    return make_response(financial.to_json(), 201)
 
 
 @bp.delete("")

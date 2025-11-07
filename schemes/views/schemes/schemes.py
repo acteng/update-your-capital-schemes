@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
 from logging import Logger
-from typing import Self
+from typing import Any, Self
 
 import inject
-from flask import Blueprint, Response, abort, flash, make_response, redirect, render_template, request, session, url_for
+from flask import Blueprint, Response, abort, flash, redirect, render_template, request, session, url_for
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from werkzeug import Response as BaseResponse
 
@@ -192,13 +192,11 @@ async def get_html(
 
 @async_api_key_auth
 @inject.autoparams("schemes")
-async def get_json(reference: str, schemes: SchemeRepository) -> Response:
+async def get_json(reference: str, schemes: SchemeRepository) -> dict[str, Any]:
     scheme = await schemes.get(reference)
     assert scheme
 
-    response = make_response(SchemeRepr.from_domain(scheme).model_dump())
-    response.content_type = "application/json"
-    return response
+    return SchemeRepr.from_domain(scheme).model_dump()
 
 
 @dataclass(frozen=True)

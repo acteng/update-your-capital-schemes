@@ -32,6 +32,7 @@ from schemes.infrastructure.database.schemes.data_sources import DataSourceMappe
         (DataSource.CRSTS_QUARTERLY_UPDATE, 23),
         (DataSource.MRN_SCHEME_LIST, 24),
         (DataSource.MRN_QUARTERLY_UPDATE, 25),
+        (DataSource.CATF_SCHEME_SUBMISSION, 26),
     ],
 )
 class TestDataSourceMapper:

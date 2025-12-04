@@ -33,6 +33,7 @@ class DataSourceRepr(str, Enum):
     CRSTS_QUARTERLY_UPDATE = "CRSTS quarterly update"
     MRN_SCHEME_LIST = "MRN scheme list"
     MRN_QUARTERLY_UPDATE = "MRN quarterly update"
+    CATF_SCHEME_SUBMISSION = "CATF scheme submission"
 
     @classmethod
     def from_domain(cls, data_source: DataSource) -> DataSourceRepr:
@@ -69,4 +70,5 @@ class DataSourceRepr(str, Enum):
             DataSource.CRSTS_QUARTERLY_UPDATE: DataSourceRepr.CRSTS_QUARTERLY_UPDATE,
             DataSource.MRN_SCHEME_LIST: DataSourceRepr.MRN_SCHEME_LIST,
             DataSource.MRN_QUARTERLY_UPDATE: DataSourceRepr.MRN_QUARTERLY_UPDATE,
+            DataSource.CATF_SCHEME_SUBMISSION: DataSourceRepr.CATF_SCHEME_SUBMISSION,
         }

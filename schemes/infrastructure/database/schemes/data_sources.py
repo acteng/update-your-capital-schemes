@@ -29,6 +29,7 @@ class DataSourceMapper:
         DataSource.CRSTS_QUARTERLY_UPDATE: 23,
         DataSource.MRN_SCHEME_LIST: 24,
         DataSource.MRN_QUARTERLY_UPDATE: 25,
+        DataSource.CATF_SCHEME_SUBMISSION: 26,
     }
 
     def to_id(self, data_source: DataSource) -> int:

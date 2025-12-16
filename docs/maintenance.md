@@ -240,11 +240,15 @@ doesn't publish a Node package. To upgrade:
    {% endmacro %}
    ```
 
-   And update the service navigation component for Jinja by applying the following patch:
+   And update the template for Jinja by applying the following patch:
 
    ```diff
    -{%- from "node_modules/govuk-frontend/dist/govuk/components/service-navigation/macro.njk" import govukServiceNavigation -%}
+   -{%- set lngQueryString = "?lng=cy" if (params.lng === "cy") else "" -%}
+   -{%- set signOutLinkText = "Allgofnodi" if (params.lng === "cy") else "Sign out" -%}
    +{%- from "govuk_frontend_jinja/components/service-navigation/macro.html" import govukServiceNavigation -%}
+   +{%- set lngQueryString = "?lng=cy" if (params.lng == "cy") else "" -%}
+   +{%- set signOutLinkText = "Allgofnodi" if (params.lng == "cy") else "Sign out" -%}
    ```
 
 1. The template [doesn't allow the crown logo to be customised](https://github.com/govuk-one-login/service-header/issues/40),

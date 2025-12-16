@@ -7,7 +7,7 @@ Digital service for local authorities to provide updates about capital schemes t
 ## Prerequisites
 
 1. Install Python 3.13
-1. Install Node 22
+1. Install Node 24
 1. Install Docker and Compose plugin
 1. Install Google Cloud CLI and authenticate using ADCs:
    ```bash

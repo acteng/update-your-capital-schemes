@@ -53,7 +53,10 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
                 current_milestone="detailed design completed",
                 items=[
                     CapitalSchemeMilestoneModel(
-                        milestone="detailed design completed", observation_type="actual", status_date="2020-01-01"
+                        milestone="detailed design completed",
+                        observation_type="actual",
+                        status_date="2020-01-01",
+                        source="ATF4 bid",
                     )
                 ],
             ),

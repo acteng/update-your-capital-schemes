@@ -87,19 +87,34 @@ def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
                 current_milestone=None,
                 items=[
                     CapitalSchemeMilestoneModel(
-                        milestone="feasibility design completed", observation_type="actual", status_date="2020-11-30"
+                        milestone="feasibility design completed",
+                        observation_type="actual",
+                        status_date="2020-11-30",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="preliminary design completed", observation_type="actual", status_date="2022-06-30"
+                        milestone="preliminary design completed",
+                        observation_type="actual",
+                        status_date="2022-06-30",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="detailed design completed", observation_type="actual", status_date="2022-06-30"
+                        milestone="detailed design completed",
+                        observation_type="actual",
+                        status_date="2022-06-30",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction started", observation_type="planned", status_date="2023-06-05"
+                        milestone="construction started",
+                        observation_type="planned",
+                        status_date="2023-06-05",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction completed", observation_type="planned", status_date="2023-08-31"
+                        milestone="construction completed",
+                        observation_type="planned",
+                        status_date="2023-08-31",
+                        source="ATF4 bid",
                     ),
                 ],
             ),
@@ -192,19 +207,34 @@ def test_change_milestones(
                 current_milestone=None,
                 items=[
                     CapitalSchemeMilestoneModel(
-                        milestone="feasibility design completed", observation_type="actual", status_date="2020-11-30"
+                        milestone="feasibility design completed",
+                        observation_type="actual",
+                        status_date="2020-11-30",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="preliminary design completed", observation_type="actual", status_date="2022-06-30"
+                        milestone="preliminary design completed",
+                        observation_type="actual",
+                        status_date="2022-06-30",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="detailed design completed", observation_type="actual", status_date="2022-06-30"
+                        milestone="detailed design completed",
+                        observation_type="actual",
+                        status_date="2022-06-30",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction started", observation_type="planned", status_date="2023-06-05"
+                        milestone="construction started",
+                        observation_type="planned",
+                        status_date="2023-06-05",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction completed", observation_type="planned", status_date="2023-08-31"
+                        milestone="construction completed",
+                        observation_type="planned",
+                        status_date="2023-08-31",
+                        source="ATF4 bid",
                     ),
                 ],
             ),
@@ -367,19 +397,34 @@ def test_cannot_change_milestones_when_error(
                 current_milestone=None,
                 items=[
                     CapitalSchemeMilestoneModel(
-                        milestone="feasibility design completed", observation_type="actual", status_date="2020-11-30"
+                        milestone="feasibility design completed",
+                        observation_type="actual",
+                        status_date="2020-11-30",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="preliminary design completed", observation_type="actual", status_date="2022-06-30"
+                        milestone="preliminary design completed",
+                        observation_type="actual",
+                        status_date="2022-06-30",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="detailed design completed", observation_type="actual", status_date="2022-06-30"
+                        milestone="detailed design completed",
+                        observation_type="actual",
+                        status_date="2022-06-30",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction started", observation_type="planned", status_date="2023-06-05"
+                        milestone="construction started",
+                        observation_type="planned",
+                        status_date="2023-06-05",
+                        source="ATF4 bid",
                     ),
                     CapitalSchemeMilestoneModel(
-                        milestone="construction completed", observation_type="planned", status_date="2023-08-31"
+                        milestone="construction completed",
+                        observation_type="planned",
+                        status_date="2023-08-31",
+                        source="ATF4 bid",
                     ),
                 ],
             ),

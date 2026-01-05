@@ -146,11 +146,13 @@ class TestCapitalSchemeModel:
                         milestone=MilestoneModel.DETAILED_DESIGN_COMPLETED,
                         observation_type=ObservationTypeModel.PLANNED,
                         status_date=date(2020, 2, 1),
+                        source=DataSourceModel.ATF4_BID,
                     ),
                     CapitalSchemeMilestoneModel(
                         milestone=MilestoneModel.CONSTRUCTION_STARTED,
                         observation_type=ObservationTypeModel.PLANNED,
                         status_date=date(2020, 3, 1),
+                        source=DataSourceModel.ATF4_BID,
                     ),
                 ]
             ),
@@ -165,12 +167,14 @@ class TestCapitalSchemeModel:
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
+            and milestone_revision1.source == DataSource.ATF4_BID
         )
         assert (
             milestone_revision2.id is not None
             and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
+            and milestone_revision2.source == DataSource.ATF4_BID
         )
 
     def test_to_domain_sets_output_revisions(self) -> None:
@@ -334,10 +338,16 @@ class TestApiSchemeRepository:
                 reference="ATE00001",
                 milestones=[
                     _build_milestone_json(
-                        milestone="detailed design completed", observation_type="planned", status_date="2020-02-01"
+                        milestone="detailed design completed",
+                        observation_type="planned",
+                        status_date="2020-02-01",
+                        source="ATF4 bid",
                     ),
                     _build_milestone_json(
-                        milestone="construction started", observation_type="planned", status_date="2020-03-01"
+                        milestone="construction started",
+                        observation_type="planned",
+                        status_date="2020-03-01",
+                        source="ATF4 bid",
                     ),
                 ],
             ),
@@ -352,12 +362,14 @@ class TestApiSchemeRepository:
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.PLANNED
             and milestone_revision1.status_date == date(2020, 2, 1)
+            and milestone_revision1.source == DataSource.ATF4_BID
         )
         assert (
             milestone_revision2.id is not None
             and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone_revision2.observation_type == ObservationType.PLANNED
             and milestone_revision2.status_date == date(2020, 3, 1)
+            and milestone_revision2.source == DataSource.ATF4_BID
         )
 
     async def test_get_scheme_sets_output_revisions(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
@@ -998,12 +1010,16 @@ def _build_financial_json(
 
 
 def _build_milestone_json(
-    milestone: str | None = None, observation_type: str | None = None, status_date: str | None = None
+    milestone: str | None = None,
+    observation_type: str | None = None,
+    status_date: str | None = None,
+    source: str | None = None,
 ) -> dict[str, Any]:
     return {
         "milestone": milestone or "public consultation completed",
         "observationType": observation_type or "planned",
         "statusDate": status_date or "1970-01-01",
+        "source": source or "Pulse 5",
     }
 
 

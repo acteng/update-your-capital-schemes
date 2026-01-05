@@ -167,15 +167,26 @@ class ApiSchemeRepository(SchemeRepository):
         response.raise_for_status()
 
     async def _update_milestones(self, remote_app: AsyncBaseApp, scheme: Scheme) -> None:
-        for milestone_revision in scheme.milestones.milestone_revisions:
-            if milestone_revision.id is None:
-                milestone_model = CapitalSchemeMilestoneModel.from_domain(milestone_revision)
-                await self._create_milestone(remote_app, scheme.reference, milestone_model)
+        new_milestone_revisions = [
+            milestone_revision
+            for milestone_revision in scheme.milestones.milestone_revisions
+            if milestone_revision.id is None
+        ]
+        if new_milestone_revisions:
+            milestones_model = CollectionModel[CapitalSchemeMilestoneModel](
+                items=[
+                    CapitalSchemeMilestoneModel.from_domain(milestone_revision)
+                    for milestone_revision in new_milestone_revisions
+                ]
+            )
+            await self._create_milestones(remote_app, scheme.reference, milestones_model)
 
-    async def _create_milestone(
-        self, remote_app: AsyncBaseApp, capital_scheme_reference: str, milestone_model: CapitalSchemeMilestoneModel
+    async def _create_milestones(
+        self,
+        remote_app: AsyncBaseApp,
+        capital_scheme_reference: str,
+        milestones_model: CollectionModel[CapitalSchemeMilestoneModel],
     ) -> None:
-        milestones_model = CollectionModel[CapitalSchemeMilestoneModel](items=[milestone_model])
         milestones_json = milestones_model.model_dump(mode="json", by_alias=True)
         response = await remote_app.post(
             f"/capital-schemes/{capital_scheme_reference}/milestones",

@@ -904,7 +904,6 @@ class TestApiSchemeRepository:
 
     async def test_update_scheme_milestones(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
         scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
-        # TODO: post multiple milestones
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=2,
@@ -922,6 +921,14 @@ class TestApiSchemeRepository:
                 status_date=date(2020, 3, 1),
                 source=DataSource.AUTHORITY_UPDATE,
             ),
+            MilestoneRevision(
+                id_=None,
+                effective=DateRange(datetime(2020, 2, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 4, 1),
+                source=DataSource.AUTHORITY_UPDATE,
+            ),
         )
         create_milestones_response = api_mock.post(
             "/capital-schemes/ATE00001/milestones",
@@ -932,7 +939,13 @@ class TestApiSchemeRepository:
                         observation_type="planned",
                         status_date="2020-03-01",
                         source="authority update",
-                    )
+                    ),
+                    _build_milestone_json(
+                        milestone="detailed design completed",
+                        observation_type="actual",
+                        status_date="2020-04-01",
+                        source="authority update",
+                    ),
                 ]
             },
         ).respond(201)

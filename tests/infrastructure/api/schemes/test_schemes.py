@@ -9,7 +9,7 @@ from respx import MockRouter
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import BidStatus, FinancialRevision, FinancialType
-from schemes.domain.schemes.milestones import Milestone
+from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure
 from schemes.domain.schemes.overview import FundingProgrammes
@@ -894,6 +894,64 @@ class TestApiSchemeRepository:
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.SPEND_TO_DATE,
                 amount=50_000,
+                source=DataSource.ATF4_BID,
+            )
+        )
+
+        await schemes.update(scheme)
+
+        assert not api_mock.calls.called
+
+    async def test_update_scheme_milestones(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        # TODO: post multiple milestones
+        scheme.milestones.update_milestones(
+            MilestoneRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 2, 1),
+                source=DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                id_=None,
+                effective=DateRange(datetime(2020, 2, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 3, 1),
+                source=DataSource.AUTHORITY_UPDATE,
+            ),
+        )
+        create_milestones_response = api_mock.post(
+            "/capital-schemes/ATE00001/milestones",
+            json={
+                "items": [
+                    _build_milestone_json(
+                        milestone="detailed design completed",
+                        observation_type="planned",
+                        status_date="2020-03-01",
+                        source="authority update",
+                    )
+                ]
+            },
+        ).respond(201)
+
+        await schemes.update(scheme)
+
+        assert create_milestones_response.call_count == 1
+
+    async def test_update_scheme_milestones_when_no_changes(
+        self, api_mock: MockRouter, schemes: ApiSchemeRepository
+    ) -> None:
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme.milestones.update_milestones(
+            MilestoneRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 2, 1),
                 source=DataSource.ATF4_BID,
             )
         )

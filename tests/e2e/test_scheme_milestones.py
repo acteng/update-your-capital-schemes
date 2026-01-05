@@ -251,82 +251,120 @@ def test_change_milestones(
     )
 
     assert scheme_page.heading.text == "Wirral Package"
-    # TODO: reinstate when https://github.com/acteng/update-your-capital-schemes/issues/190 resolved
+    assert (
+        scheme_page.milestones.milestones["Construction started"].actual == "5 Jul 2023"
+        and scheme_page.milestones.milestones["Construction completed"].planned == "30 Sep 2023"
+    )
     if "ATE_URL" not in app.config:
-        assert (
-            scheme_page.milestones.milestones["Construction started"].actual == "5 Jul 2023"
-            and scheme_page.milestones.milestones["Construction completed"].planned == "30 Sep 2023"
-        )
-    assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
-        MilestoneRevisionRepr(
-            id=1,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            milestone="feasibility design completed",
-            observation_type="actual",
-            status_date="2020-11-30",
-            source="ATF4 bid",
-        ),
-        MilestoneRevisionRepr(
-            id=2,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            milestone="preliminary design completed",
-            observation_type="actual",
-            status_date="2022-06-30",
-            source="ATF4 bid",
-        ),
-        MilestoneRevisionRepr(
-            id=3,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            milestone="detailed design completed",
-            observation_type="actual",
-            status_date="2022-06-30",
-            source="ATF4 bid",
-        ),
-        MilestoneRevisionRepr(
-            id=4,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            milestone="construction started",
-            observation_type="planned",
-            status_date="2023-06-05",
-            source="ATF4 bid",
-        ),
-        MilestoneRevisionRepr(
-            id=5,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to="2023-08-01T13:00:00",
-            milestone="construction completed",
-            observation_type="planned",
-            status_date="2023-08-31",
-            source="ATF4 bid",
-        ),
-        MilestoneRevisionRepr(
-            id=6,
-            effective_date_from="2023-08-01T13:00:00",
-            effective_date_to=None,
-            milestone="construction started",
-            observation_type="actual",
-            status_date="2023-07-05",
-            source="authority update",
-        ),
-        MilestoneRevisionRepr(
-            id=7,
-            effective_date_from="2023-08-01T13:00:00",
-            effective_date_to=None,
-            milestone="construction completed",
-            observation_type="planned",
-            status_date="2023-09-30",
-            source="authority update",
-        ),
-    ]
+        assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
+            MilestoneRevisionRepr(
+                id=1,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                milestone="feasibility design completed",
+                observation_type="actual",
+                status_date="2020-11-30",
+                source="ATF4 bid",
+            ),
+            MilestoneRevisionRepr(
+                id=2,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                milestone="preliminary design completed",
+                observation_type="actual",
+                status_date="2022-06-30",
+                source="ATF4 bid",
+            ),
+            MilestoneRevisionRepr(
+                id=3,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                milestone="detailed design completed",
+                observation_type="actual",
+                status_date="2022-06-30",
+                source="ATF4 bid",
+            ),
+            MilestoneRevisionRepr(
+                id=4,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                milestone="construction started",
+                observation_type="planned",
+                status_date="2023-06-05",
+                source="ATF4 bid",
+            ),
+            MilestoneRevisionRepr(
+                id=5,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to="2023-08-01T13:00:00",
+                milestone="construction completed",
+                observation_type="planned",
+                status_date="2023-08-31",
+                source="ATF4 bid",
+            ),
+            MilestoneRevisionRepr(
+                id=6,
+                effective_date_from="2023-08-01T13:00:00",
+                effective_date_to=None,
+                milestone="construction started",
+                observation_type="actual",
+                status_date="2023-07-05",
+                source="authority update",
+            ),
+            MilestoneRevisionRepr(
+                id=7,
+                effective_date_from="2023-08-01T13:00:00",
+                effective_date_to=None,
+                milestone="construction completed",
+                observation_type="planned",
+                status_date="2023-09-30",
+                source="authority update",
+            ),
+        ]
+    else:
+        assert api_client.get_scheme(reference="ATE00001").milestones.items == [
+            CapitalSchemeMilestoneModel(
+                milestone="feasibility design completed",
+                observation_type="actual",
+                status_date="2020-11-30",
+                source="ATF4 bid",
+            ),
+            CapitalSchemeMilestoneModel(
+                milestone="preliminary design completed",
+                observation_type="actual",
+                status_date="2022-06-30",
+                source="ATF4 bid",
+            ),
+            CapitalSchemeMilestoneModel(
+                milestone="detailed design completed",
+                observation_type="actual",
+                status_date="2022-06-30",
+                source="ATF4 bid",
+            ),
+            CapitalSchemeMilestoneModel(
+                milestone="construction started",
+                observation_type="planned",
+                status_date="2023-06-05",
+                source="ATF4 bid",
+            ),
+            CapitalSchemeMilestoneModel(
+                milestone="construction started",
+                observation_type="actual",
+                status_date="2023-07-05",
+                source="authority update",
+            ),
+            CapitalSchemeMilestoneModel(
+                milestone="construction completed",
+                observation_type="planned",
+                status_date="2023-09-30",
+                source="authority update",
+            ),
+        ]
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_cannot_change_milestones_when_error(
-    app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+    app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
@@ -450,51 +488,84 @@ def test_cannot_change_milestones_when_error(
         == "Error: Construction completed planned date must be a real date"
         and change_milestone_page.form.construction_completed_planned.value == "x x x"
     )
-
-    assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
-        MilestoneRevisionRepr(
-            id=1,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            milestone="feasibility design completed",
-            observation_type="actual",
-            status_date="2020-11-30",
-            source="ATF4 bid",
-        ),
-        MilestoneRevisionRepr(
-            id=2,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            milestone="preliminary design completed",
-            observation_type="actual",
-            status_date="2022-06-30",
-            source="ATF4 bid",
-        ),
-        MilestoneRevisionRepr(
-            id=3,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            milestone="detailed design completed",
-            observation_type="actual",
-            status_date="2022-06-30",
-            source="ATF4 bid",
-        ),
-        MilestoneRevisionRepr(
-            id=4,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            milestone="construction started",
-            observation_type="planned",
-            status_date="2023-06-05",
-            source="ATF4 bid",
-        ),
-        MilestoneRevisionRepr(
-            id=5,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to=None,
-            milestone="construction completed",
-            observation_type="planned",
-            status_date="2023-08-31",
-            source="ATF4 bid",
-        ),
-    ]
+    if "ATE_URL" not in app.config:
+        assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
+            MilestoneRevisionRepr(
+                id=1,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                milestone="feasibility design completed",
+                observation_type="actual",
+                status_date="2020-11-30",
+                source="ATF4 bid",
+            ),
+            MilestoneRevisionRepr(
+                id=2,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                milestone="preliminary design completed",
+                observation_type="actual",
+                status_date="2022-06-30",
+                source="ATF4 bid",
+            ),
+            MilestoneRevisionRepr(
+                id=3,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                milestone="detailed design completed",
+                observation_type="actual",
+                status_date="2022-06-30",
+                source="ATF4 bid",
+            ),
+            MilestoneRevisionRepr(
+                id=4,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                milestone="construction started",
+                observation_type="planned",
+                status_date="2023-06-05",
+                source="ATF4 bid",
+            ),
+            MilestoneRevisionRepr(
+                id=5,
+                effective_date_from="2020-01-01T12:00:00",
+                effective_date_to=None,
+                milestone="construction completed",
+                observation_type="planned",
+                status_date="2023-08-31",
+                source="ATF4 bid",
+            ),
+        ]
+    else:
+        assert api_client.get_scheme(reference="ATE00001").milestones.items == [
+            CapitalSchemeMilestoneModel(
+                milestone="feasibility design completed",
+                observation_type="actual",
+                status_date="2020-11-30",
+                source="ATF4 bid",
+            ),
+            CapitalSchemeMilestoneModel(
+                milestone="preliminary design completed",
+                observation_type="actual",
+                status_date="2022-06-30",
+                source="ATF4 bid",
+            ),
+            CapitalSchemeMilestoneModel(
+                milestone="detailed design completed",
+                observation_type="actual",
+                status_date="2022-06-30",
+                source="ATF4 bid",
+            ),
+            CapitalSchemeMilestoneModel(
+                milestone="construction started",
+                observation_type="planned",
+                status_date="2023-06-05",
+                source="ATF4 bid",
+            ),
+            CapitalSchemeMilestoneModel(
+                milestone="construction completed",
+                observation_type="planned",
+                status_date="2023-08-31",
+                source="ATF4 bid",
+            ),
+        ]

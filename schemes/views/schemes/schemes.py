@@ -312,7 +312,7 @@ async def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepo
 
 @bp.get("<reference>/milestones")
 @async_bearer_auth
-@inject.autoparams("clock", "users", "schemes")
+@inject.params(clock=Clock, users=UserRepository, schemes=(SchemeRepository, Migrated))
 async def milestones_form(reference: str, clock: Clock, users: UserRepository, schemes: SchemeRepository) -> str:
     user_info = session["user"]
     user = users.get(user_info["email"])
@@ -332,7 +332,7 @@ async def milestones_form(reference: str, clock: Clock, users: UserRepository, s
 
 @bp.post("<reference>/milestones")
 @async_bearer_auth
-@inject.autoparams("clock", "users", "schemes")
+@inject.params(clock=Clock, users=UserRepository, schemes=(SchemeRepository, Migrated))
 async def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])

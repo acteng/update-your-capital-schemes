@@ -105,6 +105,27 @@ def add_financial(reference: str) -> Response:
     return make_response(financial.to_json(), 201)
 
 
+@bp.post("<reference>/milestones")
+@require_oauth()
+def add_capital_scheme_milestones(reference: str) -> Response:
+    capital_scheme = capital_schemes.get(reference)
+
+    if not capital_scheme:
+        abort(404)
+
+    milestones = CollectionModel[CapitalSchemeMilestoneModel].model_validate(request.get_json())
+    milestone_observation_types = [(m.milestone, m.observation_type) for m in milestones.items]
+    # remove current milestones of same type
+    capital_scheme.milestones.items = [
+        m
+        for m in capital_scheme.milestones.items
+        if (m.milestone, m.observation_type) not in milestone_observation_types
+    ]
+    capital_scheme.milestones.items.extend(milestones.items)
+
+    return make_response(milestones.to_json(), 201)
+
+
 @bp.delete("")
 @require_oauth("tests")
 def clear_capital_schemes() -> Response:

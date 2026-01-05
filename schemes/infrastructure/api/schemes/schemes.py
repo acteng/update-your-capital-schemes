@@ -96,6 +96,7 @@ class ApiSchemeRepository(SchemeRepository):
     async def update(self, scheme: Scheme) -> None:
         async with self._remote_app.client() as client:
             await self._update_financials(client, scheme)
+            await self._update_milestones(client, scheme)
 
     async def _get_funding_programme_item_models(self, remote_app: AsyncBaseApp) -> list[FundingProgrammeItemModel]:
         response = await remote_app.get(
@@ -161,6 +162,24 @@ class ApiSchemeRepository(SchemeRepository):
         response = await remote_app.post(
             f"/capital-schemes/{capital_scheme_reference}/financials",
             json=financial_json,
+            request=self._dummy_request(),
+        )
+        response.raise_for_status()
+
+    async def _update_milestones(self, remote_app: AsyncBaseApp, scheme: Scheme) -> None:
+        for milestone_revision in scheme.milestones.milestone_revisions:
+            if milestone_revision.id is None:
+                milestone_model = CapitalSchemeMilestoneModel.from_domain(milestone_revision)
+                await self._create_milestone(remote_app, scheme.reference, milestone_model)
+
+    async def _create_milestone(
+        self, remote_app: AsyncBaseApp, capital_scheme_reference: str, milestone_model: CapitalSchemeMilestoneModel
+    ) -> None:
+        milestones_model = CollectionModel[CapitalSchemeMilestoneModel](items=[milestone_model])
+        milestones_json = milestones_model.model_dump(mode="json", by_alias=True)
+        response = await remote_app.post(
+            f"/capital-schemes/{capital_scheme_reference}/milestones",
+            json=milestones_json,
             request=self._dummy_request(),
         )
         response.raise_for_status()

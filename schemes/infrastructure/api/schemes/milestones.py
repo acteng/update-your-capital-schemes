@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from enum import Enum
+from typing import Self
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
@@ -22,6 +23,10 @@ class MilestoneModel(str, Enum):
     SUPERSEDED = "superseded"
     REMOVED = "removed"
 
+    @classmethod
+    def from_domain(cls, milestone: Milestone) -> Self:
+        return cls[milestone.name]
+
     def to_domain(self) -> Milestone:
         return Milestone[self.name]
 
@@ -31,6 +36,15 @@ class CapitalSchemeMilestoneModel(BaseModel):
     observation_type: ObservationTypeModel
     status_date: date
     source: DataSourceModel
+
+    @classmethod
+    def from_domain(cls, milestone_revision: MilestoneRevision) -> Self:
+        return cls(
+            milestone=MilestoneModel.from_domain(milestone_revision.milestone),
+            observation_type=ObservationTypeModel.from_domain(milestone_revision.observation_type),
+            status_date=milestone_revision.status_date,
+            source=DataSourceModel.from_domain(milestone_revision.source),
+        )
 
     def to_domain(self) -> MilestoneRevision:
         # TODO: id, effective

@@ -91,7 +91,7 @@ def get_capital_scheme(reference: str) -> dict[str, Any]:
 
 @bp.post("<reference>/financials")
 @require_oauth()
-def add_financial(reference: str) -> Response:
+def add_capital_scheme_financial(reference: str) -> Response:
     capital_scheme = capital_schemes.get(reference)
 
     if not capital_scheme:

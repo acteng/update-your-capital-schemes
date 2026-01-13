@@ -2,4 +2,4 @@ $govuk-assets-path: "/static/govuk-frontend/assets/";
 $govuk-brand-colour: #006853;
 $govuk-font-family: arial, sans-serif;
 
-@import "../../../node_modules/govuk-one-login-service-header/dist/styles/service-header";
+@import "../../../node_modules/@govuk-one-login/service-header/dist/styles/service-header";

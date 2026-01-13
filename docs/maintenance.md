@@ -214,12 +214,7 @@ Update the `manifest.json` file:
 
 ### Upgrading GOV.UK One Login Service Header package
 
-This dependency uses a [GitHub URL](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#github-urls) as it
-doesn't publish a Node package. To upgrade:
-
-1. Update the commit hash for the dependency `govuk-one-login-service-header` in [package.json](../package.json) to the
-   [latest release](https://github.com/govuk-one-login/service-header/releases)'s commit (tags don't seem reliable with
-   GitHub URLs)
+After upgrading GOV.UK One Login Service Header:
 
 1. Install the updated package:
 
@@ -228,7 +223,7 @@ doesn't publish a Node package. To upgrade:
    ```
 
 1. The package [doesn't provide Jinja templates](https://github.com/govuk-one-login/service-header/issues/25), so copy
-   the contents of the installed package's [service header Nunjucks template](../node_modules/govuk-one-login-service-header/dist/nunjucks/di-govuk-one-login-service-header/template.njk)
+   the contents of the installed package's [service header Nunjucks template](../node_modules/@govuk-one-login/service-header/dist/nunjucks/service-header/template.njk)
    to [schemes/views/templates/ate_service_header/macro.html](../schemes/views/templates/ate_service_header/macro.html)
    replacing the contents of the Jinja macro:
 

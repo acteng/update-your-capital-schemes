@@ -226,13 +226,19 @@ class TestCapitalSchemeModel:
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
-            authority_review=CapitalSchemeAuthorityReviewModel(review_date=datetime(2020, 1, 2)),
+            authority_review=CapitalSchemeAuthorityReviewModel(
+                review_date=datetime(2020, 1, 2), source=DataSourceModel.AUTHORITY_UPDATE
+            ),
         )
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
         (authority_review1,) = scheme.reviews.authority_reviews
-        assert authority_review1.id is not None and authority_review1.review_date == datetime(2020, 1, 2)
+        assert (
+            authority_review1.id is not None
+            and authority_review1.review_date == datetime(2020, 1, 2)
+            and authority_review1.source == DataSource.AUTHORITY_UPDATE
+        )
 
 
 class TestApiSchemeRepository:
@@ -416,7 +422,10 @@ class TestApiSchemeRepository:
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
             json=_build_capital_scheme_json(
-                reference="ATE00001", authority_review=_build_authority_review_json(review_date="2020-01-02T00:00:00Z")
+                reference="ATE00001",
+                authority_review=_build_authority_review_json(
+                    review_date="2020-01-02T00:00:00Z", source="authority update"
+                ),
             ),
         )
 
@@ -424,7 +433,11 @@ class TestApiSchemeRepository:
 
         assert scheme
         (authority_review1,) = scheme.reviews.authority_reviews
-        assert authority_review1.id is not None and authority_review1.review_date == datetime(2020, 1, 2)
+        assert (
+            authority_review1.id is not None
+            and authority_review1.review_date == datetime(2020, 1, 2)
+            and authority_review1.source == DataSource.AUTHORITY_UPDATE
+        )
 
     async def test_get_scheme_ignores_unknown_key(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
         api_mock.get(_build_funding_programme_json()["@id"]).respond(200, json=_build_funding_programme_json())
@@ -723,14 +736,20 @@ class TestApiSchemeRepository:
             json=_build_capital_scheme_json(
                 reference="ATE00001",
                 bid_submitting_authority=f"{api_base_url}/authorities/LIV",
-                authority_review=_build_authority_review_json(review_date="2020-01-02T00:00:00Z"),
+                authority_review=_build_authority_review_json(
+                    review_date="2020-01-02T00:00:00Z", source="authority update"
+                ),
             ),
         )
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
         (authority_review1,) = scheme1.reviews.authority_reviews
-        assert authority_review1.id is not None and authority_review1.review_date == datetime(2020, 1, 2)
+        assert (
+            authority_review1.id is not None
+            and authority_review1.review_date == datetime(2020, 1, 2)
+            and authority_review1.source == DataSource.AUTHORITY_UPDATE
+        )
 
     async def test_get_schemes_by_authority_filters_by_funding_programme_eligible_for_authority_update(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
@@ -1108,8 +1127,8 @@ def _build_output_json(
     }
 
 
-def _build_authority_review_json(review_date: str | None = None) -> dict[str, Any]:
-    return {"reviewDate": review_date or "1970-01-01T00:00:00Z"}
+def _build_authority_review_json(review_date: str | None = None, source: str | None = None) -> dict[str, Any]:
+    return {"reviewDate": review_date or "1970-01-01T00:00:00Z", "source": source or "Pulse 5"}
 
 
 def _build_capital_scheme_json(

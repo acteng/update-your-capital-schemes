@@ -62,7 +62,9 @@ class TestAuthenticated:
                 bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
                 funding_programme=f"{api_client.base_url}/funding-programmes/ATF3",
                 milestones=CapitalSchemeMilestonesModel(current_milestone="detailed design completed", items=[]),
-                authority_review=CapitalSchemeAuthorityReviewModel(review_date="2020-01-02T00:00:00Z"),
+                authority_review=CapitalSchemeAuthorityReviewModel(
+                    review_date="2020-01-02T00:00:00Z", source="ATF3 bid"
+                ),
             ),
             build_capital_scheme_model(
                 reference="ATE00002",
@@ -70,7 +72,9 @@ class TestAuthenticated:
                 bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
                 funding_programme=f"{api_client.base_url}/funding-programmes/ATF4",
                 milestones=CapitalSchemeMilestonesModel(current_milestone="construction started", items=[]),
-                authority_review=CapitalSchemeAuthorityReviewModel(review_date="2020-01-03T00:00:00Z"),
+                authority_review=CapitalSchemeAuthorityReviewModel(
+                    review_date="2020-01-03T00:00:00Z", source="ATF4 bid"
+                ),
             ),
         )
 

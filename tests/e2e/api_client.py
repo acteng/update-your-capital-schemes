@@ -64,6 +64,7 @@ class CapitalSchemeOutputModel(BaseModel):
 
 class CapitalSchemeAuthorityReviewModel(BaseModel):
     review_date: str
+    source: str
 
 
 class CapitalSchemeModel(BaseModel):

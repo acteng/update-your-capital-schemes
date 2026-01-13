@@ -31,7 +31,7 @@ def test_scheme(app_client: AppClient, api_client: ApiClient, oidc_client: OidcC
             name="Wirral Package",
             bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
-            authority_review=CapitalSchemeAuthorityReviewModel(review_date="2023-01-02T00:00:00Z"),
+            authority_review=CapitalSchemeAuthorityReviewModel(review_date="2023-01-02T00:00:00Z", source="ATF4 bid"),
         )
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

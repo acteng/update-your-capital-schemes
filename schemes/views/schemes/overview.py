@@ -40,6 +40,7 @@ class FundingProgrammeRepr(str, Enum):
     ATF5 = "ATF5"
     CATF = "CATF"
     CRSTS = "CRSTS"
+    IST = "IST"
     LUF1 = "LUF1"
     LUF2 = "LUF2"
     LUF3 = "LUF3"
@@ -62,6 +63,7 @@ class FundingProgrammeRepr(str, Enum):
             FundingProgrammes.ATF5: FundingProgrammeRepr.ATF5,
             FundingProgrammes.CATF: FundingProgrammeRepr.CATF,
             FundingProgrammes.CRSTS: FundingProgrammeRepr.CRSTS,
+            FundingProgrammes.IST: FundingProgrammeRepr.IST,
             FundingProgrammes.LUF1: FundingProgrammeRepr.LUF1,
             FundingProgrammes.LUF2: FundingProgrammeRepr.LUF2,
             FundingProgrammes.LUF3: FundingProgrammeRepr.LUF3,

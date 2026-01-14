@@ -27,6 +27,7 @@ class TestSchemeTypeMapper:
         (FundingProgrammes.MRN, 9),
         (FundingProgrammes.ATF5, 10),
         (FundingProgrammes.CATF, 11),
+        (FundingProgrammes.IST, 12),
     ],
 )
 class TestFundingProgrammeMapper:

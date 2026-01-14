@@ -325,6 +325,7 @@ class TestFundingProgrammeContext:
             (FundingProgrammes.ATF5, "ATF5"),
             (FundingProgrammes.CATF, "CATF"),
             (FundingProgrammes.CRSTS, "CRSTS"),
+            (FundingProgrammes.IST, "IST"),
             (FundingProgrammes.LUF1, "LUF1"),
             (FundingProgrammes.LUF2, "LUF2"),
             (FundingProgrammes.LUF3, "LUF3"),

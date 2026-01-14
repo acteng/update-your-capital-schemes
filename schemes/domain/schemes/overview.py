@@ -25,6 +25,7 @@ class FundingProgrammes:
     ATF5 = FundingProgramme("ATF5", False, True)
     CATF = FundingProgramme("CATF", False, True)
     CRSTS = FundingProgramme("CRSTS", False, False)
+    IST = FundingProgramme("IST", False, True)
     LUF1 = FundingProgramme("LUF1", False, False)
     LUF2 = FundingProgramme("LUF2", False, False)
     LUF3 = FundingProgramme("LUF3", False, False)

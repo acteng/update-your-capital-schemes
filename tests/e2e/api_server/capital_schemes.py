@@ -6,6 +6,7 @@ from pydantic import AnyUrl
 
 from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.base import BaseModel
+from tests.e2e.api_server.clock import now
 from tests.e2e.api_server.collections import CollectionModel
 from tests.e2e.api_server.requests import parse_bool
 
@@ -47,6 +48,10 @@ class CapitalSchemeOutputModel(BaseModel):
 
 class CapitalSchemeAuthorityReviewModel(BaseModel):
     review_date: datetime
+    source: str
+
+
+class CreateCapitalSchemeAuthorityReviewModel(BaseModel):
     source: str
 
 
@@ -127,6 +132,21 @@ def add_capital_scheme_milestones(reference: str) -> Response:
     capital_scheme.milestones.items.extend(milestones.items)
 
     return make_response(milestones.to_json(), 201)
+
+
+@bp.post("<reference>/authority-reviews")
+@require_oauth()
+def add_capital_scheme_authority_review(reference: str) -> Response:
+    capital_scheme = capital_schemes.get(reference)
+
+    if not capital_scheme:
+        abort(404)
+
+    create_authority_review = CreateCapitalSchemeAuthorityReviewModel.model_validate(request.get_json())
+    authority_review = CapitalSchemeAuthorityReviewModel(review_date=now(), source=create_authority_review.source)
+    capital_scheme.authority_review = authority_review
+
+    return make_response(authority_review.to_json(), 201)
 
 
 @bp.delete("")

@@ -359,7 +359,7 @@ async def milestones(clock: Clock, users: UserRepository, schemes: SchemeReposit
 
 @bp.post("<reference>")
 @async_bearer_auth
-@inject.autoparams("clock", "users", "schemes")
+@inject.params(clock=Clock, users=UserRepository, schemes=(SchemeRepository, Migrated))
 async def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])

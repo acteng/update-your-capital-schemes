@@ -8,7 +8,10 @@ from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel, FundingProgrammeModel
-from schemes.infrastructure.api.schemes.authority_reviews import CapitalSchemeAuthorityReviewModel
+from schemes.infrastructure.api.schemes.authority_reviews import (
+    CapitalSchemeAuthorityReviewModel,
+    CreateCapitalSchemeAuthorityReviewModel,
+)
 from schemes.infrastructure.api.schemes.bid_statuses import CapitalSchemeBidStatusDetailsModel
 from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel
 from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel
@@ -97,6 +100,7 @@ class ApiSchemeRepository(SchemeRepository):
         async with self._remote_app.client() as client:
             await self._update_financials(client, scheme)
             await self._update_milestones(client, scheme)
+            await self._update_authority_reviews(client, scheme)
 
     async def _get_funding_programme_item_models(self, remote_app: AsyncBaseApp) -> list[FundingProgrammeItemModel]:
         response = await remote_app.get(
@@ -191,6 +195,26 @@ class ApiSchemeRepository(SchemeRepository):
         response = await remote_app.post(
             f"/capital-schemes/{capital_scheme_reference}/milestones",
             json=milestones_json,
+            request=self._dummy_request(),
+        )
+        response.raise_for_status()
+
+    async def _update_authority_reviews(self, remote_app: AsyncBaseApp, scheme: Scheme) -> None:
+        for authority_review in scheme.reviews.authority_reviews:
+            if authority_review.id is None:
+                authority_review_model = CreateCapitalSchemeAuthorityReviewModel.from_domain(authority_review)
+                await self._create_authority_review(remote_app, scheme.reference, authority_review_model)
+
+    async def _create_authority_review(
+        self,
+        remote_app: AsyncBaseApp,
+        capital_scheme_reference: str,
+        authority_review_model: CreateCapitalSchemeAuthorityReviewModel,
+    ) -> None:
+        authority_review_json = authority_review_model.model_dump(mode="json", by_alias=True)
+        response = await remote_app.post(
+            f"/capital-schemes/{capital_scheme_reference}/authority-reviews",
+            json=authority_review_json,
             request=self._dummy_request(),
         )
         response.raise_for_status()

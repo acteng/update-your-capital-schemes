@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Self
 
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.infrastructure.api.base import BaseModel
@@ -13,3 +14,11 @@ class CapitalSchemeAuthorityReviewModel(BaseModel):
     def to_domain(self) -> AuthorityReview:
         # TODO: id
         return AuthorityReview(id_=0, review_date=zoned_to_local(self.review_date), source=self.source.to_domain())
+
+
+class CreateCapitalSchemeAuthorityReviewModel(BaseModel):
+    source: DataSourceModel
+
+    @classmethod
+    def from_domain(cls, authority_review: AuthorityReview) -> Self:
+        return cls(source=DataSourceModel.from_domain(authority_review.source))

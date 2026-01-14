@@ -100,6 +100,10 @@ class ApiClient:
     def base_url(self) -> str:
         return self._url
 
+    def set_clock(self, now: str) -> None:
+        response = self._session.put(f"{self._url}/clock", json=now, timeout=self.DEFAULT_TIMEOUT)
+        response.raise_for_status()
+
     def add_funding_programmes(self, *funding_programmes: FundingProgrammeModel) -> None:
         json = [funding_programme.to_json() for funding_programme in funding_programmes]
         response = self._session.post(f"{self._url}/funding-programmes", json=json, timeout=self.DEFAULT_TIMEOUT)

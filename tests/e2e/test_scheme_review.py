@@ -15,6 +15,7 @@ def test_scheme_review(
     app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.set_clock("2023-04-24T13:00:00")
+    api_client.set_clock("2023-04-24T12:00:00Z")
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
@@ -42,18 +43,21 @@ def test_scheme_review(
     schemes_page = SchemePage.open(page, reference="ATE00001").review.form.check_up_to_date().confirm()
 
     assert schemes_page.success_notification.heading == "Wirral Package has been reviewed"
-    # TODO: reinstate when https://github.com/acteng/update-your-capital-schemes/issues/191 resolved
+    assert schemes_page.schemes["ATE00001"].last_reviewed == "24 Apr 2023"
     if "ATE_URL" not in app.config:
-        assert schemes_page.schemes["ATE00001"].last_reviewed == "24 Apr 2023"
-    assert app_client.get_scheme(reference="ATE00001").authority_reviews == [
-        AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid"),
-        AuthorityReviewRepr(id=2, review_date="2023-04-24T13:00:00", source="authority update"),
-    ]
+        assert app_client.get_scheme(reference="ATE00001").authority_reviews == [
+            AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid"),
+            AuthorityReviewRepr(id=2, review_date="2023-04-24T13:00:00", source="authority update"),
+        ]
+    else:
+        assert api_client.get_scheme(reference="ATE00001").authority_review == CapitalSchemeAuthorityReviewModel(
+            review_date="2023-04-24T12:00:00Z", source="authority update"
+        )
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_scheme_cannot_review_when_error(
-    app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+    app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.set_clock("2023-04-24T13:00:00")
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
@@ -89,6 +93,11 @@ def test_scheme_cannot_review_when_error(
         and scheme_page.review.form.up_to_date.error == "Error: Confirm this scheme is up-to-date"
         and not scheme_page.review.form.up_to_date.value
     )
-    assert app_client.get_scheme(reference="ATE00001").authority_reviews == [
-        AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid"),
-    ]
+    if "ATE_URL" not in app.config:
+        assert app_client.get_scheme(reference="ATE00001").authority_reviews == [
+            AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid"),
+        ]
+    else:
+        assert api_client.get_scheme(reference="ATE00001").authority_review == CapitalSchemeAuthorityReviewModel(
+            review_date="2020-01-02T12:00:00Z", source="ATF4 bid"
+        )

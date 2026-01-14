@@ -13,6 +13,7 @@ from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure
 from schemes.domain.schemes.overview import FundingProgrammes
+from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.data_sources import DataSourceModel
@@ -995,6 +996,33 @@ class TestApiSchemeRepository:
 
         assert not api_mock.calls.called
 
+    async def test_update_scheme_authority_reviews(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme.reviews.update_authority_reviews(
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
+            AuthorityReview(id_=None, review_date=datetime(2020, 2, 1), source=DataSource.AUTHORITY_UPDATE),
+        )
+        create_authority_review_response = api_mock.post(
+            "/capital-schemes/ATE00001/authority-reviews",
+            json=_build_create_authority_review_json(source="authority update"),
+        ).respond(201)
+
+        await schemes.update(scheme)
+
+        assert create_authority_review_response.call_count == 1
+
+    async def test_update_scheme_authority_reviews_when_no_changes(
+        self, api_mock: MockRouter, schemes: ApiSchemeRepository
+    ) -> None:
+        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme.reviews.update_authority_reviews(
+            AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
+        )
+
+        await schemes.update(scheme)
+
+        assert not api_mock.calls.called
+
     async def test_update_scheme_reuses_client(
         self, api_mock: MockRouter, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
@@ -1129,6 +1157,10 @@ def _build_output_json(
 
 def _build_authority_review_json(review_date: str | None = None, source: str | None = None) -> dict[str, Any]:
     return {"reviewDate": review_date or "1970-01-01T00:00:00Z", "source": source or "Pulse 5"}
+
+
+def _build_create_authority_review_json(source: str | None = None) -> dict[str, Any]:
+    return {"source": source or "Pulse 5"}
 
 
 def _build_capital_scheme_json(

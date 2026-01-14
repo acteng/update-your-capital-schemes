@@ -83,7 +83,7 @@ class AppClient:
         self._session.headers.update({"Authorization": f"API-Key {api_key}"})
 
     def set_clock(self, now: str) -> None:
-        response = self._session.put(f"{self._url}/clock", data={"now": now})
+        response = self._session.put(f"{self._url}/clock", json=now)
         response.raise_for_status()
 
     def add_authorities(self, *authorities: AuthorityRepr) -> None:

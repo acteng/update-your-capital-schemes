@@ -13,6 +13,6 @@ bp = Blueprint("clock", __name__)
 @api_key_auth
 @inject.autoparams()
 def set_clock(clock: Clock) -> Response:
-    now = datetime.fromisoformat(request.form["now"])
+    now = datetime.fromisoformat(request.json)
     clock.now = now
     return Response(status=204)

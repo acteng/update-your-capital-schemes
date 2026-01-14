@@ -34,7 +34,7 @@ def test_scheme_review(
             name="Wirral Package",
             bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
-            authority_review=CapitalSchemeAuthorityReviewModel(review_date="2020-01-02T12:00:00", source="ATF4 bid"),
+            authority_review=CapitalSchemeAuthorityReviewModel(review_date="2020-01-02T12:00:00Z", source="ATF4 bid"),
         ),
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
@@ -75,7 +75,7 @@ def test_scheme_cannot_review_when_error(
             name="Wirral Package",
             bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
-            authority_review=CapitalSchemeAuthorityReviewModel(review_date="2020-01-02T12:00:00", source="ATF4 bid"),
+            authority_review=CapitalSchemeAuthorityReviewModel(review_date="2020-01-02T12:00:00Z", source="ATF4 bid"),
         ),
     )
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))

@@ -1,6 +1,8 @@
+from datetime import date, datetime
 from typing import Any
 
 from flask import Blueprint, Response, abort, make_response, request
+from pydantic import AnyUrl
 
 from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.base import BaseModel
@@ -10,8 +12,8 @@ from tests.e2e.api_server.requests import parse_bool
 
 class CapitalSchemeOverviewModel(BaseModel):
     name: str
-    bid_submitting_authority: str
-    funding_programme: str
+    bid_submitting_authority: AnyUrl
+    funding_programme: AnyUrl
     type: str
 
 
@@ -28,7 +30,7 @@ class CapitalSchemeFinancialModel(BaseModel):
 class CapitalSchemeMilestoneModel(BaseModel):
     milestone: str
     observation_type: str
-    status_date: str
+    status_date: date
     source: str
 
 
@@ -44,7 +46,7 @@ class CapitalSchemeOutputModel(BaseModel):
 
 
 class CapitalSchemeAuthorityReviewModel(BaseModel):
-    review_date: str
+    review_date: datetime
     source: str
 
 

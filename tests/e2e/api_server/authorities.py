@@ -63,9 +63,9 @@ def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str,
     bid_status = request.args.get("bid-status")
     current_milestones = request.args.getlist("current-milestone", lambda value: value or None)
 
-    authority_url = url_for("authorities.get_authority", abbreviation=abbreviation, _external=True)
+    authority_url = AnyUrl(url_for("authorities.get_authority", abbreviation=abbreviation, _external=True))
     funding_programme_urls = [
-        url_for("funding_programmes.get_funding_programme", code=funding_programme_code, _external=True)
+        AnyUrl(url_for("funding_programmes.get_funding_programme", code=funding_programme_code, _external=True))
         for funding_programme_code in funding_programme_codes
     ]
     references = [

@@ -23,7 +23,7 @@ authorities: dict[str, AuthorityModel] = {}
 @bp.post("")
 @require_oauth("tests")
 def add_authorities() -> Response:
-    for element in request.get_json():
+    for element in request.json:
         authority = AuthorityModel.model_validate(element)
 
         if not authority.id:

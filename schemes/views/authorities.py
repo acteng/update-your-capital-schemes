@@ -17,7 +17,7 @@ bp = Blueprint("authorities", __name__)
 @inject.autoparams()
 async def add(authorities: AuthorityRepository, logger: Logger) -> Response:
     try:
-        authorities_repr = [AuthorityRepr.model_validate(item) for item in request.get_json()]
+        authorities_repr = [AuthorityRepr.model_validate(item) for item in request.json]
     except ValidationError as error:
         logger.error(error)
         abort(400)
@@ -31,7 +31,7 @@ async def add(authorities: AuthorityRepository, logger: Logger) -> Response:
 @inject.autoparams("users", "logger")
 def add_users(users: UserRepository, logger: Logger, authority_abbreviation: str) -> Response:
     try:
-        users_repr = [UserRepr.model_validate(item) for item in request.get_json()]
+        users_repr = [UserRepr.model_validate(item) for item in request.json]
     except ValidationError as error:
         logger.error(error)
         abort(400)

@@ -44,7 +44,7 @@ bp = Blueprint("schemes", __name__)
 @inject.autoparams()
 async def add_schemes(schemes: SchemeRepository, logger: Logger) -> Response:
     try:
-        schemes_repr = [SchemeRepr.model_validate(item) for item in request.get_json()]
+        schemes_repr = [SchemeRepr.model_validate(item) for item in request.json]
     except ValidationError as error:
         logger.error(error)
         return abort(400)

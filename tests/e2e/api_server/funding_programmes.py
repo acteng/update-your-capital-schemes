@@ -27,7 +27,7 @@ funding_programmes: dict[str, FundingProgrammeModel] = {}
 @bp.post("")
 @require_oauth("tests")
 def add_funding_programmes() -> Response:
-    for element in request.get_json():
+    for element in request.json:
         funding_programme = FundingProgrammeModel.model_validate(element)
 
         if not funding_programme.id:

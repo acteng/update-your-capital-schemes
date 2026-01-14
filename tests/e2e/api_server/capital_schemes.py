@@ -79,7 +79,7 @@ milestones: dict[str, MilestoneModel] = {}
 @bp.post("")
 @require_oauth("tests")
 def add_capital_schemes() -> Response:
-    for element in request.get_json():
+    for element in request.json:
         capital_scheme = CapitalSchemeModel.model_validate(element)
         capital_schemes[capital_scheme.reference] = capital_scheme
 
@@ -105,7 +105,7 @@ def add_capital_scheme_financial(reference: str) -> Response:
     if not capital_scheme:
         abort(404)
 
-    financial = CapitalSchemeFinancialModel.model_validate(request.get_json())
+    financial = CapitalSchemeFinancialModel.model_validate(request.json)
     # remove current financials of same type
     capital_scheme.financials.items = [f for f in capital_scheme.financials.items if f.type != financial.type]
     capital_scheme.financials.items.append(financial)
@@ -121,7 +121,7 @@ def add_capital_scheme_milestones(reference: str) -> Response:
     if not capital_scheme:
         abort(404)
 
-    milestones = CollectionModel[CapitalSchemeMilestoneModel].model_validate(request.get_json())
+    milestones = CollectionModel[CapitalSchemeMilestoneModel].model_validate(request.json)
     milestone_observation_types = [(m.milestone, m.observation_type) for m in milestones.items]
     # remove current milestones of same type
     capital_scheme.milestones.items = [
@@ -142,7 +142,7 @@ def add_capital_scheme_authority_review(reference: str) -> Response:
     if not capital_scheme:
         abort(404)
 
-    create_authority_review = CreateCapitalSchemeAuthorityReviewModel.model_validate(request.get_json())
+    create_authority_review = CreateCapitalSchemeAuthorityReviewModel.model_validate(request.json)
     authority_review = CapitalSchemeAuthorityReviewModel(review_date=now(), source=create_authority_review.source)
     capital_scheme.authority_review = authority_review
 
@@ -159,7 +159,7 @@ def clear_capital_schemes() -> Response:
 @bp.post("milestones")
 @require_oauth("tests")
 def add_milestones() -> Response:
-    for element in request.get_json():
+    for element in request.json:
         milestone = MilestoneModel.model_validate(element)
         milestones[milestone.name] = milestone
 

@@ -102,7 +102,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerApp:
 
     @app.post("/users")
     def add_user() -> Response:
-        user = StubUser(**request.get_json())
+        user = StubUser(**request.json)
         app.add_user(user)
         return Response(status=201)
 
@@ -113,7 +113,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> OidcServerApp:
 
     @app.post("/clients")
     def add_client() -> Response:
-        client = StubClient(**request.get_json())
+        client = StubClient(**request.json)
         app.add_client(client)
         return Response(status=201)
 

@@ -16,5 +16,5 @@ def now() -> datetime:
 @require_oauth("tests")
 def set_clock() -> Response:
     global _now
-    _now = datetime.fromisoformat(request.get_json())
+    _now = datetime.fromisoformat(request.json)
     return Response(status=204)

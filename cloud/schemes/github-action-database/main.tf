@@ -19,4 +19,12 @@ resource "google_project_iam_member" "cloudsql_client" {
 resource "google_service_account_key" "main" {
   service_account_id = google_service_account.main.name
   public_key_type    = "TYPE_X509_PEM_FILE"
+
+  lifecycle {
+    replace_triggered_by = [terraform_data.google_service_account_key_main_version]
+  }
+}
+
+resource "terraform_data" "google_service_account_key_main_version" {
+  input = 1
 }

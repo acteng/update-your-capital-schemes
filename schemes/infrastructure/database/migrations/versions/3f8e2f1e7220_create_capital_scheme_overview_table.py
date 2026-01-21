@@ -44,8 +44,7 @@ def upgrade() -> None:
         sa.Column("effective_date_to", sa.DateTime),
         schema="capital_scheme",
     )
-    op.execute(
-        """
+    op.execute("""
         WITH earliest_bid_status AS
         (
             SELECT capital_scheme_id, min(effective_date_from) AS effective_date_from
@@ -70,8 +69,7 @@ def upgrade() -> None:
             earliest_bid_status.effective_date_from
         FROM capital_scheme.capital_scheme cs
         LEFT JOIN earliest_bid_status ON cs.capital_scheme_id = earliest_bid_status.capital_scheme_id;
-        """
-    )
+    """)
     op.drop_column("capital_scheme", column_name="scheme_name", schema="capital_scheme")
     op.drop_column("capital_scheme", column_name="bid_submitting_authority_id", schema="capital_scheme")
     op.drop_column("capital_scheme", column_name="scheme_type_id", schema="capital_scheme")
@@ -91,8 +89,7 @@ def downgrade() -> None:
     )
     op.add_column("capital_scheme", column=sa.Column("scheme_type_id", sa.Integer), schema="capital_scheme")
     op.add_column("capital_scheme", column=sa.Column("funding_programme_id", sa.Integer), schema="capital_scheme")
-    op.execute(
-        """
+    op.execute("""
         UPDATE capital_scheme.capital_scheme cs
         SET
             scheme_name = cso.scheme_name,
@@ -102,8 +99,7 @@ def downgrade() -> None:
         FROM capital_scheme.capital_scheme_overview cso
         WHERE cs.capital_scheme_id = cso.capital_scheme_id
         AND cso.effective_date_to IS NULL;
-        """
-    )
+    """)
     with op.batch_alter_table("capital_scheme", schema="capital_scheme") as batch_op:
         batch_op.alter_column("scheme_name", nullable=False)
         batch_op.alter_column("bid_submitting_authority_id", nullable=False)

@@ -23,19 +23,15 @@ def upgrade() -> None:
         batch_op.add_column(sa.Column("scheme_reference", sa.Text))
         batch_op.create_unique_constraint("capital_scheme_scheme_reference_key", ["scheme_reference"])
     if op.get_context().dialect.name == PGDialect.name:
-        op.execute(
-            """
+        op.execute("""
             UPDATE capital_scheme.capital_scheme
                 SET scheme_reference='ATE' || LPAD(capital_scheme.capital_scheme_id::text, 5, '0')
-            """
-        )
+        """)
     else:
-        op.execute(
-            """
+        op.execute("""
             UPDATE capital_scheme.capital_scheme
                 SET scheme_reference='ATE' || SUBSTR('00000' || capital_scheme.capital_scheme_id, -5, 5)
-            """
-        )
+        """)
     with op.batch_alter_table("capital_scheme", schema="capital_scheme") as batch_op:
         batch_op.alter_column("scheme_reference", nullable=False)
 

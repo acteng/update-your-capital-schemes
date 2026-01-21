@@ -121,7 +121,7 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
-        (financial_revision1, financial_revision2) = scheme.funding.financial_revisions
+        financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
             financial_revision1.id is not None
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
@@ -162,7 +162,7 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
-        (milestone_revision1, milestone_revision2) = scheme.milestones.milestone_revisions
+        milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.id is not None
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
@@ -205,7 +205,7 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
-        (output_revision1, output_revision2) = scheme.outputs.output_revisions
+        output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
             output_revision1.id is not None
             and output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
@@ -320,7 +320,7 @@ class TestApiSchemeRepository:
         scheme = await schemes.get("ATE00001")
 
         assert scheme
-        (financial_revision1, financial_revision2) = scheme.funding.financial_revisions
+        financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
             financial_revision1.id is not None
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
@@ -363,7 +363,7 @@ class TestApiSchemeRepository:
         scheme = await schemes.get("ATE00001")
 
         assert scheme
-        (milestone_revision1, milestone_revision2) = scheme.milestones.milestone_revisions
+        milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.id is not None
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
@@ -403,7 +403,7 @@ class TestApiSchemeRepository:
         scheme = await schemes.get("ATE00001")
 
         assert scheme
-        (output_revision1, output_revision2) = scheme.outputs.output_revisions
+        output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
             output_revision1.id is not None
             and output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
@@ -603,7 +603,7 @@ class TestApiSchemeRepository:
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
-        (financial_revision1, financial_revision2) = scheme1.funding.financial_revisions
+        financial_revision1, financial_revision2 = scheme1.funding.financial_revisions
         assert (
             financial_revision1.id is not None
             and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
@@ -651,7 +651,7 @@ class TestApiSchemeRepository:
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
-        (milestone_revision1, milestone_revision2) = scheme1.milestones.milestone_revisions
+        milestone_revision1, milestone_revision2 = scheme1.milestones.milestone_revisions
         assert (
             milestone_revision1.id is not None
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
@@ -702,7 +702,7 @@ class TestApiSchemeRepository:
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
-        (output_revision1, output_revision2) = scheme1.outputs.output_revisions
+        output_revision1, output_revision2 = scheme1.outputs.output_revisions
         assert (
             output_revision1.id is not None
             and output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES

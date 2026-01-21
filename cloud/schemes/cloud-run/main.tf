@@ -345,11 +345,6 @@ resource "google_secret_manager_secret_version" "ate_api_client_secret" {
   secret_data = var.ate_api_client_secret
 }
 
-moved {
-  from = google_secret_manager_secret_iam_member.cloud_run_schemes_ate_client_secret
-  to   = google_secret_manager_secret_iam_member.cloud_run_schemes_ate_api_client_secret
-}
-
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_ate_api_client_secret" {
   count = var.ate_api_client_secret != null ? 1 : 0
 

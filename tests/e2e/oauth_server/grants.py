@@ -13,7 +13,7 @@ class ClientSecretPostClientCredentialsGrant(ClientCredentialsGrant):  # type: i
         super().validate_token_request()
 
         # TODO: validate audience in client authentication method
-        audience = self.request.data.get("audience")
+        audience = self.request.payload.data.get("audience")
         if self.audience:
             if not audience:
                 raise OAuth2Error("Missing audience")

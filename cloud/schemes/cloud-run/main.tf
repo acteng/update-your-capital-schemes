@@ -126,7 +126,7 @@ resource "google_cloud_run_v2_service" "schemes" {
       }
     }
     containers {
-      image = "gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.15.0"
+      image = "gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.21.0"
       args = [
         "--address=0.0.0.0",
         "--port=5432",

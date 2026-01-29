@@ -11,10 +11,11 @@ resource "google_cloud_run_v2_service" "schemes" {
   name     = "schemes"
   project  = var.project
   location = var.region
-
-  ingress = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
+  ingress  = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
 
   template {
+    service_account = google_service_account.cloud_run_schemes.email
+
     containers {
       image = "${var.docker_repository_url}/schemes:latest"
       env {
@@ -125,6 +126,7 @@ resource "google_cloud_run_v2_service" "schemes" {
         container_port = 8080
       }
     }
+
     containers {
       image = "gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.21.0"
       args = [
@@ -134,11 +136,11 @@ resource "google_cloud_run_v2_service" "schemes" {
         var.capital_schemes_database_connection_name
       ]
     }
+
     scaling {
       min_instance_count = var.keep_idle ? 1 : 0
       max_instance_count = 10
     }
-    service_account = google_service_account.cloud_run_schemes.email
   }
 
   depends_on = [

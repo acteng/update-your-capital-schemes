@@ -39,7 +39,7 @@ BACKUP=$(gcloud sql backups list \
 )
 BACKUP_ID=$(echo "${BACKUP}" | cut -f1)
 BACKUP_TIMESTAMP=$(echo "${BACKUP}" | cut -f2)
-ARCHIVE=${PGDATABASE}-${ENVIRONMENT}-$(date -d $BACKUP_TIMESTAMP -u +"%Y%m%dT%H%M%SZ").dump
+ARCHIVE=${PGDATABASE}-${ENVIRONMENT}-$(date -d ${BACKUP_TIMESTAMP} -u +"%Y%m%dT%H%M%SZ").dump
 
 # Restore latest backup to restore instance
 

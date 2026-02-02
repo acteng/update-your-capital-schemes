@@ -5,13 +5,13 @@
 1. Run the [Cloud SQL Auth Proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy) script:
 
    ```bash
-   ./proxy.sh $ENVIRONMENT
+   ./proxy.sh ${ENVIRONMENT}
    ```
 
 1. Obtain the database password for the environment:
 
    ```bash
-   gcloud secrets versions access latest --project dft-schemes-$ENVIRONMENT --secret database-password
+   gcloud secrets versions access latest --project dft-schemes-${ENVIRONMENT} --secret database-password
    ```
 
 1. Connect using PSQL and enter the password when prompted:
@@ -27,10 +27,10 @@ To download the latest database backup for storing offline:
 1. Download the backup (you will be prompted to input your BitWarden master password):
 
    ```bash
-   ./cold-backup.sh $ENVIRONMENT
+   ./cold-backup.sh ${ENVIRONMENT}
    ```
 
-This will create an encrypted compressed PostgreSQL custom-format archive `schemes-$ENVIRONMENT-$BACKUP_TIMESTAMP.dump.gz.gpg`.
+This will create an encrypted compressed PostgreSQL custom-format archive `schemes-${ENVIRONMENT}-${BACKUP_TIMESTAMP}.dump.gz.gpg`.
 
 ## Restoring a cold backup
 
@@ -40,13 +40,13 @@ To restore a backup to a local or proxied database:
 
    ```bash
    bw get password "UYCS Database Backup Passphrase" \
-       | ( gpg --batch --decrypt --passphrase-fd 0 --output $ARCHIVE.gz $ARCHIVE.gz.gpg && rm $ARCHIVE.gz.gpg )
+       | ( gpg --batch --decrypt --passphrase-fd 0 --output ${ARCHIVE}.gz ${ARCHIVE}.gz.gpg && rm ${ARCHIVE}.gz.gpg )
    ```
 
 1. Uncompress the archive:
 
    ```bash
-   gunzip $ARCHIVE.gz
+   gunzip ${ARCHIVE}.gz
    ```
 
 1. (Optional) Create a local database for the backup, if necessary:
@@ -55,7 +55,7 @@ To restore a backup to a local or proxied database:
    docker run -d \
        --network=host \
        -e POSTGRES_USER=schemes \
-       -e POSTGRES_PASSWORD=$PGPASSWORD \
+       -e POSTGRES_PASSWORD=${PGPASSWORD} \
        postgres:16
    ```
 
@@ -65,7 +65,7 @@ To restore a backup to a local or proxied database:
    docker run --rm -i \
        --network=host \
        -e PGUSER=schemes \
-       -e PGPASSWORD=$PGPASSWORD \
+       -e PGPASSWORD=${PGPASSWORD} \
        postgres:16 \
-       pg_restore -h localhost -d schemes --no-owner < $ARCHIVE
+       pg_restore -h localhost -d schemes --no-owner < ${ARCHIVE}
    ```

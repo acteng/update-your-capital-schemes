@@ -238,7 +238,7 @@ For each environment required (dev, test, prod):
 1. Create a Terraform workspace for the environment:
 
    ```bash
-   terraform workspace new $ENVIRONMENT
+   terraform workspace new ${ENVIRONMENT}
    ```
 
 1. Apply the changes:
@@ -250,7 +250,7 @@ For each environment required (dev, test, prod):
 1. This will fail due to missing secrets. Now that the Secret Manager service has been enabled, create the secrets then repeat the previous step:
 
    ```bash
-   bw get notes "UYCS Secrets ($ENVIRONMENT)" | sh
+   bw get notes "UYCS Secrets (${ENVIRONMENT})" | sh
    ```
 
 1. Obtain the Cloud Run service account private key:
@@ -269,7 +269,7 @@ To manually redeploy the Cloud Run service using the latest image in the Docker 
 
 ```bash
 gcloud run deploy schemes \
-    --project dft-schemes-$ENVIRONMENT \
+    --project dft-schemes-${ENVIRONMENT} \
     --region europe-west1 \
     --image europe-west1-docker.pkg.dev/dft-schemes-common/docker/schemes
 ```

@@ -6,7 +6,7 @@ resource "google_sql_database_instance" "main" {
   name   = "schemes"
   region = var.region
 
-  database_version = "POSTGRES_16"
+  database_version = "POSTGRES_18"
 
   settings {
     tier                        = "db-custom-1-3840"

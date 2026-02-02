@@ -70,7 +70,7 @@ docker run --rm \
 	-e PGDATABASE=${PGDATABASE} \
 	-v ${PWD}:/data \
 	-u "$(id -u):$(id -g)" \
-	postgres:16 \
+	postgres:18 \
 	sh -c "until pg_isready; do sleep 1; done && pg_dump --format custom --no-acl > /data/${ARCHIVE}"
 
 # Compress archive

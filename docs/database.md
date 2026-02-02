@@ -56,7 +56,7 @@ To restore a backup to a local or proxied database:
        --network=host \
        -e POSTGRES_USER=schemes \
        -e POSTGRES_PASSWORD=${PGPASSWORD} \
-       postgres:16
+       postgres:18
    ```
 
 1. Restore the backup:
@@ -66,6 +66,6 @@ To restore a backup to a local or proxied database:
        --network=host \
        -e PGUSER=schemes \
        -e PGPASSWORD=${PGPASSWORD} \
-       postgres:16 \
+       postgres:18 \
        pg_restore -h localhost -d schemes --no-owner < ${ARCHIVE}
    ```

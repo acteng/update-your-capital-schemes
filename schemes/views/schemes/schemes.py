@@ -8,7 +8,6 @@ from flask import Blueprint, Response, abort, flash, redirect, render_template, 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from werkzeug import Response as BaseResponse
 
-from schemes.annotations import Migrated
 from schemes.dicts import as_shallow_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
@@ -55,13 +54,7 @@ async def add_schemes(schemes: SchemeRepository, logger: Logger) -> Response:
 
 @bp.get("")
 @async_bearer_auth
-@inject.params(
-    clock=Clock,
-    users=UserRepository,
-    reporting_window_service=ReportingWindowService,
-    authorities=(AuthorityRepository, Migrated),
-    schemes=(SchemeRepository, Migrated),
-)
+@inject.autoparams()
 async def index(
     clock: Clock,
     users: UserRepository,
@@ -156,13 +149,7 @@ async def get(reference: str) -> Response:
 
 
 @async_bearer_auth
-@inject.params(
-    clock=Clock,
-    reporting_window_service=ReportingWindowService,
-    users=UserRepository,
-    authorities=(AuthorityRepository, Migrated),
-    schemes=(SchemeRepository, Migrated),
-)
+@inject.autoparams()
 async def get_html(
     reference: str,
     clock: Clock,
@@ -267,7 +254,7 @@ class SchemeContext:
 
 @bp.get("<reference>/spend-to-date")
 @async_bearer_auth
-@inject.params(users=UserRepository, schemes=(SchemeRepository, Migrated))
+@inject.autoparams()
 async def spend_to_date_form(reference: str, users: UserRepository, schemes: SchemeRepository) -> str:
     user_info = session["user"]
     user = users.get(user_info["email"])
@@ -287,7 +274,7 @@ async def spend_to_date_form(reference: str, users: UserRepository, schemes: Sch
 
 @bp.post("<reference>/spend-to-date")
 @async_bearer_auth
-@inject.params(clock=Clock, users=UserRepository, schemes=(SchemeRepository, Migrated))
+@inject.autoparams()
 async def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])
@@ -313,7 +300,7 @@ async def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepo
 
 @bp.get("<reference>/milestones")
 @async_bearer_auth
-@inject.params(clock=Clock, users=UserRepository, schemes=(SchemeRepository, Migrated))
+@inject.autoparams()
 async def milestones_form(reference: str, clock: Clock, users: UserRepository, schemes: SchemeRepository) -> str:
     user_info = session["user"]
     user = users.get(user_info["email"])
@@ -333,7 +320,7 @@ async def milestones_form(reference: str, clock: Clock, users: UserRepository, s
 
 @bp.post("<reference>/milestones")
 @async_bearer_auth
-@inject.params(clock=Clock, users=UserRepository, schemes=(SchemeRepository, Migrated))
+@inject.autoparams()
 async def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])
@@ -360,7 +347,7 @@ async def milestones(clock: Clock, users: UserRepository, schemes: SchemeReposit
 
 @bp.post("<reference>")
 @async_bearer_auth
-@inject.params(clock=Clock, users=UserRepository, schemes=(SchemeRepository, Migrated))
+@inject.autoparams()
 async def review(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])

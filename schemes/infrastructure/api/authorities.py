@@ -21,6 +21,12 @@ class ApiAuthorityRepository(AuthorityRepository):
     def __init__(self, remote_app: AsyncBaseApp):
         self._remote_app = remote_app
 
+    async def add(self, *authorities: Authority) -> None:
+        pass
+
+    async def clear(self) -> None:
+        pass
+
     async def get(self, abbreviation: str) -> Authority | None:
         response = await self._remote_app.get(f"/authorities/{abbreviation}", request=self._dummy_request())
 

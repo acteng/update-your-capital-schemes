@@ -52,6 +52,12 @@ class ApiSchemeRepository(SchemeRepository):
     def __init__(self, remote_app: ClientAsyncBaseApp):
         self._remote_app = remote_app
 
+    async def add(self, *schemes: Scheme) -> None:
+        pass
+
+    async def clear(self) -> None:
+        pass
+
     async def get(self, reference: str) -> Scheme | None:
         async with self._remote_app.client() as client:
             response = await client.get(f"/capital-schemes/{reference}", request=self._dummy_request())

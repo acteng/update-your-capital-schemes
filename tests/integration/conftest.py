@@ -13,7 +13,6 @@ from inject import Binder
 from werkzeug.test import TestResponse
 
 from schemes import bindings, create_app, destroy_app
-from schemes.annotations import Migrated
 from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import UserRepository
@@ -111,11 +110,9 @@ def _test_bindings(app: Flask) -> Callable[[Binder], None]:
         binder.install(bindings(app))
         authority_repository = MemoryAuthorityRepository()
         binder.bind(AuthorityRepository, authority_repository)
-        binder.bind((AuthorityRepository, Migrated), authority_repository)
         binder.bind(UserRepository, MemoryUserRepository())
         scheme_repository = MemorySchemeRepository()
         binder.bind(SchemeRepository, scheme_repository)
-        binder.bind((SchemeRepository, Migrated), scheme_repository)
 
     return _bindings
 

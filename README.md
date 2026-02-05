@@ -284,7 +284,7 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-
 * Service redirect URLs: https://dev.update-your-capital-schemes.activetravelengland.gov.uk/auth, http://127.0.0.1:5000/auth
 * Service contact email address: mark.hobson@activetravelengland.gov.uk
 * Scopes: openid email
-* Public key: (see "UYCS GOV.UK One Login Public Key (Dev)" in Bitwarden)
+* Public key: (see "uycs-govuk-one-login-public-key-dev" in Bitwarden)
 * Logout URLs: https://dev.update-your-capital-schemes.activetravelengland.gov.uk/, http://127.0.0.1:5000/
 * Sector identifier URI: https://dev.update-your-capital-schemes.activetravelengland.gov.uk
 
@@ -294,7 +294,7 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-
 * Service redirect URLs: https://test.update-your-capital-schemes.activetravelengland.gov.uk/auth
 * Service contact email address: mark.hobson@activetravelengland.gov.uk
 * Scopes: openid email
-* Public key: (see "UYCS GOV.UK One Login Public Key (Test)" in Bitwarden)
+* Public key: (see "uycs-govuk-one-login-public-key-test" in Bitwarden)
 * Logout URLs: https://test.update-your-capital-schemes.activetravelengland.gov.uk/
 * Sector identifier URI: https://test.update-your-capital-schemes.activetravelengland.gov.uk
 
@@ -304,7 +304,7 @@ We have [registered](https://docs.sign-in.service.gov.uk/before-integrating/set-
 * Service redirect URLs: https://update-your-capital-schemes.activetravelengland.gov.uk/auth
 * Service contact email address: mark.hobson@activetravelengland.gov.uk
 * Scopes: openid email
-* Public key: (see "UYCS GOV.UK One Login Public Key (Prod)" in Bitwarden)
+* Public key: (see "uycs-govuk-one-login-public-key-prod" in Bitwarden)
 * Logout URLs: https://update-your-capital-schemes.activetravelengland.gov.uk/
 * Sector identifier URI: https://update-your-capital-schemes.activetravelengland.gov.uk
 

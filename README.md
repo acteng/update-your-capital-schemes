@@ -250,7 +250,7 @@ For each environment required (dev, test, prod):
 1. This will fail due to missing secrets. Now that the Secret Manager service has been enabled, create the secrets then repeat the previous step:
 
    ```bash
-   bw get notes "UYCS Secrets (${ENVIRONMENT})" | sh
+   ./set-secrets.sh ${ENVIRONMENT}
    ```
 
 1. Obtain the Cloud Run service account private key:

@@ -21,7 +21,7 @@ Digital service for local authorities to provide updates about capital schemes t
 Configure the application's environment variables with the localhost secrets:
 
 ```bash
-bw get notes "UYCS Secrets (Localhost)" > .env
+./get-env.sh
 ```
 
 The application can also be configured with the following environment variables:

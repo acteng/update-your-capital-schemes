@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 
 import pytest
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.serialization import Encoding, NoEncryption, PrivateFormat
 from flask import Flask, request
 from httpx import Timeout
 from respx import MockRouter
@@ -10,48 +13,37 @@ from tests.oauth import StubAuthorizationServer
 
 
 @dataclass(frozen=True)
-class _Client:
-    client_id: str
-    client_secret: str
-
-
-@dataclass(frozen=True)
 class _ResourceServer:
     url: str
     identifier: str
 
 
 class TestOAuthExtension:
-    @pytest.fixture(name="api_client")
-    def api_client_fixture(self) -> _Client:
-        return _Client(client_id="test", client_secret="secret")
-
     @pytest.fixture(name="api_server")
     def api_server_fixture(self) -> _ResourceServer:
         return _ResourceServer(url="https://api.example", identifier="https://api.example")
 
     @pytest.fixture(name="authorization_server")
     def authorization_server_fixture(
-        self, respx_mock: MockRouter, api_server: _ResourceServer, api_client: _Client
+        self, respx_mock: MockRouter, api_server: _ResourceServer
     ) -> StubAuthorizationServer:
-        authorization_server = StubAuthorizationServer(
-            respx_mock, api_server.identifier, api_client.client_id, api_client.client_secret
-        )
+        authorization_server = StubAuthorizationServer(respx_mock, api_server.identifier)
         authorization_server.given_configuration_endpoint_returns_configuration()
         return authorization_server
 
     @pytest.fixture(name="app")
-    def app_fixture(
-        self, authorization_server: StubAuthorizationServer, api_client: _Client, api_server: _ResourceServer
-    ) -> Flask:
+    def app_fixture(self, authorization_server: StubAuthorizationServer, api_server: _ResourceServer) -> Flask:
+        key_pair = rsa.generate_private_key(backend=default_backend(), public_exponent=65537, key_size=2048)
+        private_key = key_pair.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
+
         app = Flask("test")
         app.config.from_mapping(
             {
                 "GOVUK_CLIENT_ID": "test",
                 "GOVUK_CLIENT_SECRET": "test",
                 "GOVUK_SERVER_METADATA_URL": "test",
-                "ATE_CLIENT_ID": api_client.client_id,
-                "ATE_CLIENT_SECRET": api_client.client_secret,
+                "ATE_CLIENT_ID": "test",
+                "ATE_CLIENT_SECRET": private_key.decode(),
                 "ATE_SERVER_METADATA_URL": authorization_server.configuration_endpoint,
                 "ATE_AUDIENCE": api_server.identifier,
                 "ATE_URL": api_server.url,

@@ -6,8 +6,9 @@ from authlib.integrations.base_client.async_app import AsyncOAuth2Mixin, _http_r
 from authlib.integrations.base_client.async_openid import AsyncOpenIDMixin
 from authlib.integrations.flask_client import OAuth
 from authlib.integrations.httpx_client import AsyncOAuth2Client
+from authlib.oauth2 import ClientAuth
 from authlib.oauth2.rfc6749 import OAuth2Token
-from authlib.oauth2.rfc7523 import PrivateKeyJWT
+from authlib.oauth2.rfc7523 import PrivateKeyJWT, private_key_jwt_sign
 from flask import Flask, Request
 from httpx import AsyncClient, Response, Timeout
 
@@ -87,6 +88,35 @@ class _ClientAccessTokenParamsAsyncFlaskOAuth2App(ClientAsyncOAuth2Mixin, AsyncO
     client_cls = _AccessTokenParamsAsyncOAuth2Client
 
 
+# Workaround: https://github.com/authlib/authlib/issues/857
+class _ExpiresInPrivateKeyJWT(PrivateKeyJWT):  # type: ignore
+    expires_in = 60 * 60
+
+    def __init__(
+        self,
+        token_endpoint: str | None = None,
+        claims: dict[str, Any] | None = None,
+        headers: dict[str, Any] | None = None,
+        alg: str | None = None,
+        expires_in: int | None = None,
+    ):
+        super().__init__(token_endpoint, claims, headers, alg)
+        if expires_in is not None:
+            self.expires_in = expires_in
+
+    def sign(self, auth: ClientAuth, token_endpoint: str) -> bytes:
+        jwt: bytes = private_key_jwt_sign(
+            auth.client_secret,
+            client_id=auth.client_id,
+            token_endpoint=token_endpoint,
+            claims=self.claims,
+            header=self.headers,
+            alg=self.alg,
+            expires_in=self.expires_in,
+        )
+        return jwt
+
+
 class OAuthExtension(OAuth):  # type: ignore
     def __init__(self, app: Flask):
         super().__init__(app)
@@ -111,14 +141,14 @@ class OAuthExtension(OAuth):  # type: ignore
                 fetch_token=self._fetch_ate_token,
                 update_token=self._update_ate_token,
                 client_id=app.config["ATE_CLIENT_ID"],
-                client_secret=app.config["ATE_CLIENT_SECRET"],
+                client_secret=app.config["ATE_CLIENT_SECRET"].encode(),
                 server_metadata_url=app.config["ATE_SERVER_METADATA_URL"],
                 access_token_params=access_token_params,
                 api_base_url=app.config["ATE_URL"],
                 client_kwargs={
                     # Workaround: https://github.com/authlib/authlib/issues/780
                     "grant_type": "client_credentials",
-                    "token_endpoint_auth_method": "client_secret_post",
+                    "token_endpoint_auth_method": _ExpiresInPrivateKeyJWT(expires_in=60),
                     # Workaround: https://github.com/authlib/authlib/issues/783
                     "access_token_params": access_token_params,
                     "http2": True,

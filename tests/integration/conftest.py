@@ -48,7 +48,6 @@ def config_fixture() -> Mapping[str, Any]:
         "GOVUK_CLIENT_ID": "test",
         "GOVUK_CLIENT_SECRET": private_key.decode(),
         "GOVUK_SERVER_METADATA_URL": "test",
-        "GOVUK_TOKEN_ENDPOINT": "test",
         "GOVUK_PROFILE_URL": "test",
         "GOVUK_END_SESSION_ENDPOINT": "test",
     }

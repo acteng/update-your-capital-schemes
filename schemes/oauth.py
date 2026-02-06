@@ -99,7 +99,7 @@ class OAuthExtension(OAuth):  # type: ignore
             server_metadata_url=app.config["GOVUK_SERVER_METADATA_URL"],
             client_kwargs={
                 "scope": "openid email",
-                "token_endpoint_auth_method": PrivateKeyJWT(app.config["GOVUK_TOKEN_ENDPOINT"]),
+                "token_endpoint_auth_method": PrivateKeyJWT(),
             },
         )
 

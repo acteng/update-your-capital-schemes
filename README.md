@@ -38,7 +38,6 @@ The application can also be configured with the following environment variables:
 | FLASK_GOVUK_CLIENT_ID              | OIDC client id                                                                              |
 | FLASK_GOVUK_CLIENT_SECRET          | OIDC client secret                                                                          |
 | FLASK_GOVUK_SERVER_METADATA_URL    | OIDC discovery endpoint                                                                     |
-| FLASK_GOVUK_TOKEN_ENDPOINT         | OIDC token endpoint                                                                         |
 | FLASK_GOVUK_PROFILE_URL            | OIDC profile URL                                                                            |
 | FLASK_GOVUK_END_SESSION_ENDPOINT   | OIDC end session endpoint                                                                   |
 | FLASK_ATE_URL                      | ATE API URL (unset to disable)                                                              |

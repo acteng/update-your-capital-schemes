@@ -50,7 +50,6 @@ class TestOAuthExtension:
                 "GOVUK_CLIENT_ID": "test",
                 "GOVUK_CLIENT_SECRET": "test",
                 "GOVUK_SERVER_METADATA_URL": "test",
-                "GOVUK_TOKEN_ENDPOINT": "test",
                 "ATE_CLIENT_ID": api_client.client_id,
                 "ATE_CLIENT_SECRET": api_client.client_secret,
                 "ATE_SERVER_METADATA_URL": authorization_server.configuration_endpoint,

@@ -79,7 +79,6 @@ def app_fixture(
         "GOVUK_CLIENT_ID": client_id,
         "GOVUK_CLIENT_SECRET": private_key.decode(),
         "GOVUK_SERVER_METADATA_URL": oidc_server.app.url_for("openid_configuration", _external=True),
-        "GOVUK_TOKEN_ENDPOINT": oidc_server.app.url_for("token", _external=True),
         "GOVUK_END_SESSION_ENDPOINT": oidc_server.app.url_for("logout", _external=True),
     }
 

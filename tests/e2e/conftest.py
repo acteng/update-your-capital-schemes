@@ -49,8 +49,8 @@ def configure_live_server_fixture() -> None:
         multiprocessing.set_start_method("fork")
 
 
-@pytest.fixture(name="api_key", scope="package")
-def api_key_fixture() -> str:
+@pytest.fixture(name="app_api_key", scope="package")
+def app_api_key_fixture() -> str:
     return "api-key"
 
 
@@ -58,7 +58,7 @@ def api_key_fixture() -> str:
 def app_fixture(
     request: FixtureRequest,
     debug: bool,
-    api_key: str,
+    app_api_key: str,
     oidc_server: LiveServer,
     api_server: LiveServer,
     authorization_server: LiveServer,
@@ -75,7 +75,7 @@ def app_fixture(
         "SECRET_KEY": b"secret_key",
         "SERVER_NAME": f"localhost:{port}",
         "LIVESERVER_PORT": port,
-        "API_KEY": api_key,
+        "API_KEY": app_api_key,
         "GOVUK_CLIENT_ID": client_id,
         "GOVUK_CLIENT_SECRET": private_key.decode(),
         "GOVUK_SERVER_METADATA_URL": oidc_server.app.url_for("openid_configuration", _external=True),
@@ -108,8 +108,8 @@ def app_fixture(
 
 
 @pytest.fixture(name="app_client")
-def app_client_fixture(live_server: LiveServer, api_key: str) -> Generator[AppClient]:
-    client = AppClient(_get_url(live_server), api_key)
+def app_client_fixture(live_server: LiveServer, app_api_key: str) -> Generator[AppClient]:
+    client = AppClient(_get_url(live_server), app_api_key)
     yield client
     client.clear_schemes()
     client.clear_users()

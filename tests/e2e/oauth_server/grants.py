@@ -7,6 +7,7 @@ class ClientSecretPostClientCredentialsGrant(ClientCredentialsGrant):  # type: i
 
     def __init__(self, request: OAuth2Request, server: AuthorizationServer):
         super().__init__(request, server)
+        # attributes set by grant extension as initializer arguments are fixed
         self.audience = None
 
     def validate_token_request(self) -> None:

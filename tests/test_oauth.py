@@ -88,6 +88,11 @@ class TestOAuthExtension:
         )
         return app
 
+    def test_ate_api_uses_shorter_client_assertion_expiration_time(self, app: Flask) -> None:
+        oauth = OAuthExtension(app)
+
+        assert oauth.ate.client_kwargs.get("token_endpoint_auth_method").expires_in == 60
+
     def test_ate_api_uses_http2(self, app: Flask) -> None:
         oauth = OAuthExtension(app)
 

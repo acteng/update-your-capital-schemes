@@ -29,7 +29,7 @@ from tests.e2e.oidc_server.web_client import OidcClient
 @dataclass(frozen=True)
 class OAuthClient:
     client_id: str
-    client_secret: str
+    public_key: bytes
     scope: str
 
 
@@ -95,9 +95,19 @@ def app_oidc_oauth_client_fixture(app_oidc_client_id: str, app_oidc_public_key: 
     )
 
 
+@pytest.fixture(name="app_api_key_pair", scope="package")
+def app_api_key_pair_fixture() -> KeyPair:
+    return KeyPair()
+
+
+@pytest.fixture(name="app_api_public_key", scope="package")
+def app_api_public_key_fixture(app_api_key_pair: KeyPair) -> bytes:
+    return app_api_key_pair.public_key
+
+
 @pytest.fixture(name="app_api_oauth_client", scope="package")
-def app_api_oauth_client_fixture() -> OAuthClient:
-    return OAuthClient(client_id="app", client_secret="secret", scope="")
+def app_api_oauth_client_fixture(app_api_public_key: bytes) -> OAuthClient:
+    return OAuthClient(client_id="app", public_key=app_api_public_key, scope="")
 
 
 @pytest.fixture(name="app", scope="package", params=[False, True], ids=["database", "api"])
@@ -112,6 +122,7 @@ def app_fixture(
     authorization_server: LiveServer,
     api_resource_server: OAuthResourceServer,
     app_api_oauth_client: OAuthClient,
+    app_api_key_pair: KeyPair,
 ) -> Generator[Flask]:
     port = _get_random_port()
 
@@ -132,7 +143,7 @@ def app_fixture(
         config |= {
             "ATE_URL": _get_url(api_server),
             "ATE_CLIENT_ID": app_api_oauth_client.client_id,
-            "ATE_CLIENT_SECRET": app_api_oauth_client.client_secret,
+            "ATE_CLIENT_SECRET": app_api_key_pair.private_key.decode(),
             "ATE_SERVER_METADATA_URL": authorization_server.app.url_for("openid_configuration", _external=True),
             "ATE_AUDIENCE": api_resource_server.identifier,
         }
@@ -223,9 +234,19 @@ def api_server_fixture(api_server_app: Flask, request: FixtureRequest) -> LiveSe
     return server
 
 
+@pytest.fixture(name="tests_api_key_pair", scope="package")
+def tests_api_key_pair_fixture() -> KeyPair:
+    return KeyPair()
+
+
+@pytest.fixture(name="tests_api_public_key", scope="package")
+def tests_api_public_key_fixture(tests_api_key_pair: KeyPair) -> bytes:
+    return tests_api_key_pair.public_key
+
+
 @pytest.fixture(name="tests_api_oauth_client", scope="package")
-def tests_api_oauth_client_fixture() -> OAuthClient:
-    return OAuthClient(client_id="tests", client_secret="secret", scope="tests")
+def tests_api_oauth_client_fixture(tests_api_public_key: bytes) -> OAuthClient:
+    return OAuthClient(client_id="tests", public_key=tests_api_public_key, scope="tests")
 
 
 @pytest.fixture(name="api_client", scope="package")
@@ -234,11 +255,12 @@ def api_client_fixture(
     authorization_server: LiveServer,
     api_resource_server: OAuthResourceServer,
     tests_api_oauth_client: OAuthClient,
+    tests_api_key_pair: KeyPair,
 ) -> Generator[ApiClient]:
     client = ApiClient(
         url=_get_url(api_server),
         client_id=tests_api_oauth_client.client_id,
-        client_secret=tests_api_oauth_client.client_secret,
+        private_key=tests_api_key_pair.private_key,
         token_endpoint=authorization_server.app.url_for("token", _external=True),
         scope="tests",
         audience=api_resource_server.identifier,
@@ -272,12 +294,12 @@ def authorization_server_app_fixture(
             "CLIENTS": [
                 {
                     "clientId": app_api_oauth_client.client_id,
-                    "clientSecret": app_api_oauth_client.client_secret,
+                    "publicKey": app_api_oauth_client.public_key,
                     "scope": app_api_oauth_client.scope,
                 },
                 {
                     "clientId": tests_api_oauth_client.client_id,
-                    "clientSecret": tests_api_oauth_client.client_secret,
+                    "publicKey": tests_api_oauth_client.public_key,
                     "scope": tests_api_oauth_client.scope,
                 },
             ],

@@ -6,7 +6,7 @@ from authlib.oauth2.rfc6749.models import ClientMixin
 @dataclass
 class StubClient(ClientMixin):  # type: ignore
     client_id: str
-    client_secret: str
+    public_key: bytes
     scope: str
 
     def get_client_id(self) -> str:
@@ -16,11 +16,8 @@ class StubClient(ClientMixin):  # type: ignore
         allowed_scope = [s for s in scope.split() if s in self.scope]
         return " ".join(allowed_scope)
 
-    def check_client_secret(self, client_secret: str) -> bool:
-        return self.client_secret == client_secret
-
     def check_endpoint_auth_method(self, method: str, endpoint: str) -> bool:
-        return endpoint == "token" and method == "client_secret_post"
+        return endpoint == "token" and method == "private_key_jwt"
 
     def check_grant_type(self, grant_type: str) -> bool:
         return grant_type == "client_credentials"

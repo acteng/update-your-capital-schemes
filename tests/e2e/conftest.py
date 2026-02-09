@@ -27,14 +27,14 @@ from tests.e2e.oidc_server.web_client import OidcClient
 
 
 @dataclass(frozen=True)
-class _Client:
+class OAuthClient:
     client_id: str
     client_secret: str
     scope: str
 
 
 @dataclass(frozen=True)
-class _ResourceServer:
+class OAuthResourceServer:
     identifier: str
 
 
@@ -62,8 +62,8 @@ def app_fixture(
     oidc_server: LiveServer,
     api_server: LiveServer,
     authorization_server: LiveServer,
-    resource_server: _ResourceServer,
-    app_oauth_client: _Client,
+    resource_server: OAuthResourceServer,
+    app_oauth_client: OAuthClient,
 ) -> Generator[Flask]:
     port = _get_random_port()
     client_id = "app"
@@ -138,7 +138,9 @@ def oidc_client_fixture(oidc_server: LiveServer) -> Generator[OidcClient]:
 
 
 @pytest.fixture(name="api_server_app", scope="package")
-def api_server_app_fixture(debug: bool, authorization_server: LiveServer, resource_server: _ResourceServer) -> Flask:
+def api_server_app_fixture(
+    debug: bool, authorization_server: LiveServer, resource_server: OAuthResourceServer
+) -> Flask:
     port = _get_random_port()
     return api_server_create_app(
         {
@@ -163,8 +165,8 @@ def api_server_fixture(api_server_app: Flask, request: FixtureRequest) -> LiveSe
 def api_client_fixture(
     api_server: LiveServer,
     authorization_server: LiveServer,
-    resource_server: _ResourceServer,
-    tests_oauth_client: _Client,
+    resource_server: OAuthResourceServer,
+    tests_oauth_client: OAuthClient,
 ) -> Generator[ApiClient]:
     client = ApiClient(
         url=_get_url(api_server),
@@ -182,23 +184,23 @@ def api_client_fixture(
 
 
 @pytest.fixture(name="resource_server", scope="package")
-def resource_server_fixture() -> _ResourceServer:
-    return _ResourceServer(identifier="https://api.example")
+def resource_server_fixture() -> OAuthResourceServer:
+    return OAuthResourceServer(identifier="https://api.example")
 
 
 @pytest.fixture(name="app_oauth_client", scope="package")
-def app_oauth_client_fixture() -> _Client:
-    return _Client(client_id="app", client_secret="secret", scope="")
+def app_oauth_client_fixture() -> OAuthClient:
+    return OAuthClient(client_id="app", client_secret="secret", scope="")
 
 
 @pytest.fixture(name="tests_oauth_client", scope="package")
-def tests_oauth_client_fixture() -> _Client:
-    return _Client(client_id="tests", client_secret="secret", scope="tests")
+def tests_oauth_client_fixture() -> OAuthClient:
+    return OAuthClient(client_id="tests", client_secret="secret", scope="tests")
 
 
 @pytest.fixture(name="authorization_server_app", scope="package")
 def authorization_server_app_fixture(
-    debug: bool, app_oauth_client: _Client, tests_oauth_client: _Client, resource_server: _ResourceServer
+    debug: bool, app_oauth_client: OAuthClient, tests_oauth_client: OAuthClient, resource_server: OAuthResourceServer
 ) -> Flask:
     port = _get_random_port()
     return authorization_server_create_app(

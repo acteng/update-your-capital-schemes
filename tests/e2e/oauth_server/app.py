@@ -28,9 +28,9 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
 
     authorization_server = AuthorizationServer(app, clients.get, _save_token)
     issuer = "http://auth.example"
-    key = RSAKey.generate_key(is_private=True)
+    token_key = RSAKey.generate_key(is_private=True)
     authorization_server.register_token_generator(
-        "default", StubJWTBearerTokenGenerator(issuer, app.config["RESOURCE_SERVER_IDENTIFIER"], KeySet([key]))
+        "default", StubJWTBearerTokenGenerator(issuer, app.config["RESOURCE_SERVER_IDENTIFIER"], KeySet([token_key]))
     )
     authorization_server.register_grant(ClientSecretPostClientCredentialsGrant, [_init_grant])
 
@@ -51,6 +51,6 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
 
     @app.get("/.well-known/jwks.json")
     def key_set() -> Any:
-        return KeySet([key]).as_dict()
+        return KeySet([token_key]).as_dict()
 
     return app

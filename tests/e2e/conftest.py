@@ -70,6 +70,31 @@ def app_api_key_fixture() -> str:
     return "api-key"
 
 
+@pytest.fixture(name="app_oidc_client_id", scope="package")
+def app_oidc_client_id_fixture() -> str:
+    return "app"
+
+
+@pytest.fixture(name="app_oidc_key_pair", scope="package")
+def app_oidc_key_pair_fixture() -> KeyPair:
+    return KeyPair()
+
+
+@pytest.fixture(name="app_oidc_public_key", scope="package")
+def app_oidc_public_key_fixture(app_oidc_key_pair: KeyPair) -> bytes:
+    return app_oidc_key_pair.public_key
+
+
+@pytest.fixture(name="app_oidc_oauth_client", scope="package")
+def app_oidc_oauth_client_fixture(app_oidc_client_id: str, app_oidc_public_key: bytes, app: Flask) -> StubClient:
+    return StubClient(
+        client_id=app_oidc_client_id,
+        redirect_uri=app.url_for("auth.callback", _external=True),
+        public_key=app_oidc_public_key.decode(),
+        scope="openid email",
+    )
+
+
 @pytest.fixture(name="app_oauth_client", scope="package")
 def app_oauth_client_fixture() -> OAuthClient:
     return OAuthClient(client_id="app", client_secret="secret", scope="")
@@ -80,6 +105,8 @@ def app_fixture(
     request: FixtureRequest,
     debug: bool,
     app_api_key: str,
+    app_oidc_client_id: str,
+    app_oidc_key_pair: KeyPair,
     oidc_server: LiveServer,
     api_server: LiveServer,
     authorization_server: LiveServer,
@@ -87,8 +114,6 @@ def app_fixture(
     app_oauth_client: OAuthClient,
 ) -> Generator[Flask]:
     port = _get_random_port()
-    client_id = "app"
-    key_pair = KeyPair()
 
     config = {
         "DEBUG": debug,
@@ -97,8 +122,8 @@ def app_fixture(
         "SERVER_NAME": f"localhost:{port}",
         "LIVESERVER_PORT": port,
         "API_KEY": app_api_key,
-        "GOVUK_CLIENT_ID": client_id,
-        "GOVUK_CLIENT_SECRET": key_pair.private_key.decode(),
+        "GOVUK_CLIENT_ID": app_oidc_client_id,
+        "GOVUK_CLIENT_SECRET": app_oidc_key_pair.private_key.decode(),
         "GOVUK_SERVER_METADATA_URL": oidc_server.app.url_for("openid_configuration", _external=True),
         "GOVUK_END_SESSION_ENDPOINT": oidc_server.app.url_for("logout", _external=True),
     }
@@ -113,18 +138,17 @@ def app_fixture(
         }
 
     app = create_app(config)
-
-    app_oidc_client = StubClient(
-        client_id=client_id,
-        redirect_uri=app.url_for("auth.callback", _external=True),
-        public_key=key_pair.public_key.decode(),
-        scope="openid email",
-    )
-
-    oidc_client = OidcClient(_get_url(oidc_server))
-    oidc_client.add_client(app_oidc_client)
     yield app
     destroy_app(app)
+
+
+@pytest.fixture(name="register_app_oidc_oauth_client", scope="package", autouse=True)
+def register_app_oidc_oauth_client_fixture(
+    oidc_server: LiveServer, app_oidc_oauth_client: StubClient
+) -> Generator[None]:
+    oidc_client = OidcClient(_get_url(oidc_server))
+    oidc_client.add_client(app_oidc_oauth_client)
+    yield
     oidc_client.clear_clients()
 
 

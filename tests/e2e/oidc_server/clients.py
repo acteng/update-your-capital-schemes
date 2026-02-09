@@ -13,9 +13,6 @@ class StubClient(ClientMixin):  # type: ignore
     def get_client_id(self) -> str:
         return self.client_id
 
-    def get_default_redirect_uri(self) -> str:
-        raise NotImplementedError()
-
     def get_allowed_scope(self, scope: str) -> str:
         allowed_scope = [s for s in scope.split() if s in self.scope]
         return " ".join(allowed_scope)
@@ -25,9 +22,6 @@ class StubClient(ClientMixin):  # type: ignore
 
     def check_response_type(self, response_type: str) -> bool:
         return response_type == "code"
-
-    def check_client_secret(self, client_secret: str) -> bool:
-        raise NotImplementedError()
 
     def check_endpoint_auth_method(self, method: str, endpoint: str) -> bool:
         return endpoint == "token" and method == "private_key_jwt"

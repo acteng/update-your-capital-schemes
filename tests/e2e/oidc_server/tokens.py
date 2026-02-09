@@ -4,8 +4,6 @@ from typing import Any
 from authlib.oauth2.rfc6749.models import TokenMixin
 from authlib.oauth2.rfc6750 import BearerTokenValidator
 
-from tests.e2e.oidc_server.clients import StubClient
-
 
 @dataclass
 class StubToken(TokenMixin):  # type: ignore
@@ -13,14 +11,8 @@ class StubToken(TokenMixin):  # type: ignore
     user_id: str
     scope: str
 
-    def check_client(self, client: StubClient) -> bool:
-        raise NotImplementedError()
-
     def get_scope(self) -> str:
         return self.scope
-
-    def get_expires_in(self) -> int:
-        raise NotImplementedError()
 
     def is_expired(self) -> bool:
         return False

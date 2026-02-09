@@ -27,12 +27,12 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
         grant.audience = app.config["RESOURCE_SERVER_IDENTIFIER"]
 
     authorization_server = AuthorizationServer(app, clients.get, _save_token)
-    authorization_server.register_grant(ClientSecretPostClientCredentialsGrant, [_init_grant])
     issuer = "http://auth.example"
     key = RSAKey.generate_key(is_private=True)
     authorization_server.register_token_generator(
         "default", StubJWTBearerTokenGenerator(issuer, app.config["RESOURCE_SERVER_IDENTIFIER"], KeySet([key]))
     )
+    authorization_server.register_grant(ClientSecretPostClientCredentialsGrant, [_init_grant])
 
     @app.get("/.well-known/openid-configuration")
     def openid_configuration() -> Response:

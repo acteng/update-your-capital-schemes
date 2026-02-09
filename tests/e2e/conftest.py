@@ -95,8 +95,8 @@ def app_oidc_oauth_client_fixture(app_oidc_client_id: str, app_oidc_public_key: 
     )
 
 
-@pytest.fixture(name="app_oauth_client", scope="package")
-def app_oauth_client_fixture() -> OAuthClient:
+@pytest.fixture(name="app_api_oauth_client", scope="package")
+def app_api_oauth_client_fixture() -> OAuthClient:
     return OAuthClient(client_id="app", client_secret="secret", scope="")
 
 
@@ -111,7 +111,7 @@ def app_fixture(
     api_server: LiveServer,
     authorization_server: LiveServer,
     api_resource_server: OAuthResourceServer,
-    app_oauth_client: OAuthClient,
+    app_api_oauth_client: OAuthClient,
 ) -> Generator[Flask]:
     port = _get_random_port()
 
@@ -131,8 +131,8 @@ def app_fixture(
     if request.param:
         config |= {
             "ATE_URL": _get_url(api_server),
-            "ATE_CLIENT_ID": app_oauth_client.client_id,
-            "ATE_CLIENT_SECRET": app_oauth_client.client_secret,
+            "ATE_CLIENT_ID": app_api_oauth_client.client_id,
+            "ATE_CLIENT_SECRET": app_api_oauth_client.client_secret,
             "ATE_SERVER_METADATA_URL": authorization_server.app.url_for("openid_configuration", _external=True),
             "ATE_AUDIENCE": api_resource_server.identifier,
         }
@@ -223,8 +223,8 @@ def api_server_fixture(api_server_app: Flask, request: FixtureRequest) -> LiveSe
     return server
 
 
-@pytest.fixture(name="tests_oauth_client", scope="package")
-def tests_oauth_client_fixture() -> OAuthClient:
+@pytest.fixture(name="tests_api_oauth_client", scope="package")
+def tests_api_oauth_client_fixture() -> OAuthClient:
     return OAuthClient(client_id="tests", client_secret="secret", scope="tests")
 
 
@@ -233,12 +233,12 @@ def api_client_fixture(
     api_server: LiveServer,
     authorization_server: LiveServer,
     api_resource_server: OAuthResourceServer,
-    tests_oauth_client: OAuthClient,
+    tests_api_oauth_client: OAuthClient,
 ) -> Generator[ApiClient]:
     client = ApiClient(
         url=_get_url(api_server),
-        client_id=tests_oauth_client.client_id,
-        client_secret=tests_oauth_client.client_secret,
+        client_id=tests_api_oauth_client.client_id,
+        client_secret=tests_api_oauth_client.client_secret,
         token_endpoint=authorization_server.app.url_for("token", _external=True),
         scope="tests",
         audience=api_resource_server.identifier,
@@ -259,8 +259,8 @@ def api_client_fixture(
 @pytest.fixture(name="authorization_server_app", scope="package")
 def authorization_server_app_fixture(
     debug: bool,
-    app_oauth_client: OAuthClient,
-    tests_oauth_client: OAuthClient,
+    app_api_oauth_client: OAuthClient,
+    tests_api_oauth_client: OAuthClient,
     api_resource_server: OAuthResourceServer,
 ) -> Flask:
     port = _get_random_port()
@@ -271,14 +271,14 @@ def authorization_server_app_fixture(
             "SERVER_NAME": f"localhost:{port}",
             "CLIENTS": [
                 {
-                    "clientId": app_oauth_client.client_id,
-                    "clientSecret": app_oauth_client.client_secret,
-                    "scope": app_oauth_client.scope,
+                    "clientId": app_api_oauth_client.client_id,
+                    "clientSecret": app_api_oauth_client.client_secret,
+                    "scope": app_api_oauth_client.scope,
                 },
                 {
-                    "clientId": tests_oauth_client.client_id,
-                    "clientSecret": tests_oauth_client.client_secret,
-                    "scope": tests_oauth_client.scope,
+                    "clientId": tests_api_oauth_client.client_id,
+                    "clientSecret": tests_api_oauth_client.client_secret,
+                    "scope": tests_api_oauth_client.scope,
                 },
             ],
             "RESOURCE_SERVER_IDENTIFIER": api_resource_server.identifier,

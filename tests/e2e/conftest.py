@@ -54,6 +54,11 @@ def app_api_key_fixture() -> str:
     return "api-key"
 
 
+@pytest.fixture(name="app_oauth_client", scope="package")
+def app_oauth_client_fixture() -> OAuthClient:
+    return OAuthClient(client_id="app", client_secret="secret", scope="")
+
+
 @pytest.fixture(name="app", scope="package", params=[False, True], ids=["database", "api"])
 def app_fixture(
     request: FixtureRequest,
@@ -137,6 +142,11 @@ def oidc_client_fixture(oidc_server: LiveServer) -> Generator[OidcClient]:
     client.clear_users()
 
 
+@pytest.fixture(name="api_resource_server", scope="package")
+def api_resource_server_fixture() -> OAuthResourceServer:
+    return OAuthResourceServer(identifier="https://api.example")
+
+
 @pytest.fixture(name="api_server_app", scope="package")
 def api_server_app_fixture(
     debug: bool, authorization_server: LiveServer, api_resource_server: OAuthResourceServer
@@ -161,6 +171,11 @@ def api_server_fixture(api_server_app: Flask, request: FixtureRequest) -> LiveSe
     return server
 
 
+@pytest.fixture(name="tests_oauth_client", scope="package")
+def tests_oauth_client_fixture() -> OAuthClient:
+    return OAuthClient(client_id="tests", client_secret="secret", scope="tests")
+
+
 @pytest.fixture(name="api_client", scope="package")
 def api_client_fixture(
     api_server: LiveServer,
@@ -181,21 +196,6 @@ def api_client_fixture(
     client.clear_milestones()
     client.clear_authorities()
     client.clear_funding_programmes()
-
-
-@pytest.fixture(name="api_resource_server", scope="package")
-def api_resource_server_fixture() -> OAuthResourceServer:
-    return OAuthResourceServer(identifier="https://api.example")
-
-
-@pytest.fixture(name="app_oauth_client", scope="package")
-def app_oauth_client_fixture() -> OAuthClient:
-    return OAuthClient(client_id="app", client_secret="secret", scope="")
-
-
-@pytest.fixture(name="tests_oauth_client", scope="package")
-def tests_oauth_client_fixture() -> OAuthClient:
-    return OAuthClient(client_id="tests", client_secret="secret", scope="tests")
 
 
 @pytest.fixture(name="authorization_server_app", scope="package")

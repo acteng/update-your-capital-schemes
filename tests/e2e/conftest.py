@@ -38,6 +38,19 @@ class OAuthResourceServer:
     identifier: str
 
 
+class KeyPair:
+    def __init__(self) -> None:
+        self._key_pair = rsa.generate_private_key(backend=default_backend(), public_exponent=65537, key_size=2048)
+
+    @property
+    def private_key(self) -> bytes:
+        return self._key_pair.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
+
+    @property
+    def public_key(self) -> bytes:
+        return self._key_pair.public_key().public_bytes(Encoding.OpenSSH, PublicFormat.OpenSSH)
+
+
 @pytest.fixture(name="debug", scope="package")
 def debug_fixture() -> bool:
     return False
@@ -75,7 +88,7 @@ def app_fixture(
 ) -> Generator[Flask]:
     port = _get_random_port()
     client_id = "app"
-    private_key, public_key = _generate_key_pair()
+    key_pair = KeyPair()
 
     config = {
         "DEBUG": debug,
@@ -85,7 +98,7 @@ def app_fixture(
         "LIVESERVER_PORT": port,
         "API_KEY": app_api_key,
         "GOVUK_CLIENT_ID": client_id,
-        "GOVUK_CLIENT_SECRET": private_key.decode(),
+        "GOVUK_CLIENT_SECRET": key_pair.private_key.decode(),
         "GOVUK_SERVER_METADATA_URL": oidc_server.app.url_for("openid_configuration", _external=True),
         "GOVUK_END_SESSION_ENDPOINT": oidc_server.app.url_for("logout", _external=True),
     }
@@ -104,7 +117,7 @@ def app_fixture(
     app_oidc_client = StubClient(
         client_id=client_id,
         redirect_uri=app.url_for("auth.callback", _external=True),
-        public_key=public_key.decode(),
+        public_key=key_pair.public_key.decode(),
         scope="openid email",
     )
 
@@ -376,10 +389,3 @@ def _get_random_port() -> int:
     port: int = sock.getsockname()[1]
     sock.close()
     return port
-
-
-def _generate_key_pair() -> tuple[bytes, bytes]:
-    key_pair = rsa.generate_private_key(backend=default_backend(), public_exponent=65537, key_size=2048)
-    private_key = key_pair.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
-    public_key = key_pair.public_key().public_bytes(Encoding.OpenSSH, PublicFormat.OpenSSH)
-    return private_key, public_key

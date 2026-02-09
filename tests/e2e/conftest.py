@@ -49,6 +49,9 @@ def configure_live_server_fixture() -> None:
         multiprocessing.set_start_method("fork")
 
 
+# region app fixtures
+
+
 @pytest.fixture(name="app_api_key", scope="package")
 def app_api_key_fixture() -> str:
     return "api-key"
@@ -121,6 +124,12 @@ def app_client_fixture(live_server: LiveServer, app_api_key: str) -> Generator[A
     client.clear_authorities()
 
 
+# endregion
+
+
+# region OIDC server fixtures
+
+
 @pytest.fixture(name="oidc_server_app", scope="package")
 def oidc_server_app_fixture(debug: bool) -> OidcServerApp:
     port = _get_random_port()
@@ -140,6 +149,12 @@ def oidc_client_fixture(oidc_server: LiveServer) -> Generator[OidcClient]:
     client = OidcClient(_get_url(oidc_server))
     yield client
     client.clear_users()
+
+
+# endregion
+
+
+# region API server fixtures
 
 
 @pytest.fixture(name="api_resource_server", scope="package")
@@ -198,6 +213,12 @@ def api_client_fixture(
     client.clear_funding_programmes()
 
 
+# endregion
+
+
+# region authorization server fixtures
+
+
 @pytest.fixture(name="authorization_server_app", scope="package")
 def authorization_server_app_fixture(
     debug: bool,
@@ -234,6 +255,12 @@ def authorization_server_fixture(authorization_server_app: Flask, request: Fixtu
     server.start()
     request.addfinalizer(server.stop)
     return server
+
+
+# endregion
+
+
+# region Playwright fixtures
 
 
 # Copy of pytest_playwright.pytest_playwright.browser_context_args to narrow scope for pytest-asyncio compatibility
@@ -330,6 +357,9 @@ def browser_fixture(launch_browser: Callable[[], Browser]) -> Generator[Browser]
     browser = launch_browser()
     yield browser
     browser.close()
+
+
+# endregion
 
 
 def _get_url(live_server: LiveServer) -> str:

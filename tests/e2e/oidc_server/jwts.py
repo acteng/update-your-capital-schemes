@@ -31,5 +31,5 @@ class PrivateKeyJwtClientAssertion(JWTBearerClientAssertion):  # type: ignore
         self._jtis.add_jti(sub, jti)
         return True
 
-    def resolve_client_public_key(self, client: StubClient, headers: dict[str, str]) -> str:
-        return client.public_key
+    def resolve_client_public_key(self, client: StubClient, headers: dict[str, str]) -> bytes:
+        return client.public_key.encode()

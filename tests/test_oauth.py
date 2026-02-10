@@ -10,29 +10,29 @@ from tests.oauth import StubAuthorizationServer
 
 
 @dataclass(frozen=True)
-class _Client:
+class OAuthClient:
     client_id: str
     client_secret: str
 
 
 @dataclass(frozen=True)
-class _ResourceServer:
+class OAuthResourceServer:
     url: str
     identifier: str
 
 
 class TestOAuthExtension:
     @pytest.fixture(name="api_client")
-    def api_client_fixture(self) -> _Client:
-        return _Client(client_id="test", client_secret="secret")
+    def api_client_fixture(self) -> OAuthClient:
+        return OAuthClient(client_id="test", client_secret="secret")
 
     @pytest.fixture(name="api_server")
-    def api_server_fixture(self) -> _ResourceServer:
-        return _ResourceServer(url="https://api.example", identifier="https://api.example")
+    def api_server_fixture(self) -> OAuthResourceServer:
+        return OAuthResourceServer(url="https://api.example", identifier="https://api.example")
 
     @pytest.fixture(name="authorization_server")
     def authorization_server_fixture(
-        self, respx_mock: MockRouter, api_server: _ResourceServer, api_client: _Client
+        self, respx_mock: MockRouter, api_server: OAuthResourceServer, api_client: OAuthClient
     ) -> StubAuthorizationServer:
         authorization_server = StubAuthorizationServer(
             respx_mock, api_server.identifier, api_client.client_id, api_client.client_secret
@@ -42,7 +42,7 @@ class TestOAuthExtension:
 
     @pytest.fixture(name="app")
     def app_fixture(
-        self, authorization_server: StubAuthorizationServer, api_client: _Client, api_server: _ResourceServer
+        self, authorization_server: StubAuthorizationServer, api_client: OAuthClient, api_server: OAuthResourceServer
     ) -> Flask:
         app = Flask("test")
         app.config.from_mapping(
@@ -74,7 +74,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: _ResourceServer,
+        api_server: OAuthResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
@@ -91,7 +91,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: _ResourceServer,
+        api_server: OAuthResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
@@ -107,7 +107,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: _ResourceServer,
+        api_server: OAuthResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         token_response = authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
@@ -124,7 +124,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: _ResourceServer,
+        api_server: OAuthResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         token_response = authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
@@ -142,7 +142,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: _ResourceServer,
+        api_server: OAuthResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("expired_jwt", expires_in=1 * 60)
@@ -159,7 +159,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: _ResourceServer,
+        api_server: OAuthResourceServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("expired_jwt", expires_in=1 * 60)

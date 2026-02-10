@@ -17,8 +17,12 @@ class OAuthClient:
 
 @dataclass(frozen=True)
 class OAuthResourceServer:
-    url: str
     identifier: str
+
+
+@dataclass(frozen=True)
+class ApiServer:
+    url: str
 
 
 class TestOAuthExtension:
@@ -26,16 +30,20 @@ class TestOAuthExtension:
     def api_oauth_client_fixture(self) -> OAuthClient:
         return OAuthClient(client_id="test", client_secret="secret")
 
+    @pytest.fixture(name="api_resource_server")
+    def api_resource_server_fixture(self) -> OAuthResourceServer:
+        return OAuthResourceServer(identifier="https://api.example")
+
     @pytest.fixture(name="api_server")
-    def api_server_fixture(self) -> OAuthResourceServer:
-        return OAuthResourceServer(url="https://api.example", identifier="https://api.example")
+    def api_server_fixture(self) -> ApiServer:
+        return ApiServer(url="https://api.example")
 
     @pytest.fixture(name="authorization_server")
     def authorization_server_fixture(
-        self, respx_mock: MockRouter, api_server: OAuthResourceServer, api_oauth_client: OAuthClient
+        self, respx_mock: MockRouter, api_resource_server: OAuthResourceServer, api_oauth_client: OAuthClient
     ) -> StubAuthorizationServer:
         authorization_server = StubAuthorizationServer(
-            respx_mock, api_server.identifier, api_oauth_client.client_id, api_oauth_client.client_secret
+            respx_mock, api_resource_server.identifier, api_oauth_client.client_id, api_oauth_client.client_secret
         )
         authorization_server.given_configuration_endpoint_returns_configuration()
         return authorization_server
@@ -45,7 +53,8 @@ class TestOAuthExtension:
         self,
         authorization_server: StubAuthorizationServer,
         api_oauth_client: OAuthClient,
-        api_server: OAuthResourceServer,
+        api_resource_server: OAuthResourceServer,
+        api_server: ApiServer,
     ) -> Flask:
         app = Flask("test")
         app.config.from_mapping(
@@ -56,7 +65,7 @@ class TestOAuthExtension:
                 "ATE_CLIENT_ID": api_oauth_client.client_id,
                 "ATE_CLIENT_SECRET": api_oauth_client.client_secret,
                 "ATE_SERVER_METADATA_URL": authorization_server.configuration_endpoint,
-                "ATE_AUDIENCE": api_server.identifier,
+                "ATE_AUDIENCE": api_resource_server.identifier,
                 "ATE_URL": api_server.url,
             }
         )
@@ -77,7 +86,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: OAuthResourceServer,
+        api_server: ApiServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
@@ -94,7 +103,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: OAuthResourceServer,
+        api_server: ApiServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
@@ -110,7 +119,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: OAuthResourceServer,
+        api_server: ApiServer,
     ) -> None:
         oauth = OAuthExtension(app)
         token_response = authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
@@ -127,7 +136,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: OAuthResourceServer,
+        api_server: ApiServer,
     ) -> None:
         oauth = OAuthExtension(app)
         token_response = authorization_server.given_token_endpoint_returns_access_token("dummy_jwt", expires_in=15 * 60)
@@ -145,7 +154,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: OAuthResourceServer,
+        api_server: ApiServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("expired_jwt", expires_in=1 * 60)
@@ -162,7 +171,7 @@ class TestOAuthExtension:
         respx_mock: MockRouter,
         app: Flask,
         authorization_server: StubAuthorizationServer,
-        api_server: OAuthResourceServer,
+        api_server: ApiServer,
     ) -> None:
         oauth = OAuthExtension(app)
         authorization_server.given_token_endpoint_returns_access_token("expired_jwt", expires_in=1 * 60)

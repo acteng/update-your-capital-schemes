@@ -1,4 +1,5 @@
 from typing import Iterator, cast
+from unittest.mock import ANY
 
 from httpx import Response
 from respx import MockRouter, Route
@@ -6,13 +7,13 @@ from respx import MockRouter, Route
 
 class StubAuthorizationServer:
     def __init__(
-        self, respx_mock: MockRouter, resource_server_identifier: str, client_id: str, client_secret: str
+        self, respx_mock: MockRouter, resource_server_identifier: str, client_id: str, public_key: bytes
     ) -> None:
         self._respx_mock = respx_mock
         self._url = "https://identity.example"
         self._resource_server_identifier = resource_server_identifier
         self._client_id = client_id
-        self._client_secret = client_secret
+        self._public_key = public_key
 
     @property
     def configuration_endpoint(self) -> str:
@@ -36,8 +37,9 @@ class StubAuthorizationServer:
             data={
                 "grant_type": "client_credentials",
                 "audience": self._resource_server_identifier,
-                "client_id": self._client_id,
-                "client_secret": self._client_secret,
+                "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+                # TODO: verify JWT (signed by public_key, iss=client_id, sub=client_id, aud=token_endpoint)
+                "client_assertion": ANY,
             },
         ).mock(
             side_effect=side_effects + [Response(200, json={"access_token": access_token, "expires_in": expires_in})]

@@ -22,8 +22,8 @@ class OAuthResourceServer:
 
 
 class TestOAuthExtension:
-    @pytest.fixture(name="api_client")
-    def api_client_fixture(self) -> OAuthClient:
+    @pytest.fixture(name="api_oauth_client")
+    def api_oauth_client_fixture(self) -> OAuthClient:
         return OAuthClient(client_id="test", client_secret="secret")
 
     @pytest.fixture(name="api_server")
@@ -32,17 +32,20 @@ class TestOAuthExtension:
 
     @pytest.fixture(name="authorization_server")
     def authorization_server_fixture(
-        self, respx_mock: MockRouter, api_server: OAuthResourceServer, api_client: OAuthClient
+        self, respx_mock: MockRouter, api_server: OAuthResourceServer, api_oauth_client: OAuthClient
     ) -> StubAuthorizationServer:
         authorization_server = StubAuthorizationServer(
-            respx_mock, api_server.identifier, api_client.client_id, api_client.client_secret
+            respx_mock, api_server.identifier, api_oauth_client.client_id, api_oauth_client.client_secret
         )
         authorization_server.given_configuration_endpoint_returns_configuration()
         return authorization_server
 
     @pytest.fixture(name="app")
     def app_fixture(
-        self, authorization_server: StubAuthorizationServer, api_client: OAuthClient, api_server: OAuthResourceServer
+        self,
+        authorization_server: StubAuthorizationServer,
+        api_oauth_client: OAuthClient,
+        api_server: OAuthResourceServer,
     ) -> Flask:
         app = Flask("test")
         app.config.from_mapping(
@@ -50,8 +53,8 @@ class TestOAuthExtension:
                 "GOVUK_CLIENT_ID": "test",
                 "GOVUK_CLIENT_SECRET": "test",
                 "GOVUK_SERVER_METADATA_URL": "test",
-                "ATE_CLIENT_ID": api_client.client_id,
-                "ATE_CLIENT_SECRET": api_client.client_secret,
+                "ATE_CLIENT_ID": api_oauth_client.client_id,
+                "ATE_CLIENT_SECRET": api_oauth_client.client_secret,
                 "ATE_SERVER_METADATA_URL": authorization_server.configuration_endpoint,
                 "ATE_AUDIENCE": api_server.identifier,
                 "ATE_URL": api_server.url,

@@ -23,17 +23,13 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
         # JWT Bearer tokens do not require saving
         pass
 
-    def _init_grant(grant: PrivateKeyJwtClientCredentialsGrant) -> None:
-        # attributes set by grant extension as initializer arguments are fixed
-        grant.audience = app.config["RESOURCE_SERVER_IDENTIFIER"]
-
     authorization_server = AuthorizationServer(app, clients.get, _save_token)
     issuer = "http://auth.example"
     token_key = RSAKey.generate_key(is_private=True)
     authorization_server.register_token_generator(
         "default", StubJWTBearerTokenGenerator(issuer, app.config["RESOURCE_SERVER_IDENTIFIER"], KeySet([token_key]))
     )
-    authorization_server.register_grant(PrivateKeyJwtClientCredentialsGrant, [_init_grant])
+    authorization_server.register_grant(PrivateKeyJwtClientCredentialsGrant)
 
     @app.get("/.well-known/openid-configuration")
     def openid_configuration() -> Response:
@@ -57,7 +53,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     # register after token endpoint has been defined
     authorization_server.register_client_auth_method(
         PrivateKeyJwtClientAssertion.CLIENT_AUTH_METHOD,
-        PrivateKeyJwtClientAssertion(app.url_for("token", _external=True)),
+        PrivateKeyJwtClientAssertion(app.url_for("token", _external=True), app.config["RESOURCE_SERVER_IDENTIFIER"]),
     )
 
     return app

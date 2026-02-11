@@ -1,6 +1,7 @@
 from typing import Any
 
 from authlib.integrations.requests_client import OAuth2Session
+from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from pydantic import BaseModel as pydantic_BaseModel
 from pydantic import ConfigDict
 from pydantic.alias_generators import to_camel
@@ -86,12 +87,12 @@ class MilestoneModel(BaseModel):
 class ApiClient:
     DEFAULT_TIMEOUT = 10
 
-    def __init__(self, url: str, client_id: str, client_secret: str, token_endpoint: str, scope: str, audience: str):
+    def __init__(self, url: str, client_id: str, private_key: bytes, token_endpoint: str, scope: str, audience: str):
         self._url = url
         self._session = OAuth2Session(
             client_id=client_id,
-            client_secret=client_secret,
-            token_endpoint_auth_method="client_secret_post",
+            client_secret=private_key,
+            token_endpoint_auth_method=PrivateKeyJWT(),
             scope=scope,
         )
         self._session.fetch_token(token_endpoint, grant_type="client_credentials", audience=audience)

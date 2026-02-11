@@ -24,3 +24,6 @@ fi
 
 bw get notes "uycs-govuk-one-login-private-key-${ENVIRONMENT}" \
 	| gcloud secrets create "govuk-client-secret" --project "${PROJECT}" --data-file=-
+
+bw get notes "uycs-ate-api-private-key-${ENVIRONMENT}" \
+	| gcloud secrets create "ate-api-client-secret" --project "${PROJECT}" --data-file=-

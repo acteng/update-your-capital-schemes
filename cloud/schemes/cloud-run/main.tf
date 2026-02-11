@@ -102,12 +102,12 @@ resource "google_cloud_run_v2_service" "schemes" {
         }
       }
       dynamic "env" {
-        for_each = var.ate_api_client_secret != null ? [1] : []
+        for_each = var.ate_api_client_id != null ? [1] : []
         content {
           name = "FLASK_ATE_CLIENT_SECRET"
           value_source {
             secret_key_ref {
-              secret  = google_secret_manager_secret.ate_api_client_secret[0].secret_id
+              secret  = data.google_secret_manager_secret.ate_api_client_secret[0].secret_id
               version = "latest"
             }
           }
@@ -333,30 +333,18 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_govuk_clie
 
 # ATE API client secret
 
-resource "google_secret_manager_secret" "ate_api_client_secret" {
-  count = var.ate_api_client_secret != null ? 1 : 0
+data "google_secret_manager_secret" "ate_api_client_secret" {
+  count = var.ate_api_client_id != null ? 1 : 0
 
   secret_id = "ate-api-client-secret"
-
-  replication {
-    auto {
-    }
-  }
-}
-
-resource "google_secret_manager_secret_version" "ate_api_client_secret" {
-  count = var.ate_api_client_secret != null ? 1 : 0
-
-  secret      = google_secret_manager_secret.ate_api_client_secret[0].id
-  secret_data = var.ate_api_client_secret
 }
 
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_ate_api_client_secret" {
-  count = var.ate_api_client_secret != null ? 1 : 0
+  count = var.ate_api_client_id != null ? 1 : 0
 
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
   role      = "roles/secretmanager.secretAccessor"
-  secret_id = google_secret_manager_secret.ate_api_client_secret[0].id
+  secret_id = data.google_secret_manager_secret.ate_api_client_secret[0].id
 }
 
 # monitoring

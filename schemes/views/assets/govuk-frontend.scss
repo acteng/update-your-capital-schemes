@@ -1,5 +1,14 @@
 $govuk-assets-path: "/static/govuk-frontend/assets/";
-$govuk-brand-colour: #006853;
+$govuk-functional-colours: (
+  // govuk-organisation-colour("department-for-transport")
+  brand: #006853,
+  // govuk-organisation-colour("department-for-transport"), variant tint-95
+  template-background: #f2f7f6,
+  // govuk-organisation-colour("department-for-transport"), variant tint-95
+  surface-background: #f2f7f6,
+  // govuk-organisation-colour("department-for-transport"), variant tint-50
+  surface-border: #80b4a9
+);
 $govuk-font-family: arial, sans-serif;
 
 @import "../../../node_modules/govuk-frontend/dist/govuk/index";
@@ -12,6 +21,6 @@ $govuk-font-family: arial, sans-serif;
 }
 
 .govuk-notification-banner--success {
-  border-color: $govuk-success-colour;
-  background-color: $govuk-success-colour;
+  border-color: govuk-functional-colour("success");
+  background-color: govuk-functional-colour("success");
 }

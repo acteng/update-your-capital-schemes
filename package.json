@@ -22,10 +22,10 @@
   "license": "MIT",
   "dependencies": {
     "@govuk-one-login/service-header": "~5.0.0",
-    "govuk-frontend": "~5.14.0"
+    "govuk-frontend": "~6.0.0"
   },
   "devDependencies": {
-    "sass": "~1.69.0",
+    "sass": "~1.100.0",
     "terser": "~5.44.0"
   },
   "engines": {

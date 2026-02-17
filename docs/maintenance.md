@@ -187,7 +187,7 @@ We derive the ATE icons from the GOV.UK crest.
 
 After upgrading GOV.UK Frontend, update the ATE icons if the crest has changed:
 
-1. Copy the `path` elements from the [GOV.UK crest](../node_modules/govuk-frontend/dist/govuk/assets/rebrand/images/govuk-crest.svg)
+1. Copy the `path` elements from the [GOV.UK crest](../node_modules/govuk-frontend/dist/govuk/assets/images/govuk-crest.svg)
    to the corresponding position within:
    * the large icon: [schemes/views/assets/ate-logo.svg](../schemes/views/assets/ate-logo.svg)
    * the small icon: [schemes/views/static/ate-icons/images/favicon.svg](../schemes/views/static/ate-icons/images/favicon.svg)
@@ -203,7 +203,7 @@ After upgrading GOV.UK Frontend, update the ATE icons if the crest has changed:
 
 Update the `manifest.json` file:
 
-1. Copy the contents of the [manifest.json file](../node_modules/govuk-frontend/dist/govuk/assets/rebrand/manifest.json)
+1. Copy the contents of the [manifest.json file](../node_modules/govuk-frontend/dist/govuk/assets/manifest.json)
    to [schemes/views/static/ate-icons/manifest.json](../schemes/views/static/ate-icons/manifest.json)
 2. Update the GOV.UK icon paths to point to the corresponding ATE icons, for example:
 

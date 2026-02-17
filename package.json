@@ -22,7 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "@govuk-one-login/service-header": "~5.0.0",
-    "govuk-frontend": "~5.14.0"
+    "govuk-frontend": "~6.0.0"
   },
   "devDependencies": {
     "sass": "~1.69.0",

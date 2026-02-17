@@ -9,8 +9,7 @@
     {% if review.form.errors %}Error: {% endif %}{{ name }} - {{ super() }}
 {%- endblock %}
 
-{% block beforeContent %}
-    {{ super() }}
+{% block containerStart %}
     {{ govukBackLink({
         "href": url_for("schemes.index")
     }) }}

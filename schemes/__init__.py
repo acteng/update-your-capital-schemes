@@ -241,7 +241,6 @@ def _configure_govuk_frontend(app: Flask) -> None:
     @app.context_processor
     def govuk_frontend_config() -> dict[str, Any]:
         return {
-            "govukRebrand": True,
             "assetPath": url_for("static", filename="govuk-frontend/assets"),
             "themeColor": "#006853",
             "opengraphImageUrl": url_for("static", filename="ate-icons/images/ate-opengraph-image.png", _external=True),

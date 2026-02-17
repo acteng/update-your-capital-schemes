@@ -10,8 +10,7 @@
     {% if form.errors %}Error: {% endif %}Change milestone dates - {{ super() }}
 {%- endblock %}
 
-{% block beforeContent %}
-    {{ super() }}
+{% block containerStart %}
     {{ govukBackLink({
         "href": url_for("schemes.get", reference=reference)
     }) }}

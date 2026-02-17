@@ -82,9 +82,7 @@ After upgrading GOV.UK Frontend Jinja Macros, update the header template:
    ```diff
    -        {{ govukLogo({
    -          'classes': "govuk-header__logotype",
-   -          'ariaLabelText': "GOV.UK",
-   -          'useTudorCrown': params.useTudorCrown,
-   -          'rebrand': _rebrand
+   -          'ariaLabelText': "GOV.UK"
    -        }) | trim | indent(8) }}
    +        <img class="govuk-header__logotype ate-header__logotype" src="{{ url_for('static', filename='ate-header/ATE_Lesser_Arms_Landscape_White.png') }}" alt="Active Travel England"/>
    +        <img class="govuk-header__logotype ate-header__logotype--focus" src="{{ url_for('static', filename='ate-header/ATE_Lesser_Arms_Landscape_Black.png') }}" alt="Active Travel England"/>
@@ -109,13 +107,10 @@ After upgrading GOV.UK Frontend Jinja Macros, update the footer template:
 1. Remove the crown logo by applying the following patch:
 
    ```diff
-   -    {% if _rebrand %}
-   -      {{- govukLogo({
-   -        'classes': 'govuk-footer__crown',
-   -        'rebrand': true,
-   -        'useLogotype': false
-   -      }) }}
-   -    {% endif %}
+   -    {{- govukLogo({
+   -      'classes': 'govuk-footer__crown',
+   -      'useLogotype': false
+   -    }) }}
    ```
 
 ### Upgrading Playwright package

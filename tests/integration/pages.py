@@ -30,7 +30,7 @@ class PageObject:
 
 class HeaderComponent:
     def __init__(self, header: Tag):
-        self.home_url = one(header.select("a.govuk-header__link"))["href"]
+        self.home_url = one(header.select("a.govuk-header__homepage-link"))["href"]
 
 
 class FooterComponent:
@@ -49,11 +49,11 @@ class StartPage(PageObject):
 
     @property
     def header(self) -> HeaderComponent:
-        return HeaderComponent(one(self._soup.select("header")))
+        return HeaderComponent(one(self._soup.select(".govuk-header")))
 
     @property
     def footer(self) -> FooterComponent:
-        return FooterComponent(one(self._soup.select("footer")))
+        return FooterComponent(one(self._soup.select(".govuk-footer")))
 
     @classmethod
     def open(cls, client: FlaskClient) -> Self:

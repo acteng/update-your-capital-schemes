@@ -482,7 +482,12 @@ class TestApiSchemeRepository:
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
-            json={"items": [f"{api_base_url}/capital-schemes/ATE00001", f"{api_base_url}/capital-schemes/ATE00002"]},
+            json={
+                "items": [
+                    {"@id": f"{api_base_url}/capital-schemes/ATE00001"},
+                    {"@id": f"{api_base_url}/capital-schemes/ATE00002"},
+                ]
+            },
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
@@ -523,7 +528,7 @@ class TestApiSchemeRepository:
             ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
-            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
+            200, json={"items": [{"@id": f"{api_base_url}/capital-schemes/ATE00001"}]}
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
@@ -559,7 +564,7 @@ class TestApiSchemeRepository:
             ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
-            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
+            200, json={"items": [{"@id": f"{api_base_url}/capital-schemes/ATE00001"}]}
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
@@ -587,7 +592,7 @@ class TestApiSchemeRepository:
             ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
-            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
+            200, json={"items": [{"@id": f"{api_base_url}/capital-schemes/ATE00001"}]}
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
@@ -631,7 +636,7 @@ class TestApiSchemeRepository:
             ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
-            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
+            200, json={"items": [{"@id": f"{api_base_url}/capital-schemes/ATE00001"}]}
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
@@ -679,7 +684,7 @@ class TestApiSchemeRepository:
             ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
-            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
+            200, json={"items": [{"@id": f"{api_base_url}/capital-schemes/ATE00001"}]}
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
@@ -730,7 +735,7 @@ class TestApiSchemeRepository:
             ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
-            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
+            200, json={"items": [{"@id": f"{api_base_url}/capital-schemes/ATE00001"}]}
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
@@ -775,7 +780,7 @@ class TestApiSchemeRepository:
         )
         api_mock.get(
             "/authorities/LIV/capital-schemes/bid-submitting", params={"funding-programme-code": ["ATF3", "ATF4"]}
-        ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
+        ).respond(200, json={"items": [{"@id": f"{api_base_url}/capital-schemes/ATE00001"}]})
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
             json=_build_capital_scheme_json(
@@ -803,7 +808,7 @@ class TestApiSchemeRepository:
             ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting", params={"bid-status": "funded"}).respond(
-            200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]}
+            200, json={"items": [{"@id": f"{api_base_url}/capital-schemes/ATE00001"}]}
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
@@ -834,7 +839,7 @@ class TestApiSchemeRepository:
         api_mock.get(
             "/authorities/LIV/capital-schemes/bid-submitting",
             params={"current-milestone": ["detailed design completed", "construction started", ""]},
-        ).respond(200, json={"items": [f"{api_base_url}/capital-schemes/ATE00001"]})
+        ).respond(200, json={"items": [{"@id": f"{api_base_url}/capital-schemes/ATE00001"}]})
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,
             json=_build_capital_scheme_json(
@@ -861,7 +866,12 @@ class TestApiSchemeRepository:
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
-            json={"items": [f"{api_base_url}/capital-schemes/ATE00001", f"{api_base_url}/capital-schemes/ATE00002"]},
+            json={
+                "items": [
+                    {"@id": f"{api_base_url}/capital-schemes/ATE00001"},
+                    {"@id": f"{api_base_url}/capital-schemes/ATE00002"},
+                ]
+            },
         )
         api_mock.get("/capital-schemes/ATE00001").respond(
             200,

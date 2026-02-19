@@ -16,6 +16,10 @@ class AuthorityModel(BaseModel):
     bid_submitting_capital_schemes: AnyUrl | None = None
 
 
+class CapitalSchemeItemModel(BaseModel):
+    id: Annotated[AnyUrl, Field(alias="@id")]
+
+
 bp = Blueprint("authorities", __name__)
 authorities: dict[str, AuthorityModel] = {}
 
@@ -77,11 +81,13 @@ def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str,
         and (not current_milestones or capital_scheme.milestones.current_milestone in current_milestones)
     ]
 
-    capital_scheme_urls = [
-        AnyUrl(url_for("capital_schemes.get_capital_scheme", reference=reference, _external=True))
+    capital_scheme_items = [
+        CapitalSchemeItemModel(
+            id=AnyUrl(url_for("capital_schemes.get_capital_scheme", reference=reference, _external=True))
+        )
         for reference in references
     ]
-    return CollectionModel[AnyUrl](items=capital_scheme_urls).to_json()
+    return CollectionModel[CapitalSchemeItemModel](items=capital_scheme_items).to_json()
 
 
 @bp.delete("")

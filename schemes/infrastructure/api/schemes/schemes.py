@@ -1,7 +1,7 @@
 import asyncio
-from typing import Any
+from typing import Annotated, Any
 
-from pydantic import AnyUrl
+from pydantic import AnyUrl, Field
 
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.authorities import AuthorityModel
@@ -48,6 +48,10 @@ class CapitalSchemeModel(BaseModel):
         return scheme
 
 
+class CapitalSchemeItemModel(BaseModel):
+    id: Annotated[AnyUrl, Field(alias="@id")]
+
+
 class ApiSchemeRepository(SchemeRepository):
     def __init__(self, remote_app: ClientAsyncBaseApp):
         self._remote_app = remote_app
@@ -83,13 +87,13 @@ class ApiSchemeRepository(SchemeRepository):
             ]
             milestones = await self._get_milestones(client)
 
-            capital_scheme_urls_model = await self._get_capital_scheme_urls_by_url(
+            capital_scheme_items_model = await self._get_capital_scheme_items_model_by_url(
                 client, str(authority_model.bid_submitting_capital_schemes), funding_programme_codes, milestones
             )
             capital_scheme_models = await asyncio.gather(
                 *[
-                    self._get_capital_scheme_model_by_url(client, str(capital_scheme_url))
-                    for capital_scheme_url in capital_scheme_urls_model.items
+                    self._get_capital_scheme_model_by_url(client, str(capital_scheme_item_model.id))
+                    for capital_scheme_item_model in capital_scheme_items_model.items
                 ]
             )
             return [
@@ -127,13 +131,13 @@ class ApiSchemeRepository(SchemeRepository):
         no_milestone = ""
         return collection_model.items + [no_milestone]
 
-    async def _get_capital_scheme_urls_by_url(
+    async def _get_capital_scheme_items_model_by_url(
         self,
         remote_app: AsyncBaseApp,
         url: str,
         funding_programme_codes: list[str],
         current_milestones: list[str],
-    ) -> CollectionModel[AnyUrl]:
+    ) -> CollectionModel[CapitalSchemeItemModel]:
         response = await remote_app.get(
             url,
             params={
@@ -144,7 +148,7 @@ class ApiSchemeRepository(SchemeRepository):
             request=self._dummy_request(),
         )
         response.raise_for_status()
-        return CollectionModel[AnyUrl].model_validate(response.json())
+        return CollectionModel[CapitalSchemeItemModel].model_validate(response.json())
 
     async def _get_capital_scheme_model_by_url(self, remote_app: AsyncBaseApp, url: str) -> CapitalSchemeModel:
         response = await remote_app.get(url, request=self._dummy_request())

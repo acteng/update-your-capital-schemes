@@ -83,13 +83,13 @@ class ApiSchemeRepository(SchemeRepository):
             ]
             milestones = await self._get_milestones(client)
 
-            collection_model = await self._get_capital_scheme_urls_by_url(
+            capital_scheme_urls_model = await self._get_capital_scheme_urls_by_url(
                 client, str(authority_model.bid_submitting_capital_schemes), funding_programme_codes, milestones
             )
             capital_scheme_models = await asyncio.gather(
                 *[
                     self._get_capital_scheme_model_by_url(client, str(capital_scheme_url))
-                    for capital_scheme_url in collection_model.items
+                    for capital_scheme_url in capital_scheme_urls_model.items
                 ]
             )
             return [

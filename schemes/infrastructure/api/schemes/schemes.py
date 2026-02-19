@@ -76,9 +76,10 @@ class ApiSchemeRepository(SchemeRepository):
         async with self._remote_app.client() as client:
             authority_url = f"/authorities/{authority_abbreviation}"
             authority_model = await self._get_authority_model_by_url(client, authority_url)
-            funding_programme_item_models = await self._get_funding_programme_item_models(client)
+            funding_programme_items_model = await self._get_funding_programme_items_model(client)
             funding_programme_codes = [
-                funding_programme_item_model.code for funding_programme_item_model in funding_programme_item_models
+                funding_programme_item_model.code
+                for funding_programme_item_model in funding_programme_items_model.items
             ]
             milestones = await self._get_milestones(client)
 
@@ -92,7 +93,7 @@ class ApiSchemeRepository(SchemeRepository):
                 ]
             )
             return [
-                capital_scheme_model.to_domain([authority_model], funding_programme_item_models)
+                capital_scheme_model.to_domain([authority_model], funding_programme_items_model.items)
                 for capital_scheme_model in capital_scheme_models
             ]
 
@@ -102,12 +103,14 @@ class ApiSchemeRepository(SchemeRepository):
             await self._update_milestones(client, scheme)
             await self._update_authority_reviews(client, scheme)
 
-    async def _get_funding_programme_item_models(self, remote_app: AsyncBaseApp) -> list[FundingProgrammeItemModel]:
+    async def _get_funding_programme_items_model(
+        self, remote_app: AsyncBaseApp
+    ) -> CollectionModel[FundingProgrammeItemModel]:
         response = await remote_app.get(
             "/funding-programmes", params={"eligible-for-authority-update": "true"}, request=self._dummy_request()
         )
         response.raise_for_status()
-        return CollectionModel[FundingProgrammeItemModel].model_validate(response.json()).items
+        return CollectionModel[FundingProgrammeItemModel].model_validate(response.json())
 
     async def _get_funding_programme_model_by_url(self, remote_app: AsyncBaseApp, url: str) -> FundingProgrammeModel:
         response = await remote_app.get(url, request=self._dummy_request())

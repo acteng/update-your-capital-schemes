@@ -45,7 +45,7 @@ def add_funding_programmes() -> Response:
 def get_funding_programmes() -> dict[str, Any]:
     eligible_for_authority_update = request.args.get("eligible-for-authority-update", type=parse_bool)
 
-    funding_programme_item_models = [
+    funding_programme_items = [
         FundingProgrammeItemModel(
             id=AnyUrl(url_for("funding_programmes.get_funding_programme", code=funding_programme.code, _external=True)),
             code=funding_programme.code,
@@ -56,7 +56,7 @@ def get_funding_programmes() -> dict[str, Any]:
             or funding_programme.eligible_for_authority_update == eligible_for_authority_update
         )
     ]
-    return CollectionModel[FundingProgrammeItemModel](items=funding_programme_item_models).to_json()
+    return CollectionModel[FundingProgrammeItemModel](items=funding_programme_items).to_json()
 
 
 @bp.get("<code>")

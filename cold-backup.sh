@@ -22,7 +22,7 @@ PGUSER=schemes
 gcloud sql instances create ${RESTORE_INSTANCE} \
 	--project ${PROJECT} \
 	--region ${REGION} \
-	--database-version POSTGRES_16 \
+	--database-version POSTGRES_18 \
 	--tier db-custom-1-3840 \
 	--edition enterprise \
 	--connector-enforcement REQUIRED \

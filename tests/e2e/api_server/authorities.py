@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Any
 
 from flask import Blueprint, Response, abort, request, url_for
@@ -5,7 +6,7 @@ from pydantic import AnyUrl, Field
 
 from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.base import BaseModel
-from tests.e2e.api_server.capital_schemes import capital_schemes
+from tests.e2e.api_server.capital_schemes import CapitalSchemeModel, capital_schemes
 from tests.e2e.api_server.collections import CollectionModel
 
 
@@ -16,8 +17,20 @@ class AuthorityModel(BaseModel):
     bid_submitting_capital_schemes: AnyUrl | None = None
 
 
+class CapitalSchemeItemOverviewModel(BaseModel):
+    name: str
+    funding_programme: AnyUrl
+
+
+class CapitalSchemeItemAuthorityReviewModel(BaseModel):
+    review_date: datetime
+
+
 class CapitalSchemeItemModel(BaseModel):
     id: Annotated[AnyUrl, Field(alias="@id")]
+    reference: str
+    overview: CapitalSchemeItemOverviewModel
+    authority_review: CapitalSchemeItemAuthorityReviewModel | None
 
 
 bp = Blueprint("authorities", __name__)
@@ -72,8 +85,8 @@ def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str,
         AnyUrl(url_for("funding_programmes.get_funding_programme", code=funding_programme_code, _external=True))
         for funding_programme_code in funding_programme_codes
     ]
-    references = [
-        capital_scheme.reference
+    capital_scheme_items = [
+        _to_capital_scheme_item(capital_scheme)
         for capital_scheme in capital_schemes.values()
         if capital_scheme.overview.bid_submitting_authority == authority_url
         and (not funding_programme_urls or capital_scheme.overview.funding_programme in funding_programme_urls)
@@ -81,12 +94,6 @@ def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str,
         and (not current_milestones or capital_scheme.milestones.current_milestone in current_milestones)
     ]
 
-    capital_scheme_items = [
-        CapitalSchemeItemModel(
-            id=AnyUrl(url_for("capital_schemes.get_capital_scheme", reference=reference, _external=True))
-        )
-        for reference in references
-    ]
     return CollectionModel[CapitalSchemeItemModel](items=capital_scheme_items).to_json()
 
 
@@ -95,3 +102,18 @@ def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str,
 def clear_authorities() -> Response:
     authorities.clear()
     return Response(status=204)
+
+
+def _to_capital_scheme_item(capital_scheme: CapitalSchemeModel) -> CapitalSchemeItemModel:
+    return CapitalSchemeItemModel(
+        id=AnyUrl(url_for("capital_schemes.get_capital_scheme", reference=capital_scheme.reference, _external=True)),
+        reference=capital_scheme.reference,
+        overview=CapitalSchemeItemOverviewModel(
+            name=capital_scheme.overview.name, funding_programme=capital_scheme.overview.funding_programme
+        ),
+        authority_review=(
+            CapitalSchemeItemAuthorityReviewModel(review_date=capital_scheme.authority_review.review_date)
+            if capital_scheme.authority_review
+            else None
+        ),
+    )

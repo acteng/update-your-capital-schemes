@@ -1,12 +1,18 @@
-import asyncio
-from typing import Annotated, Any
+from datetime import datetime
+from typing import Any
 
-from pydantic import AnyUrl, Field
+from pydantic import AnyUrl
 
+from schemes.domain.dates import DateRange
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.funding import BidStatus, BidStatusRevision
+from schemes.domain.schemes.overview import OverviewRevision, SchemeType
+from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
+from schemes.infrastructure.api.dates import zoned_to_local
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel, FundingProgrammeModel
 from schemes.infrastructure.api.schemes.authority_reviews import (
     CapitalSchemeAuthorityReviewModel,
@@ -48,8 +54,53 @@ class CapitalSchemeModel(BaseModel):
         return scheme
 
 
+class CapitalSchemeItemOverviewModel(BaseModel):
+    name: str
+    funding_programme: AnyUrl
+
+    def to_domain(self, funding_programme_item_models: list[FundingProgrammeItemModel]) -> OverviewRevision:
+        # TODO: id, effective, authority_abbreviation, type
+        return OverviewRevision(
+            id_=0,
+            effective=DateRange(date_from=datetime.min, date_to=None),
+            name=self.name,
+            authority_abbreviation="",
+            type_=SchemeType.DEVELOPMENT,
+            funding_programme=next(
+                funding_programme_item_model.to_domain()
+                for funding_programme_item_model in funding_programme_item_models
+                if funding_programme_item_model.id == self.funding_programme
+            ),
+        )
+
+
+class CapitalSchemeItemAuthorityReviewModel(BaseModel):
+    review_date: datetime
+
+    def to_domain(self) -> AuthorityReview:
+        # TODO: id, source
+        return AuthorityReview(id_=0, review_date=zoned_to_local(self.review_date), source=DataSource.PULSE_5)
+
+
 class CapitalSchemeItemModel(BaseModel):
-    id: Annotated[AnyUrl, Field(alias="@id")]
+    reference: str
+    overview: CapitalSchemeItemOverviewModel
+    authority_review: CapitalSchemeItemAuthorityReviewModel | None = None
+
+    def to_domain(self, funding_programme_item_models: list[FundingProgrammeItemModel]) -> Scheme:
+        # TODO: id
+        scheme = Scheme(id_=0, reference=self.reference)
+        scheme.overview.update_overview(self.overview.to_domain(funding_programme_item_models))
+        # TODO: bid_status
+        scheme.funding.update_bid_status(
+            BidStatusRevision(id_=0, effective=DateRange(date_from=datetime.min, date_to=None), status=BidStatus.FUNDED)
+        )
+        # TODO: financials, milestones, outputs
+
+        if self.authority_review:
+            scheme.reviews.update_authority_review(self.authority_review.to_domain())
+
+        return scheme
 
 
 class ApiSchemeRepository(SchemeRepository):
@@ -90,15 +141,9 @@ class ApiSchemeRepository(SchemeRepository):
             capital_scheme_items_model = await self._get_capital_scheme_items_model_by_url(
                 client, str(authority_model.bid_submitting_capital_schemes), funding_programme_codes, milestones
             )
-            capital_scheme_models = await asyncio.gather(
-                *[
-                    self._get_capital_scheme_model_by_url(client, str(capital_scheme_item_model.id))
-                    for capital_scheme_item_model in capital_scheme_items_model.items
-                ]
-            )
             return [
-                capital_scheme_model.to_domain([authority_model], funding_programme_items_model.items)
-                for capital_scheme_model in capital_scheme_models
+                capital_scheme_item_model.to_domain(funding_programme_items_model.items)
+                for capital_scheme_item_model in capital_scheme_items_model.items
             ]
 
     async def update(self, scheme: Scheme) -> None:

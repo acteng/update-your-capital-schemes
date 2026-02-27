@@ -1,11 +1,8 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import AnyUrl
-
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.funding import BidStatus, BidStatusRevision
-from schemes.domain.schemes.overview import OverviewRevision, SchemeType
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
@@ -51,35 +48,17 @@ class CapitalSchemeModel(BaseModel):
         return scheme
 
 
-class CapitalSchemeItemOverviewModel(BaseModel):
-    name: str
-    funding_programme: AnyUrl
-
-    def to_domain(self, funding_programme_item_models: list[FundingProgrammeItemModel]) -> OverviewRevision:
-        # TODO: id, effective, authority_abbreviation, type
-        return OverviewRevision(
-            id_=0,
-            effective=DateRange(date_from=datetime.min, date_to=None),
-            name=self.name,
-            authority_abbreviation="",
-            type_=SchemeType.DEVELOPMENT,
-            funding_programme=next(
-                funding_programme_item_model.to_domain()
-                for funding_programme_item_model in funding_programme_item_models
-                if funding_programme_item_model.id == self.funding_programme
-            ),
-        )
-
-
 class CapitalSchemeItemModel(BaseModel):
     reference: str
-    overview: CapitalSchemeItemOverviewModel
+    overview: CapitalSchemeOverviewModel
     authority_review: CapitalSchemeAuthorityReviewModel | None = None
 
-    def to_domain(self, funding_programme_item_models: list[FundingProgrammeItemModel]) -> Scheme:
+    def to_domain(
+        self, authority_models: list[AuthorityModel], funding_programme_item_models: list[FundingProgrammeItemModel]
+    ) -> Scheme:
         # TODO: id
         scheme = Scheme(id_=0, reference=self.reference)
-        scheme.overview.update_overview(self.overview.to_domain(funding_programme_item_models))
+        scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
         # TODO: bid_status
         scheme.funding.update_bid_status(
             BidStatusRevision(id_=0, effective=DateRange(date_from=datetime.min, date_to=None), status=BidStatus.FUNDED)
@@ -131,7 +110,7 @@ class ApiSchemeRepository(SchemeRepository):
                 client, str(authority_model.bid_submitting_capital_schemes), funding_programme_codes, milestones
             )
             return [
-                capital_scheme_item_model.to_domain(funding_programme_items_model.items)
+                capital_scheme_item_model.to_domain([authority_model], funding_programme_items_model.items)
                 for capital_scheme_item_model in capital_scheme_items_model.items
             ]
 

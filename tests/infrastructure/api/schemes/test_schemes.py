@@ -26,12 +26,7 @@ from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancial
 from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel, MilestoneModel
 from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel, OutputMeasureModel, OutputTypeModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel, CapitalSchemeTypeModel
-from schemes.infrastructure.api.schemes.schemes import (
-    ApiSchemeRepository,
-    CapitalSchemeItemModel,
-    CapitalSchemeItemOverviewModel,
-    CapitalSchemeModel,
-)
+from schemes.infrastructure.api.schemes.schemes import ApiSchemeRepository, CapitalSchemeItemModel, CapitalSchemeModel
 from schemes.oauth import ClientAsyncBaseApp
 from tests.builders import build_scheme
 from tests.infrastructure.api.conftest import StubRemoteApp
@@ -248,62 +243,59 @@ class TestCapitalSchemeModel:
         )
 
 
-class TestCapitalSchemeItemOverviewModel:
-    def test_to_domain(self) -> None:
-        funding_programme_item_model = FundingProgrammeItemModel(
-            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
-        )
-        overview_model = CapitalSchemeItemOverviewModel(
-            name="Wirral Package", funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4")
-        )
-
-        overview_revision = overview_model.to_domain([funding_programme_item_model])
-
-        assert (
-            overview_revision.id is not None
-            and overview_revision.name == "Wirral Package"
-            and overview_revision.funding_programme == FundingProgrammes.ATF4
-        )
-
-
 class TestCapitalSchemeItemModel:
     def test_to_domain(self) -> None:
-        capital_scheme_item_model = CapitalSchemeItemModel(reference="ATE00001", overview=_dummy_item_overview_model())
+        capital_scheme_item_model = CapitalSchemeItemModel(reference="ATE00001", overview=_dummy_overview_model())
 
-        scheme = capital_scheme_item_model.to_domain([_dummy_funding_programme_item_model()])
+        scheme = capital_scheme_item_model.to_domain(
+            [_dummy_authority_model()], [_dummy_funding_programme_item_model()]
+        )
 
         assert scheme.id is not None and scheme.reference == "ATE00001"
 
     def test_to_domain_sets_overview_revision(self) -> None:
+        authority_model = AuthorityModel(
+            id=AnyUrl("https://api.example/authorities/LIV"),
+            abbreviation="LIV",
+            full_name="Liverpool City Region Combined Authority",
+            bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/LIV/capital-schemes/bid-submitting"),
+        )
         funding_programme_item_model = FundingProgrammeItemModel(
             id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
         )
         capital_scheme_item_model = CapitalSchemeItemModel(
             reference="ATE00001",
-            overview=CapitalSchemeItemOverviewModel(
-                name="Wirral Package", funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4")
+            overview=CapitalSchemeOverviewModel(
+                name="Wirral Package",
+                bid_submitting_authority=AnyUrl("https://api.example/authorities/LIV"),
+                funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
+                type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
         )
 
-        scheme = capital_scheme_item_model.to_domain([funding_programme_item_model])
+        scheme = capital_scheme_item_model.to_domain([authority_model], [funding_programme_item_model])
 
         (overview_revision1,) = scheme.overview.overview_revisions
         assert (
             overview_revision1.id is not None
             and overview_revision1.name == "Wirral Package"
+            and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
+            and overview_revision1.type == SchemeType.CONSTRUCTION
         )
 
     def test_to_domain_sets_authority_review(self) -> None:
         capital_scheme_item_model = CapitalSchemeItemModel(
             reference="ATE00001",
-            overview=_dummy_item_overview_model(),
+            overview=_dummy_overview_model(),
             authority_review=CapitalSchemeAuthorityReviewModel(
                 review_date=datetime(2020, 1, 2), source=DataSourceModel.AUTHORITY_UPDATE
             ),
         )
 
-        scheme = capital_scheme_item_model.to_domain([_dummy_funding_programme_item_model()])
+        scheme = capital_scheme_item_model.to_domain(
+            [_dummy_authority_model()], [_dummy_funding_programme_item_model()]
+        )
 
         (authority_review1,) = scheme.reviews.authority_reviews
         assert (
@@ -557,8 +549,12 @@ class TestApiSchemeRepository:
             200,
             json={
                 "items": [
-                    _build_capital_scheme_item_json(reference="ATE00001"),
-                    _build_capital_scheme_item_json(reference="ATE00002"),
+                    _build_capital_scheme_item_json(
+                        reference="ATE00001", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                    ),
+                    _build_capital_scheme_item_json(
+                        reference="ATE00002", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                    ),
                 ]
             },
         )
@@ -595,7 +591,9 @@ class TestApiSchemeRepository:
                     _build_capital_scheme_item_json(
                         reference="ATE00001",
                         name="Wirral Package",
+                        bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                         funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                        type_="construction",
                     )
                 ]
             },
@@ -607,7 +605,9 @@ class TestApiSchemeRepository:
         assert (
             overview_revision1.id is not None
             and overview_revision1.name == "Wirral Package"
+            and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
+            and overview_revision1.type == SchemeType.CONSTRUCTION
         )
 
     async def test_get_schemes_by_authority_sets_authority_review(
@@ -629,6 +629,7 @@ class TestApiSchemeRepository:
                 "items": [
                     _build_capital_scheme_item_json(
                         reference="ATE00001",
+                        bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                         authority_review=_build_authority_review_json(
                             review_date="2020-01-02T00:00:00Z", source="authority update"
                         ),
@@ -674,7 +675,9 @@ class TestApiSchemeRepository:
             json={
                 "items": [
                     _build_capital_scheme_item_json(
-                        reference="ATE00001", funding_programme=f"{api_base_url}/funding-programmes/ATF4"
+                        reference="ATE00001",
+                        bid_submitting_authority=f"{api_base_url}/authorities/LIV",
+                        funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                     )
                 ]
             },
@@ -698,7 +701,14 @@ class TestApiSchemeRepository:
             ),
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting", params={"bid-status": "funded"}).respond(
-            200, json={"items": [_build_capital_scheme_item_json(reference="ATE00001")]}
+            200,
+            json={
+                "items": [
+                    _build_capital_scheme_item_json(
+                        reference="ATE00001", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                    )
+                ]
+            },
         )
 
         (scheme1,) = await schemes.get_by_authority("LIV")
@@ -723,7 +733,16 @@ class TestApiSchemeRepository:
         api_mock.get(
             "/authorities/LIV/capital-schemes/bid-submitting",
             params={"current-milestone": ["detailed design completed", "construction started", ""]},
-        ).respond(200, json={"items": [_build_capital_scheme_item_json(reference="ATE00001")]})
+        ).respond(
+            200,
+            json={
+                "items": [
+                    _build_capital_scheme_item_json(
+                        reference="ATE00001", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                    )
+                ]
+            },
+        )
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
@@ -746,8 +765,12 @@ class TestApiSchemeRepository:
             200,
             json={
                 "items": [
-                    _build_capital_scheme_item_json(reference="ATE00001"),
-                    _build_capital_scheme_item_json(reference="ATE00002"),
+                    _build_capital_scheme_item_json(
+                        reference="ATE00001", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                    ),
+                    _build_capital_scheme_item_json(
+                        reference="ATE00002", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                    ),
                 ]
             },
         )
@@ -959,12 +982,6 @@ def _dummy_bid_status_details_model() -> CapitalSchemeBidStatusDetailsModel:
     return CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.SUBMITTED)
 
 
-def _dummy_item_overview_model() -> CapitalSchemeItemOverviewModel:
-    return CapitalSchemeItemOverviewModel(
-        name="dummy", funding_programme=AnyUrl("https://api.example/funding-programmes/dummy")
-    )
-
-
 def _build_funding_programme_json(id_: str | None = None, code: str | None = None) -> dict[str, Any]:
     return {"@id": id_ or "https://api.example/funding-programmes/dummy", "code": code or "dummy"}
 
@@ -1076,14 +1093,18 @@ def _build_capital_scheme_json(
 def _build_capital_scheme_item_json(
     reference: str | None = None,
     name: str | None = None,
+    bid_submitting_authority: str | None = None,
     funding_programme: str | None = None,
+    type_: str | None = None,
     authority_review: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
         "reference": reference or "dummy",
-        "overview": {
-            "name": name or "dummy",
-            "fundingProgramme": funding_programme or "https://api.example/funding-programmes/dummy",
-        },
+        "overview": _build_overview_json(
+            name=name,
+            bid_submitting_authority=bid_submitting_authority,
+            funding_programme=funding_programme,
+            type_=type_,
+        ),
         "authorityReview": authority_review if authority_review else None,
     }

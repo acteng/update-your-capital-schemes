@@ -5,7 +5,12 @@ from pydantic import AnyUrl, Field
 
 from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.base import BaseModel
-from tests.e2e.api_server.capital_schemes import CapitalSchemeAuthorityReviewModel, CapitalSchemeModel, capital_schemes
+from tests.e2e.api_server.capital_schemes import (
+    CapitalSchemeAuthorityReviewModel,
+    CapitalSchemeModel,
+    CapitalSchemeOverviewModel,
+    capital_schemes,
+)
 from tests.e2e.api_server.collections import CollectionModel
 
 
@@ -16,15 +21,10 @@ class AuthorityModel(BaseModel):
     bid_submitting_capital_schemes: AnyUrl | None = None
 
 
-class CapitalSchemeItemOverviewModel(BaseModel):
-    name: str
-    funding_programme: AnyUrl
-
-
 class CapitalSchemeItemModel(BaseModel):
     id: Annotated[AnyUrl, Field(alias="@id")]
     reference: str
-    overview: CapitalSchemeItemOverviewModel
+    overview: CapitalSchemeOverviewModel
     authority_review: CapitalSchemeAuthorityReviewModel | None
 
 
@@ -103,8 +103,6 @@ def _to_capital_scheme_item(capital_scheme: CapitalSchemeModel) -> CapitalScheme
     return CapitalSchemeItemModel(
         id=AnyUrl(url_for("capital_schemes.get_capital_scheme", reference=capital_scheme.reference, _external=True)),
         reference=capital_scheme.reference,
-        overview=CapitalSchemeItemOverviewModel(
-            name=capital_scheme.overview.name, funding_programme=capital_scheme.overview.funding_programme
-        ),
+        overview=capital_scheme.overview,
         authority_review=capital_scheme.authority_review,
     )

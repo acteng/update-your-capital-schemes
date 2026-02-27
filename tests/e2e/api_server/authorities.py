@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Annotated, Any
 
 from flask import Blueprint, Response, abort, request, url_for
@@ -6,7 +5,7 @@ from pydantic import AnyUrl, Field
 
 from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.base import BaseModel
-from tests.e2e.api_server.capital_schemes import CapitalSchemeModel, capital_schemes
+from tests.e2e.api_server.capital_schemes import CapitalSchemeAuthorityReviewModel, CapitalSchemeModel, capital_schemes
 from tests.e2e.api_server.collections import CollectionModel
 
 
@@ -22,15 +21,11 @@ class CapitalSchemeItemOverviewModel(BaseModel):
     funding_programme: AnyUrl
 
 
-class CapitalSchemeItemAuthorityReviewModel(BaseModel):
-    review_date: datetime
-
-
 class CapitalSchemeItemModel(BaseModel):
     id: Annotated[AnyUrl, Field(alias="@id")]
     reference: str
     overview: CapitalSchemeItemOverviewModel
-    authority_review: CapitalSchemeItemAuthorityReviewModel | None
+    authority_review: CapitalSchemeAuthorityReviewModel | None
 
 
 bp = Blueprint("authorities", __name__)
@@ -111,9 +106,5 @@ def _to_capital_scheme_item(capital_scheme: CapitalSchemeModel) -> CapitalScheme
         overview=CapitalSchemeItemOverviewModel(
             name=capital_scheme.overview.name, funding_programme=capital_scheme.overview.funding_programme
         ),
-        authority_review=(
-            CapitalSchemeItemAuthorityReviewModel(review_date=capital_scheme.authority_review.review_date)
-            if capital_scheme.authority_review
-            else None
-        ),
+        authority_review=capital_scheme.authority_review,
     )

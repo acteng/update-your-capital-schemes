@@ -4,15 +4,12 @@ from typing import Any
 from pydantic import AnyUrl
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import BidStatus, BidStatusRevision
 from schemes.domain.schemes.overview import OverviewRevision, SchemeType
-from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
-from schemes.infrastructure.api.dates import zoned_to_local
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel, FundingProgrammeModel
 from schemes.infrastructure.api.schemes.authority_reviews import (
     CapitalSchemeAuthorityReviewModel,
@@ -74,18 +71,10 @@ class CapitalSchemeItemOverviewModel(BaseModel):
         )
 
 
-class CapitalSchemeItemAuthorityReviewModel(BaseModel):
-    review_date: datetime
-
-    def to_domain(self) -> AuthorityReview:
-        # TODO: id, source
-        return AuthorityReview(id_=0, review_date=zoned_to_local(self.review_date), source=DataSource.PULSE_5)
-
-
 class CapitalSchemeItemModel(BaseModel):
     reference: str
     overview: CapitalSchemeItemOverviewModel
-    authority_review: CapitalSchemeItemAuthorityReviewModel | None = None
+    authority_review: CapitalSchemeAuthorityReviewModel | None = None
 
     def to_domain(self, funding_programme_item_models: list[FundingProgrammeItemModel]) -> Scheme:
         # TODO: id

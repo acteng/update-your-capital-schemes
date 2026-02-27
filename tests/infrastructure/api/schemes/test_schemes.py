@@ -1,4 +1,4 @@
-from datetime import UTC, date, datetime
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 
@@ -28,7 +28,6 @@ from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel,
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel, CapitalSchemeTypeModel
 from schemes.infrastructure.api.schemes.schemes import (
     ApiSchemeRepository,
-    CapitalSchemeItemAuthorityReviewModel,
     CapitalSchemeItemModel,
     CapitalSchemeItemOverviewModel,
     CapitalSchemeModel,
@@ -266,22 +265,6 @@ class TestCapitalSchemeItemOverviewModel:
         )
 
 
-class TestCapitalSchemeItemAuthorityReviewModel:
-    def test_to_domain(self) -> None:
-        authority_review_model = CapitalSchemeItemAuthorityReviewModel(review_date=datetime(2020, 1, 2))
-
-        authority_review = authority_review_model.to_domain()
-
-        assert authority_review.id is not None and authority_review.review_date == datetime(2020, 1, 2)
-
-    def test_to_domain_converts_dates_to_local_europe_london(self) -> None:
-        authority_review_model = CapitalSchemeItemAuthorityReviewModel(review_date=datetime(2020, 6, 1, 12, tzinfo=UTC))
-
-        authority_review = authority_review_model.to_domain()
-
-        assert authority_review.review_date == datetime(2020, 6, 1, 13)
-
-
 class TestCapitalSchemeItemModel:
     def test_to_domain(self) -> None:
         capital_scheme_item_model = CapitalSchemeItemModel(reference="ATE00001", overview=_dummy_item_overview_model())
@@ -314,13 +297,19 @@ class TestCapitalSchemeItemModel:
         capital_scheme_item_model = CapitalSchemeItemModel(
             reference="ATE00001",
             overview=_dummy_item_overview_model(),
-            authority_review=CapitalSchemeItemAuthorityReviewModel(review_date=datetime(2020, 1, 2)),
+            authority_review=CapitalSchemeAuthorityReviewModel(
+                review_date=datetime(2020, 1, 2), source=DataSourceModel.AUTHORITY_UPDATE
+            ),
         )
 
         scheme = capital_scheme_item_model.to_domain([_dummy_funding_programme_item_model()])
 
         (authority_review1,) = scheme.reviews.authority_reviews
-        assert authority_review1.id is not None and authority_review1.review_date == datetime(2020, 1, 2)
+        assert (
+            authority_review1.id is not None
+            and authority_review1.review_date == datetime(2020, 1, 2)
+            and authority_review1.source == DataSource.AUTHORITY_UPDATE
+        )
 
 
 class TestApiSchemeRepository:
@@ -633,13 +622,26 @@ class TestApiSchemeRepository:
         )
         api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
             200,
-            json={"items": [_build_capital_scheme_item_json(reference="ATE00001", review_date="2020-01-02T00:00:00Z")]},
+            json={
+                "items": [
+                    _build_capital_scheme_item_json(
+                        reference="ATE00001",
+                        authority_review=_build_authority_review_json(
+                            review_date="2020-01-02T00:00:00Z", source="authority update"
+                        ),
+                    )
+                ]
+            },
         )
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
         (authority_review1,) = scheme1.reviews.authority_reviews
-        assert authority_review1.id is not None and authority_review1.review_date == datetime(2020, 1, 2)
+        assert (
+            authority_review1.id is not None
+            and authority_review1.review_date == datetime(2020, 1, 2)
+            and authority_review1.source == DataSource.AUTHORITY_UPDATE
+        )
 
     async def test_get_schemes_by_authority_filters_by_funding_programme_eligible_for_authority_update(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
@@ -1068,7 +1070,7 @@ def _build_capital_scheme_item_json(
     reference: str | None = None,
     name: str | None = None,
     funding_programme: str | None = None,
-    review_date: str | None = None,
+    authority_review: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
         "reference": reference or "dummy",
@@ -1076,5 +1078,5 @@ def _build_capital_scheme_item_json(
             "name": name or "dummy",
             "fundingProgramme": funding_programme or "https://api.example/funding-programmes/dummy",
         },
-        "authorityReview": {"reviewDate": review_date} if review_date else None,
+        "authorityReview": authority_review if authority_review else None,
     }

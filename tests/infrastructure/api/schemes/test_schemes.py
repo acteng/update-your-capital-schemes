@@ -12,7 +12,7 @@ from schemes.domain.schemes.funding import BidStatus, FinancialRevision, Financi
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure
-from schemes.domain.schemes.overview import FundingProgrammes
+from schemes.domain.schemes.overview import FundingProgrammes, SchemeType
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.collections import CollectionModel
@@ -103,6 +103,7 @@ class TestCapitalSchemeModel:
             and overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
+            and overview_revision1.type == SchemeType.CONSTRUCTION
         )
 
     def test_to_domain_sets_financial_revisions(self) -> None:
@@ -342,6 +343,7 @@ class TestApiSchemeRepository:
                 name="Wirral Package",
                 bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                 funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                type_="construction",
             ),
         )
 
@@ -354,6 +356,7 @@ class TestApiSchemeRepository:
             and overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
+            and overview_revision1.type == SchemeType.CONSTRUCTION
         )
 
     async def test_get_scheme_sets_bid_status_revision(
@@ -1047,6 +1050,7 @@ def _build_capital_scheme_json(
     name: str | None = None,
     bid_submitting_authority: str | None = None,
     funding_programme: str | None = None,
+    type_: str | None = None,
     bid_status: str | None = None,
     financials: list[dict[str, Any]] | None = None,
     milestones: list[dict[str, Any]] | None = None,
@@ -1056,7 +1060,10 @@ def _build_capital_scheme_json(
     return {
         "reference": reference or "dummy",
         "overview": _build_overview_json(
-            name=name, bid_submitting_authority=bid_submitting_authority, funding_programme=funding_programme
+            name=name,
+            bid_submitting_authority=bid_submitting_authority,
+            funding_programme=funding_programme,
+            type_=type_,
         ),
         "bidStatusDetails": _build_bid_status_details_json(bid_status=bid_status),
         "financials": {"items": financials or []},

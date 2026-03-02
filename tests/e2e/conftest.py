@@ -269,6 +269,7 @@ def api_client_fixture(
         url=_get_url(api_server),
         client_id=tests_api_oauth_client.client_id,
         private_key=tests_api_key_pair.private_key,
+        issuer=authorization_server_metadata["issuer"],
         token_endpoint=authorization_server_metadata["token_endpoint"],
         scope="tests",
         audience=api_resource_server.identifier,

@@ -1,3 +1,5 @@
+from typing import Any
+
 from authlib.oauth2 import OAuth2Error, OAuth2Request
 from authlib.oauth2.rfc7523 import JWTBearerClientAssertion
 
@@ -21,8 +23,9 @@ class JtiRepository:
 class PrivateKeyJwtClientAssertion(JWTBearerClientAssertion):  # type: ignore
     CLIENT_AUTH_METHOD = "private_key_jwt"
 
-    def __init__(self, token_url: str, audience: str):
+    def __init__(self, token_url: str, issuer: str, audience: str):
         super().__init__(token_url)
+        self._issuer = issuer
         self._audience = audience
         self._jtis = JtiRepository()
 
@@ -30,6 +33,12 @@ class PrivateKeyJwtClientAssertion(JWTBearerClientAssertion):  # type: ignore
         client: StubClient = super().__call__(query_client, request)
         self._validate_audience(request.payload.data.get("audience"))
         return client
+
+    # Workaround: https://github.com/authlib/authlib/issues/730
+    def create_claims_options(self) -> dict[str, Any]:
+        options: dict[str, Any] = super().create_claims_options()
+        options["aud"]["value"] = self._issuer
+        return options
 
     def _validate_audience(self, audience: str) -> None:
         if self._audience:

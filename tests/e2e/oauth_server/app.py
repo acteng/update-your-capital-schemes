@@ -53,7 +53,9 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     # register after token endpoint has been defined
     authorization_server.register_client_auth_method(
         PrivateKeyJwtClientAssertion.CLIENT_AUTH_METHOD,
-        PrivateKeyJwtClientAssertion(app.url_for("token", _external=True), app.config["RESOURCE_SERVER_IDENTIFIER"]),
+        PrivateKeyJwtClientAssertion(
+            app.url_for("token", _external=True), issuer, app.config["RESOURCE_SERVER_IDENTIFIER"]
+        ),
     )
 
     return app

@@ -87,12 +87,15 @@ class MilestoneModel(BaseModel):
 class ApiClient:
     DEFAULT_TIMEOUT = 10
 
-    def __init__(self, url: str, client_id: str, private_key: bytes, token_endpoint: str, scope: str, audience: str):
+    def __init__(
+        self, url: str, client_id: str, private_key: bytes, issuer: str, token_endpoint: str, scope: str, audience: str
+    ):
         self._url = url
         self._session = OAuth2Session(
             client_id=client_id,
             client_secret=private_key,
-            token_endpoint_auth_method=PrivateKeyJWT(),
+            # Workaround: https://github.com/authlib/authlib/issues/730
+            token_endpoint_auth_method=PrivateKeyJWT(token_endpoint=issuer),
             scope=scope,
         )
         self._session.fetch_token(token_endpoint, grant_type="client_credentials", audience=audience)

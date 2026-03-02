@@ -121,6 +121,13 @@ resource "google_cloud_run_v2_service" "schemes" {
         }
       }
       dynamic "env" {
+        for_each = var.ate_api_issuer != null ? [1] : []
+        content {
+          name  = "FLASK_ATE_ISSUER"
+          value = var.ate_api_issuer
+        }
+      }
+      dynamic "env" {
         for_each = var.ate_api_audience != null ? [1] : []
         content {
           name  = "FLASK_ATE_AUDIENCE"

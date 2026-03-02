@@ -44,6 +44,7 @@ The application can also be configured with the following environment variables:
 | FLASK_ATE_CLIENT_ID                | ATE API client id                                                                           |
 | FLASK_ATE_CLIENT_SECRET            | ATE API client secret                                                                       |
 | FLASK_ATE_SERVER_METADATA_URL      | ATE API authorisation server configuration endpoint                                         |
+| FLASK_ATE_ISSUER                   | ATE API authorisation server issuer                                                         |
 | FLASK_ATE_AUDIENCE                 | ATE API resource server identifier                                                          |
 
 ## Running locally

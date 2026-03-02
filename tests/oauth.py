@@ -20,6 +20,10 @@ class StubAuthorizationServer:
         return f"{self._url}/.well-known/openid-configuration"
 
     @property
+    def issuer(self) -> str:
+        return self._url
+
+    @property
     def token_endpoint(self) -> str:
         return f"{self._url}/token"
 
@@ -38,7 +42,7 @@ class StubAuthorizationServer:
                 "grant_type": "client_credentials",
                 "audience": self._resource_server_identifier,
                 "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-                # TODO: verify JWT (signed by public_key, iss=client_id, sub=client_id, aud=token_endpoint)
+                # TODO: verify JWT (signed by public_key, iss=client_id, sub=client_id, aud=issuer)
                 "client_assertion": ANY,
             },
         ).mock(

@@ -82,6 +82,7 @@ class TestOAuthExtension:
                 "ATE_CLIENT_ID": api_oauth_client.client_id,
                 "ATE_CLIENT_SECRET": api_private_key.decode(),
                 "ATE_SERVER_METADATA_URL": authorization_server.configuration_endpoint,
+                "ATE_ISSUER": authorization_server.issuer,
                 "ATE_AUDIENCE": api_resource_server.identifier,
                 "ATE_URL": api_server.url,
             }

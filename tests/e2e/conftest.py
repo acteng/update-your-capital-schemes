@@ -119,7 +119,7 @@ def app_fixture(
     app_oidc_key_pair: KeyPair,
     oidc_server: LiveServer,
     api_server: LiveServer,
-    authorization_server: LiveServer,
+    authorization_server_configuration_url: str,
     api_resource_server: OAuthResourceServer,
     app_api_oauth_client: OAuthClient,
     app_api_key_pair: KeyPair,
@@ -144,7 +144,7 @@ def app_fixture(
             "ATE_URL": _get_url(api_server),
             "ATE_CLIENT_ID": app_api_oauth_client.client_id,
             "ATE_CLIENT_SECRET": app_api_key_pair.private_key.decode(),
-            "ATE_SERVER_METADATA_URL": authorization_server.app.url_for("openid_configuration", _external=True),
+            "ATE_SERVER_METADATA_URL": authorization_server_configuration_url,
             "ATE_AUDIENCE": api_resource_server.identifier,
         }
 
@@ -212,7 +212,7 @@ def api_resource_server_fixture() -> OAuthResourceServer:
 
 @pytest.fixture(name="api_server_app", scope="package")
 def api_server_app_fixture(
-    debug: bool, authorization_server: LiveServer, api_resource_server: OAuthResourceServer
+    debug: bool, authorization_server_configuration_url: str, api_resource_server: OAuthResourceServer
 ) -> Flask:
     port = _get_random_port()
     return api_server_create_app(
@@ -220,7 +220,7 @@ def api_server_app_fixture(
             "DEBUG": debug,
             "TESTING": True,
             "SERVER_NAME": f"localhost:{port}",
-            "OIDC_SERVER_METADATA_URL": authorization_server.app.url_for("openid_configuration", _external=True),
+            "OIDC_SERVER_METADATA_URL": authorization_server_configuration_url,
             "RESOURCE_SERVER_IDENTIFIER": api_resource_server.identifier,
         }
     )
@@ -314,6 +314,12 @@ def authorization_server_fixture(authorization_server_app: Flask, request: Fixtu
     server.start()
     request.addfinalizer(server.stop)
     return server
+
+
+@pytest.fixture(name="authorization_server_configuration_url", scope="package")
+def authorization_server_configuration_url_fixture(authorization_server: LiveServer) -> str:
+    app: Flask = authorization_server.app
+    return app.url_for("openid_configuration", _external=True)
 
 
 # endregion

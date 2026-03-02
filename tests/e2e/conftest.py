@@ -14,6 +14,7 @@ from flask import Flask
 from playwright.sync_api import Browser, BrowserContext, BrowserType, Playwright, sync_playwright
 from pytest import FixtureRequest
 from pytest_flask.live_server import LiveServer
+from requests import Session
 
 from schemes import create_app, destroy_app
 from tests.e2e.api_client import ApiClient
@@ -252,7 +253,7 @@ def tests_api_oauth_client_fixture(tests_api_public_key: bytes) -> OAuthClient:
 @pytest.fixture(name="api_client", scope="package")
 def api_client_fixture(
     api_server: LiveServer,
-    authorization_server: LiveServer,
+    authorization_server_configuration: Any,
     api_resource_server: OAuthResourceServer,
     tests_api_oauth_client: OAuthClient,
     tests_api_key_pair: KeyPair,
@@ -261,7 +262,7 @@ def api_client_fixture(
         url=_get_url(api_server),
         client_id=tests_api_oauth_client.client_id,
         private_key=tests_api_key_pair.private_key,
-        token_endpoint=authorization_server.app.url_for("token", _external=True),
+        token_endpoint=authorization_server_configuration["token_endpoint"],
         scope="tests",
         audience=api_resource_server.identifier,
     )
@@ -320,6 +321,14 @@ def authorization_server_fixture(authorization_server_app: Flask, request: Fixtu
 def authorization_server_configuration_url_fixture(authorization_server: LiveServer) -> str:
     app: Flask = authorization_server.app
     return app.url_for("openid_configuration", _external=True)
+
+
+@pytest.fixture(name="authorization_server_configuration", scope="package")
+def authorization_server_configuration_fixture(authorization_server_configuration_url: str) -> Any:
+    with Session() as session:
+        response = session.get(authorization_server_configuration_url)
+        response.raise_for_status()
+        return response.json()
 
 
 # endregion

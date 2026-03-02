@@ -30,7 +30,7 @@ pip list --outdated
 To upgrade local packages to their latest patch versions:
 
 ```bash
-pip install --upgrade --upgrade-strategy=eager -e .[dev]
+make upgrade
 ```
 
 To upgrade packages to their latest minor or major version:

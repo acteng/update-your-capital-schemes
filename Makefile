@@ -1,6 +1,9 @@
 bin = .venv/bin
 packages = schemes tests
 
+upgrade:
+	$(bin)/pip install --upgrade --upgrade-strategy=eager -e .[dev]
+
 clean:
 	rm -rf .mypy_cache .venv node_modules test-results
 	rm -rf schemes/views/static/govuk-frontend schemes/views/static/govuk-one-login-service-header

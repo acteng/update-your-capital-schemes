@@ -120,7 +120,7 @@ def app_fixture(
     app_oidc_key_pair: KeyPair,
     oidc_server: LiveServer,
     api_server: LiveServer,
-    authorization_server_configuration_url: str,
+    authorization_server_metadata_url: str,
     api_resource_server: OAuthResourceServer,
     app_api_oauth_client: OAuthClient,
     app_api_key_pair: KeyPair,
@@ -145,7 +145,7 @@ def app_fixture(
             "ATE_URL": _get_url(api_server),
             "ATE_CLIENT_ID": app_api_oauth_client.client_id,
             "ATE_CLIENT_SECRET": app_api_key_pair.private_key.decode(),
-            "ATE_SERVER_METADATA_URL": authorization_server_configuration_url,
+            "ATE_SERVER_METADATA_URL": authorization_server_metadata_url,
             "ATE_AUDIENCE": api_resource_server.identifier,
         }
 
@@ -213,7 +213,7 @@ def api_resource_server_fixture() -> OAuthResourceServer:
 
 @pytest.fixture(name="api_server_app", scope="package")
 def api_server_app_fixture(
-    debug: bool, authorization_server_configuration_url: str, api_resource_server: OAuthResourceServer
+    debug: bool, authorization_server_metadata_url: str, api_resource_server: OAuthResourceServer
 ) -> Flask:
     port = _get_random_port()
     return api_server_create_app(
@@ -221,7 +221,7 @@ def api_server_app_fixture(
             "DEBUG": debug,
             "TESTING": True,
             "SERVER_NAME": f"localhost:{port}",
-            "OIDC_SERVER_METADATA_URL": authorization_server_configuration_url,
+            "OIDC_SERVER_METADATA_URL": authorization_server_metadata_url,
             "RESOURCE_SERVER_IDENTIFIER": api_resource_server.identifier,
         }
     )
@@ -253,7 +253,7 @@ def tests_api_oauth_client_fixture(tests_api_public_key: bytes) -> OAuthClient:
 @pytest.fixture(name="api_client", scope="package")
 def api_client_fixture(
     api_server: LiveServer,
-    authorization_server_configuration: Any,
+    authorization_server_metadata: Any,
     api_resource_server: OAuthResourceServer,
     tests_api_oauth_client: OAuthClient,
     tests_api_key_pair: KeyPair,
@@ -262,7 +262,7 @@ def api_client_fixture(
         url=_get_url(api_server),
         client_id=tests_api_oauth_client.client_id,
         private_key=tests_api_key_pair.private_key,
-        token_endpoint=authorization_server_configuration["token_endpoint"],
+        token_endpoint=authorization_server_metadata["token_endpoint"],
         scope="tests",
         audience=api_resource_server.identifier,
     )
@@ -317,16 +317,16 @@ def authorization_server_fixture(authorization_server_app: Flask, request: Fixtu
     return server
 
 
-@pytest.fixture(name="authorization_server_configuration_url", scope="package")
-def authorization_server_configuration_url_fixture(authorization_server: LiveServer) -> str:
+@pytest.fixture(name="authorization_server_metadata_url", scope="package")
+def authorization_server_metadata_url_fixture(authorization_server: LiveServer) -> str:
     app: Flask = authorization_server.app
     return app.url_for("openid_configuration", _external=True)
 
 
-@pytest.fixture(name="authorization_server_configuration", scope="package")
-def authorization_server_configuration_fixture(authorization_server_configuration_url: str) -> Any:
+@pytest.fixture(name="authorization_server_metadata", scope="package")
+def authorization_server_metadata_fixture(authorization_server_metadata_url: str) -> Any:
     with Session() as session:
-        response = session.get(authorization_server_configuration_url)
+        response = session.get(authorization_server_metadata_url)
         response.raise_for_status()
         return response.json()
 

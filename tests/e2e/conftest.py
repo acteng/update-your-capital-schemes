@@ -118,6 +118,7 @@ def app_fixture(
     app_api_key: str,
     app_oidc_client_id: str,
     app_oidc_key_pair: KeyPair,
+    oidc_server_metadata_url: str,
     oidc_server: LiveServer,
     api_server: LiveServer,
     authorization_server_metadata_url: str,
@@ -136,7 +137,7 @@ def app_fixture(
         "API_KEY": app_api_key,
         "GOVUK_CLIENT_ID": app_oidc_client_id,
         "GOVUK_CLIENT_SECRET": app_oidc_key_pair.private_key.decode(),
-        "GOVUK_SERVER_METADATA_URL": oidc_server.app.url_for("openid_configuration", _external=True),
+        "GOVUK_SERVER_METADATA_URL": oidc_server_metadata_url,
         "GOVUK_END_SESSION_ENDPOINT": oidc_server.app.url_for("logout", _external=True),
     }
 
@@ -191,6 +192,12 @@ def oidc_server_fixture(oidc_server_app: OidcServerApp, request: FixtureRequest)
     server.start()
     request.addfinalizer(server.stop)
     yield server
+
+
+@pytest.fixture(name="oidc_server_metadata_url", scope="package")
+def oidc_server_metadata_url_fixture(oidc_server: LiveServer) -> str:
+    app: Flask = oidc_server.app
+    return app.url_for("openid_configuration", _external=True)
 
 
 @pytest.fixture(name="oidc_client")

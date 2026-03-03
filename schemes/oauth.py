@@ -148,7 +148,11 @@ class OAuthExtension(OAuth):  # type: ignore
                 client_kwargs={
                     # Workaround: https://github.com/authlib/authlib/issues/780
                     "grant_type": "client_credentials",
-                    "token_endpoint_auth_method": _ExpiresInPrivateKeyJWT(expires_in=60),
+                    "token_endpoint_auth_method": _ExpiresInPrivateKeyJWT(
+                        # Workaround: https://github.com/authlib/authlib/issues/730
+                        token_endpoint=app.config["ATE_ISSUER"],
+                        expires_in=60,
+                    ),
                     # Workaround: https://github.com/authlib/authlib/issues/783
                     "access_token_params": access_token_params,
                     "http2": True,

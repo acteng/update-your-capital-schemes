@@ -95,6 +95,11 @@ variable "ate_api_server_metadata_url" {
   type        = string
 }
 
+variable "ate_api_issuer" {
+  description = "ATE API authorisation server issuer"
+  type        = string
+}
+
 variable "ate_api_audience" {
   description = "ATE API resource server identifier"
   type        = string

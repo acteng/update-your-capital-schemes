@@ -15,10 +15,10 @@ PROJECT="dft-schemes-${ENVIRONMENT}"
 
 BASIC_AUTH_ITEM=$(bw get item "uycs-basic-auth-${ENVIRONMENT}" || true)
 if [ -n "${BASIC_AUTH_ITEM}" ]; then
-	echo "${BASIC_AUTH_ITEM}" | jq -r '.login.username' \
+	echo "${BASIC_AUTH_ITEM}" | jq -j '.login.username' \
 		| gcloud secrets create "basic-auth-username" --project "${PROJECT}" --data-file=-
 
-	echo "${BASIC_AUTH_ITEM}" | jq -r '.login.password' \
+	echo "${BASIC_AUTH_ITEM}" | jq -j '.login.password' \
 		| gcloud secrets create "basic-auth-password" --project "${PROJECT}" --data-file=-
 fi
 

@@ -1,8 +1,8 @@
 import json
 import multiprocessing
-import socket
 import sys
 from dataclasses import dataclass
+from socket import socket
 from tempfile import TemporaryDirectory
 from typing import Any, Callable, Generator
 
@@ -455,7 +455,7 @@ def _get_port(app: Flask) -> int:
 
 
 def _get_random_port() -> int:
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock = socket()
     sock.bind(("localhost", 0))
     port: int = sock.getsockname()[1]
     sock.close()

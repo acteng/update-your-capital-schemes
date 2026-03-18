@@ -456,7 +456,7 @@ def _get_port(app: Flask) -> int:
 
 def _get_random_port() -> int:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(("", 0))
+    sock.bind(("localhost", 0))
     port: int = sock.getsockname()[1]
     sock.close()
     return port

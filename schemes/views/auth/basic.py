@@ -10,8 +10,18 @@ def basic_auth[**P, T](func: Callable[P, T]) -> Callable[P, T | Response]:
         username = current_app.config.get("BASIC_AUTH_USERNAME")
         password = current_app.config.get("BASIC_AUTH_PASSWORD")
         auth = request.authorization
-        if username and not (auth and auth.type == "basic" and auth.username == username and auth.password == password):
-            return Response(status=401, headers={"WWW-Authenticate": "Basic realm='Schemes'"}, response="Unauthorized")
+
+        if username:
+            if not (auth and auth.type == "basic"):
+                return _create_unauthorized_response("Not authenticated")
+
+            if not (auth.username == username and auth.password == password):
+                return _create_unauthorized_response("Unauthorized")
+
         return func(*args, **kwargs)
 
     return decorated_function
+
+
+def _create_unauthorized_response(text: str) -> Response:
+    return Response(status=401, headers={"WWW-Authenticate": "Basic realm='Schemes'"}, response=text)

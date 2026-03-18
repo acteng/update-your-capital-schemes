@@ -38,5 +38,5 @@ class TestBasicAuthWhenProtected:
         assert (
             response.status_code == 401
             and response.headers["WWW-Authenticate"] == "Basic realm='Schemes'"
-            and response.text == "Unauthorized"
+            and response.text == "Not authenticated"
         )

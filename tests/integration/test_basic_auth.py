@@ -26,9 +26,17 @@ class TestBasicAuthWhenProtected:
         # echo -n 'obree:opensesame' | base64
         response = client.get("/", headers={"Authorization": "Basic b2JyZWU6b3BlbnNlc2FtZQ=="})
 
-        assert response.status_code == 401 and response.text == "Unauthorized"
+        assert (
+            response.status_code == 401
+            and response.headers["WWW-Authenticate"] == "Basic realm='Schemes'"
+            and response.text == "Unauthorized"
+        )
 
     def test_cannot_access_without_credentials(self, client: FlaskClient) -> None:
         response = client.get("/")
 
-        assert response.status_code == 401 and response.headers["WWW-Authenticate"] == "Basic realm='Schemes'"
+        assert (
+            response.status_code == 401
+            and response.headers["WWW-Authenticate"] == "Basic realm='Schemes'"
+            and response.text == "Unauthorized"
+        )

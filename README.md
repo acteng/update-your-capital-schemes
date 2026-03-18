@@ -241,16 +241,24 @@ For each environment required (dev, test, prod):
    terraform workspace new ${ENVIRONMENT}
    ```
 
+1. Provision the Secret Manager:
+
+   ```bash
+   terraform plan -target google_project_service.secret_manager -out plan.out
+   terraform apply plan.out
+   rm plan.out
+   ```
+
+1. Set the secrets for the environment:
+
+   ```bash
+   ./set-secrets.sh ${ENVIRONMENT}
+   ```
+
 1. Apply the changes:
 
    ```bash
    terraform apply
-   ```
-
-1. This will fail due to missing secrets. Now that the Secret Manager service has been enabled, create the secrets then repeat the previous step:
-
-   ```bash
-   ./set-secrets.sh ${ENVIRONMENT}
    ```
 
 1. Obtain the Cloud Run service account private key:

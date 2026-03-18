@@ -16,11 +16,6 @@ class TestBasicAuthWhenProtected:
     def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"BASIC_AUTH_USERNAME": "boardman", "BASIC_AUTH_PASSWORD": "letmein"}
 
-    def test_cannot_access_without_credentials(self, client: FlaskClient) -> None:
-        response = client.get("/")
-
-        assert response.status_code == 401 and response.headers["WWW-Authenticate"] == "Basic realm='Schemes'"
-
     def test_can_access_with_correct_credentials(self, client: FlaskClient) -> None:
         # echo -n 'boardman:letmein' | base64
         response = client.get("/", headers={"Authorization": "Basic Ym9hcmRtYW46bGV0bWVpbg=="})
@@ -32,3 +27,8 @@ class TestBasicAuthWhenProtected:
         response = client.get("/", headers={"Authorization": "Basic b2JyZWU6b3BlbnNlc2FtZQ=="})
 
         assert response.status_code == 401 and response.text == "Unauthorized"
+
+    def test_cannot_access_without_credentials(self, client: FlaskClient) -> None:
+        response = client.get("/")
+
+        assert response.status_code == 401 and response.headers["WWW-Authenticate"] == "Basic realm='Schemes'"

@@ -1,4 +1,5 @@
 from functools import wraps
+from secrets import compare_digest
 from typing import Callable
 
 from flask import Response, current_app, request
@@ -11,11 +12,11 @@ def basic_auth[**P, T](func: Callable[P, T]) -> Callable[P, T | Response]:
         password = current_app.config.get("BASIC_AUTH_PASSWORD")
         auth = request.authorization
 
-        if username:
+        if username and password:
             if not (auth and auth.type == "basic"):
                 return _create_unauthorized_response("Not authenticated")
 
-            if not (auth.username == username and auth.password == password):
+            if not (compare_digest(auth.username, username) and compare_digest(auth.password, password)):
                 return _create_unauthorized_response("Unauthorized")
 
         return func(*args, **kwargs)

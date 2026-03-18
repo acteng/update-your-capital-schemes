@@ -27,7 +27,7 @@ locals {
     test = {
       keep_idle        = false
       basic_auth       = true
-      ate_api          = false
+      ate_api          = true
       database_backups = false
       monitoring       = false
       domain           = "test.${local.domain}"

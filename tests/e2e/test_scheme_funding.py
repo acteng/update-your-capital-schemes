@@ -119,7 +119,12 @@ def test_change_spend_to_date(
 
     assert scheme_page.heading.text == "Wirral Package"
     assert scheme_page.funding.spend_to_date == "£60,000"
-    if not api:
+    if api:
+        assert api_client.get_scheme(reference="ATE00001").financials.items == [
+            CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
+            CapitalSchemeFinancialModel(type="spend to date", amount=60_000, source="authority update"),
+        ]
+    else:
         assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
             FinancialRevisionRepr(
                 id=1,
@@ -145,11 +150,6 @@ def test_change_spend_to_date(
                 amount=60_000,
                 source="authority update",
             ),
-        ]
-    else:
-        assert api_client.get_scheme(reference="ATE00001").financials.items == [
-            CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
-            CapitalSchemeFinancialModel(type="spend to date", amount=60_000, source="authority update"),
         ]
 
 
@@ -218,7 +218,12 @@ def test_cannot_change_spend_to_date_when_error(
         and change_spend_to_date_page.form.amount.error == "Error: Enter spend to date"
         and change_spend_to_date_page.form.amount.value == ""
     )
-    if not api:
+    if api:
+        assert api_client.get_scheme(reference="ATE00001").financials.items == [
+            CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
+            CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
+        ]
+    else:
         assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
             FinancialRevisionRepr(
                 id=1,
@@ -236,9 +241,4 @@ def test_cannot_change_spend_to_date_when_error(
                 amount=50_000,
                 source="ATF4 bid",
             ),
-        ]
-    else:
-        assert api_client.get_scheme(reference="ATE00001").financials.items == [
-            CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
-            CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
         ]

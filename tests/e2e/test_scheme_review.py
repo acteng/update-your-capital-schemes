@@ -43,15 +43,15 @@ def test_scheme_review(
 
     assert schemes_page.success_notification.heading == "Wirral Package has been reviewed"
     assert schemes_page.schemes["ATE00001"].last_reviewed == "24 Apr 2023"
-    if not api:
+    if api:
+        assert api_client.get_scheme(reference="ATE00001").authority_review == CapitalSchemeAuthorityReviewModel(
+            review_date="2023-04-24T12:00:00Z", source="authority update"
+        )
+    else:
         assert app_client.get_scheme(reference="ATE00001").authority_reviews == [
             AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid"),
             AuthorityReviewRepr(id=2, review_date="2023-04-24T13:00:00", source="authority update"),
         ]
-    else:
-        assert api_client.get_scheme(reference="ATE00001").authority_review == CapitalSchemeAuthorityReviewModel(
-            review_date="2023-04-24T12:00:00Z", source="authority update"
-        )
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
@@ -92,11 +92,11 @@ def test_scheme_cannot_review_when_error(
         and scheme_page.review.form.up_to_date.error == "Error: Confirm this scheme is up-to-date"
         and not scheme_page.review.form.up_to_date.value
     )
-    if not api:
-        assert app_client.get_scheme(reference="ATE00001").authority_reviews == [
-            AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid"),
-        ]
-    else:
+    if api:
         assert api_client.get_scheme(reference="ATE00001").authority_review == CapitalSchemeAuthorityReviewModel(
             review_date="2020-01-02T12:00:00Z", source="ATF4 bid"
         )
+    else:
+        assert app_client.get_scheme(reference="ATE00001").authority_reviews == [
+            AuthorityReviewRepr(id=1, review_date="2020-01-02T12:00:00", source="ATF4 bid"),
+        ]

@@ -21,7 +21,6 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import ConnectionPoolEntry
 from werkzeug import Response as BaseResponse
 
-from schemes.annotations import Migrated
 from schemes.config import LocalConfig
 from schemes.domain.authorities import AuthorityRepository
 from schemes.domain.reporting_window import DefaultReportingWindowService, ReportingWindowService
@@ -114,15 +113,11 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
         binder.bind_to_constructor(Engine, _create_engine)
         binder.bind_to_constructor((Engine, CapitalSchemeEntity), _create_capital_schemes_engine)
         binder.bind_to_constructor(sessionmaker[Session], _create_session_maker)
-        binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
         binder.bind_to_constructor(
-            (AuthorityRepository, Migrated), _create_api_authority_repository if api else DatabaseAuthorityRepository
+            AuthorityRepository, _create_api_authority_repository if api else DatabaseAuthorityRepository
         )
         binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
-        binder.bind_to_constructor(SchemeRepository, DatabaseSchemeRepository)
-        binder.bind_to_constructor(
-            (SchemeRepository, Migrated), _create_api_scheme_repository if api else DatabaseSchemeRepository
-        )
+        binder.bind_to_constructor(SchemeRepository, _create_api_scheme_repository if api else DatabaseSchemeRepository)
 
     return _bindings
 

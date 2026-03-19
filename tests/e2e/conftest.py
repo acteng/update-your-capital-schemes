@@ -111,15 +111,21 @@ def app_api_oauth_client_fixture(app_api_public_key: bytes) -> OAuthClient:
     return OAuthClient(client_id="app", public_key=app_api_public_key, scope="")
 
 
-@pytest.fixture(name="app", scope="package", params=[False, True], ids=["database", "api"])
+@pytest.fixture(name="api", scope="package", params=[False, True], ids=["database", "api"])
+def api_fixture(request: FixtureRequest) -> bool:
+    api: bool = request.param
+    return api
+
+
+@pytest.fixture(name="app", scope="package")
 def app_fixture(
-    request: FixtureRequest,
     debug: bool,
     app_api_key: str,
     app_oidc_client_id: str,
     app_oidc_key_pair: KeyPair,
     oidc_server_metadata_url: str,
     oidc_server: LiveServer,
+    api: bool,
     api_server: LiveServer,
     authorization_server_metadata_url: str,
     authorization_server_metadata: Any,
@@ -142,7 +148,7 @@ def app_fixture(
         "GOVUK_END_SESSION_ENDPOINT": oidc_server.app.url_for("logout", _external=True),
     }
 
-    if request.param:
+    if api:
         config |= {
             "ATE_URL": _get_url(api_server),
             "ATE_CLIENT_ID": app_api_oauth_client.client_id,

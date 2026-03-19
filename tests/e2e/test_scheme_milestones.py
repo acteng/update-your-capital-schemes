@@ -1,5 +1,4 @@
 import pytest
-from flask import Flask
 from playwright.sync_api import Page
 
 from tests.e2e.api_client import (
@@ -135,7 +134,7 @@ def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_change_milestones(
-    app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+    api: bool, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.set_clock("2023-08-01T13:00:00")
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
@@ -255,7 +254,7 @@ def test_change_milestones(
         scheme_page.milestones.milestones["Construction started"].actual == "5 Jul 2023"
         and scheme_page.milestones.milestones["Construction completed"].planned == "30 Sep 2023"
     )
-    if "ATE_URL" not in app.config:
+    if not api:
         assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
             MilestoneRevisionRepr(
                 id=1,
@@ -364,7 +363,7 @@ def test_change_milestones(
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_cannot_change_milestones_when_error(
-    app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+    api: bool, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
@@ -488,7 +487,7 @@ def test_cannot_change_milestones_when_error(
         == "Error: Construction completed planned date must be a real date"
         and change_milestone_page.form.construction_completed_planned.value == "x x x"
     )
-    if "ATE_URL" not in app.config:
+    if not api:
         assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
             MilestoneRevisionRepr(
                 id=1,

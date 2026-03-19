@@ -1,5 +1,4 @@
 import pytest
-from flask import Flask
 from playwright.sync_api import Page
 
 from tests.e2e.api_client import ApiClient, AuthorityModel, CapitalSchemeFinancialModel, FundingProgrammeModel
@@ -67,7 +66,7 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_change_spend_to_date(
-    app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+    api: bool, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     app_client.set_clock("2020-01-31T13:00:00")
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
@@ -120,7 +119,7 @@ def test_change_spend_to_date(
 
     assert scheme_page.heading.text == "Wirral Package"
     assert scheme_page.funding.spend_to_date == "£60,000"
-    if "ATE_URL" not in app.config:
+    if not api:
         assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
             FinancialRevisionRepr(
                 id=1,
@@ -156,7 +155,7 @@ def test_change_spend_to_date(
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_cannot_change_spend_to_date_when_error(
-    app: Flask, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+    api: bool, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
@@ -219,7 +218,7 @@ def test_cannot_change_spend_to_date_when_error(
         and change_spend_to_date_page.form.amount.error == "Error: Enter spend to date"
         and change_spend_to_date_page.form.amount.value == ""
     )
-    if "ATE_URL" not in app.config:
+    if not api:
         assert app_client.get_scheme(reference="ATE00001").financial_revisions == [
             FinancialRevisionRepr(
                 id=1,

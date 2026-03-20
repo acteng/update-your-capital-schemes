@@ -103,6 +103,8 @@ def destroy_app(_app: Flask) -> None:
 
 
 def bindings(app: Flask) -> Callable[[Binder], None]:
+    api = "ATE_URL" in app.config
+
     def _bindings(binder: Binder) -> None:
         binder.bind(Flask, app)
         binder.bind(Config, app.config)
@@ -114,14 +116,12 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
         binder.bind_to_constructor(sessionmaker[Session], _create_session_maker)
         binder.bind_to_constructor(AuthorityRepository, DatabaseAuthorityRepository)
         binder.bind_to_constructor(
-            (AuthorityRepository, Migrated),
-            _create_api_authority_repository if "ATE_URL" in app.config else DatabaseAuthorityRepository,
+            (AuthorityRepository, Migrated), _create_api_authority_repository if api else DatabaseAuthorityRepository
         )
         binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
         binder.bind_to_constructor(SchemeRepository, DatabaseSchemeRepository)
         binder.bind_to_constructor(
-            (SchemeRepository, Migrated),
-            _create_api_scheme_repository if "ATE_URL" in app.config else DatabaseSchemeRepository,
+            (SchemeRepository, Migrated), _create_api_scheme_repository if api else DatabaseSchemeRepository
         )
 
     return _bindings

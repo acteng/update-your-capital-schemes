@@ -174,12 +174,13 @@ def register_app_oidc_oauth_client_fixture(
 
 
 @pytest.fixture(name="app_client")
-def app_client_fixture(live_server: LiveServer, app_api_key: str) -> Generator[AppClient]:
+def app_client_fixture(live_server: LiveServer, app_api_key: str, api: bool) -> Generator[AppClient]:
     client = AppClient(_get_url(live_server), app_api_key)
     yield client
-    client.clear_schemes()
     client.clear_users()
-    client.clear_authorities()
+    if not api:
+        client.clear_schemes()
+        client.clear_authorities()
 
 
 # endregion

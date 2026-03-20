@@ -10,49 +10,55 @@ from tests.e2e.pages import SchemePage
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
-    app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
-    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
-    app_client.add_schemes(
-        build_scheme(
-            id_=1,
-            reference="ATE00001",
-            name="Wirral Package",
-            authority_abbreviation="LIV",
-            financial_revisions=[
-                FinancialRevisionRepr(
-                    id=1,
-                    effective_date_from="2020-01-01",
-                    effective_date_to=None,
-                    type="funding allocation",
-                    amount=100_000,
-                    source="ATF4 bid",
-                ),
-                FinancialRevisionRepr(
-                    id=2,
-                    effective_date_from="2020-01-01",
-                    effective_date_to=None,
-                    type="spend to date",
-                    amount=50_000,
-                    source="ATF4 bid",
-                ),
-            ],
-        ),
-    )
-    api_client.add_schemes(
-        build_capital_scheme_model(
-            reference="ATE00001",
-            name="Wirral Package",
-            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
-            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
-            financials=[
-                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
-                CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
-            ],
+def test_scheme_funding(
+    api: bool, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+) -> None:
+    if api:
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+        api_client.add_authorities(
+            AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
-    )
+        api_client.add_schemes(
+            build_capital_scheme_model(
+                reference="ATE00001",
+                name="Wirral Package",
+                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+                financials=[
+                    CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
+                    CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
+                ],
+            )
+        )
+    else:
+        app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        app_client.add_schemes(
+            build_scheme(
+                id_=1,
+                reference="ATE00001",
+                name="Wirral Package",
+                authority_abbreviation="LIV",
+                financial_revisions=[
+                    FinancialRevisionRepr(
+                        id=1,
+                        effective_date_from="2020-01-01",
+                        effective_date_to=None,
+                        type="funding allocation",
+                        amount=100_000,
+                        source="ATF4 bid",
+                    ),
+                    FinancialRevisionRepr(
+                        id=2,
+                        effective_date_from="2020-01-01",
+                        effective_date_to=None,
+                        type="spend to date",
+                        amount=50_000,
+                        source="ATF4 bid",
+                    ),
+                ],
+            ),
+        )
+    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     scheme_page = SchemePage.open(page, reference="ATE00001")
@@ -68,49 +74,53 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
 def test_change_spend_to_date(
     api: bool, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
-    app_client.set_clock("2020-01-31T13:00:00")
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
-    app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
-    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
-    app_client.add_schemes(
-        build_scheme(
-            id_=1,
-            reference="ATE00001",
-            name="Wirral Package",
-            authority_abbreviation="LIV",
-            financial_revisions=[
-                FinancialRevisionRepr(
-                    id=1,
-                    effective_date_from="2020-01-01T12:00:00",
-                    effective_date_to=None,
-                    type="funding allocation",
-                    amount=100_000,
-                    source="ATF4 bid",
-                ),
-                FinancialRevisionRepr(
-                    id=2,
-                    effective_date_from="2020-01-01T12:00:00",
-                    effective_date_to=None,
-                    type="spend to date",
-                    amount=50_000,
-                    source="ATF4 bid",
-                ),
-            ],
-        ),
-    )
-    api_client.add_schemes(
-        build_capital_scheme_model(
-            reference="ATE00001",
-            name="Wirral Package",
-            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
-            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
-            financials=[
-                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
-                CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
-            ],
+    if api:
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+        api_client.add_authorities(
+            AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
-    )
+        api_client.add_schemes(
+            build_capital_scheme_model(
+                reference="ATE00001",
+                name="Wirral Package",
+                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+                financials=[
+                    CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
+                    CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
+                ],
+            )
+        )
+    else:
+        app_client.set_clock("2020-01-31T13:00:00")
+        app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        app_client.add_schemes(
+            build_scheme(
+                id_=1,
+                reference="ATE00001",
+                name="Wirral Package",
+                authority_abbreviation="LIV",
+                financial_revisions=[
+                    FinancialRevisionRepr(
+                        id=1,
+                        effective_date_from="2020-01-01T12:00:00",
+                        effective_date_to=None,
+                        type="funding allocation",
+                        amount=100_000,
+                        source="ATF4 bid",
+                    ),
+                    FinancialRevisionRepr(
+                        id=2,
+                        effective_date_from="2020-01-01T12:00:00",
+                        effective_date_to=None,
+                        type="spend to date",
+                        amount=50_000,
+                        source="ATF4 bid",
+                    ),
+                ],
+            ),
+        )
+    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     scheme_page = (
@@ -157,48 +167,52 @@ def test_change_spend_to_date(
 def test_cannot_change_spend_to_date_when_error(
     api: bool, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
-    app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
-    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
-    app_client.add_schemes(
-        build_scheme(
-            id_=1,
-            reference="ATE00001",
-            name="Wirral Package",
-            authority_abbreviation="LIV",
-            financial_revisions=[
-                FinancialRevisionRepr(
-                    id=1,
-                    effective_date_from="2020-01-01T12:00:00",
-                    effective_date_to=None,
-                    type="funding allocation",
-                    amount=100_000,
-                    source="ATF4 bid",
-                ),
-                FinancialRevisionRepr(
-                    id=2,
-                    effective_date_from="2020-01-01T12:00:00",
-                    effective_date_to=None,
-                    type="spend to date",
-                    amount=50_000,
-                    source="ATF4 bid",
-                ),
-            ],
-        ),
-    )
-    api_client.add_schemes(
-        build_capital_scheme_model(
-            reference="ATE00001",
-            name="Wirral Package",
-            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
-            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
-            financials=[
-                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
-                CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
-            ],
+    if api:
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+        api_client.add_authorities(
+            AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
-    )
+        api_client.add_schemes(
+            build_capital_scheme_model(
+                reference="ATE00001",
+                name="Wirral Package",
+                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+                financials=[
+                    CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
+                    CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
+                ],
+            )
+        )
+    else:
+        app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
+        app_client.add_schemes(
+            build_scheme(
+                id_=1,
+                reference="ATE00001",
+                name="Wirral Package",
+                authority_abbreviation="LIV",
+                financial_revisions=[
+                    FinancialRevisionRepr(
+                        id=1,
+                        effective_date_from="2020-01-01T12:00:00",
+                        effective_date_to=None,
+                        type="funding allocation",
+                        amount=100_000,
+                        source="ATF4 bid",
+                    ),
+                    FinancialRevisionRepr(
+                        id=2,
+                        effective_date_from="2020-01-01T12:00:00",
+                        effective_date_to=None,
+                        type="spend to date",
+                        amount=50_000,
+                        source="ATF4 bid",
+                    ),
+                ],
+            ),
+        )
+    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     change_spend_to_date_page = (

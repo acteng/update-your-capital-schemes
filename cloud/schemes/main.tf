@@ -35,7 +35,7 @@ locals {
     prod = {
       keep_idle        = true
       basic_auth       = false
-      ate_api          = false
+      ate_api          = true
       database_backups = true
       monitoring       = true
       domain           = local.domain

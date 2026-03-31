@@ -180,7 +180,7 @@ To use the service you will first need to [load a dataset](data/README.md).
 1. Fetch the previous Terraform state from Bitwarden, if any:
 
    ```bash
-   bw get notes "UYCS tf-backend State" > terraform.tfstate
+   bw get notes "uycs-tf-backend-state" > terraform.tfstate
    ```
 
 1. Apply the changes:
@@ -189,7 +189,7 @@ To use the service you will first need to [load a dataset](data/README.md).
    terraform apply
    ```
 
-1. Store the new Terraform state in Bitwarden as "UYCS tf-backend State"
+1. Store the new Terraform state in Bitwarden as "uycs-tf-backend-state"
 
 ### Provision the Docker repository
 

@@ -1,12 +1,7 @@
-locals {
-  project  = "dft-schemes-common"
-  location = "europe-west1"
-}
-
 resource "google_storage_bucket" "main" {
-  name     = "${local.project}-tf-backend"
-  project  = local.project
-  location = local.location
+  name     = "${var.project}-tf-backend"
+  project  = var.project
+  location = var.location
 
   uniform_bucket_level_access = true
   public_access_prevention    = "enforced"
@@ -18,6 +13,6 @@ resource "google_storage_bucket" "main" {
 
 resource "google_storage_bucket_iam_member" "main_storage_object_user" {
   bucket = google_storage_bucket.main.name
-  member = "projectEditor:${local.project}"
+  member = "projectEditor:${var.project}"
   role   = "roles/storage.objectUser"
 }

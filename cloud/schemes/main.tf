@@ -10,10 +10,9 @@ provider "google" {
 }
 
 locals {
-  env      = terraform.workspace
-  project  = "dft-schemes-${local.env}"
-  location = "europe-west1"
-  domain   = "update-your-capital-schemes.activetravelengland.gov.uk"
+  env     = terraform.workspace
+  project = "${var.project_prefix}-${local.env}"
+  domain  = "update-your-capital-schemes.activetravelengland.gov.uk"
 
   config = {
     dev = {
@@ -46,7 +45,7 @@ locals {
 data "terraform_remote_state" "docker_repository" {
   backend = "gcs"
   config = {
-    bucket = "dft-schemes-common-tf-backend"
+    bucket = "${var.project_prefix}-common-tf-backend"
     prefix = "docker-repository"
   }
 }
@@ -54,7 +53,7 @@ data "terraform_remote_state" "docker_repository" {
 data "terraform_remote_state" "schemes_database" {
   backend = "gcs"
   config = {
-    bucket = "dft-ate-capitalschemes-common-tf-backend"
+    bucket = "${var.database_project_prefix}-common-tf-backend"
     prefix = "schemes-database"
   }
   workspace = local.env
@@ -63,7 +62,7 @@ data "terraform_remote_state" "schemes_database" {
 data "terraform_remote_state" "identity" {
   backend = "gcs"
   config = {
-    bucket = "dft-ate-api-common-tf-backend"
+    bucket = "${var.ate_api_project_prefix}-common-tf-backend"
     prefix = "identity"
   }
   workspace = local.env
@@ -72,7 +71,7 @@ data "terraform_remote_state" "identity" {
 data "terraform_remote_state" "ate_api" {
   backend = "gcs"
   config = {
-    bucket = "dft-ate-api-common-tf-backend"
+    bucket = "${var.ate_api_project_prefix}-common-tf-backend"
     prefix = "service"
   }
   workspace = local.env
@@ -91,7 +90,7 @@ resource "google_project_service" "monitoring" {
 module "cloud_sql" {
   source           = "./cloud-sql"
   project          = local.project
-  region           = local.location
+  region           = var.location
   database_backups = local.config[local.env].database_backups
 
   depends_on = [google_project_service.secret_manager]
@@ -100,7 +99,7 @@ module "cloud_sql" {
 module "cloud_run" {
   source                                   = "./cloud-run"
   project                                  = local.project
-  region                                   = local.location
+  region                                   = var.location
   docker_repository_project                = data.terraform_remote_state.docker_repository.outputs.project
   docker_repository_url                    = data.terraform_remote_state.docker_repository.outputs.url
   env                                      = local.env
@@ -135,7 +134,7 @@ module "web_application_firewall" {
 
 module "load_balancer" {
   source                 = "./load-balancer"
-  region                 = local.location
+  region                 = var.location
   domain                 = local.config[local.env].domain
   cloud_run_service_name = module.cloud_run.name
   security_policy_id     = module.web_application_firewall.security_policy_id

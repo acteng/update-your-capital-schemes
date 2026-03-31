@@ -6,28 +6,26 @@ terraform {
 }
 
 locals {
-  project        = "dft-schemes-common"
-  location       = "europe-west1"
   day_in_seconds = 24 * 60 * 60
 }
 
 resource "google_project_service" "iam_credentials" {
-  project = local.project
+  project = var.project
   service = "iamcredentials.googleapis.com"
 }
 
 resource "google_project_service" "artifact_registry" {
-  project = local.project
+  project = var.project
   service = "artifactregistry.googleapis.com"
 }
 
 resource "google_project_service" "container_scanning" {
-  project = local.project
+  project = var.project
   service = "containerscanning.googleapis.com"
 }
 
 resource "google_project_iam_audit_config" "artifact_registry_data_write" {
-  project = local.project
+  project = var.project
   service = "artifactregistry.googleapis.com"
 
   audit_log_config {
@@ -36,9 +34,9 @@ resource "google_project_iam_audit_config" "artifact_registry_data_write" {
 }
 
 resource "google_artifact_registry_repository" "main" {
-  project       = local.project
+  project       = var.project
   repository_id = "docker"
-  location      = local.location
+  location      = var.location
   format        = "DOCKER"
 
   cleanup_policies {
@@ -63,5 +61,5 @@ resource "google_artifact_registry_repository" "main" {
 
 module "github_action_push" {
   source  = "./github-action-push"
-  project = local.project
+  project = var.project
 }

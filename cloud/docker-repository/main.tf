@@ -9,11 +9,6 @@ locals {
   day_in_seconds = 24 * 60 * 60
 }
 
-resource "google_project_service" "iam_credentials" {
-  project = var.project
-  service = "iamcredentials.googleapis.com"
-}
-
 resource "google_project_service" "artifact_registry" {
   project = var.project
   service = "artifactregistry.googleapis.com"
@@ -27,6 +22,11 @@ resource "google_project_service" "compute" {
 resource "google_project_service" "container_scanning" {
   project = var.project
   service = "containerscanning.googleapis.com"
+}
+
+resource "google_project_service" "iam_credentials" {
+  project = var.project
+  service = "iamcredentials.googleapis.com"
 }
 
 resource "google_project_iam_audit_config" "artifact_registry_data_write" {

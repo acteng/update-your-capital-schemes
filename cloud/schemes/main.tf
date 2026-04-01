@@ -77,14 +77,14 @@ data "terraform_remote_state" "ate_api" {
   workspace = local.env
 }
 
-resource "google_project_service" "secret_manager" {
-  project = local.project
-  service = "secretmanager.googleapis.com"
-}
-
 resource "google_project_service" "monitoring" {
   project = local.project
   service = "monitoring.googleapis.com"
+}
+
+resource "google_project_service" "secret_manager" {
+  project = local.project
+  service = "secretmanager.googleapis.com"
 }
 
 module "cloud_sql" {
@@ -123,8 +123,8 @@ module "cloud_run" {
   domain                                   = local.config[local.env].domain
 
   depends_on = [
-    google_project_service.secret_manager,
-    google_project_service.monitoring
+    google_project_service.monitoring,
+    google_project_service.secret_manager
   ]
 }
 

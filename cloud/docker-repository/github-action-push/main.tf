@@ -1,8 +1,3 @@
-resource "google_project_service" "compute" {
-  project = var.project
-  service = "compute.googleapis.com"
-}
-
 resource "google_service_account" "main" {
   project      = var.project
   account_id   = "github-action-push"

@@ -19,6 +19,11 @@ resource "google_project_service" "artifact_registry" {
   service = "artifactregistry.googleapis.com"
 }
 
+resource "google_project_service" "compute" {
+  project = var.project
+  service = "compute.googleapis.com"
+}
+
 resource "google_project_service" "container_scanning" {
   project = var.project
   service = "containerscanning.googleapis.com"

@@ -34,6 +34,14 @@ on:
 permissions:
   contents: read
 
+env:
+  IMAGE_PROJECT: dft-schemes-common
+  IMAGE_LOCATION: europe-west1
+  IMAGE_REPOSITORY_ID: docker
+  IMAGE_NAME: schemes
+  SERVICE_LOCATION: europe-west1
+  SERVICE_NAME: schemes
+
 jobs:
 
   deploy:
@@ -48,6 +56,6 @@ jobs:
       - name: Deploy image
         uses: google-github-actions/deploy-cloudrun@v3
         with:
-          service: schemes
-          image: europe-west1-docker.pkg.dev/dft-schemes-common/docker/schemes:${{ inputs.tag }}
-          region: europe-west1
+          service: ${{ env.SERVICE_NAME }}
+          image: ${{ env.IMAGE_LOCATION }}-docker.pkg.dev/${{ env.IMAGE_PROJECT }}/${{ env.IMAGE_REPOSITORY_ID }}/${{ env.IMAGE_NAME }}:${{ inputs.tag }}
+          region: ${{ env.SERVICE_LOCATION }}

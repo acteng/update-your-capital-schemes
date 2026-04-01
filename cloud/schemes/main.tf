@@ -82,9 +82,29 @@ resource "google_project_service" "monitoring" {
   service = "monitoring.googleapis.com"
 }
 
+moved {
+  from = module.cloud_run.google_project_service.run
+  to   = google_project_service.run
+}
+
+resource "google_project_service" "run" {
+  project = local.project
+  service = "run.googleapis.com"
+}
+
 resource "google_project_service" "secret_manager" {
   project = local.project
   service = "secretmanager.googleapis.com"
+}
+
+moved {
+  from = module.cloud_sql.google_project_service.sql_admin
+  to   = google_project_service.sql_admin
+}
+
+resource "google_project_service" "sql_admin" {
+  project = local.project
+  service = "sqladmin.googleapis.com"
 }
 
 module "cloud_sql" {
@@ -124,6 +144,7 @@ module "cloud_run" {
 
   depends_on = [
     google_project_service.monitoring,
+    google_project_service.run,
     google_project_service.secret_manager
   ]
 }

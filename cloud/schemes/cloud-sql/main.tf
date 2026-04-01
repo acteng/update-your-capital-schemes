@@ -1,7 +1,3 @@
-resource "google_project_service" "sql_admin" {
-  service = "sqladmin.googleapis.com"
-}
-
 resource "google_sql_database_instance" "main" {
   name   = "schemes"
   region = var.region

@@ -29,6 +29,7 @@ class FundingProgrammeMapper:
         FundingProgrammes.ATF5: 10,
         FundingProgrammes.CATF: 11,
         FundingProgrammes.IST: 12,
+        FundingProgrammes.OTH: 13,
     }
 
     def to_id(self, funding_programme: FundingProgramme) -> int:

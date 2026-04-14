@@ -34,6 +34,7 @@ from schemes.views.schemes.data_sources import DataSourceRepr
         (DataSource.MRN_QUARTERLY_UPDATE, "MRN quarterly update"),
         (DataSource.CATF_SCHEME_SUBMISSION, "CATF scheme submission"),
         (DataSource.IST_SCHEME_LIST, "IST scheme list"),
+        (DataSource.DESIGN_REVIEW_REQUEST, "design review request"),
     ],
 )
 class TestDataSourceRepr:

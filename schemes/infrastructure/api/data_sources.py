@@ -32,6 +32,7 @@ class DataSourceModel(str, Enum):
     MRN_QUARTERLY_UPDATE = "MRN quarterly update"
     CATF_SCHEME_SUBMISSION = "CATF scheme submission"
     IST_SCHEME_LIST = "IST scheme list"
+    DESIGN_REVIEW_REQUEST = "design review request"
 
     @classmethod
     def from_domain(cls, data_source: DataSource) -> Self:

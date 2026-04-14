@@ -30,3 +30,4 @@ class DataSource(Enum):
     MRN_QUARTERLY_UPDATE = auto()
     CATF_SCHEME_SUBMISSION = auto()
     IST_SCHEME_LIST = auto()
+    DESIGN_REVIEW_REQUEST = auto()

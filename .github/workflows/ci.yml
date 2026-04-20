@@ -46,7 +46,7 @@ jobs:
         run: python3 -m venv --upgrade-deps .venv
 
       - name: Build web assets
-        run: npm install && npm run build
+        run: npm clean-install && npm run build
 
       - name: Install dependencies
         run: .venv/bin/pip install .[dev]

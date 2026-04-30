@@ -296,7 +296,7 @@ To upgrade Terraform the [latest minor version](https://developer.hashicorp.com/
    }
    ```
 
-1. Update the Terraform version in the [CI workflow](.github/workflows/ci.yml):
+1. Update the Terraform version in the [CI workflow](../.github/workflows/ci.yml):
 
    ```yaml
    - name: Setup Terraform

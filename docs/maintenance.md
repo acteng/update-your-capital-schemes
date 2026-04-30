@@ -300,7 +300,7 @@ To upgrade Terraform the [latest minor version](https://developer.hashicorp.com/
 
    ```yaml
    - name: Setup Terraform
-     uses: hashicorp/setup-terraform@v3
+     uses: hashicorp/setup-terraform@v4
      with:
        terraform_version: '~<version>'
    ```

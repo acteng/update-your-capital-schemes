@@ -19,7 +19,7 @@
     "build": "npm run application:build && npm run govuk-frontend:build && npm run govuk-one-login-service-header:build"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@govuk-one-login/service-header": "~5.0.0",
     "govuk-frontend": "~5.14.0"

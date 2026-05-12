@@ -16,7 +16,7 @@ dependencies = [
     "pg8000~=1.31.0",
     "pydantic~=2.13.0",
     "python-dotenv~=1.2.0",
-    "requests~=2.33.0",
+    "requests~=2.34.0",
     "sqlalchemy~=2.0.0"
 ]
 
@@ -34,7 +34,6 @@ dev = [
     "respx~=0.23.0",
     "ruff~=0.15.0",
     "responses~=0.26.0",
-    "types-requests~=2.33.0",
     "types-wtforms~=3.2.0"
 ]
 

@@ -13,14 +13,14 @@ from flask import Flask, Request
 from httpx import AsyncClient, Response, Timeout
 
 
-class _AccessTokenParamsAsyncOAuth2Client(AsyncOAuth2Client):  # type: ignore
+class _AccessTokenParamsAsyncOAuth2Client(AsyncOAuth2Client):
     """
     An OAuth2 session that supports extra parameters to fetch access token.
 
     See: https://github.com/authlib/authlib/issues/783
     """
 
-    async def ensure_active_token(self, token: OAuth2Token = None) -> None:
+    async def ensure_active_token(self, token: OAuth2Token) -> None:
         access_token_params = self.metadata.get("access_token_params") or {}
 
         # Copy of AsyncOAuth2Client.ensure_active_token:
@@ -73,7 +73,7 @@ class _AsyncBaseAppAdapter(AsyncBaseApp):
 
 
 # Workaround: https://github.com/authlib/authlib/issues/822
-class ClientAsyncOAuth2Mixin(AsyncOAuth2Mixin):  # type: ignore
+class ClientAsyncOAuth2Mixin(AsyncOAuth2Mixin):
     @asynccontextmanager
     async def client(self) -> AsyncIterator[AsyncBaseApp]:
         metadata = await self.load_server_metadata()
@@ -83,13 +83,13 @@ class ClientAsyncOAuth2Mixin(AsyncOAuth2Mixin):  # type: ignore
 
 # Workaround: https://github.com/authlib/authlib/issues/818
 # Workaround: https://github.com/authlib/authlib/issues/822
-class _ClientAccessTokenParamsAsyncFlaskOAuth2App(ClientAsyncOAuth2Mixin, AsyncOpenIDMixin, ClientAsyncBaseApp):  # type: ignore
+class _ClientAccessTokenParamsAsyncFlaskOAuth2App(ClientAsyncOAuth2Mixin, AsyncOpenIDMixin, ClientAsyncBaseApp):
     # Workaround: https://github.com/authlib/authlib/issues/783
     client_cls = _AccessTokenParamsAsyncOAuth2Client
 
 
 # Workaround: https://github.com/authlib/authlib/issues/857
-class _ExpiresInPrivateKeyJWT(PrivateKeyJWT):  # type: ignore
+class _ExpiresInPrivateKeyJWT(PrivateKeyJWT):
     expires_in = 60 * 60
 
     def __init__(
@@ -117,7 +117,7 @@ class _ExpiresInPrivateKeyJWT(PrivateKeyJWT):  # type: ignore
         return jwt
 
 
-class OAuthExtension(OAuth):  # type: ignore
+class OAuthExtension(OAuth):
     def __init__(self, app: Flask):
         super().__init__(app)
         self._ate_token: OAuth2Token | None = None

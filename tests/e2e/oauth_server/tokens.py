@@ -5,7 +5,7 @@ from authlib.oauth2.rfc6749 import ClientMixin
 from authlib.oauth2.rfc9068 import JWTBearerTokenGenerator
 
 
-class StubJWTBearerTokenGenerator(JWTBearerTokenGenerator):  # type: ignore
+class StubJWTBearerTokenGenerator(JWTBearerTokenGenerator):
     def __init__(self, issuer: str, resource_server_identifier: str, jwks: KeySet):
         super().__init__(issuer)
         self._resource_server_identifier = resource_server_identifier

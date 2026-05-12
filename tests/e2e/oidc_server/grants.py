@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from typing import Any
 
 from authlib.jose.rfc7517.base_key import Key
+from authlib.oauth2 import OAuth2Client
+from authlib.oauth2.rfc6749 import ClientMixin, BaseGrant
 from authlib.oauth2.rfc6749.authorization_server import AuthorizationServer
 from authlib.oauth2.rfc6749.grants import AuthorizationCodeGrant
 from authlib.oauth2.rfc6749.requests import OAuth2Request
@@ -16,7 +18,7 @@ from tests.e2e.oidc_server.users import StubUser, UserRepository
 
 
 @dataclass
-class StubAuthorizationCode(AuthorizationCodeMixin):  # type: ignore
+class StubAuthorizationCode(AuthorizationCodeMixin):
     code: str
     client_id: str
     redirect_uri: str
@@ -62,7 +64,7 @@ class AuthorizationCodeRepository:
         return f"{client_id}-{code}"
 
 
-class StubAuthorizationCodeGrant(AuthorizationCodeGrant):  # type: ignore
+class StubAuthorizationCodeGrant(AuthorizationCodeGrant):
     TOKEN_ENDPOINT_AUTH_METHODS = [PrivateKeyJwtClientAssertion.CLIENT_AUTH_METHOD]
 
     def __init__(self, request: OAuth2Request, server: AuthorizationServer) -> None:
@@ -84,8 +86,8 @@ class StubAuthorizationCodeGrant(AuthorizationCodeGrant):  # type: ignore
             )
         )
 
-    def query_authorization_code(self, code: str, client: StubClient) -> StubAuthorizationCode | None:
-        return self.authorization_codes.get_by_code(client.client_id, code)
+    def query_authorization_code(self, code: str, client: ClientMixin) -> StubAuthorizationCode | None:
+        return self.authorization_codes.get_by_code(client.get_client_id(), code)
 
     def delete_authorization_code(self, authorization_code: StubAuthorizationCode) -> None:
         self.authorization_codes.delete(authorization_code)
@@ -94,12 +96,12 @@ class StubAuthorizationCodeGrant(AuthorizationCodeGrant):  # type: ignore
         return self.users.get(authorization_code.user_id)
 
 
-class StubUserInfo(UserInfo):  # type: ignore
+class StubUserInfo(UserInfo):
     def __init__(self, user: StubUser) -> None:
         super().__init__(sub=user.id, email=user.email)
 
 
-class StubOpenIDCode(OpenIDCode):  # type: ignore
+class StubOpenIDCode(OpenIDCode):
     def __init__(
         self, issuer: str, key: Key, authorization_codes: AuthorizationCodeRepository, require_nonce: bool = False
     ) -> None:
@@ -108,7 +110,7 @@ class StubOpenIDCode(OpenIDCode):  # type: ignore
         self._key = key
         self._authorization_codes = authorization_codes
 
-    def get_jwt_config(self, grant: AuthorizationCodeGrant) -> dict[str, Any]:
+    def get_jwt_config(self, grant: BaseGrant, client: OAuth2Client) -> dict[str, Any]:
         return {"key": self._key.as_dict(is_private=True), "alg": "RS256", "iss": self._issuer, "exp": 3600}
 
     def exists_nonce(self, nonce: str, request: OAuth2Request) -> bool:

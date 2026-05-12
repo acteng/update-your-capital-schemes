@@ -20,7 +20,7 @@ class JtiRepository:
         return f"{sub}-{jti}"
 
 
-class PrivateKeyJwtClientAssertion(JWTBearerClientAssertion):  # type: ignore
+class PrivateKeyJwtClientAssertion(JWTBearerClientAssertion):
     CLIENT_AUTH_METHOD = "private_key_jwt"
 
     def __init__(self, token_url: str, issuer: str, audience: str):

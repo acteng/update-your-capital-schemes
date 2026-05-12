@@ -6,7 +6,7 @@ from authlib.oauth2.rfc6750 import BearerTokenValidator
 
 
 @dataclass
-class StubToken(TokenMixin):  # type: ignore
+class StubToken(TokenMixin):
     client_id: str
     user_id: str
     scope: str
@@ -32,7 +32,7 @@ class TokenRepository:
         self._tokens[access_token] = token
 
 
-class StubBearerTokenValidator(BearerTokenValidator):  # type: ignore
+class StubBearerTokenValidator(BearerTokenValidator):
     def __init__(self, tokens: TokenRepository, realm: str | None = None, **extra_attributes: Any) -> None:
         super().__init__(realm, **extra_attributes)
         self._tokens = tokens

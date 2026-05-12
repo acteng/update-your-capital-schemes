@@ -4,6 +4,7 @@ from authlib.integrations.flask_oauth2 import AuthorizationServer, current_token
 from authlib.jose.rfc7517.base_key import Key
 from authlib.jose.rfc7517.key_set import KeySet
 from authlib.jose.rfc7518.rsa_key import RSAKey
+from authlib.oauth2.rfc6749 import BaseGrant
 from authlib.oauth2.rfc6749.requests import OAuth2Request
 from flask import Flask, Response, jsonify, redirect, request, url_for
 from werkzeug import Response as BaseResponse
@@ -79,7 +80,7 @@ class OidcServerApp(Flask):
         root = self.config["APPLICATION_ROOT"]
         return f"{scheme}://{server_name}{root}"
 
-    def _init_grant(self, grant: StubAuthorizationCodeGrant) -> None:
+    def _init_grant(self, grant: BaseGrant) -> None:
         # attributes set by grant extension as initializer arguments are fixed
         grant.authorization_codes = self._authorization_codes
         grant.users = self._users

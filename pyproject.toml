@@ -34,6 +34,7 @@ dev = [
     "respx~=0.23.0",
     "ruff~=0.15.0",
     "responses~=0.26.0",
+    "types-authlib~=1.6.0",
     "types-wtforms~=3.2.0"
 ]
 
@@ -65,7 +66,6 @@ strict = true
 
 [[tool.mypy.overrides]]
 module = [
-    "authlib.*",
     "flask_session.*",
     "flask_wtf.*",
     "govuk_frontend_wtf.*",

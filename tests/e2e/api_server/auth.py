@@ -5,7 +5,7 @@ from authlib.oauth2.rfc9068 import JWTBearerTokenValidator
 from flask import current_app
 
 
-class TypedResourceProtector(ResourceProtector):  # type: ignore
+class TypedResourceProtector(ResourceProtector):
     def __call__[**P, T](
         self, scopes: str | None = None, optional: bool = False, **kwargs: Any
     ) -> Callable[[Callable[P, T]], Callable[P, T]]:
@@ -13,7 +13,7 @@ class TypedResourceProtector(ResourceProtector):  # type: ignore
         return decorator
 
 
-class ApiJwtBearerTokenValidator(JWTBearerTokenValidator):  # type: ignore
+class ApiJwtBearerTokenValidator(JWTBearerTokenValidator):
     def get_jwks(self) -> Any:
         oauth = current_app.extensions["authlib.integrations.flask_client"]
         return oauth.auth.fetch_jwk_set()

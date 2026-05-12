@@ -3,7 +3,7 @@ from typing import Any, Callable
 from authlib.integrations.flask_oauth2 import ResourceProtector
 
 
-class TypedResourceProtector(ResourceProtector):  # type: ignore
+class TypedResourceProtector(ResourceProtector):
     def __call__[**P, T](
         self, scopes: str | None = None, optional: bool = False, **kwargs: Any
     ) -> Callable[[Callable[P, T]], Callable[P, T]]:

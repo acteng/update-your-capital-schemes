@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+from typing import Collection
 
 from authlib.oauth2.rfc6749.models import ClientMixin
 
 
 @dataclass
-class StubClient(ClientMixin):  # type: ignore
+class StubClient(ClientMixin):
     client_id: str
     public_key: bytes
     scope: str
@@ -12,7 +13,7 @@ class StubClient(ClientMixin):  # type: ignore
     def get_client_id(self) -> str:
         return self.client_id
 
-    def get_allowed_scope(self, scope: str) -> str:
+    def get_allowed_scope(self, scope: Collection[str] | str) -> str:
         allowed_scope = [s for s in scope.split() if s in self.scope]
         return " ".join(allowed_scope)
 

@@ -23,7 +23,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "beautifulsoup4~=4.14.0",
-    "black~=26.3.0",
+    "black~=26.5.0",
     "isort~=8.0.0",
     "mypy~=2.1.0",
     "playwright~=1.59.0",

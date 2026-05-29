@@ -233,10 +233,8 @@ After upgrading GOV.UK One Login Service Header:
    And update the template for Jinja by applying the following patch:
 
    ```diff
-   -{%- from "node_modules/govuk-frontend/dist/govuk/components/service-navigation/macro.njk" import govukServiceNavigation -%}
    -{%- set lngQueryString = "?lng=cy" if (params.lng === "cy") else "" -%}
    -{%- set signOutLinkText = "Allgofnodi" if (params.lng === "cy") else "Sign out" -%}
-   +{%- from "govuk_frontend_jinja/components/service-navigation/macro.html" import govukServiceNavigation -%}
    +{%- set lngQueryString = "?lng=cy" if (params.lng == "cy") else "" -%}
    +{%- set signOutLinkText = "Allgofnodi" if (params.lng == "cy") else "Sign out" -%}
    ```

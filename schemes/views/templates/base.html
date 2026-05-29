@@ -4,7 +4,7 @@
 {% from "ate_header/macro.html" import ateHeader -%}
 
 {% block pageTitle -%}
-    Update your capital schemes - Active Travel England - GOV.UK
+    {{ serviceName }} - Active Travel England - GOV.UK
 {%- endblock %}
 
 {% block headIcons %}
@@ -20,14 +20,13 @@
     <link href="{{ url_for('static', filename='application.min.css') }}" rel="stylesheet">
 {% endblock %}
 
-{% block header %}
+{% block govukHeader %}
     {{ ateHeader({
-        "homepageUrl": "https://www.activetravelengland.gov.uk",
-        "rebrand": govukRebrand
+        "homepageUrl": "https://www.activetravelengland.gov.uk"
     }) }}
 {% endblock %}
 
-{% block beforeContent %}
+{% block headerEnd %}
     {% set html -%}
         This is a new service – your
         <a class="govuk-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfq6W-tnvz1gt_TWg2ojhxcu1RmpnWCPtVN3IDDLonTsmcRLA/viewform" rel="noreferrer noopener" target="_blank">feedback<span class="govuk-visually-hidden"> (opens in new tab)</span></a>
@@ -49,7 +48,7 @@
     </script>
 {% endblock %}
 
-{% block footer %}
+{% block govukFooter %}
     {{ ateFooter({
         "meta": {
             "items": [
@@ -66,7 +65,6 @@
                     "href": url_for("legal.cookies")
                 }
             ]
-        },
-        "rebrand": govukRebrand
+        }
     }) }}
 {% endblock %}

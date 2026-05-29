@@ -82,9 +82,7 @@ After upgrading GOV.UK Frontend Jinja Macros, update the header template:
    ```diff
    -        {{ govukLogo({
    -          'classes': "govuk-header__logotype",
-   -          'ariaLabelText': "GOV.UK",
-   -          'useTudorCrown': params.useTudorCrown,
-   -          'rebrand': _rebrand
+   -          'ariaLabelText': "GOV.UK"
    -        }) | trim | indent(8) }}
    +        <img class="govuk-header__logotype ate-header__logotype" src="{{ url_for('static', filename='ate-header/ATE_Lesser_Arms_Landscape_White.png') }}" alt="Active Travel England"/>
    +        <img class="govuk-header__logotype ate-header__logotype--focus" src="{{ url_for('static', filename='ate-header/ATE_Lesser_Arms_Landscape_Black.png') }}" alt="Active Travel England"/>
@@ -109,13 +107,10 @@ After upgrading GOV.UK Frontend Jinja Macros, update the footer template:
 1. Remove the crown logo by applying the following patch:
 
    ```diff
-   -    {% if _rebrand %}
-   -      {{- govukLogo({
-   -        'classes': 'govuk-footer__crown',
-   -        'rebrand': true,
-   -        'useLogotype': false
-   -      }) }}
-   -    {% endif %}
+   -    {{- govukLogo({
+   -      'classes': 'govuk-footer__crown',
+   -      'useLogotype': false
+   -    }) }}
    ```
 
 ### Upgrading Playwright package
@@ -187,7 +182,7 @@ We derive the ATE icons from the GOV.UK crest.
 
 After upgrading GOV.UK Frontend, update the ATE icons if the crest has changed:
 
-1. Copy the `path` elements from the [GOV.UK crest](../node_modules/govuk-frontend/dist/govuk/assets/rebrand/images/govuk-crest.svg)
+1. Copy the `path` elements from the [GOV.UK crest](../node_modules/govuk-frontend/dist/govuk/assets/images/govuk-crest.svg)
    to the corresponding position within:
    * the large icon: [schemes/views/assets/ate-logo.svg](../schemes/views/assets/ate-logo.svg)
    * the small icon: [schemes/views/static/ate-icons/images/favicon.svg](../schemes/views/static/ate-icons/images/favicon.svg)
@@ -203,7 +198,7 @@ After upgrading GOV.UK Frontend, update the ATE icons if the crest has changed:
 
 Update the `manifest.json` file:
 
-1. Copy the contents of the [manifest.json file](../node_modules/govuk-frontend/dist/govuk/assets/rebrand/manifest.json)
+1. Copy the contents of the [manifest.json file](../node_modules/govuk-frontend/dist/govuk/assets/manifest.json)
    to [schemes/views/static/ate-icons/manifest.json](../schemes/views/static/ate-icons/manifest.json)
 2. Update the GOV.UK icon paths to point to the corresponding ATE icons, for example:
 
@@ -238,10 +233,8 @@ After upgrading GOV.UK One Login Service Header:
    And update the template for Jinja by applying the following patch:
 
    ```diff
-   -{%- from "node_modules/govuk-frontend/dist/govuk/components/service-navigation/macro.njk" import govukServiceNavigation -%}
    -{%- set lngQueryString = "?lng=cy" if (params.lng === "cy") else "" -%}
    -{%- set signOutLinkText = "Allgofnodi" if (params.lng === "cy") else "Sign out" -%}
-   +{%- from "govuk_frontend_jinja/components/service-navigation/macro.html" import govukServiceNavigation -%}
    +{%- set lngQueryString = "?lng=cy" if (params.lng == "cy") else "" -%}
    +{%- set signOutLinkText = "Allgofnodi" if (params.lng == "cy") else "Sign out" -%}
    ```

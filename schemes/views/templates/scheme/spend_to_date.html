@@ -9,8 +9,7 @@
     {% if form.errors %}Error: {% endif %}How much has been spent to date? - {{ super() }}
 {%- endblock %}
 
-{% block beforeContent %}
-    {{ super() }}
+{% block containerStart %}
     {{ govukBackLink({
         "href": url_for("schemes.get", reference=reference)
     }) }}

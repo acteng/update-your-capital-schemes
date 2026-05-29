@@ -6,11 +6,8 @@
     <link href="{{ url_for('static', filename='govuk-one-login-service-header/govuk-one-login-service-header.min.css') }}" rel="stylesheet">
 {% endblock %}
 
-{% block header %}
+{% block govukHeader %}
     {{ ateServiceHeader({
-        "serviceNavigationParams": {
-            "serviceName": "Update your capital schemes",
-        },
         "homepageLink": "https://www.activetravelengland.gov.uk",
         "oneLoginLink": oneLoginLink,
         "signOutLink": url_for("auth.logout")

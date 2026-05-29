@@ -30,7 +30,7 @@ class PageObject:
 
 class HeaderComponent:
     def __init__(self, header: Tag):
-        self.home_url = one(header.select("a.govuk-header__link"))["href"]
+        self.home_url = one(header.select("a.govuk-header__homepage-link"))["href"]
 
 
 class FooterComponent:

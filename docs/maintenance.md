@@ -54,11 +54,19 @@ After upgrading GOV.UK Frontend Jinja Macros, update the page template:
 1. Copy the contents of the `headIcons` block in [the page template](../.venv/lib/python3.13/site-packages/govuk_frontend_jinja/templates/template.html)
    to the corresponding block in [schemes/views/templates/base.html](../schemes/views/templates/base.html) 
 
-1. Update the GOV.UK icon hrefs to point to the corresponding ATE icons, for example:
+1. Update the GOV.UK icon hrefs to point to the corresponding ATE icons by applying the following patch:
 
    ```diff
-   -<link rel="icon" sizes="48x48" href="{{ assetPath }}/images/favicon.ico">
-   +<link rel="icon" sizes="48x48" href="{{ url_for('static', filename='ate-icons/images/favicon.ico') }}">
+   -      <link rel="icon" sizes="48x48" href="{{ assetPath }}/images/favicon.ico">
+   -      <link rel="icon" sizes="any" href="{{ assetPath }}/images/favicon.svg" type="image/svg+xml">
+   -      <link rel="mask-icon" href="{{ assetPath }}/images/govuk-icon-mask.svg" color="{{ themeColor }}">
+   -      <link rel="apple-touch-icon" href="{{ assetPath }}/images/govuk-icon-180.png">
+   -      <link rel="manifest" href="{{ assetPath }}/manifest.json">
+   +    <link rel="icon" sizes="48x48" href="{{ url_for('static', filename='ate-icons/images/favicon.ico') }}">
+   +    <link rel="icon" sizes="any" href="{{ url_for('static', filename='ate-icons/images/favicon.svg') }}" type="image/svg+xml">
+   +    <link rel="mask-icon" href="{{ url_for('static', filename='ate-icons/images/ate-icon-mask.svg') }}" color="{{ themeColor }}">
+   +    <link rel="apple-touch-icon" href="{{ url_for('static', filename='ate-icons/images/ate-icon-180.png') }}">
+   +    <link rel="manifest" href="{{ url_for('static', filename='ate-icons/manifest.json') }}">
    ```
 
 #### GOV.UK header component

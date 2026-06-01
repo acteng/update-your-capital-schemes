@@ -13,17 +13,8 @@ __pycache__/
 # User guide
 /docs/user-guide/index.pdf
 
-# Application assets
-/schemes/views/static/application.min.css*
-
-# GOV.UK Frontend
-/schemes/views/static/govuk-frontend/
-
-# GOV.UK One Login Service header
-/schemes/views/static/govuk-one-login-service-header/
-
-# ATE Frontend
-/schemes/views/static/ate-frontend/
+# Web assets
+/schemes/views/static/
 
 # Terraform
 .terraform/

@@ -243,7 +243,9 @@ def _configure_govuk_frontend(app: Flask) -> None:
         return {
             "assetPath": url_for("static", filename="govuk-frontend/assets"),
             "themeColor": "#006853",
-            "opengraphImageUrl": url_for("static", filename="ate-icons/images/ate-opengraph-image.png", _external=True),
+            "opengraphImageUrl": url_for(
+                "static", filename="ate-frontend/assets/ate-icons/ate-opengraph-image.png", _external=True
+            ),
             "oneLoginLink": app.config["GOVUK_PROFILE_URL"],
             "serviceName": "Update your capital schemes",
         }

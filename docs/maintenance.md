@@ -62,11 +62,11 @@ After upgrading GOV.UK Frontend Jinja Macros, update the page template:
    -      <link rel="mask-icon" href="{{ assetPath }}/images/govuk-icon-mask.svg" color="{{ themeColor }}">
    -      <link rel="apple-touch-icon" href="{{ assetPath }}/images/govuk-icon-180.png">
    -      <link rel="manifest" href="{{ assetPath }}/manifest.json">
-   +    <link rel="icon" sizes="48x48" href="{{ url_for('static', filename='ate-icons/images/favicon.ico') }}">
-   +    <link rel="icon" sizes="any" href="{{ url_for('static', filename='ate-icons/images/favicon.svg') }}" type="image/svg+xml">
-   +    <link rel="mask-icon" href="{{ url_for('static', filename='ate-icons/images/ate-icon-mask.svg') }}" color="{{ themeColor }}">
-   +    <link rel="apple-touch-icon" href="{{ url_for('static', filename='ate-icons/images/ate-icon-180.png') }}">
-   +    <link rel="manifest" href="{{ url_for('static', filename='ate-icons/manifest.json') }}">
+   +    <link rel="icon" sizes="48x48" href="{{ url_for('static', filename='ate-frontend/assets/ate-icons/favicon.ico') }}">
+   +    <link rel="icon" sizes="any" href="{{ url_for('static', filename='ate-frontend/assets/ate-icons/favicon.svg') }}" type="image/svg+xml">
+   +    <link rel="mask-icon" href="{{ url_for('static', filename='ate-frontend/assets/ate-icons/ate-icon-mask.svg') }}" color="{{ themeColor }}">
+   +    <link rel="apple-touch-icon" href="{{ url_for('static', filename='ate-frontend/assets/ate-icons/ate-icon-180.png') }}">
+   +    <link rel="manifest" href="{{ url_for('static', filename='ate-frontend/assets/ate-icons/manifest.json') }}">
    ```
 
 #### GOV.UK header component
@@ -181,39 +181,6 @@ To upgrade packages to their latest patch versions:
 ```bash
 npm upgrade
 ```
-
-### Upgrading GOV.UK Frontend package
-
-#### Icons
-
-We derive the ATE icons from the GOV.UK crest.
-
-After upgrading GOV.UK Frontend, update the ATE icons if the crest has changed:
-
-1. Copy the `path` elements from the [GOV.UK crest](../node_modules/govuk-frontend/dist/govuk/assets/images/govuk-crest.svg)
-   to the corresponding position within:
-   * the large icon: [schemes/views/assets/ate-logo.svg](../schemes/views/assets/ate-logo.svg)
-   * the small icon: [schemes/views/static/ate-icons/images/favicon.svg](../schemes/views/static/ate-icons/images/favicon.svg)
-   * the Safari icon: [schemes/views/static/ate-icons/images/ate-icon-mask.svg](../schemes/views/static/ate-icons/images/ate-icon-mask.svg)
-1. Export the large icon as PNGs with the following sizes:
-   * 180x180: [schemes/views/static/ate-icons/images/ate-icon-180.png](../schemes/views/static/ate-icons/images/ate-icon-180.png)
-   * 192x192: [schemes/views/static/ate-icons/images/ate-icon-192.png](../schemes/views/static/ate-icons/images/ate-icon-192.png)
-   * 512x512: [schemes/views/static/ate-icons/images/ate-icon-512.png](../schemes/views/static/ate-icons/images/ate-icon-512.png)
-1. Export the small icon as an ICO with the following sizes to [schemes/views/static/ate-icons/images/favicon.ico](../schemes/views/static/ate-icons/images/favicon.ico):
-   * 16x16 BMP 8bpp
-   * 32x32 BMP 24bpp
-   * 48x48 BMP 24bpp
-
-Update the `manifest.json` file:
-
-1. Copy the contents of the [manifest.json file](../node_modules/govuk-frontend/dist/govuk/assets/manifest.json)
-   to [schemes/views/static/ate-icons/manifest.json](../schemes/views/static/ate-icons/manifest.json)
-2. Update the GOV.UK icon paths to point to the corresponding ATE icons, for example:
-
-   ```diff
-   -      "src": "images/govuk-icon-180.png",
-   +      "src": "images/ate-icon-180.png",
-   ```
 
 ### Upgrading GOV.UK One Login Service Header package
 

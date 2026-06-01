@@ -7,4 +7,7 @@ class TestMetadata:
     def test_image(self, client: FlaskClient) -> None:
         start_page = StartPage.open(client)
 
-        assert start_page.metadata.image_url == "http://localhost/static/ate-icons/images/ate-opengraph-image.png"
+        assert (
+            start_page.metadata.image_url
+            == "http://localhost/static/ate-frontend/assets/ate-icons/ate-opengraph-image.png"
+        )

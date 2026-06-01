@@ -1,15 +1,8 @@
+@use "ate/settings";
+
 $govuk-assets-path: "/static/govuk-frontend/assets/";
-$govuk-functional-colours: (
-  // govuk-organisation-colour("department-for-transport")
-  brand: #006853,
-  // govuk-organisation-colour("department-for-transport"), variant tint-95
-  template-background: #f2f7f6,
-  // govuk-organisation-colour("department-for-transport"), variant tint-95
-  surface-background: #f2f7f6,
-  // govuk-organisation-colour("department-for-transport"), variant tint-50
-  surface-border: #80b4a9
-);
-$govuk-font-family: arial, sans-serif;
+$govuk-functional-colours: settings.$ate-functional-colours;
+$govuk-font-family: settings.$ate-font-family;
 
 @import "govuk";
 

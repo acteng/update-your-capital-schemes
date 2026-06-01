@@ -1,7 +1,7 @@
 @use "ate/settings";
 
 $govuk-assets-path: "/static/govuk-frontend/assets/";
-$govuk-functional-colours: settings.$ate-functional-colours;
 $govuk-font-family: settings.$ate-font-family;
+$govuk-functional-colours: settings.$ate-functional-colours;
 
 @import "service-header";

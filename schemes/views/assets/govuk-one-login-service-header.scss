@@ -11,4 +11,4 @@ $govuk-functional-colours: (
 );
 $govuk-font-family: arial, sans-serif;
 
-@import "../../../node_modules/@govuk-one-login/service-header/dist/styles/service-header";
+@import "service-header";

@@ -44,32 +44,6 @@ variable "database_password" {
   sensitive   = true
 }
 
-variable "capital_schemes_database_project" {
-  description = "Capital schemes database GCP project"
-  type        = string
-}
-
-variable "capital_schemes_database_connection_name" {
-  description = "Capital schemes database connection name"
-  type        = string
-}
-
-variable "capital_schemes_database_name" {
-  description = "Capital schemes database name"
-  type        = string
-}
-
-variable "capital_schemes_database_username" {
-  description = "Capital schemes database username"
-  type        = string
-}
-
-variable "capital_schemes_database_password" {
-  description = "Capital schemes database password"
-  type        = string
-  sensitive   = true
-}
-
 variable "keep_idle" {
   description = "Whether to keep an instance idle to prevent cold starts"
   type        = bool

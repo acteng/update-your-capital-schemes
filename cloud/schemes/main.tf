@@ -50,15 +50,6 @@ data "terraform_remote_state" "docker_repository" {
   }
 }
 
-data "terraform_remote_state" "schemes_database" {
-  backend = "gcs"
-  config = {
-    bucket = "${var.database_project_prefix}-common-tf-backend"
-    prefix = "schemes-database"
-  }
-  workspace = local.env
-}
-
 data "terraform_remote_state" "identity" {
   backend = "gcs"
   config = {
@@ -117,30 +108,25 @@ module "cloud_sql" {
 }
 
 module "cloud_run" {
-  source                                   = "./cloud-run"
-  project                                  = local.project
-  region                                   = var.location
-  docker_repository_project                = data.terraform_remote_state.docker_repository.outputs.project
-  docker_repository_url                    = data.terraform_remote_state.docker_repository.outputs.url
-  env                                      = local.env
-  database_connection_name                 = module.cloud_sql.connection_name
-  database_name                            = module.cloud_sql.name
-  database_username                        = module.cloud_sql.username
-  database_password                        = module.cloud_sql.password
-  capital_schemes_database_project         = data.terraform_remote_state.schemes_database.outputs.project
-  capital_schemes_database_connection_name = data.terraform_remote_state.schemes_database.outputs.connection_name
-  capital_schemes_database_name            = data.terraform_remote_state.schemes_database.outputs.name
-  capital_schemes_database_username        = data.terraform_remote_state.schemes_database.outputs.username
-  capital_schemes_database_password        = data.terraform_remote_state.schemes_database.outputs.password
-  keep_idle                                = local.config[local.env].keep_idle
-  basic_auth                               = local.config[local.env].basic_auth
-  ate_api_url                              = local.config[local.env].ate_api ? data.terraform_remote_state.ate_api.outputs.url : null
-  ate_api_client_id                        = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.update_your_capital_schemes_client_id : null
-  ate_api_server_metadata_url              = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.oidc_server_metadata_url : null
-  ate_api_issuer                           = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.issuer : null
-  ate_api_audience                         = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.resource_server_identifier : null
-  monitoring                               = local.config[local.env].monitoring
-  domain                                   = local.config[local.env].domain
+  source                      = "./cloud-run"
+  project                     = local.project
+  region                      = var.location
+  docker_repository_project   = data.terraform_remote_state.docker_repository.outputs.project
+  docker_repository_url       = data.terraform_remote_state.docker_repository.outputs.url
+  env                         = local.env
+  database_connection_name    = module.cloud_sql.connection_name
+  database_name               = module.cloud_sql.name
+  database_username           = module.cloud_sql.username
+  database_password           = module.cloud_sql.password
+  keep_idle                   = local.config[local.env].keep_idle
+  basic_auth                  = local.config[local.env].basic_auth
+  ate_api_url                 = local.config[local.env].ate_api ? data.terraform_remote_state.ate_api.outputs.url : null
+  ate_api_client_id           = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.update_your_capital_schemes_client_id : null
+  ate_api_server_metadata_url = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.oidc_server_metadata_url : null
+  ate_api_issuer              = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.issuer : null
+  ate_api_audience            = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.resource_server_identifier : null
+  monitoring                  = local.config[local.env].monitoring
+  domain                      = local.config[local.env].domain
 
   depends_on = [
     google_project_service.monitoring,

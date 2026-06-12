@@ -14,7 +14,7 @@ from flask_wtf.csrf import CSRFError
 from govuk_frontend_wtf.main import WTFormsHelpers
 from inject import Binder
 from jinja2 import ChoiceLoader, FileSystemLoader, PackageLoader, PrefixLoader
-from sqlalchemy import Engine, create_engine, event
+from sqlalchemy import Engine, event
 from sqlalchemy.dialects.sqlite.base import SQLiteDialect
 from sqlalchemy.engine.interfaces import DBAPIConnection
 from sqlalchemy.orm import Session, sessionmaker
@@ -29,17 +29,6 @@ from schemes.domain.users import UserRepository
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository
 from schemes.infrastructure.api.schemes.schemes import ApiSchemeRepository
 from schemes.infrastructure.clock import Clock, FakeClock, SystemClock
-from schemes.infrastructure.database import (
-    AuthorityEntity,
-    CapitalSchemeAuthorityReviewEntity,
-    CapitalSchemeBidStatusEntity,
-    CapitalSchemeEntity,
-    CapitalSchemeFinancialEntity,
-    CapitalSchemeInterventionEntity,
-    CapitalSchemeMilestoneEntity,
-    CapitalSchemeOverviewEntity,
-    UserEntity,
-)
 from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
 from schemes.infrastructure.database.schemes.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.database.users import DatabaseUserRepository
@@ -111,7 +100,6 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
         binder.bind(Clock, FakeClock() if app.testing else SystemClock())
         binder.bind_to_constructor(ReportingWindowService, DefaultReportingWindowService)
         binder.bind_to_constructor(Engine, _create_engine)
-        binder.bind_to_constructor((Engine, CapitalSchemeEntity), _create_capital_schemes_engine)
         binder.bind_to_constructor(sessionmaker[Session], _create_session_maker)
         binder.bind_to_constructor(
             AuthorityRepository, _create_api_authority_repository if api else DatabaseAuthorityRepository
@@ -139,27 +127,8 @@ def _create_engine(app: Flask) -> Engine:
 
 
 @inject.autoparams()
-def _create_capital_schemes_engine(config: Config, engine: Engine) -> Engine:
-    database_uri = config.get("CAPITAL_SCHEMES_DATABASE_URI")
-    engine_options = config["SQLALCHEMY_ENGINE_OPTIONS"]
-    return create_engine(database_uri, **engine_options) if database_uri else engine
-
-
-@inject.params(engine=Engine, capital_schemes_engine=(Engine, CapitalSchemeEntity))
-def _create_session_maker(engine: Engine, capital_schemes_engine: Engine) -> sessionmaker[Session]:
-    return sessionmaker(
-        binds={
-            AuthorityEntity: capital_schemes_engine,
-            CapitalSchemeAuthorityReviewEntity: capital_schemes_engine,
-            CapitalSchemeBidStatusEntity: capital_schemes_engine,
-            CapitalSchemeEntity: capital_schemes_engine,
-            CapitalSchemeFinancialEntity: capital_schemes_engine,
-            CapitalSchemeInterventionEntity: capital_schemes_engine,
-            CapitalSchemeMilestoneEntity: capital_schemes_engine,
-            CapitalSchemeOverviewEntity: capital_schemes_engine,
-            UserEntity: engine,
-        }
-    )
+def _create_session_maker(engine: Engine) -> sessionmaker[Session]:
+    return sessionmaker(engine)
 
 
 @inject.autoparams()

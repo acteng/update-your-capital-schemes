@@ -9,8 +9,8 @@ from tests.e2e.api_client import (
     FundingProgrammeModel,
     MilestoneModel,
 )
-from tests.e2e.app_client import AppClient, AuthorityRepr, AuthorityReviewRepr, UserRepr
-from tests.e2e.builders import build_capital_scheme_model, build_scheme
+from tests.e2e.app_client import AppClient, UserRepr
+from tests.e2e.builders import build_capital_scheme_model
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemesPage
@@ -22,64 +22,41 @@ class TestAuthenticated:
     def oidc_user(self, oidc_client: OidcClient) -> None:
         oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
-    def test_schemes(self, api: bool, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
+    def test_schemes(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
-        if api:
-            api_client.add_funding_programmes(
-                FundingProgrammeModel(code="ATF3", eligible_for_authority_update=True),
-                FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True),
-            )
-            api_client.add_milestones(
-                MilestoneModel(name="detailed design completed", active=True, complete=False),
-                MilestoneModel(name="construction started", active=True, complete=False),
-            )
-            api_client.add_authorities(
-                AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
-            )
-            api_client.add_schemes(
-                build_capital_scheme_model(
-                    reference="ATE00001",
-                    name="Wirral Package",
-                    bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
-                    funding_programme=f"{api_client.base_url}/funding-programmes/ATF3",
-                    milestones=CapitalSchemeMilestonesModel(current_milestone="detailed design completed", items=[]),
-                    authority_review=CapitalSchemeAuthorityReviewModel(
-                        review_date="2020-01-02T00:00:00Z", source="ATF3 bid"
-                    ),
+        api_client.add_funding_programmes(
+            FundingProgrammeModel(code="ATF3", eligible_for_authority_update=True),
+            FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True),
+        )
+        api_client.add_milestones(
+            MilestoneModel(name="detailed design completed", active=True, complete=False),
+            MilestoneModel(name="construction started", active=True, complete=False),
+        )
+        api_client.add_authorities(
+            AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+        )
+        api_client.add_schemes(
+            build_capital_scheme_model(
+                reference="ATE00001",
+                name="Wirral Package",
+                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+                funding_programme=f"{api_client.base_url}/funding-programmes/ATF3",
+                milestones=CapitalSchemeMilestonesModel(current_milestone="detailed design completed", items=[]),
+                authority_review=CapitalSchemeAuthorityReviewModel(
+                    review_date="2020-01-02T00:00:00Z", source="ATF3 bid"
                 ),
-                build_capital_scheme_model(
-                    reference="ATE00002",
-                    name="School Streets",
-                    bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
-                    funding_programme=f"{api_client.base_url}/funding-programmes/ATF4",
-                    milestones=CapitalSchemeMilestonesModel(current_milestone="construction started", items=[]),
-                    authority_review=CapitalSchemeAuthorityReviewModel(
-                        review_date="2020-01-03T00:00:00Z", source="ATF4 bid"
-                    ),
+            ),
+            build_capital_scheme_model(
+                reference="ATE00002",
+                name="School Streets",
+                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+                funding_programme=f"{api_client.base_url}/funding-programmes/ATF4",
+                milestones=CapitalSchemeMilestonesModel(current_milestone="construction started", items=[]),
+                authority_review=CapitalSchemeAuthorityReviewModel(
+                    review_date="2020-01-03T00:00:00Z", source="ATF4 bid"
                 ),
-            )
-        else:
-            app_client.add_authorities(
-                AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority")
-            )
-            app_client.add_schemes(
-                build_scheme(
-                    id_=1,
-                    reference="ATE00001",
-                    name="Wirral Package",
-                    authority_abbreviation="LIV",
-                    funding_programme="ATF3",
-                    authority_reviews=[AuthorityReviewRepr(id=1, review_date="2020-01-02", source="ATF3 bid")],
-                ),
-                build_scheme(
-                    id_=2,
-                    reference="ATE00002",
-                    name="School Streets",
-                    authority_abbreviation="LIV",
-                    funding_programme="ATF4",
-                    authority_reviews=[AuthorityReviewRepr(id=2, review_date="2020-01-03", source="ATF4 bid")],
-                ),
-            )
+            ),
+        )
         app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
 
         schemes_page = SchemesPage.open(page)
@@ -107,27 +84,19 @@ class TestAuthenticated:
 
         assert forbidden_page.is_visible
 
-    def test_scheme_shows_scheme(self, api: bool, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
-        if api:
-            api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
-            api_client.add_authorities(
-                AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+    def test_scheme_shows_scheme(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+        api_client.add_authorities(
+            AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+        )
+        api_client.add_schemes(
+            build_capital_scheme_model(
+                reference="ATE00001",
+                name="Wirral Package",
+                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             )
-            api_client.add_schemes(
-                build_capital_scheme_model(
-                    reference="ATE00001",
-                    name="Wirral Package",
-                    bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
-                    funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
-                )
-            )
-        else:
-            app_client.add_authorities(
-                AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority")
-            )
-            app_client.add_schemes(
-                build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-            )
+        )
         app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
 
         scheme_page = SchemesPage.open(page).schemes["ATE00001"].open()
@@ -135,35 +104,21 @@ class TestAuthenticated:
         assert scheme_page.heading.text == "Wirral Package"
 
     def test_schemes_shows_update_schemes_notification(
-        self, api: bool, app_client: AppClient, api_client: ApiClient, page: Page
+        self, app_client: AppClient, api_client: ApiClient, page: Page
     ) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
-        if api:
-            api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
-            api_client.add_authorities(
-                AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+        api_client.add_authorities(
+            AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+        )
+        api_client.add_schemes(
+            build_capital_scheme_model(
+                reference="ATE00001",
+                name="Wirral Package",
+                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             )
-            api_client.add_schemes(
-                build_capital_scheme_model(
-                    reference="ATE00001",
-                    name="Wirral Package",
-                    bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
-                    funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
-                )
-            )
-        else:
-            app_client.add_authorities(
-                AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority")
-            )
-            app_client.add_schemes(
-                build_scheme(
-                    id_=1,
-                    reference="ATE00001",
-                    name="Wirral Package",
-                    authority_abbreviation="LIV",
-                    authority_reviews=[AuthorityReviewRepr(id=1, review_date="2023-01-02", source="ATF4 bid")],
-                ),
-            )
+        )
         app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
 
         schemes_page = SchemesPage.open(page)

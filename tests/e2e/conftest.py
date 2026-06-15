@@ -111,12 +111,6 @@ def app_api_oauth_client_fixture(app_api_public_key: bytes) -> OAuthClient:
     return OAuthClient(client_id="app", public_key=app_api_public_key, scope="")
 
 
-@pytest.fixture(name="api", scope="package")
-def api_fixture() -> bool:
-    # GH-212: Remove fixture when test API is removed from E2E tests
-    return True
-
-
 @pytest.fixture(name="app", scope="package")
 def app_fixture(
     debug: bool,
@@ -169,13 +163,10 @@ def register_app_oidc_oauth_client_fixture(
 
 
 @pytest.fixture(name="app_client")
-def app_client_fixture(live_server: LiveServer, app_api_key: str, api: bool) -> Generator[AppClient]:
+def app_client_fixture(live_server: LiveServer, app_api_key: str) -> Generator[AppClient]:
     client = AppClient(_get_url(live_server), app_api_key)
     yield client
     client.clear_users()
-    if not api:
-        client.clear_schemes()
-        client.clear_authorities()
 
 
 # endregion

@@ -111,10 +111,10 @@ def app_api_oauth_client_fixture(app_api_public_key: bytes) -> OAuthClient:
     return OAuthClient(client_id="app", public_key=app_api_public_key, scope="")
 
 
-@pytest.fixture(name="api", scope="package", params=[False, True], ids=["database", "api"])
-def api_fixture(request: FixtureRequest) -> bool:
-    api: bool = request.param
-    return api
+@pytest.fixture(name="api", scope="package")
+def api_fixture() -> bool:
+    # GH-212: Remove fixture when test API is removed from E2E tests
+    return True
 
 
 @pytest.fixture(name="app", scope="package")
@@ -125,7 +125,6 @@ def app_fixture(
     app_oidc_key_pair: KeyPair,
     oidc_server_metadata_url: str,
     oidc_server: LiveServer,
-    api: bool,
     api_server: LiveServer,
     authorization_server_metadata_url: str,
     authorization_server_metadata: Any,
@@ -146,17 +145,13 @@ def app_fixture(
         "GOVUK_CLIENT_SECRET": app_oidc_key_pair.private_key.decode(),
         "GOVUK_SERVER_METADATA_URL": oidc_server_metadata_url,
         "GOVUK_END_SESSION_ENDPOINT": oidc_server.app.url_for("logout", _external=True),
+        "ATE_URL": _get_url(api_server),
+        "ATE_CLIENT_ID": app_api_oauth_client.client_id,
+        "ATE_CLIENT_SECRET": app_api_key_pair.private_key.decode(),
+        "ATE_SERVER_METADATA_URL": authorization_server_metadata_url,
+        "ATE_ISSUER": authorization_server_metadata["issuer"],
+        "ATE_AUDIENCE": api_resource_server.identifier,
     }
-
-    if api:
-        config |= {
-            "ATE_URL": _get_url(api_server),
-            "ATE_CLIENT_ID": app_api_oauth_client.client_id,
-            "ATE_CLIENT_SECRET": app_api_key_pair.private_key.decode(),
-            "ATE_SERVER_METADATA_URL": authorization_server_metadata_url,
-            "ATE_ISSUER": authorization_server_metadata["issuer"],
-            "ATE_AUDIENCE": api_resource_server.identifier,
-        }
 
     app = create_app(config)
     yield app

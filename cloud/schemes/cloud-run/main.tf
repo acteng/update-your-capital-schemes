@@ -73,52 +73,34 @@ resource "google_cloud_run_v2_service" "schemes" {
           }
         }
       }
-      dynamic "env" {
-        for_each = var.ate_api_url != null ? [1] : []
-        content {
-          name  = "FLASK_ATE_URL"
-          value = var.ate_api_url
-        }
+      env {
+        name  = "FLASK_ATE_URL"
+        value = var.ate_api_url
       }
-      dynamic "env" {
-        for_each = var.ate_api_client_id != null ? [1] : []
-        content {
-          name  = "FLASK_ATE_CLIENT_ID"
-          value = var.ate_api_client_id
-        }
+      env {
+        name  = "FLASK_ATE_CLIENT_ID"
+        value = var.ate_api_client_id
       }
-      dynamic "env" {
-        for_each = var.ate_api_client_id != null ? [1] : []
-        content {
-          name = "FLASK_ATE_CLIENT_SECRET"
-          value_source {
-            secret_key_ref {
-              secret  = data.google_secret_manager_secret.ate_api_client_secret[0].secret_id
-              version = "latest"
-            }
+      env {
+        name = "FLASK_ATE_CLIENT_SECRET"
+        value_source {
+          secret_key_ref {
+            secret  = data.google_secret_manager_secret.ate_api_client_secret.secret_id
+            version = "latest"
           }
         }
       }
-      dynamic "env" {
-        for_each = var.ate_api_server_metadata_url != null ? [1] : []
-        content {
-          name  = "FLASK_ATE_SERVER_METADATA_URL"
-          value = var.ate_api_server_metadata_url
-        }
+      env {
+        name  = "FLASK_ATE_SERVER_METADATA_URL"
+        value = var.ate_api_server_metadata_url
       }
-      dynamic "env" {
-        for_each = var.ate_api_issuer != null ? [1] : []
-        content {
-          name  = "FLASK_ATE_ISSUER"
-          value = var.ate_api_issuer
-        }
+      env {
+        name  = "FLASK_ATE_ISSUER"
+        value = var.ate_api_issuer
       }
-      dynamic "env" {
-        for_each = var.ate_api_audience != null ? [1] : []
-        content {
-          name  = "FLASK_ATE_AUDIENCE"
-          value = var.ate_api_audience
-        }
+      env {
+        name  = "FLASK_ATE_AUDIENCE"
+        value = var.ate_api_audience
       }
       ports {
         container_port = 8080
@@ -281,17 +263,13 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_govuk_clie
 # ATE API client secret
 
 data "google_secret_manager_secret" "ate_api_client_secret" {
-  count = var.ate_api_client_id != null ? 1 : 0
-
   secret_id = "ate-api-client-secret"
 }
 
 resource "google_secret_manager_secret_iam_member" "cloud_run_schemes_ate_api_client_secret" {
-  count = var.ate_api_client_id != null ? 1 : 0
-
   member    = "serviceAccount:${google_service_account.cloud_run_schemes.email}"
   role      = "roles/secretmanager.secretAccessor"
-  secret_id = data.google_secret_manager_secret.ate_api_client_secret[0].id
+  secret_id = data.google_secret_manager_secret.ate_api_client_secret.id
 }
 
 # monitoring

@@ -18,7 +18,6 @@ locals {
     dev = {
       keep_idle        = false
       basic_auth       = true
-      ate_api          = true
       database_backups = false
       monitoring       = false
       domain           = "dev.${local.domain}"
@@ -26,7 +25,6 @@ locals {
     test = {
       keep_idle        = false
       basic_auth       = true
-      ate_api          = true
       database_backups = false
       monitoring       = false
       domain           = "test.${local.domain}"
@@ -34,7 +32,6 @@ locals {
     prod = {
       keep_idle        = true
       basic_auth       = false
-      ate_api          = true
       database_backups = true
       monitoring       = true
       domain           = local.domain
@@ -120,11 +117,11 @@ module "cloud_run" {
   database_password           = module.cloud_sql.password
   keep_idle                   = local.config[local.env].keep_idle
   basic_auth                  = local.config[local.env].basic_auth
-  ate_api_url                 = local.config[local.env].ate_api ? data.terraform_remote_state.ate_api.outputs.url : null
-  ate_api_client_id           = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.update_your_capital_schemes_client_id : null
-  ate_api_server_metadata_url = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.oidc_server_metadata_url : null
-  ate_api_issuer              = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.issuer : null
-  ate_api_audience            = local.config[local.env].ate_api ? data.terraform_remote_state.identity.outputs.resource_server_identifier : null
+  ate_api_url                 = data.terraform_remote_state.ate_api.outputs.url
+  ate_api_client_id           = data.terraform_remote_state.identity.outputs.update_your_capital_schemes_client_id
+  ate_api_server_metadata_url = data.terraform_remote_state.identity.outputs.oidc_server_metadata_url
+  ate_api_issuer              = data.terraform_remote_state.identity.outputs.issuer
+  ate_api_audience            = data.terraform_remote_state.identity.outputs.resource_server_identifier
   monitoring                  = local.config[local.env].monitoring
   domain                      = local.config[local.env].domain
 

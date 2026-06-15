@@ -133,32 +133,31 @@ class OAuthExtension(OAuth):  # type: ignore
             },
         )
 
-        if "ATE_URL" in app.config:
-            access_token_params = {"audience": app.config["ATE_AUDIENCE"]}
-            self.register(
-                name="ate",
-                client_cls=_ClientAccessTokenParamsAsyncFlaskOAuth2App,
-                fetch_token=self._fetch_ate_token,
-                update_token=self._update_ate_token,
-                client_id=app.config["ATE_CLIENT_ID"],
-                client_secret=app.config["ATE_CLIENT_SECRET"].encode(),
-                server_metadata_url=app.config["ATE_SERVER_METADATA_URL"],
-                access_token_params=access_token_params,
-                api_base_url=app.config["ATE_URL"],
-                client_kwargs={
-                    # Workaround: https://github.com/authlib/authlib/issues/780
-                    "grant_type": "client_credentials",
-                    "token_endpoint_auth_method": _ExpiresInPrivateKeyJWT(
-                        # Workaround: https://github.com/authlib/authlib/issues/730
-                        token_endpoint=app.config["ATE_ISSUER"],
-                        expires_in=60,
-                    ),
-                    # Workaround: https://github.com/authlib/authlib/issues/783
-                    "access_token_params": access_token_params,
-                    "http2": True,
-                    "timeout": Timeout(10),
-                },
-            )
+        access_token_params = {"audience": app.config["ATE_AUDIENCE"]}
+        self.register(
+            name="ate",
+            client_cls=_ClientAccessTokenParamsAsyncFlaskOAuth2App,
+            fetch_token=self._fetch_ate_token,
+            update_token=self._update_ate_token,
+            client_id=app.config["ATE_CLIENT_ID"],
+            client_secret=app.config["ATE_CLIENT_SECRET"].encode(),
+            server_metadata_url=app.config["ATE_SERVER_METADATA_URL"],
+            access_token_params=access_token_params,
+            api_base_url=app.config["ATE_URL"],
+            client_kwargs={
+                # Workaround: https://github.com/authlib/authlib/issues/780
+                "grant_type": "client_credentials",
+                "token_endpoint_auth_method": _ExpiresInPrivateKeyJWT(
+                    # Workaround: https://github.com/authlib/authlib/issues/730
+                    token_endpoint=app.config["ATE_ISSUER"],
+                    expires_in=60,
+                ),
+                # Workaround: https://github.com/authlib/authlib/issues/783
+                "access_token_params": access_token_params,
+                "http2": True,
+                "timeout": Timeout(10),
+            },
+        )
 
     async def _fetch_ate_token(self, request: Request) -> OAuth2Token:
         if not self._ate_token:

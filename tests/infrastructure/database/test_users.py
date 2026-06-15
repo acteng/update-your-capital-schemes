@@ -2,27 +2,16 @@ import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, sessionmaker
 
-from schemes.domain.authorities import Authority
 from schemes.domain.users import User
 from schemes.infrastructure.database import UserEntity
-from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
 from schemes.infrastructure.database.users import DatabaseUserRepository
 
 
 class TestDatabaseUserRepository:
-    @pytest.fixture(name="authorities")
-    def authorities_fixture(self, session_maker: sessionmaker[Session]) -> DatabaseAuthorityRepository:
-        repository: DatabaseAuthorityRepository = DatabaseAuthorityRepository(session_maker)
-        return repository
-
     @pytest.fixture(name="users")
     def users_fixture(self, session_maker: sessionmaker[Session]) -> DatabaseUserRepository:
         repository: DatabaseUserRepository = DatabaseUserRepository(session_maker)
         return repository
-
-    @pytest.fixture(name="authority", autouse=True)
-    async def authority_fixture(self, authorities: DatabaseAuthorityRepository) -> None:
-        await authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
 
     def test_add_users(self, users: DatabaseUserRepository, session_maker: sessionmaker[Session]) -> None:
         users.add(

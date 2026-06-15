@@ -8,114 +8,51 @@ from tests.e2e.api_client import (
     CapitalSchemeMilestonesModel,
     FundingProgrammeModel,
 )
-from tests.e2e.app_client import AppClient, AuthorityRepr, MilestoneRevisionRepr, UserRepr
-from tests.e2e.builders import build_capital_scheme_model, build_scheme
+from tests.e2e.app_client import AppClient, UserRepr
+from tests.e2e.builders import build_capital_scheme_model
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_scheme_milestones(
-    api: bool, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
-) -> None:
-    if api:
-        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
-        api_client.add_authorities(
-            AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
-        )
-        api_client.add_schemes(
-            build_capital_scheme_model(
-                reference="ATE00001",
-                name="Wirral Package",
-                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
-                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
-                milestones=CapitalSchemeMilestonesModel(
-                    current_milestone=None,
-                    items=[
-                        CapitalSchemeMilestoneModel(
-                            milestone="feasibility design completed",
-                            observation_type="actual",
-                            status_date="2020-11-30",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="preliminary design completed",
-                            observation_type="actual",
-                            status_date="2022-06-30",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="detailed design completed",
-                            observation_type="actual",
-                            status_date="2022-06-30",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="construction started",
-                            observation_type="planned",
-                            status_date="2023-06-05",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="construction completed",
-                            observation_type="planned",
-                            status_date="2023-08-31",
-                            source="ATF4 bid",
-                        ),
-                    ],
-                ),
-            )
-        )
-    else:
-        app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-        app_client.add_schemes(
-            build_scheme(
-                id_=1,
-                reference="ATE00001",
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                milestone_revisions=[
-                    MilestoneRevisionRepr(
-                        id=1,
-                        effective_date_from="2020-01-01",
-                        effective_date_to=None,
+def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
+    api_client.add_schemes(
+        build_capital_scheme_model(
+            reference="ATE00001",
+            name="Wirral Package",
+            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            milestones=CapitalSchemeMilestonesModel(
+                current_milestone=None,
+                items=[
+                    CapitalSchemeMilestoneModel(
                         milestone="feasibility design completed",
                         observation_type="actual",
                         status_date="2020-11-30",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=2,
-                        effective_date_from="2020-01-01",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="preliminary design completed",
                         observation_type="actual",
                         status_date="2022-06-30",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=3,
-                        effective_date_from="2020-01-01",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="detailed design completed",
                         observation_type="actual",
                         status_date="2022-06-30",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=4,
-                        effective_date_from="2020-01-01",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="construction started",
                         observation_type="planned",
                         status_date="2023-06-05",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=5,
-                        effective_date_from="2020-01-01",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="construction completed",
                         observation_type="planned",
                         status_date="2023-08-31",
@@ -124,6 +61,7 @@ def test_scheme_milestones(
                 ],
             ),
         )
+    )
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
@@ -139,107 +77,44 @@ def test_scheme_milestones(
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
-def test_change_milestones(
-    api: bool, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
-) -> None:
+def test_change_milestones(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
     app_client.set_clock("2023-08-01T13:00:00")
-    if api:
-        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
-        api_client.add_authorities(
-            AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
-        )
-        api_client.add_schemes(
-            build_capital_scheme_model(
-                reference="ATE00001",
-                name="Wirral Package",
-                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
-                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
-                milestones=CapitalSchemeMilestonesModel(
-                    current_milestone=None,
-                    items=[
-                        CapitalSchemeMilestoneModel(
-                            milestone="feasibility design completed",
-                            observation_type="actual",
-                            status_date="2020-11-30",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="preliminary design completed",
-                            observation_type="actual",
-                            status_date="2022-06-30",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="detailed design completed",
-                            observation_type="actual",
-                            status_date="2022-06-30",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="construction started",
-                            observation_type="planned",
-                            status_date="2023-06-05",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="construction completed",
-                            observation_type="planned",
-                            status_date="2023-08-31",
-                            source="ATF4 bid",
-                        ),
-                    ],
-                ),
-            )
-        )
-    else:
-        app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-        app_client.add_schemes(
-            build_scheme(
-                id_=1,
-                reference="ATE00001",
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                milestone_revisions=[
-                    MilestoneRevisionRepr(
-                        id=1,
-                        effective_date_from="2020-01-01T12:00:00",
-                        effective_date_to=None,
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
+    api_client.add_schemes(
+        build_capital_scheme_model(
+            reference="ATE00001",
+            name="Wirral Package",
+            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            milestones=CapitalSchemeMilestonesModel(
+                current_milestone=None,
+                items=[
+                    CapitalSchemeMilestoneModel(
                         milestone="feasibility design completed",
                         observation_type="actual",
                         status_date="2020-11-30",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=2,
-                        effective_date_from="2020-01-01T12:00:00",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="preliminary design completed",
                         observation_type="actual",
                         status_date="2022-06-30",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=3,
-                        effective_date_from="2020-01-01T12:00:00",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="detailed design completed",
                         observation_type="actual",
                         status_date="2022-06-30",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=4,
-                        effective_date_from="2020-01-01T12:00:00",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="construction started",
                         observation_type="planned",
                         status_date="2023-06-05",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=5,
-                        effective_date_from="2020-01-01T12:00:00",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="construction completed",
                         observation_type="planned",
                         status_date="2023-08-31",
@@ -248,6 +123,7 @@ def test_change_milestones(
                 ],
             ),
         )
+    )
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
@@ -264,214 +140,86 @@ def test_change_milestones(
         scheme_page.milestones.milestones["Construction started"].actual == "5 Jul 2023"
         and scheme_page.milestones.milestones["Construction completed"].planned == "30 Sep 2023"
     )
-    if api:
-        assert api_client.get_scheme(reference="ATE00001").milestones.items == [
-            CapitalSchemeMilestoneModel(
-                milestone="feasibility design completed",
-                observation_type="actual",
-                status_date="2020-11-30",
-                source="ATF4 bid",
-            ),
-            CapitalSchemeMilestoneModel(
-                milestone="preliminary design completed",
-                observation_type="actual",
-                status_date="2022-06-30",
-                source="ATF4 bid",
-            ),
-            CapitalSchemeMilestoneModel(
-                milestone="detailed design completed",
-                observation_type="actual",
-                status_date="2022-06-30",
-                source="ATF4 bid",
-            ),
-            CapitalSchemeMilestoneModel(
-                milestone="construction started",
-                observation_type="planned",
-                status_date="2023-06-05",
-                source="ATF4 bid",
-            ),
-            CapitalSchemeMilestoneModel(
-                milestone="construction started",
-                observation_type="actual",
-                status_date="2023-07-05",
-                source="authority update",
-            ),
-            CapitalSchemeMilestoneModel(
-                milestone="construction completed",
-                observation_type="planned",
-                status_date="2023-09-30",
-                source="authority update",
-            ),
-        ]
-    else:
-        assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
-            MilestoneRevisionRepr(
-                id=1,
-                effective_date_from="2020-01-01T12:00:00",
-                effective_date_to=None,
-                milestone="feasibility design completed",
-                observation_type="actual",
-                status_date="2020-11-30",
-                source="ATF4 bid",
-            ),
-            MilestoneRevisionRepr(
-                id=2,
-                effective_date_from="2020-01-01T12:00:00",
-                effective_date_to=None,
-                milestone="preliminary design completed",
-                observation_type="actual",
-                status_date="2022-06-30",
-                source="ATF4 bid",
-            ),
-            MilestoneRevisionRepr(
-                id=3,
-                effective_date_from="2020-01-01T12:00:00",
-                effective_date_to=None,
-                milestone="detailed design completed",
-                observation_type="actual",
-                status_date="2022-06-30",
-                source="ATF4 bid",
-            ),
-            MilestoneRevisionRepr(
-                id=4,
-                effective_date_from="2020-01-01T12:00:00",
-                effective_date_to=None,
-                milestone="construction started",
-                observation_type="planned",
-                status_date="2023-06-05",
-                source="ATF4 bid",
-            ),
-            MilestoneRevisionRepr(
-                id=5,
-                effective_date_from="2020-01-01T12:00:00",
-                effective_date_to="2023-08-01T13:00:00",
-                milestone="construction completed",
-                observation_type="planned",
-                status_date="2023-08-31",
-                source="ATF4 bid",
-            ),
-            MilestoneRevisionRepr(
-                id=6,
-                effective_date_from="2023-08-01T13:00:00",
-                effective_date_to=None,
-                milestone="construction started",
-                observation_type="actual",
-                status_date="2023-07-05",
-                source="authority update",
-            ),
-            MilestoneRevisionRepr(
-                id=7,
-                effective_date_from="2023-08-01T13:00:00",
-                effective_date_to=None,
-                milestone="construction completed",
-                observation_type="planned",
-                status_date="2023-09-30",
-                source="authority update",
-            ),
-        ]
+    assert api_client.get_scheme(reference="ATE00001").milestones.items == [
+        CapitalSchemeMilestoneModel(
+            milestone="feasibility design completed",
+            observation_type="actual",
+            status_date="2020-11-30",
+            source="ATF4 bid",
+        ),
+        CapitalSchemeMilestoneModel(
+            milestone="preliminary design completed",
+            observation_type="actual",
+            status_date="2022-06-30",
+            source="ATF4 bid",
+        ),
+        CapitalSchemeMilestoneModel(
+            milestone="detailed design completed",
+            observation_type="actual",
+            status_date="2022-06-30",
+            source="ATF4 bid",
+        ),
+        CapitalSchemeMilestoneModel(
+            milestone="construction started",
+            observation_type="planned",
+            status_date="2023-06-05",
+            source="ATF4 bid",
+        ),
+        CapitalSchemeMilestoneModel(
+            milestone="construction started",
+            observation_type="actual",
+            status_date="2023-07-05",
+            source="authority update",
+        ),
+        CapitalSchemeMilestoneModel(
+            milestone="construction completed",
+            observation_type="planned",
+            status_date="2023-09-30",
+            source="authority update",
+        ),
+    ]
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_cannot_change_milestones_when_error(
-    api: bool, app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
+    app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
-    if api:
-        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
-        api_client.add_authorities(
-            AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
-        )
-        api_client.add_schemes(
-            build_capital_scheme_model(
-                reference="ATE00001",
-                name="Wirral Package",
-                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
-                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
-                milestones=CapitalSchemeMilestonesModel(
-                    current_milestone=None,
-                    items=[
-                        CapitalSchemeMilestoneModel(
-                            milestone="feasibility design completed",
-                            observation_type="actual",
-                            status_date="2020-11-30",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="preliminary design completed",
-                            observation_type="actual",
-                            status_date="2022-06-30",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="detailed design completed",
-                            observation_type="actual",
-                            status_date="2022-06-30",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="construction started",
-                            observation_type="planned",
-                            status_date="2023-06-05",
-                            source="ATF4 bid",
-                        ),
-                        CapitalSchemeMilestoneModel(
-                            milestone="construction completed",
-                            observation_type="planned",
-                            status_date="2023-08-31",
-                            source="ATF4 bid",
-                        ),
-                    ],
-                ),
-            )
-        )
-    else:
-        app_client.add_authorities(AuthorityRepr(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
-        app_client.add_schemes(
-            build_scheme(
-                id_=1,
-                reference="ATE00001",
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                milestone_revisions=[
-                    MilestoneRevisionRepr(
-                        id=1,
-                        effective_date_from="2020-01-01T12:00:00",
-                        effective_date_to=None,
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
+    api_client.add_schemes(
+        build_capital_scheme_model(
+            reference="ATE00001",
+            name="Wirral Package",
+            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
+            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            milestones=CapitalSchemeMilestonesModel(
+                current_milestone=None,
+                items=[
+                    CapitalSchemeMilestoneModel(
                         milestone="feasibility design completed",
                         observation_type="actual",
                         status_date="2020-11-30",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=2,
-                        effective_date_from="2020-01-01T12:00:00",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="preliminary design completed",
                         observation_type="actual",
                         status_date="2022-06-30",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=3,
-                        effective_date_from="2020-01-01T12:00:00",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="detailed design completed",
                         observation_type="actual",
                         status_date="2022-06-30",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=4,
-                        effective_date_from="2020-01-01T12:00:00",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="construction started",
                         observation_type="planned",
                         status_date="2023-06-05",
                         source="ATF4 bid",
                     ),
-                    MilestoneRevisionRepr(
-                        id=5,
-                        effective_date_from="2020-01-01T12:00:00",
-                        effective_date_to=None,
+                    CapitalSchemeMilestoneModel(
                         milestone="construction completed",
                         observation_type="planned",
                         status_date="2023-08-31",
@@ -480,6 +228,7 @@ def test_cannot_change_milestones_when_error(
                 ],
             ),
         )
+    )
     app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
@@ -501,84 +250,35 @@ def test_cannot_change_milestones_when_error(
         == "Error: Construction completed planned date must be a real date"
         and change_milestone_page.form.construction_completed_planned.value == "x x x"
     )
-    if api:
-        assert api_client.get_scheme(reference="ATE00001").milestones.items == [
-            CapitalSchemeMilestoneModel(
-                milestone="feasibility design completed",
-                observation_type="actual",
-                status_date="2020-11-30",
-                source="ATF4 bid",
-            ),
-            CapitalSchemeMilestoneModel(
-                milestone="preliminary design completed",
-                observation_type="actual",
-                status_date="2022-06-30",
-                source="ATF4 bid",
-            ),
-            CapitalSchemeMilestoneModel(
-                milestone="detailed design completed",
-                observation_type="actual",
-                status_date="2022-06-30",
-                source="ATF4 bid",
-            ),
-            CapitalSchemeMilestoneModel(
-                milestone="construction started",
-                observation_type="planned",
-                status_date="2023-06-05",
-                source="ATF4 bid",
-            ),
-            CapitalSchemeMilestoneModel(
-                milestone="construction completed",
-                observation_type="planned",
-                status_date="2023-08-31",
-                source="ATF4 bid",
-            ),
-        ]
-    else:
-        assert app_client.get_scheme(reference="ATE00001").milestone_revisions == [
-            MilestoneRevisionRepr(
-                id=1,
-                effective_date_from="2020-01-01T12:00:00",
-                effective_date_to=None,
-                milestone="feasibility design completed",
-                observation_type="actual",
-                status_date="2020-11-30",
-                source="ATF4 bid",
-            ),
-            MilestoneRevisionRepr(
-                id=2,
-                effective_date_from="2020-01-01T12:00:00",
-                effective_date_to=None,
-                milestone="preliminary design completed",
-                observation_type="actual",
-                status_date="2022-06-30",
-                source="ATF4 bid",
-            ),
-            MilestoneRevisionRepr(
-                id=3,
-                effective_date_from="2020-01-01T12:00:00",
-                effective_date_to=None,
-                milestone="detailed design completed",
-                observation_type="actual",
-                status_date="2022-06-30",
-                source="ATF4 bid",
-            ),
-            MilestoneRevisionRepr(
-                id=4,
-                effective_date_from="2020-01-01T12:00:00",
-                effective_date_to=None,
-                milestone="construction started",
-                observation_type="planned",
-                status_date="2023-06-05",
-                source="ATF4 bid",
-            ),
-            MilestoneRevisionRepr(
-                id=5,
-                effective_date_from="2020-01-01T12:00:00",
-                effective_date_to=None,
-                milestone="construction completed",
-                observation_type="planned",
-                status_date="2023-08-31",
-                source="ATF4 bid",
-            ),
-        ]
+    assert api_client.get_scheme(reference="ATE00001").milestones.items == [
+        CapitalSchemeMilestoneModel(
+            milestone="feasibility design completed",
+            observation_type="actual",
+            status_date="2020-11-30",
+            source="ATF4 bid",
+        ),
+        CapitalSchemeMilestoneModel(
+            milestone="preliminary design completed",
+            observation_type="actual",
+            status_date="2022-06-30",
+            source="ATF4 bid",
+        ),
+        CapitalSchemeMilestoneModel(
+            milestone="detailed design completed",
+            observation_type="actual",
+            status_date="2022-06-30",
+            source="ATF4 bid",
+        ),
+        CapitalSchemeMilestoneModel(
+            milestone="construction started",
+            observation_type="planned",
+            status_date="2023-06-05",
+            source="ATF4 bid",
+        ),
+        CapitalSchemeMilestoneModel(
+            milestone="construction completed",
+            observation_type="planned",
+            status_date="2023-08-31",
+            source="ATF4 bid",
+        ),
+    ]

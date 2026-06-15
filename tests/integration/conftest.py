@@ -49,6 +49,12 @@ def config_fixture() -> Mapping[str, Any]:
         "GOVUK_SERVER_METADATA_URL": "test",
         "GOVUK_PROFILE_URL": "test",
         "GOVUK_END_SESSION_ENDPOINT": "test",
+        "ATE_URL": "test",
+        "ATE_CLIENT_ID": "test",
+        "ATE_CLIENT_SECRET": "test",
+        "ATE_SERVER_METADATA_URL": "test",
+        "ATE_ISSUER": "test",
+        "ATE_AUDIENCE": "test",
     }
 
 

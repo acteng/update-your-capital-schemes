@@ -29,8 +29,6 @@ from schemes.domain.users import UserRepository
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository
 from schemes.infrastructure.api.schemes.schemes import ApiSchemeRepository
 from schemes.infrastructure.clock import Clock, FakeClock, SystemClock
-from schemes.infrastructure.database.authorities import DatabaseAuthorityRepository
-from schemes.infrastructure.database.schemes.schemes import DatabaseSchemeRepository
 from schemes.infrastructure.database.users import DatabaseUserRepository
 from schemes.oauth import OAuthExtension
 from schemes.sessions import RequestFilteringSessionInterface
@@ -91,8 +89,6 @@ def destroy_app(_app: Flask) -> None:
 
 
 def bindings(app: Flask) -> Callable[[Binder], None]:
-    api = "ATE_URL" in app.config
-
     def _bindings(binder: Binder) -> None:
         binder.bind(Flask, app)
         binder.bind(Config, app.config)
@@ -101,11 +97,9 @@ def bindings(app: Flask) -> Callable[[Binder], None]:
         binder.bind_to_constructor(ReportingWindowService, DefaultReportingWindowService)
         binder.bind_to_constructor(Engine, _create_engine)
         binder.bind_to_constructor(sessionmaker[Session], _create_session_maker)
-        binder.bind_to_constructor(
-            AuthorityRepository, _create_api_authority_repository if api else DatabaseAuthorityRepository
-        )
+        binder.bind_to_constructor(AuthorityRepository, _create_api_authority_repository)
         binder.bind_to_constructor(UserRepository, DatabaseUserRepository)
-        binder.bind_to_constructor(SchemeRepository, _create_api_scheme_repository if api else DatabaseSchemeRepository)
+        binder.bind_to_constructor(SchemeRepository, _create_api_scheme_repository)
 
     return _bindings
 

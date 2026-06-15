@@ -6,8 +6,7 @@ from werkzeug.datastructures import MultiDict
 
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.reviews import AuthorityReview, SchemeReviews
-from schemes.views.schemes.data_sources import DataSourceRepr
-from schemes.views.schemes.reviews import AuthorityReviewRepr, SchemeReviewContext, SchemeReviewForm
+from schemes.views.schemes.reviews import SchemeReviewContext, SchemeReviewForm
 
 
 @pytest.mark.usefixtures("app")
@@ -63,27 +62,3 @@ class TestSchemeReviewContext:
         context = SchemeReviewContext.from_domain(reviews)
 
         assert context.last_reviewed == datetime(2020, 1, 2)
-
-
-class TestAuthorityReviewRepr:
-    def test_from_domain(self) -> None:
-        authority_review = AuthorityReview(id_=1, review_date=datetime(2020, 1, 1, 12), source=DataSource.ATF4_BID)
-
-        authority_review_repr = AuthorityReviewRepr.from_domain(authority_review)
-
-        assert authority_review_repr == AuthorityReviewRepr(
-            id=1, review_date="2020-01-01T12:00:00", source=DataSourceRepr.ATF4_BID
-        )
-
-    def test_to_domain(self) -> None:
-        authority_review_repr = AuthorityReviewRepr(
-            id=1, review_date="2020-01-01T12:00:00", source=DataSourceRepr.ATF4_BID
-        )
-
-        authority_review = authority_review_repr.to_domain()
-
-        assert (
-            authority_review.id == 1
-            and authority_review.review_date == datetime(2020, 1, 1, 12)
-            and authority_review.source == DataSource.ATF4_BID
-        )

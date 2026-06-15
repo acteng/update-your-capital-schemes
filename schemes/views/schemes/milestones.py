@@ -2,17 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, datetime
-from enum import Enum, unique
 from typing import Any, Self
 
 from flask_wtf import FlaskForm
-from pydantic import BaseModel
 from wtforms import FormField
 from wtforms.form import BaseForm, Form
 
-from schemes.dicts import inverse_dict
-from schemes.domain.dates import DateRange
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision, SchemeMilestones
+from schemes.domain.schemes.milestones import Milestone, SchemeMilestones
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.schemes import Scheme
 from schemes.views import forms
@@ -22,8 +18,6 @@ from schemes.views.forms import (
     MultivalueOptional,
     RemoveLeadingZerosGovDateInput,
 )
-from schemes.views.schemes.data_sources import DataSourceRepr
-from schemes.views.schemes.observations import ObservationTypeRepr
 
 
 @dataclass(frozen=True)
@@ -189,80 +183,3 @@ class ChangeMilestoneDatesContext:
         assert name is not None
 
         return cls(reference=scheme.reference, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme, now))
-
-
-@unique
-class MilestoneRepr(str, Enum):
-    PUBLIC_CONSULTATION_COMPLETED = "public consultation completed"
-    FEASIBILITY_DESIGN_STARTED = "feasibility design started"
-    FEASIBILITY_DESIGN_COMPLETED = "feasibility design completed"
-    PRELIMINARY_DESIGN_COMPLETED = "preliminary design completed"
-    OUTLINE_DESIGN_COMPLETED = "outline design completed"
-    DETAILED_DESIGN_COMPLETED = "detailed design completed"
-    CONSTRUCTION_STARTED = "construction started"
-    CONSTRUCTION_COMPLETED = "construction completed"
-    FUNDING_COMPLETED = "funding completed"
-    NOT_PROGRESSED = "not progressed"
-    SUPERSEDED = "superseded"
-    REMOVED = "removed"
-
-    @classmethod
-    def from_domain(cls, milestone: Milestone) -> MilestoneRepr:
-        return cls._members()[milestone]
-
-    def to_domain(self) -> Milestone:
-        return inverse_dict(self._members())[self]
-
-    @staticmethod
-    def _members() -> dict[Milestone, MilestoneRepr]:
-        return {
-            Milestone.PUBLIC_CONSULTATION_COMPLETED: MilestoneRepr.PUBLIC_CONSULTATION_COMPLETED,
-            Milestone.FEASIBILITY_DESIGN_STARTED: MilestoneRepr.FEASIBILITY_DESIGN_STARTED,
-            Milestone.FEASIBILITY_DESIGN_COMPLETED: MilestoneRepr.FEASIBILITY_DESIGN_COMPLETED,
-            Milestone.PRELIMINARY_DESIGN_COMPLETED: MilestoneRepr.PRELIMINARY_DESIGN_COMPLETED,
-            Milestone.OUTLINE_DESIGN_COMPLETED: MilestoneRepr.OUTLINE_DESIGN_COMPLETED,
-            Milestone.DETAILED_DESIGN_COMPLETED: MilestoneRepr.DETAILED_DESIGN_COMPLETED,
-            Milestone.CONSTRUCTION_STARTED: MilestoneRepr.CONSTRUCTION_STARTED,
-            Milestone.CONSTRUCTION_COMPLETED: MilestoneRepr.CONSTRUCTION_COMPLETED,
-            Milestone.FUNDING_COMPLETED: MilestoneRepr.FUNDING_COMPLETED,
-            Milestone.NOT_PROGRESSED: MilestoneRepr.NOT_PROGRESSED,
-            Milestone.SUPERSEDED: MilestoneRepr.SUPERSEDED,
-            Milestone.REMOVED: MilestoneRepr.REMOVED,
-        }
-
-
-class MilestoneRevisionRepr(BaseModel):
-    effective_date_from: str
-    effective_date_to: str | None
-    milestone: MilestoneRepr
-    observation_type: ObservationTypeRepr
-    status_date: str
-    source: DataSourceRepr
-    id: int | None = None
-
-    @classmethod
-    def from_domain(cls, milestone_revision: MilestoneRevision) -> Self:
-        return cls(
-            id=milestone_revision.id,
-            effective_date_from=milestone_revision.effective.date_from.isoformat(),
-            effective_date_to=(
-                milestone_revision.effective.date_to.isoformat() if milestone_revision.effective.date_to else None
-            ),
-            milestone=MilestoneRepr.from_domain(milestone_revision.milestone),
-            observation_type=ObservationTypeRepr.from_domain(milestone_revision.observation_type),
-            status_date=milestone_revision.status_date.isoformat(),
-            source=DataSourceRepr.from_domain(milestone_revision.source),
-        )
-
-    def to_domain(self) -> MilestoneRevision:
-        return MilestoneRevision(
-            id_=self.id,
-            effective=DateRange(
-                date_from=datetime.fromisoformat(self.effective_date_from),
-                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
-            ),
-            milestone=self.milestone.to_domain(),
-            observation_type=self.observation_type.to_domain(),
-            status_date=date.fromisoformat(self.status_date),
-            source=self.source.to_domain(),
-        )

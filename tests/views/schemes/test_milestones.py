@@ -10,19 +10,15 @@ from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision, SchemeMilestones
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.overview import SchemeType
-from schemes.views.schemes.data_sources import DataSourceRepr
 from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,
     ChangeMilestoneDatesForm,
     MilestoneContext,
     MilestoneDateField,
     MilestoneDatesForm,
-    MilestoneRepr,
-    MilestoneRevisionRepr,
     SchemeMilestoneRowContext,
     SchemeMilestonesContext,
 )
-from schemes.views.schemes.observations import ObservationTypeRepr
 from tests.builders import build_scheme
 
 
@@ -715,103 +711,3 @@ class TestChangeMilestoneDatesForm:
         form.validate()
 
         assert not form.errors
-
-
-class TestMilestoneRevisionRepr:
-    def test_from_domain(self) -> None:
-        milestone_revision = MilestoneRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13)),
-            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-            observation_type=ObservationType.ACTUAL,
-            status_date=date(2020, 1, 1),
-            source=DataSource.ATF4_BID,
-        )
-
-        milestone_revision_repr = MilestoneRevisionRepr.from_domain(milestone_revision)
-
-        assert milestone_revision_repr == MilestoneRevisionRepr(
-            id=1,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to="2020-02-01T13:00:00",
-            milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
-            observation_type=ObservationTypeRepr.ACTUAL,
-            status_date="2020-01-01",
-            source=DataSourceRepr.ATF4_BID,
-        )
-
-    def test_from_domain_when_no_effective_date_to(self) -> None:
-        milestone_revision = MilestoneRevision(
-            id_=1,
-            effective=DateRange(datetime(2020, 1, 1), None),
-            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-            observation_type=ObservationType.ACTUAL,
-            status_date=date(2020, 1, 1),
-            source=DataSource.ATF4_BID,
-        )
-
-        milestone_revision_repr = MilestoneRevisionRepr.from_domain(milestone_revision)
-
-        assert milestone_revision_repr.effective_date_to is None
-
-    def test_to_domain(self) -> None:
-        milestone_revision_repr = MilestoneRevisionRepr(
-            id=1,
-            effective_date_from="2020-01-01T12:00:00",
-            effective_date_to="2020-02-01T13:00:00",
-            milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
-            observation_type=ObservationTypeRepr.ACTUAL,
-            status_date="2020-01-01",
-            source=DataSourceRepr.ATF4_BID,
-        )
-
-        milestone_revision = milestone_revision_repr.to_domain()
-
-        assert (
-            milestone_revision.id == 1
-            and milestone_revision.effective == DateRange(datetime(2020, 1, 1, 12), datetime(2020, 2, 1, 13))
-            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision.observation_type == ObservationType.ACTUAL
-            and milestone_revision.status_date == date(2020, 1, 1)
-            and milestone_revision.source == DataSource.ATF4_BID
-        )
-
-    def test_to_domain_when_no_effective_date_to(self) -> None:
-        milestone_revision_repr = MilestoneRevisionRepr(
-            id=1,
-            effective_date_from="2020-01-01",
-            effective_date_to=None,
-            milestone=MilestoneRepr.DETAILED_DESIGN_COMPLETED,
-            observation_type=ObservationTypeRepr.ACTUAL,
-            status_date="2020-01-01",
-            source=DataSourceRepr.ATF4_BID,
-        )
-
-        milestone_revision = milestone_revision_repr.to_domain()
-
-        assert milestone_revision.effective.date_to is None
-
-
-@pytest.mark.parametrize(
-    "milestone, milestone_repr",
-    [
-        (Milestone.PUBLIC_CONSULTATION_COMPLETED, "public consultation completed"),
-        (Milestone.FEASIBILITY_DESIGN_STARTED, "feasibility design started"),
-        (Milestone.FEASIBILITY_DESIGN_COMPLETED, "feasibility design completed"),
-        (Milestone.PRELIMINARY_DESIGN_COMPLETED, "preliminary design completed"),
-        (Milestone.OUTLINE_DESIGN_COMPLETED, "outline design completed"),
-        (Milestone.DETAILED_DESIGN_COMPLETED, "detailed design completed"),
-        (Milestone.CONSTRUCTION_STARTED, "construction started"),
-        (Milestone.CONSTRUCTION_COMPLETED, "construction completed"),
-        (Milestone.FUNDING_COMPLETED, "funding completed"),
-        (Milestone.NOT_PROGRESSED, "not progressed"),
-        (Milestone.SUPERSEDED, "superseded"),
-        (Milestone.REMOVED, "removed"),
-    ],
-)
-class TestMilestoneRepr:
-    def test_from_domain(self, milestone: Milestone, milestone_repr: str) -> None:
-        assert MilestoneRepr.from_domain(milestone).value == milestone_repr
-
-    def test_to_domain(self, milestone: Milestone, milestone_repr: str) -> None:
-        assert MilestoneRepr(milestone_repr).to_domain() == milestone

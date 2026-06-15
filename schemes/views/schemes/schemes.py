@@ -1,11 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-from logging import Logger
-from typing import Any, Self
+from typing import Self
 
 import inject
-from flask import Blueprint, Response, abort, flash, redirect, render_template, request, session, url_for
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from flask import Blueprint, Response, abort, flash, redirect, render_template, session, url_for
 from werkzeug import Response as BaseResponse
 
 from schemes.dicts import as_shallow_dict
@@ -15,41 +13,22 @@ from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes,
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
-from schemes.views.auth.api_key import async_api_key_auth
 from schemes.views.auth.bearer import async_bearer_auth
 from schemes.views.schemes.funding import (
-    BidStatusRevisionRepr,
     ChangeSpendToDateContext,
     ChangeSpendToDateForm,
-    FinancialRevisionRepr,
     SchemeFundingContext,
 )
 from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,
     ChangeMilestoneDatesForm,
     MilestoneContext,
-    MilestoneRevisionRepr,
     SchemeMilestonesContext,
 )
-from schemes.views.schemes.outputs import OutputRevisionRepr, SchemeOutputsContext
-from schemes.views.schemes.overview import OverviewRevisionRepr
-from schemes.views.schemes.reviews import AuthorityReviewRepr, SchemeReviewContext, SchemeReviewForm
+from schemes.views.schemes.outputs import SchemeOutputsContext
+from schemes.views.schemes.reviews import SchemeReviewContext, SchemeReviewForm
 
 bp = Blueprint("schemes", __name__)
-
-
-@bp.post("")
-@async_api_key_auth
-@inject.autoparams()
-async def add_schemes(schemes: SchemeRepository, logger: Logger) -> Response:
-    try:
-        schemes_repr = [SchemeRepr.model_validate(item) for item in request.json]
-    except ValidationError as error:
-        logger.error(error)
-        return abort(400)
-
-    await schemes.add(*[scheme_repr.to_domain() for scheme_repr in schemes_repr])
-    return Response(status=201)
 
 
 @bp.get("")
@@ -145,14 +124,9 @@ class SchemesContext:
 
 
 @bp.get("<reference>")
-async def get(reference: str) -> Response | dict[str, Any]:
-    json = request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html
-    return await get_json(reference) if json else await get_html(reference)
-
-
 @async_bearer_auth
 @inject.autoparams()
-async def get_html(
+async def get(
     reference: str,
     clock: Clock,
     reporting_window_service: ReportingWindowService,
@@ -178,15 +152,6 @@ async def get_html(
     context = SchemeContext.from_domain(reporting_window, authority, scheme)
     context.review.form.validate_on_submit()
     return Response(render_template("scheme/index.html", **as_shallow_dict(context)))
-
-
-@async_api_key_auth
-@inject.autoparams("schemes")
-async def get_json(reference: str, schemes: SchemeRepository) -> dict[str, Any]:
-    scheme = await schemes.get(reference)
-    assert scheme
-
-    return SchemeRepr.from_domain(scheme).model_dump()
 
 
 @dataclass(frozen=True)
@@ -369,84 +334,10 @@ async def review(clock: Clock, users: UserRepository, schemes: SchemeRepository,
     form = SchemeReviewForm()
 
     if not form.validate():
-        return await get_html(reference)
+        return await get(reference)
 
     form.update_domain(scheme.reviews, clock.now)
     await schemes.update(scheme)
 
     flash(f"{scheme.overview.name} has been reviewed")
     return redirect(url_for("schemes.index"))
-
-
-@bp.delete("")
-@async_api_key_auth
-@inject.autoparams()
-async def clear(schemes: SchemeRepository) -> Response:
-    await schemes.clear()
-    return Response(status=204)
-
-
-class SchemeRepr(BaseModel):
-    id: int
-    reference: str
-    overview_revisions: list[OverviewRevisionRepr] = Field(default_factory=list)
-    bid_status_revisions: list[BidStatusRevisionRepr] = Field(default_factory=list)
-    financial_revisions: list[FinancialRevisionRepr] = Field(default_factory=list)
-    milestone_revisions: list[MilestoneRevisionRepr] = Field(default_factory=list)
-    output_revisions: list[OutputRevisionRepr] = Field(default_factory=list)
-    authority_reviews: list[AuthorityReviewRepr] = Field(default_factory=list)
-
-    model_config = ConfigDict(extra="forbid")
-
-    @classmethod
-    def from_domain(cls, scheme: Scheme) -> Self:
-        return cls(
-            id=scheme.id,
-            reference=scheme.reference,
-            overview_revisions=[
-                OverviewRevisionRepr.from_domain(overview_revision)
-                for overview_revision in scheme.overview.overview_revisions
-            ],
-            bid_status_revisions=[
-                BidStatusRevisionRepr.from_domain(bid_status_revision)
-                for bid_status_revision in scheme.funding.bid_status_revisions
-            ],
-            financial_revisions=[
-                FinancialRevisionRepr.from_domain(financial_revision)
-                for financial_revision in scheme.funding.financial_revisions
-            ],
-            milestone_revisions=[
-                MilestoneRevisionRepr.from_domain(milestone_revision)
-                for milestone_revision in scheme.milestones.milestone_revisions
-            ],
-            output_revisions=[
-                OutputRevisionRepr.from_domain(output_revision) for output_revision in scheme.outputs.output_revisions
-            ],
-            authority_reviews=[
-                AuthorityReviewRepr.from_domain(authority_review)
-                for authority_review in scheme.reviews.authority_reviews
-            ],
-        )
-
-    def to_domain(self) -> Scheme:
-        scheme = Scheme(id_=self.id, reference=self.reference)
-
-        for overview_revision_repr in self.overview_revisions:
-            scheme.overview.update_overviews(overview_revision_repr.to_domain())
-
-        for bid_status_revision_repr in self.bid_status_revisions:
-            scheme.funding.update_bid_status(bid_status_revision_repr.to_domain())
-
-        for financial_revision_repr in self.financial_revisions:
-            scheme.funding.update_financial(financial_revision_repr.to_domain())
-
-        for milestone_revision_repr in self.milestone_revisions:
-            scheme.milestones.update_milestone(milestone_revision_repr.to_domain())
-
-        for output_revision_repr in self.output_revisions:
-            scheme.outputs.update_output(output_revision_repr.to_domain())
-
-        for authority_review_repr in self.authority_reviews:
-            scheme.reviews.update_authority_review(authority_review_repr.to_domain())
-
-        return scheme

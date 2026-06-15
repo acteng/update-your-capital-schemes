@@ -70,12 +70,8 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.register_blueprint(legal.bp)
     app.register_blueprint(bearer.bp, url_prefix="/auth")
     app.register_blueprint(authorities.bp, url_prefix="/authorities")
-    csrf.exempt(authorities.add)
     csrf.exempt(authorities.add_users)
-    csrf.exempt(authorities.clear)
     app.register_blueprint(schemes.bp, url_prefix="/schemes")
-    csrf.exempt(schemes.add_schemes)
-    csrf.exempt(schemes.clear)
     app.register_blueprint(users.bp, url_prefix="/users")
     csrf.exempt(users.clear)
 

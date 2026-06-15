@@ -2,20 +2,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum, unique
 from typing import Self
 
 from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovTextInput
-from pydantic import BaseModel
 from wtforms.validators import InputRequired, NumberRange, ValidationError
 
-from schemes.dicts import inverse_dict
-from schemes.domain.dates import DateRange
-from schemes.domain.schemes.funding import BidStatus, BidStatusRevision, FinancialRevision, FinancialType, SchemeFunding
+from schemes.domain.schemes.funding import SchemeFunding
 from schemes.domain.schemes.schemes import Scheme
 from schemes.views.forms import CustomMessageIntegerField
-from schemes.views.schemes.data_sources import DataSourceRepr
 
 
 @dataclass(frozen=True)
@@ -79,118 +74,4 @@ class ChangeSpendToDateContext:
             name=name,
             funding_allocation=scheme.funding.funding_allocation,
             form=ChangeSpendToDateForm.from_domain(scheme.funding),
-        )
-
-
-@unique
-class BidStatusRepr(str, Enum):
-    SUBMITTED = "submitted"
-    FUNDED = "funded"
-    NOT_FUNDED = "not funded"
-    SPLIT = "split"
-    DELETED = "deleted"
-
-    @classmethod
-    def from_domain(cls, bid_status: BidStatus) -> BidStatusRepr:
-        return cls._members()[bid_status]
-
-    def to_domain(self) -> BidStatus:
-        return inverse_dict(self._members())[self]
-
-    @staticmethod
-    def _members() -> dict[BidStatus, BidStatusRepr]:
-        return {
-            BidStatus.SUBMITTED: BidStatusRepr.SUBMITTED,
-            BidStatus.FUNDED: BidStatusRepr.FUNDED,
-            BidStatus.NOT_FUNDED: BidStatusRepr.NOT_FUNDED,
-            BidStatus.SPLIT: BidStatusRepr.SPLIT,
-            BidStatus.DELETED: BidStatusRepr.DELETED,
-        }
-
-
-class BidStatusRevisionRepr(BaseModel):
-    effective_date_from: str
-    effective_date_to: str | None
-    status: BidStatusRepr
-    id: int | None = None
-
-    @classmethod
-    def from_domain(cls, bid_status_revision: BidStatusRevision) -> Self:
-        return cls(
-            id=bid_status_revision.id,
-            effective_date_from=bid_status_revision.effective.date_from.isoformat(),
-            effective_date_to=(
-                bid_status_revision.effective.date_to.isoformat() if bid_status_revision.effective.date_to else None
-            ),
-            status=BidStatusRepr.from_domain(bid_status_revision.status),
-        )
-
-    def to_domain(self) -> BidStatusRevision:
-        return BidStatusRevision(
-            id_=self.id,
-            effective=DateRange(
-                date_from=datetime.fromisoformat(self.effective_date_from),
-                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
-            ),
-            status=self.status.to_domain(),
-        )
-
-
-@unique
-class FinancialTypeRepr(str, Enum):
-    EXPECTED_COST = "expected cost"
-    ACTUAL_COST = "actual cost"
-    FUNDING_ALLOCATION = "funding allocation"
-    SPEND_TO_DATE = "spend to date"
-    FUNDING_REQUEST = "funding request"
-
-    @classmethod
-    def from_domain(cls, financial_type: FinancialType) -> FinancialTypeRepr:
-        return cls._members()[financial_type]
-
-    def to_domain(self) -> FinancialType:
-        return inverse_dict(self._members())[self]
-
-    @staticmethod
-    def _members() -> dict[FinancialType, FinancialTypeRepr]:
-        return {
-            FinancialType.EXPECTED_COST: FinancialTypeRepr.EXPECTED_COST,
-            FinancialType.ACTUAL_COST: FinancialTypeRepr.ACTUAL_COST,
-            FinancialType.FUNDING_ALLOCATION: FinancialTypeRepr.FUNDING_ALLOCATION,
-            FinancialType.SPEND_TO_DATE: FinancialTypeRepr.SPEND_TO_DATE,
-            FinancialType.FUNDING_REQUEST: FinancialTypeRepr.FUNDING_REQUEST,
-        }
-
-
-class FinancialRevisionRepr(BaseModel):
-    effective_date_from: str
-    effective_date_to: str | None
-    type: FinancialTypeRepr
-    amount: int
-    source: DataSourceRepr
-    id: int | None = None
-
-    @classmethod
-    def from_domain(cls, financial_revision: FinancialRevision) -> Self:
-        return cls(
-            id=financial_revision.id,
-            effective_date_from=financial_revision.effective.date_from.isoformat(),
-            effective_date_to=(
-                financial_revision.effective.date_to.isoformat() if financial_revision.effective.date_to else None
-            ),
-            type=FinancialTypeRepr.from_domain(financial_revision.type),
-            amount=financial_revision.amount,
-            source=DataSourceRepr.from_domain(financial_revision.source),
-        )
-
-    def to_domain(self) -> FinancialRevision:
-        return FinancialRevision(
-            id_=self.id,
-            effective=DateRange(
-                date_from=datetime.fromisoformat(self.effective_date_from),
-                date_to=datetime.fromisoformat(self.effective_date_to) if self.effective_date_to else None,
-            ),
-            type_=self.type.to_domain(),
-            amount=self.amount,
-            source=self.source.to_domain(),
         )

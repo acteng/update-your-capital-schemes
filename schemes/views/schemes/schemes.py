@@ -144,7 +144,7 @@ class SchemesContext:
 
 
 @bp.get("<reference>")
-async def get(reference: str) -> Response:
+async def get(reference: str) -> Response | dict[str, Any]:
     json = request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html
     return await get_json(reference) if json else await get_html(reference)
 
@@ -276,7 +276,9 @@ async def spend_to_date_form(reference: str, users: UserRepository, schemes: Sch
 @bp.post("<reference>/spend-to-date")
 @async_bearer_auth
 @inject.autoparams()
-async def spend_to_date(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
+async def spend_to_date(
+    clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str
+) -> str | BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])
     assert user
@@ -322,7 +324,9 @@ async def milestones_form(reference: str, clock: Clock, users: UserRepository, s
 @bp.post("<reference>/milestones")
 @async_bearer_auth
 @inject.autoparams()
-async def milestones(clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str) -> BaseResponse:
+async def milestones(
+    clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str
+) -> str | BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])
     assert user
@@ -364,7 +368,7 @@ async def review(clock: Clock, users: UserRepository, schemes: SchemeRepository,
     form = SchemeReviewForm()
 
     if not form.validate():
-        return await get(reference)
+        return await get_html(reference)
 
     form.update_domain(scheme.reviews, clock.now)
     await schemes.update(scheme)

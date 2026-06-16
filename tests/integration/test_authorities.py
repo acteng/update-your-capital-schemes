@@ -84,14 +84,16 @@ class TestAuthoritiesApi:
         assert user2 and user2.email == "obree@example.com" and user2.authority_abbreviation == "LIV"
 
     def test_cannot_add_users_when_no_credentials(self, users: UserRepository, client: FlaskClient) -> None:
-        response = client.post("/authorities/1/users", json=[{"email": "boardman@example.com"}])
+        response = client.post("/authorities/LIV/users", json=[{"email": "boardman@example.com"}])
 
         assert response.status_code == 401
         assert not users.get("boardman@example.com")
 
     def test_cannot_add_users_when_incorrect_credentials(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/users", headers={"Authorization": "API-Key obree"}, json=[{"email": "boardman@example.com"}]
+            "/authorities/LIV/users",
+            headers={"Authorization": "API-Key obree"},
+            json=[{"email": "boardman@example.com"}],
         )
 
         assert response.status_code == 401
@@ -99,7 +101,7 @@ class TestAuthoritiesApi:
 
     def test_cannot_add_users_with_invalid_repr(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/users",
+            "/authorities/LIV/users",
             headers={"Authorization": "API-Key boardman"},
             json=[{"email": "boardman@example.com", "foo": "bar"}],
         )
@@ -151,7 +153,7 @@ class TestAuthoritiesApiWhenDisabled:
 
     def test_cannot_add_users(self, users: UserRepository, client: FlaskClient) -> None:
         response = client.post(
-            "/authorities/1/users",
+            "/authorities/LIV/users",
             headers={"Authorization": "API-Key boardman"},
             json=[{"email": "boardman@example.com"}],
         )

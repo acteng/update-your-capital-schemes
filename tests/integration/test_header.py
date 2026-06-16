@@ -18,7 +18,8 @@ class TestHeaderWhenUnauthenticated:
 
 class TestHeaderWhenAuthenticated:
     @pytest.fixture(name="config", scope="class")
-    def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
+    @classmethod
+    def config_fixture(cls, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"GOVUK_PROFILE_URL": "https://example.com/profile"}
 
     @pytest.fixture(name="auth", autouse=True)

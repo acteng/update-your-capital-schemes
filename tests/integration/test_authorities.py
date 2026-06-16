@@ -10,7 +10,8 @@ from tests.integration.conftest import AsyncFlaskClient
 
 class TestAuthoritiesApi:
     @pytest.fixture(name="config", scope="class")
-    def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
+    @classmethod
+    def config_fixture(cls, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"API_KEY": "boardman"}
 
     async def test_add_authorities(self, authorities: AuthorityRepository, async_client: AsyncFlaskClient) -> None:

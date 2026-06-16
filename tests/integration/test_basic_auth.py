@@ -13,7 +13,8 @@ class TestBasicAuthWhenPublic:
 
 class TestBasicAuthWhenProtected:
     @pytest.fixture(name="config", scope="class")
-    def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
+    @classmethod
+    def config_fixture(cls, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"BASIC_AUTH_USERNAME": "boardman", "BASIC_AUTH_PASSWORD": "letmein"}
 
     def test_can_access_with_correct_credentials(self, client: FlaskClient) -> None:

@@ -11,16 +11,19 @@ from schemes.infrastructure.database import CapitalSchemeEntity
 @pytest.mark.usefixtures("client")
 class TestProdDatabase:
     @pytest.fixture(name="monkeypatch", scope="class")
-    def monkeypatch_fixture(self) -> Generator[MonkeyPatch]:
+    @classmethod
+    def monkeypatch_fixture(cls) -> Generator[MonkeyPatch]:
         with pytest.MonkeyPatch.context() as monkeypatch:
             yield monkeypatch
 
     @pytest.fixture(name="env", scope="class", autouse=True)
-    def env_fixture(self, monkeypatch: MonkeyPatch) -> None:
+    @classmethod
+    def env_fixture(cls, monkeypatch: MonkeyPatch) -> None:
         monkeypatch.setenv("FLASK_ENV", "prod")
 
     @pytest.fixture(name="config", scope="class")
-    def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
+    @classmethod
+    def config_fixture(cls, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"CAPITAL_SCHEMES_DATABASE_URI": "sqlite+pysqlite:///:memory:"}
 
     def test_pool_pings_connections(self) -> None:

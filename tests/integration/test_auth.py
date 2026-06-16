@@ -20,11 +20,13 @@ from tests.integration.pages import BadRequestPage, ForbiddenPage
 
 class TestAuth:
     @pytest.fixture(name="client_id", scope="class")
-    def client_id_fixture(self) -> str:
+    @classmethod
+    def client_id_fixture(cls) -> str:
         return "stub_client_id"
 
     @pytest.fixture(name="config", scope="class")
-    def config_fixture(self, config: Mapping[str, Any], client_id: str) -> Mapping[str, Any]:
+    @classmethod
+    def config_fixture(cls, config: Mapping[str, Any], client_id: str) -> Mapping[str, Any]:
         return dict(config) | {"GOVUK_CLIENT_ID": client_id, "GOVUK_END_SESSION_ENDPOINT": "https://example.com/logout"}
 
     @pytest.fixture(name="oauth")

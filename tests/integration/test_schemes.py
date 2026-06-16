@@ -191,7 +191,8 @@ class TestSchemes:
 
 class TestSchemesApi:
     @pytest.fixture(name="config", scope="class")
-    def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
+    @classmethod
+    def config_fixture(cls, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"API_KEY": "boardman"}
 
     async def test_add_schemes(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:

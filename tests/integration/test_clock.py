@@ -9,7 +9,8 @@ from schemes.infrastructure.clock import Clock
 
 class TestClockApi:
     @pytest.fixture(name="config", scope="class")
-    def config_fixture(self, config: Mapping[str, Any]) -> Mapping[str, Any]:
+    @classmethod
+    def config_fixture(cls, config: Mapping[str, Any]) -> Mapping[str, Any]:
         return dict(config) | {"API_KEY": "boardman"}
 
     def test_set_clock(self, clock: Clock, client: FlaskClient) -> None:

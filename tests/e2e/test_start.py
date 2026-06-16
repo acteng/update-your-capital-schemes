@@ -33,7 +33,7 @@ class TestAuthenticated:
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
-        app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
+        app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
         start_page = StartPage.open(page)
         start_page.start()
 

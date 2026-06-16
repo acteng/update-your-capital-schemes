@@ -32,7 +32,7 @@ from schemes.infrastructure.clock import Clock, FakeClock, SystemClock
 from schemes.infrastructure.database.users import DatabaseUserRepository
 from schemes.oauth import OAuthExtension
 from schemes.sessions import RequestFilteringSessionInterface
-from schemes.views import authorities, clock, legal, start, users
+from schemes.views import clock, legal, start, users
 from schemes.views.auth import bearer
 from schemes.views.filters import date, pounds, remove_exponent
 from schemes.views.schemes import schemes
@@ -69,10 +69,9 @@ def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
     app.register_blueprint(start.bp)
     app.register_blueprint(legal.bp)
     app.register_blueprint(bearer.bp, url_prefix="/auth")
-    app.register_blueprint(authorities.bp, url_prefix="/authorities")
-    csrf.exempt(authorities.add_users)
     app.register_blueprint(schemes.bp, url_prefix="/schemes")
     app.register_blueprint(users.bp, url_prefix="/users")
+    csrf.exempt(users.add_users)
     csrf.exempt(users.clear)
 
     _migrate_database()

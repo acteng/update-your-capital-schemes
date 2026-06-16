@@ -57,7 +57,7 @@ class TestAuthenticated:
                 ),
             ),
         )
-        app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
+        app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
 
         schemes_page = SchemesPage.open(page)
 
@@ -97,7 +97,7 @@ class TestAuthenticated:
                 funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             )
         )
-        app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
+        app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
 
         scheme_page = SchemesPage.open(page).schemes["ATE00001"].open()
 
@@ -119,7 +119,7 @@ class TestAuthenticated:
                 funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             )
         )
-        app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
+        app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
 
         schemes_page = SchemesPage.open(page)
 

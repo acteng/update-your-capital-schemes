@@ -25,7 +25,7 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
             ],
         )
     )
-    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
+    app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     scheme_page = SchemePage.open(page, reference="ATE00001")
@@ -55,7 +55,7 @@ def test_change_spend_to_date(
             ],
         )
     )
-    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
+    app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     scheme_page = (
@@ -88,7 +88,7 @@ def test_cannot_change_spend_to_date_when_error(
             ],
         )
     )
-    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
+    app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     change_spend_to_date_page = (

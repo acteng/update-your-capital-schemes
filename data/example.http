@@ -15,13 +15,13 @@ Content-Type: application/json
 ###
 
 # Add users
-POST http://127.0.0.1:5000/authorities/LIV/users
+POST http://127.0.0.1:5000/users
 Authorization: API-Key {{$env.FLASK_API_KEY}}
 Content-Type: application/json
 
 [
-  { "email": "alex.coleman@activetravelengland.gov.uk" },
-  { "email": "mark.hobson@activetravelengland.gov.uk" }
+  { "email": "alex.coleman@activetravelengland.gov.uk", "authority_abbreviation": "LIV" },
+  { "email": "mark.hobson@activetravelengland.gov.uk", "authority_abbreviation": "LIV" }
 ]
 
 > resource-created.js

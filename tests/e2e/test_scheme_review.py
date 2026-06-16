@@ -23,7 +23,7 @@ def test_scheme_review(app_client: AppClient, api_client: ApiClient, oidc_client
             authority_review=CapitalSchemeAuthorityReviewModel(review_date="2020-01-02T12:00:00Z", source="ATF4 bid"),
         ),
     )
-    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
+    app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     schemes_page = SchemePage.open(page, reference="ATE00001").review.form.check_up_to_date().confirm()
@@ -50,7 +50,7 @@ def test_scheme_cannot_review_when_error(
             authority_review=CapitalSchemeAuthorityReviewModel(review_date="2020-01-02T12:00:00Z", source="ATF4 bid"),
         ),
     )
-    app_client.add_users("LIV", UserRepr(email="boardman@example.com"))
+    app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     scheme_page = SchemePage.open(page, reference="ATE00001").review.form.confirm_when_error()

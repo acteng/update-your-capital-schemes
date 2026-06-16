@@ -4,6 +4,7 @@ from requests import Session
 
 class UserRepr(BaseModel):
     email: str
+    authority_abbreviation: str
 
 
 class AppClient:
@@ -18,11 +19,9 @@ class AppClient:
         response = self._session.put(f"{self._url}/clock", json=now)
         response.raise_for_status()
 
-    def add_users(self, authority_abbreviation: str, *users: UserRepr) -> None:
+    def add_users(self, *users: UserRepr) -> None:
         json = [user.model_dump() for user in users]
-        response = self._session.post(
-            f"{self._url}/authorities/{authority_abbreviation}/users", json=json, timeout=self.DEFAULT_TIMEOUT
-        )
+        response = self._session.post(f"{self._url}/users", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
     def clear_users(self) -> None:

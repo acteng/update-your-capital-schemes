@@ -331,6 +331,7 @@ class TestFundingProgrammeContext:
             (FundingProgrammes.LUF3, "LUF3"),
             (FundingProgrammes.MRN, "MRN"),
             (FundingProgrammes.OTH, "OTH"),
+            (FundingProgrammes.CON, "CON"),
         ],
     )
     def test_from_domain(self, funding_programme: FundingProgramme, expected_name: str) -> None:

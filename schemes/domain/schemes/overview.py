@@ -31,6 +31,7 @@ class FundingProgrammes:
     LUF3 = FundingProgramme("LUF3", False, False)
     MRN = FundingProgramme("MRN", False, False)
     OTH = FundingProgramme("OTH", False, False)
+    CON = FundingProgramme("CON", False, True)
 
 
 class OverviewRevision:

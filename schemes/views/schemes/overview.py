@@ -46,6 +46,7 @@ class FundingProgrammeRepr(str, Enum):
     LUF3 = "LUF3"
     MRN = "MRN"
     OTH = "OTH"
+    CON = "CON"
 
     @classmethod
     def from_domain(cls, funding_programme: FundingProgramme) -> FundingProgrammeRepr:
@@ -70,6 +71,7 @@ class FundingProgrammeRepr(str, Enum):
             FundingProgrammes.LUF3: FundingProgrammeRepr.LUF3,
             FundingProgrammes.MRN: FundingProgrammeRepr.MRN,
             FundingProgrammes.OTH: FundingProgrammeRepr.OTH,
+            FundingProgrammes.CON: FundingProgrammeRepr.CON,
         }
 
 

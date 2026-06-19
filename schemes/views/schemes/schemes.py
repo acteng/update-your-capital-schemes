@@ -94,6 +94,7 @@ class FundingProgrammeContext:
         FundingProgrammes.LUF3: "LUF3",
         FundingProgrammes.MRN: "MRN",
         FundingProgrammes.OTH: "OTH",
+        FundingProgrammes.CON: "CON",
     }
 
     @classmethod

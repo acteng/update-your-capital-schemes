@@ -59,7 +59,7 @@ def debug_fixture() -> bool:
 
 @pytest.fixture(name="configure_live_server", scope="package", autouse=True)
 def configure_live_server_fixture() -> None:
-    if sys.platform == "darwin":
+    if sys.platform in ["darwin", "linux"]:
         multiprocessing.set_start_method("fork")
 
 

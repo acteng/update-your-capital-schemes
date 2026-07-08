@@ -12,7 +12,7 @@ from schemes.infrastructure.api.schemes.authority_reviews import (
 class TestCapitalSchemeAuthorityReviewModel:
     def test_to_domain(self) -> None:
         authority_review_model = CapitalSchemeAuthorityReviewModel(
-            review_date=datetime(2020, 1, 2), source=DataSourceModel.AUTHORITY_UPDATE
+            review_date=datetime(2020, 1, 2, tzinfo=UTC), source=DataSourceModel.AUTHORITY_UPDATE
         )
 
         authority_review = authority_review_model.to_domain()

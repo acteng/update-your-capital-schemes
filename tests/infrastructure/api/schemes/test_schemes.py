@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Any
 
@@ -229,7 +229,7 @@ class TestCapitalSchemeModel:
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
             authority_review=CapitalSchemeAuthorityReviewModel(
-                review_date=datetime(2020, 1, 2), source=DataSourceModel.AUTHORITY_UPDATE
+                review_date=datetime(2020, 1, 2, tzinfo=UTC), source=DataSourceModel.AUTHORITY_UPDATE
             ),
         )
 
@@ -289,7 +289,7 @@ class TestCapitalSchemeItemModel:
             reference="ATE00001",
             overview=_dummy_overview_model(),
             authority_review=CapitalSchemeAuthorityReviewModel(
-                review_date=datetime(2020, 1, 2), source=DataSourceModel.AUTHORITY_UPDATE
+                review_date=datetime(2020, 1, 2, tzinfo=UTC), source=DataSourceModel.AUTHORITY_UPDATE
             ),
         )
 

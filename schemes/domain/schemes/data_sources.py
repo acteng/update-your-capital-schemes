@@ -31,3 +31,4 @@ class DataSource(Enum):
     CATF_SCHEME_SUBMISSION = auto()
     IST_SCHEME_LIST = auto()
     DESIGN_REVIEW_REQUEST = auto()
+    FUNDING_DEVOLUTION = auto()

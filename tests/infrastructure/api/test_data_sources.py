@@ -35,6 +35,7 @@ from schemes.infrastructure.api.data_sources import DataSourceModel
         (DataSource.CATF_SCHEME_SUBMISSION, DataSourceModel.CATF_SCHEME_SUBMISSION),
         (DataSource.IST_SCHEME_LIST, DataSourceModel.IST_SCHEME_LIST),
         (DataSource.DESIGN_REVIEW_REQUEST, DataSourceModel.DESIGN_REVIEW_REQUEST),
+        (DataSource.FUNDING_DEVOLUTION, DataSourceModel.FUNDING_DEVOLUTION),
     ],
 )
 class TestDataSourceModel:

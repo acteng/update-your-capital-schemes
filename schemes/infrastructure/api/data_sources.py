@@ -33,6 +33,7 @@ class DataSourceModel(str, Enum):
     CATF_SCHEME_SUBMISSION = "CATF scheme submission"
     IST_SCHEME_LIST = "IST scheme list"
     DESIGN_REVIEW_REQUEST = "design review request"
+    FUNDING_DEVOLUTION = "funding devolution"
 
     @classmethod
     def from_domain(cls, data_source: DataSource) -> Self:

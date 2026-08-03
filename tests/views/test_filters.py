@@ -33,11 +33,11 @@ def test_pounds(value: int, expected_value: str) -> None:
 @pytest.mark.parametrize(
     "value, expected_value",
     [
-        (Decimal("0"), Decimal("0")),
+        (Decimal(0), Decimal(0)),
         (Decimal("0.10"), Decimal("0.1")),
-        (Decimal("1.00"), Decimal("1")),
-        (Decimal("10.00"), Decimal("10")),
-        (Decimal("1E2"), Decimal("100")),
+        (Decimal("1.00"), Decimal(1)),
+        (Decimal("10.00"), Decimal(10)),
+        (Decimal("1E2"), Decimal(100)),
     ],
 )
 def test_remove_exponent(value: Decimal, expected_value: Decimal) -> None:

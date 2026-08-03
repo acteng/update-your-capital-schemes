@@ -7,16 +7,15 @@ Create Date: 2024-03-25 16:37:57.133912
 """
 
 from collections.abc import Sequence
-from typing import Union
 
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects.postgresql.base import PGDialect
 
 revision: str = "e62a2b8bc9e0"
-down_revision: Union[str, None] = "0346163fa870"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "0346163fa870"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

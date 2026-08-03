@@ -7,15 +7,14 @@ Create Date: ${create_date}
 """
 
 from collections.abc import Sequence
-from typing import Union
 
 import sqlalchemy as sa
 from alembic import op
 
 revision: str = ${repr(up_revision).replace("'", '"')}
-down_revision: Union[str, None] = ${repr(down_revision).replace("'", '"')}
-branch_labels: Union[str, Sequence[str], None] = ${repr(branch_labels).replace("'", '"')}
-depends_on: Union[str, Sequence[str], None] = ${repr(depends_on).replace("'", '"')}
+down_revision: str | None = ${repr(down_revision).replace("'", '"')}
+branch_labels: str | Sequence[str] | None = ${repr(branch_labels).replace("'", '"')}
+depends_on: str | Sequence[str] | None = ${repr(depends_on).replace("'", '"')}
 
 
 def upgrade() -> None:

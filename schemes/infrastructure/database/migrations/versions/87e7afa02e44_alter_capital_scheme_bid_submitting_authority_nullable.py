@@ -7,14 +7,13 @@ Create Date: 2024-04-05 16:52:42.713837
 """
 
 from collections.abc import Sequence
-from typing import Union
 
 from alembic import op
 
 revision: str = "87e7afa02e44"
-down_revision: Union[str, None] = "5da26a70a39c"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "5da26a70a39c"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

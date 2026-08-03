@@ -7,15 +7,14 @@ Create Date: 2023-10-27 16:46:01.771963
 """
 
 from collections.abc import Sequence
-from typing import Union
 
 import sqlalchemy as sa
 from alembic import op
 
 revision: str = "b0244825d57f"
-down_revision: Union[str, None] = "ecb44674a1da"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "ecb44674a1da"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

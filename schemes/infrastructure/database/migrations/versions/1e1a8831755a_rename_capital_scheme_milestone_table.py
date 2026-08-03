@@ -6,7 +6,8 @@ Create Date: 2024-03-22 11:52:10.575564
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
+from typing import Union
 
 from alembic import op
 from sqlalchemy.dialects.postgresql.base import PGDialect

@@ -1,4 +1,5 @@
-from typing import Any, AsyncGenerator, Callable, Generator, Mapping
+from collections.abc import AsyncGenerator, Callable, Generator, Mapping
+from typing import Any
 
 import inject
 import pytest

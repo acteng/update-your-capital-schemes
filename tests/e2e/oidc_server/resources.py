@@ -1,4 +1,5 @@
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from authlib.integrations.flask_oauth2 import ResourceProtector
 

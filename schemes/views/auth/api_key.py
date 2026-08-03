@@ -1,5 +1,5 @@
+from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import Awaitable, Callable
 
 from flask import abort, current_app, request
 

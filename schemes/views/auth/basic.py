@@ -1,6 +1,6 @@
+from collections.abc import Callable
 from functools import wraps
 from secrets import compare_digest
-from typing import Callable
 
 from flask import Response, current_app, request
 

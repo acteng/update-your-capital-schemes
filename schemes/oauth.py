@@ -1,5 +1,6 @@
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import Any, AsyncIterator
+from typing import Any
 
 from authlib.integrations.base_client import InvalidTokenError
 from authlib.integrations.base_client.async_app import AsyncOAuth2Mixin, _http_request

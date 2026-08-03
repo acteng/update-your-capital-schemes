@@ -1,6 +1,7 @@
 import logging
+from collections.abc import Generator, Mapping
 from datetime import datetime
-from typing import Any, Generator, Mapping
+from typing import Any
 
 import pytest
 import responses

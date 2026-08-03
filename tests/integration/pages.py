@@ -1,6 +1,7 @@
 import re
+from collections.abc import Iterator
 from re import Pattern
-from typing import Iterator, Self
+from typing import Self
 
 from bs4 import BeautifulSoup, ResultSet, Tag
 from flask.testing import FlaskClient

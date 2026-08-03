@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 from decimal import Decimal
 from itertools import groupby
-from typing import Iterator, Self
+from typing import Self
 
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, OutputType

@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from datetime import date, datetime
-from typing import Any, Callable, Self
+from typing import Any, Self
 
 from govuk_frontend_wtf.wtforms_widgets import GovCheckboxInput, GovDateInput
 from wtforms import DateField, Field

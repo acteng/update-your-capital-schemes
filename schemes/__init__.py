@@ -1,7 +1,8 @@
 import os
+from collections.abc import Callable, Mapping
 from datetime import timedelta
 from logging import Logger
-from typing import Any, Callable, Mapping
+from typing import Any
 
 import alembic.config
 import flask_session

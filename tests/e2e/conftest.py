@@ -1,10 +1,11 @@
 import json
 import multiprocessing
 import sys
+from collections.abc import Callable, Generator
 from dataclasses import dataclass
 from socket import socket
 from tempfile import TemporaryDirectory
-from typing import Any, Callable, Generator
+from typing import Any
 
 import pytest
 from cryptography.hazmat.backends import default_backend

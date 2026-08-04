@@ -196,7 +196,7 @@ class SchemesTableComponent:
         return (SchemeRowComponent(row) for row in self._rows)
 
     def __getitem__(self, reference: str) -> SchemeRowComponent:
-        return next((scheme for scheme in self if scheme.reference == reference))
+        return next(scheme for scheme in self if scheme.reference == reference)
 
     def to_dicts(self) -> list[dict[str, str | bool | None]]:
         return [scheme.to_dict() for scheme in self]

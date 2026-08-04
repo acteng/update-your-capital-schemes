@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any, Self
+from typing import Any, ClassVar, Self
 
 from flask_wtf import FlaskForm
 from wtforms import FormField
@@ -23,7 +24,7 @@ from schemes.views.forms import (
 @dataclass(frozen=True)
 class MilestoneContext:
     name: str | None
-    _NAMES = {
+    _NAMES: ClassVar[Mapping[Milestone, str]] = {
         Milestone.PUBLIC_CONSULTATION_COMPLETED: "Public consultation completed",
         Milestone.FEASIBILITY_DESIGN_STARTED: "Feasibility design started",
         Milestone.FEASIBILITY_DESIGN_COMPLETED: "Feasibility design completed",

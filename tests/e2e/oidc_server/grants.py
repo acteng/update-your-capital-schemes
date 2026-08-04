@@ -1,4 +1,5 @@
 import time
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -63,7 +64,7 @@ class AuthorizationCodeRepository:
 
 
 class StubAuthorizationCodeGrant(AuthorizationCodeGrant):  # type: ignore
-    TOKEN_ENDPOINT_AUTH_METHODS = [PrivateKeyJwtClientAssertion.CLIENT_AUTH_METHOD]
+    TOKEN_ENDPOINT_AUTH_METHODS: Sequence[str] = [PrivateKeyJwtClientAssertion.CLIENT_AUTH_METHOD]
 
     def __init__(self, request: OAuth2Request, server: AuthorizationServer) -> None:
         super().__init__(request, server)

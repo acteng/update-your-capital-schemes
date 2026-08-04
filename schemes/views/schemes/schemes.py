@@ -1,6 +1,7 @@
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Self
+from typing import ClassVar, Self
 
 import inject
 from flask import Blueprint, Response, abort, flash, redirect, render_template, session, url_for
@@ -59,7 +60,7 @@ async def index(
 @dataclass(frozen=True)
 class FundingProgrammeContext:
     name: str
-    _NAMES = {
+    _NAMES: ClassVar[Mapping[FundingProgramme, str]] = {
         FundingProgrammes.ATF2: "ATF2",
         FundingProgrammes.ATF3: "ATF3",
         FundingProgrammes.ATF4: "ATF4",
@@ -157,7 +158,7 @@ async def get(
 @dataclass(frozen=True)
 class SchemeTypeContext:
     name: str
-    _NAMES = {
+    _NAMES: ClassVar[Mapping[SchemeType, str]] = {
         SchemeType.DEVELOPMENT: "Development",
         SchemeType.CONSTRUCTION: "Construction",
     }

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 from decimal import Decimal
 from itertools import groupby
-from typing import Self
+from typing import ClassVar, Self
 
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, OutputType
@@ -13,7 +13,7 @@ from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, Output
 @dataclass(frozen=True)
 class OutputTypeContext:
     name: str
-    _NAMES = {
+    _NAMES: ClassVar[Mapping[OutputType, str]] = {
         OutputType.NEW_SEGREGATED_CYCLING_FACILITY: "New segregated cycling facility",
         OutputType.NEW_TEMPORARY_SEGREGATED_CYCLING_FACILITY: "New temporary segregated cycling facility",
         OutputType.NEW_JUNCTION_TREATMENT: "New junction treatment",
@@ -44,7 +44,7 @@ class OutputTypeContext:
 @dataclass(frozen=True)
 class OutputMeasureContext:
     name: str
-    _NAMES = {
+    _NAMES: ClassVar[Mapping[OutputMeasure, str]] = {
         OutputMeasure.MILES: "Miles",
         OutputMeasure.NUMBER_OF_JUNCTIONS: "Number of junctions",
         OutputMeasure.SIZE_OF_AREA: "Size of area",

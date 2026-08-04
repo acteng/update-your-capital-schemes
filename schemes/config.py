@@ -1,5 +1,7 @@
 import logging
+from collections.abc import Mapping
 from datetime import timedelta
+from typing import Any
 
 
 class Config:
@@ -41,7 +43,10 @@ class LocalConfig(Config):
 
 class GoogleConfig(Config):
     # Flask-SQLAlchemy
-    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": int(timedelta(minutes=30).total_seconds())}
+    SQLALCHEMY_ENGINE_OPTIONS: Mapping[str, Any] = {
+        "pool_pre_ping": True,
+        "pool_recycle": int(timedelta(minutes=30).total_seconds()),
+    }
 
 
 class DevConfig(GoogleConfig):

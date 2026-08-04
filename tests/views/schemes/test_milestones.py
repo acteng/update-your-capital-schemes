@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from datetime import date, datetime
 
 import pytest
@@ -486,7 +487,7 @@ class TestMilestoneDatesForm:
 
 @pytest.mark.usefixtures("app")
 class TestChangeMilestoneDatesForm:
-    field_names = [
+    field_names: Sequence[str] = [
         "feasibility_design_completed-planned",
         "feasibility_design_completed-actual",
         "preliminary_design_completed-planned",

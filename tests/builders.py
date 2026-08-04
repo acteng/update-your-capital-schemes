@@ -26,7 +26,7 @@ def build_scheme(
         assert False, "Either bid status or revisions must be specified"
 
     if overview_revisions is not None:
-        overview_revisions = overview_revisions
+        pass
     elif name is not None:
         overview_revisions = [
             OverviewRevision(

@@ -77,7 +77,7 @@ class TestCapitalSchemeOutputModel:
             type=OutputTypeModel.WIDENING_EXISTING_FOOTWAY,
             measure=OutputMeasureModel.MILES,
             observation_type=ObservationTypeModel.ACTUAL,
-            value=Decimal(1.5),
+            value=Decimal("1.5"),
         )
 
         output_revision = output_model.to_domain()
@@ -86,5 +86,5 @@ class TestCapitalSchemeOutputModel:
             output_revision.id is not None
             and output_revision.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
             and output_revision.observation_type == ObservationType.ACTUAL
-            and output_revision.value == Decimal(1.5)
+            and output_revision.value == Decimal("1.5")
         )

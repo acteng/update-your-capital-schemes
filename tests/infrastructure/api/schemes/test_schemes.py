@@ -192,7 +192,7 @@ class TestCapitalSchemeModel:
                         type=OutputTypeModel.WIDENING_EXISTING_FOOTWAY,
                         measure=OutputMeasureModel.MILES,
                         observation_type=ObservationTypeModel.ACTUAL,
-                        value=Decimal(1.5),
+                        value=Decimal("1.5"),
                     ),
                     CapitalSchemeOutputModel(
                         type=OutputTypeModel.NEW_SEGREGATED_CYCLING_FACILITY,
@@ -211,7 +211,7 @@ class TestCapitalSchemeModel:
             output_revision1.id is not None
             and output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
             and output_revision1.observation_type == ObservationType.ACTUAL
-            and output_revision1.value == Decimal(1.5)
+            and output_revision1.value == Decimal("1.5")
         )
         assert (
             output_revision2.id is not None
@@ -473,7 +473,7 @@ class TestApiSchemeRepository:
             output_revision1.id is not None
             and output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
             and output_revision1.observation_type == ObservationType.ACTUAL
-            and output_revision1.value == Decimal(1.5)
+            and output_revision1.value == Decimal("1.5")
         )
         assert (
             output_revision2.id is not None

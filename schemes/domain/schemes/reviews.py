@@ -42,7 +42,7 @@ class SchemeReviews:
     @property
     def last_reviewed(self) -> datetime | None:
         return (
-            sorted(authority_review.review_date for authority_review in self._authority_reviews)[-1]
+            max(authority_review.review_date for authority_review in self._authority_reviews)
             if self._authority_reviews
             else None
         )

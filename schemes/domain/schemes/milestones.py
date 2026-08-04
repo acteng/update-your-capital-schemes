@@ -146,7 +146,7 @@ class SchemeMilestones:
             for revision in self.current_milestone_revisions
             if revision.observation_type == ObservationType.ACTUAL
         ]
-        return sorted(actual_milestones, key=lambda milestone: milestone.stage_order)[-1] if actual_milestones else None
+        return max(actual_milestones, key=lambda milestone: milestone.stage_order) if actual_milestones else None
 
     def get_current_status_date(self, milestone: Milestone, observation_type: ObservationType) -> date | None:
         current_milestone_revision = self._current_milestone_revision(milestone, observation_type)

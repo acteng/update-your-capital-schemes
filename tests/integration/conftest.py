@@ -40,7 +40,7 @@ class AsyncFlaskClient:
 
 @pytest.fixture(name="config", scope="class")
 def config_fixture() -> Mapping[str, Any]:
-    private_key, public_key = _generate_key_pair()
+    private_key, _ = _generate_key_pair()
 
     return {
         "TESTING": True,

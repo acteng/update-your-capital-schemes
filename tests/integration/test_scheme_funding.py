@@ -312,7 +312,7 @@ class TestSchemeFunding:
 
         actual_scheme = await schemes.get("ATE00001")
         assert actual_scheme
-        financial_revision1, financial_revision2, financial_revision3 = actual_scheme.funding.financial_revisions
+        _, financial_revision2, financial_revision3 = actual_scheme.funding.financial_revisions
         assert financial_revision2.id == 2 and financial_revision2.effective.date_to == datetime(2020, 2, 1, 13)
         assert (
             financial_revision3.effective == DateRange(datetime(2020, 2, 1, 13), None)

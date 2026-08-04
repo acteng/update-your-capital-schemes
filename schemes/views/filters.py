@@ -3,11 +3,11 @@ from decimal import Decimal
 
 
 def date(value: datetime.date) -> str:
-    return "{:%-d %b %Y}".format(value)
+    return f"{value:%-d %b %Y}"
 
 
 def pounds(value: int) -> str:
-    return "£{:,}".format(value)
+    return f"£{value:,}"
 
 
 def remove_exponent(value: Decimal) -> Decimal:

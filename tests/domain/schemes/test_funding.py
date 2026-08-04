@@ -41,9 +41,7 @@ class TestSchemeFunding:
         )
         funding.update_bid_status(bid_status_revision)
 
-        with pytest.raises(
-            ValueError, match=re.escape(f"Current bid status already exists: {repr(bid_status_revision)}")
-        ):
+        with pytest.raises(ValueError, match=re.escape(f"Current bid status already exists: {bid_status_revision!r}")):
             funding.update_bid_status(
                 BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.FUNDED)
             )
@@ -119,7 +117,7 @@ class TestSchemeFunding:
         funding.update_financial(financial_revision)
 
         with pytest.raises(
-            ValueError, match=re.escape(f"Current spend to date already exists: {repr(financial_revision)}")
+            ValueError, match=re.escape(f"Current spend to date already exists: {financial_revision!r}")
         ):
             funding.update_financial(
                 FinancialRevision(

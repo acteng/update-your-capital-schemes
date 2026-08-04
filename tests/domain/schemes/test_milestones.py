@@ -81,9 +81,7 @@ class TestSchemeMilestones:
         )
         milestones.update_milestone(milestone_revision)
 
-        with pytest.raises(
-            ValueError, match=re.escape(f"Current milestone already exists: {repr(milestone_revision)}")
-        ):
+        with pytest.raises(ValueError, match=re.escape(f"Current milestone already exists: {milestone_revision!r}")):
             milestones.update_milestone(
                 MilestoneRevision(
                     id_=2,

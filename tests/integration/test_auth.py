@@ -190,7 +190,7 @@ class TestAuth:
     def test_callback_when_id_token_signature_invalid_raises_error(
         self, oidc_server: StubOidcServer, client: FlaskClient
     ) -> None:
-        oidc_server.given_token_endpoint_returns_id_token(nonce="456", signature="invalid_signature".encode())
+        oidc_server.given_token_endpoint_returns_id_token(nonce="456", signature=b"invalid_signature")
         given_session_has_authentication_request(client, state="123", nonce="456")
 
         with pytest.raises(BadSignatureError):

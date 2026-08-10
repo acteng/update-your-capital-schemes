@@ -3,6 +3,7 @@ from typing import Any
 
 from flask import Blueprint, Response, abort, make_response, request
 from pydantic import AnyUrl
+from werkzeug.datastructures import MultiDict
 
 from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.base import BaseModel
@@ -169,8 +170,11 @@ def add_milestones() -> Response:
 @bp.get("milestones")
 @require_oauth()
 def get_milestones() -> dict[str, Any]:
-    active = request.args.get("active", type=parse_bool)
-    complete = request.args.get("complete", type=parse_bool)
+    args = MultiDict(request.args)
+    active = parse_bool(args.pop("active")) if "active" in args else None
+    complete = parse_bool(args.pop("complete")) if "complete" in args else None
+    if args:
+        abort(400, f"Unexpected query string parameters: {set(args.keys())}")
 
     milestone_names = [
         milestone.name

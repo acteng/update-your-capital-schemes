@@ -2,6 +2,7 @@ from typing import Annotated, Any
 
 from flask import Blueprint, Response, abort, request, url_for
 from pydantic import AnyUrl, Field
+from werkzeug.datastructures import MultiDict
 
 from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.base import BaseModel
@@ -71,9 +72,12 @@ def get_authority(abbreviation: str) -> dict[str, Any]:
 @bp.get("<abbreviation>/capital-schemes/bid-submitting")
 @require_oauth()
 def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str, Any]:
-    funding_programme_codes = request.args.getlist("funding-programme-code")
-    bid_status = request.args.get("bid-status")
-    current_milestones = request.args.getlist("current-milestone", lambda value: value or None)
+    args = MultiDict(request.args)
+    funding_programme_codes = args.poplist("funding-programme-code")
+    bid_status = args.pop("bid-status", None)
+    current_milestones = [value or None for value in args.poplist("current-milestone")]
+    if args:
+        abort(400, f"Unexpected query string parameters: {set(args.keys())}")
 
     authority_url = AnyUrl(url_for("authorities.get_authority", abbreviation=abbreviation, _external=True))
     funding_programme_urls = [

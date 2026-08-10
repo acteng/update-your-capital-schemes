@@ -1,7 +1,8 @@
 from typing import Annotated, Any
 
-from flask import Blueprint, Response, request, url_for
+from flask import Blueprint, Response, abort, request, url_for
 from pydantic import AnyUrl, Field
+from werkzeug.datastructures import MultiDict
 
 from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.base import BaseModel
@@ -43,7 +44,12 @@ def add_funding_programmes() -> Response:
 @bp.get("")
 @require_oauth()
 def get_funding_programmes() -> dict[str, Any]:
-    eligible_for_authority_update = request.args.get("eligible-for-authority-update", type=parse_bool)
+    args = MultiDict(request.args)
+    eligible_for_authority_update = (
+        parse_bool(args.pop("eligible-for-authority-update")) if "eligible-for-authority-update" in args else None
+    )
+    if args:
+        abort(400, f"Unexpected query string parameters: {set(args.keys())}")
 
     funding_programme_items = [
         FundingProgrammeItemModel(

@@ -3,13 +3,11 @@ from typing import Any
 
 from flask import Blueprint, Response, abort, make_response, request
 from pydantic import AnyUrl
-from werkzeug.datastructures import MultiDict
 
 from tests.e2e.api_server.auth import require_oauth
 from tests.e2e.api_server.base import BaseModel
 from tests.e2e.api_server.clock import now
 from tests.e2e.api_server.collections import CollectionModel
-from tests.e2e.api_server.requests import parse_bool
 
 
 class CapitalSchemeOverviewModel(BaseModel):
@@ -66,15 +64,8 @@ class CapitalSchemeModel(BaseModel):
     authority_review: CapitalSchemeAuthorityReviewModel | None
 
 
-class MilestoneModel(BaseModel):
-    name: str
-    active: bool
-    complete: bool
-
-
 bp = Blueprint("capital_schemes", __name__)
 capital_schemes: dict[str, CapitalSchemeModel] = {}
-milestones: dict[str, MilestoneModel] = {}
 
 
 @bp.post("")
@@ -154,38 +145,4 @@ def add_capital_scheme_authority_review(reference: str) -> Response:
 @require_oauth("tests")
 def clear_capital_schemes() -> Response:
     capital_schemes.clear()
-    return Response(status=204)
-
-
-@bp.post("milestones")
-@require_oauth("tests")
-def add_milestones() -> Response:
-    for element in request.json:
-        milestone = MilestoneModel.model_validate(element)
-        milestones[milestone.name] = milestone
-
-    return Response(status=201)
-
-
-@bp.get("milestones")
-@require_oauth()
-def get_milestones() -> dict[str, Any]:
-    args = MultiDict(request.args)
-    active = parse_bool(args.pop("active")) if "active" in args else None
-    complete = parse_bool(args.pop("complete")) if "complete" in args else None
-    if args:
-        abort(400, f"Unexpected query string parameters: {set(args.keys())}")
-
-    milestone_names = [
-        milestone.name
-        for milestone in milestones.values()
-        if (active is None or milestone.active == active) and (complete is None or milestone.complete == complete)
-    ]
-    return CollectionModel[str](items=milestone_names).to_json()
-
-
-@bp.delete("milestones")
-@require_oauth("tests")
-def clear_milestones() -> Response:
-    milestones.clear()
     return Response(status=204)

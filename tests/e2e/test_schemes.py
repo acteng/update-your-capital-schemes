@@ -7,7 +7,6 @@ from tests.e2e.api_client import (
     CapitalSchemeAuthorityReviewModel,
     CapitalSchemeMilestonesModel,
     FundingProgrammeModel,
-    MilestoneModel,
 )
 from tests.e2e.app_client import AppClient, UserRepr
 from tests.e2e.builders import build_capital_scheme_model
@@ -27,10 +26,6 @@ class TestAuthenticated:
         api_client.add_funding_programmes(
             FundingProgrammeModel(code="ATF3", eligible_for_authority_update=True),
             FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True),
-        )
-        api_client.add_milestones(
-            MilestoneModel(name="detailed design completed", active=True, complete=False),
-            MilestoneModel(name="construction started", active=True, complete=False),
         )
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")

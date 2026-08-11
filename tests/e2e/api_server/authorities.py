@@ -75,7 +75,6 @@ def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str,
     args = MultiDict(request.args)
     funding_programme_codes = args.poplist("funding-programme-code")
     status = args.pop("status", None)
-    current_milestones = [value or None for value in args.poplist("current-milestone")]
     if args:
         abort(400, f"Unexpected query string parameters: {set(args.keys())}")
 
@@ -90,7 +89,6 @@ def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str,
         if capital_scheme.overview.bid_submitting_authority == authority_url
         and (not funding_programme_urls or capital_scheme.overview.funding_programme in funding_programme_urls)
         and (not status or capital_scheme.status.status == status)
-        and (not current_milestones or capital_scheme.milestones.current_milestone in current_milestones)
     ]
 
     return CollectionModel[CapitalSchemeItemModel](items=capital_scheme_items).to_json()

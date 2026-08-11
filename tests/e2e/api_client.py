@@ -78,12 +78,6 @@ class CapitalSchemeModel(BaseModel):
     authority_review: CapitalSchemeAuthorityReviewModel | None
 
 
-class MilestoneModel(BaseModel):
-    name: str
-    active: bool
-    complete: bool
-
-
 class ApiClient:
     DEFAULT_TIMEOUT = 10
 
@@ -138,15 +132,4 @@ class ApiClient:
 
     def clear_schemes(self) -> None:
         response = self._session.delete(f"{self._url}/capital-schemes", timeout=self.DEFAULT_TIMEOUT)
-        response.raise_for_status()
-
-    def add_milestones(self, *milestones: MilestoneModel) -> None:
-        json = [milestone.to_json() for milestone in milestones]
-        response = self._session.post(
-            f"{self._url}/capital-schemes/milestones", json=json, timeout=self.DEFAULT_TIMEOUT
-        )
-        response.raise_for_status()
-
-    def clear_milestones(self) -> None:
-        response = self._session.delete(f"{self._url}/capital-schemes/milestones", timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()

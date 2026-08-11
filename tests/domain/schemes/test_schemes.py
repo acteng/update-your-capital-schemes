@@ -1,12 +1,7 @@
-from datetime import date, datetime
-
 import pytest
 
-from schemes.domain.dates import DateRange
-from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import SchemeFunding
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision, SchemeMilestones
-from schemes.domain.schemes.observations import ObservationType
+from schemes.domain.schemes.milestones import Milestone, SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
 from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeOverview, SchemeType
 from schemes.domain.schemes.reviews import SchemeReviews
@@ -62,44 +57,6 @@ class TestScheme:
             funding_programme=FundingProgrammes.ATF4,
             status=status,
         )
-        scheme.milestones.update_milestone(
-            MilestoneRevision(
-                id_=1,
-                effective=DateRange(datetime(2000, 1, 2), None),
-                milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2000, 1, 2),
-                source=DataSource.ATF4_BID,
-            )
-        )
-
-        assert scheme.is_updateable == expected_updateable
-
-    @pytest.mark.parametrize(
-        "milestone, expected_updateable",
-        [
-            pytest.param(Milestone.PUBLIC_CONSULTATION_COMPLETED, True, id="active and incomplete"),
-            pytest.param(Milestone.FUNDING_COMPLETED, False, id="complete"),
-            pytest.param(Milestone.NOT_PROGRESSED, False, id="inactive"),
-        ],
-    )
-    def test_is_updateable_when_active_and_incomplete(self, milestone: Milestone, expected_updateable: bool) -> None:
-        scheme = build_scheme(
-            reference="ATE00001",
-            name="Wirral Package",
-            funding_programme=FundingProgrammes.ATF4,
-            status=Status.ACTIVE,
-        )
-        scheme.milestones.update_milestone(
-            MilestoneRevision(
-                id_=1,
-                effective=DateRange(datetime(2000, 1, 2), None),
-                milestone=milestone,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2000, 1, 2),
-                source=DataSource.ATF4_BID,
-            )
-        )
 
         assert scheme.is_updateable == expected_updateable
 
@@ -118,16 +75,6 @@ class TestScheme:
             name="Wirral Package",
             funding_programme=funding_programme,
             status=Status.ACTIVE,
-        )
-        scheme.milestones.update_milestone(
-            MilestoneRevision(
-                id_=1,
-                effective=DateRange(datetime(2000, 1, 2), None),
-                milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2000, 1, 2),
-                source=DataSource.ATF4_BID,
-            )
         )
 
         assert scheme.is_updateable == expected_updateable
@@ -148,56 +95,8 @@ class TestScheme:
             funding_programme=funding_programme,
             status=Status.ACTIVE,
         )
-        scheme.milestones.update_milestone(
-            MilestoneRevision(
-                id_=1,
-                effective=DateRange(datetime(2000, 1, 2), None),
-                milestone=Milestone.PUBLIC_CONSULTATION_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2000, 1, 2),
-                source=DataSource.ATF4_BID,
-            )
-        )
 
         assert scheme.is_updateable == expected_updateable
-
-    def test_is_updateable_when_no_milestone_revision(self) -> None:
-        scheme = build_scheme(
-            reference="ATE00001",
-            name="Wirral Package",
-            funding_programme=FundingProgrammes.ATF4,
-            status=Status.ACTIVE,
-        )
-
-        assert scheme.is_updateable is True
-
-    def test_is_updateable_uses_latest_milestone_revision(self) -> None:
-        scheme = build_scheme(
-            reference="ATE00001",
-            name="Wirral Package",
-            funding_programme=FundingProgrammes.ATF4,
-            status=Status.ACTIVE,
-        )
-        scheme.milestones.update_milestones(
-            MilestoneRevision(
-                id_=1,
-                effective=DateRange(datetime(2000, 1, 1), datetime(2000, 2, 1)),
-                milestone=Milestone.CONSTRUCTION_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2000, 1, 1),
-                source=DataSource.ATF4_BID,
-            ),
-            MilestoneRevision(
-                id_=2,
-                effective=DateRange(datetime(2000, 2, 1), None),
-                milestone=Milestone.FUNDING_COMPLETED,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2000, 2, 1),
-                source=DataSource.ATF4_BID,
-            ),
-        )
-
-        assert scheme.is_updateable is False
 
     def test_is_updateable_when_no_overview_revision(self) -> None:
         scheme = build_scheme(reference="ATE00001", status=Status.ACTIVE, overview_revisions=[])

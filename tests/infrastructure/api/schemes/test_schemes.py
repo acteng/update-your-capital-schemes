@@ -534,7 +534,6 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
-        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             200,
             json=_build_authority_json(
@@ -573,7 +572,6 @@ class TestApiSchemeRepository:
                 ]
             },
         )
-        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             200,
             json=_build_authority_json(
@@ -611,7 +609,6 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
-        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             200,
             json=_build_authority_json(
@@ -643,7 +640,6 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
-        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             200,
             json=_build_authority_json(
@@ -688,7 +684,6 @@ class TestApiSchemeRepository:
                 ]
             },
         )
-        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             200,
             json=_build_authority_json(
@@ -720,7 +715,6 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
-        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             200,
             json=_build_authority_json(
@@ -744,44 +738,10 @@ class TestApiSchemeRepository:
 
         assert scheme1.reference == "ATE00001"
 
-    async def test_get_schemes_by_authority_filters_by_current_milestone_active_and_incomplete(
-        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
-    ) -> None:
-        api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
-        api_mock.get("/capital-schemes/milestones", params={"active": "true", "complete": "false"}).respond(
-            200, json={"items": ["detailed design completed", "construction started"]}
-        )
-        api_mock.get("/authorities/LIV").respond(
-            200,
-            json=_build_authority_json(
-                id_=f"{api_base_url}/authorities/LIV",
-                abbreviation="LIV",
-                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
-            ),
-        )
-        api_mock.get(
-            "/authorities/LIV/capital-schemes/bid-submitting",
-            params={"current-milestone": ["detailed design completed", "construction started", ""]},
-        ).respond(
-            200,
-            json={
-                "items": [
-                    _build_capital_scheme_item_json(
-                        reference="ATE00001", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
-                    )
-                ]
-            },
-        )
-
-        (scheme1,) = await schemes.get_by_authority("LIV")
-
-        assert scheme1.reference == "ATE00001"
-
     async def test_get_schemes_by_authority_reuses_client(
         self, api_mock: MockRouter, api_base_url: str, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
-        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             200,
             json=_build_authority_json(

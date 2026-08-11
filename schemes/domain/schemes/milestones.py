@@ -8,29 +8,25 @@ from schemes.domain.schemes.observations import ObservationType
 
 
 class Milestone(Enum):
-    PUBLIC_CONSULTATION_COMPLETED = (auto(), 0, True, False)
-    FEASIBILITY_DESIGN_STARTED = (auto(), 1, True, False)
-    FEASIBILITY_DESIGN_COMPLETED = (auto(), 2, True, False)
-    PRELIMINARY_DESIGN_COMPLETED = (auto(), 3, True, False)
-    OUTLINE_DESIGN_COMPLETED = (auto(), 4, True, False)
-    DETAILED_DESIGN_COMPLETED = (auto(), 5, True, False)
-    CONSTRUCTION_STARTED = (auto(), 6, True, False)
-    CONSTRUCTION_COMPLETED = (auto(), 7, True, False)
-    FUNDING_COMPLETED = (auto(), 8, True, True)
-    NOT_PROGRESSED = (auto(), 9, False, False)
-    SUPERSEDED = (auto(), 10, False, False)
-    REMOVED = (auto(), 11, False, False)
+    PUBLIC_CONSULTATION_COMPLETED = (auto(), 0)
+    FEASIBILITY_DESIGN_STARTED = (auto(), 1)
+    FEASIBILITY_DESIGN_COMPLETED = (auto(), 2)
+    PRELIMINARY_DESIGN_COMPLETED = (auto(), 3)
+    OUTLINE_DESIGN_COMPLETED = (auto(), 4)
+    DETAILED_DESIGN_COMPLETED = (auto(), 5)
+    CONSTRUCTION_STARTED = (auto(), 6)
+    CONSTRUCTION_COMPLETED = (auto(), 7)
+    FUNDING_COMPLETED = (auto(), 8)
+    NOT_PROGRESSED = (auto(), 9)
+    SUPERSEDED = (auto(), 10)
+    REMOVED = (auto(), 11)
 
     stage_order: int
-    is_active: bool
-    is_complete: bool
 
-    def __new__(cls, value: int, stage_order: int, is_active: bool, is_complete: bool) -> Self:
+    def __new__(cls, value: int, stage_order: int) -> Self:
         obj = object.__new__(cls)
         obj._value_ = value
         obj.stage_order = stage_order
-        obj.is_active = is_active
-        obj.is_complete = is_complete
         return obj
 
 

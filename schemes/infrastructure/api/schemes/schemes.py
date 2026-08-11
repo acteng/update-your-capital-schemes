@@ -95,10 +95,9 @@ class ApiSchemeRepository(SchemeRepository):
                 funding_programme_item_model.code
                 for funding_programme_item_model in funding_programme_items_model.items
             ]
-            milestones = await self._get_milestones(client)
 
             capital_scheme_items_model = await self._get_capital_scheme_items_model_by_url(
-                client, str(authority_model.bid_submitting_capital_schemes), funding_programme_codes, milestones
+                client, str(authority_model.bid_submitting_capital_schemes), funding_programme_codes
             )
             return [
                 capital_scheme_item_model.to_domain([authority_model], funding_programme_items_model.items)
@@ -125,30 +124,15 @@ class ApiSchemeRepository(SchemeRepository):
         response.raise_for_status()
         return FundingProgrammeModel.model_validate(response.json())
 
-    async def _get_milestones(self, remote_app: AsyncBaseApp) -> list[str]:
-        response = await remote_app.get(
-            "/capital-schemes/milestones", params={"active": "true", "complete": "false"}, request=self._dummy_request()
-        )
-        response.raise_for_status()
-
-        collection_model = CollectionModel[str].model_validate(response.json())
-        no_milestone = ""
-        return collection_model.items + [no_milestone]
-
     async def _get_capital_scheme_items_model_by_url(
         self,
         remote_app: AsyncBaseApp,
         url: str,
         funding_programme_codes: list[str],
-        current_milestones: list[str],
     ) -> CollectionModel[CapitalSchemeItemModel]:
         response = await remote_app.get(
             url,
-            params={
-                "funding-programme-code": funding_programme_codes,
-                "status": "active",
-                "current-milestone": current_milestones,
-            },
+            params={"funding-programme-code": funding_programme_codes, "status": "active"},
             request=self._dummy_request(),
         )
         response.raise_for_status()

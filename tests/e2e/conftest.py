@@ -272,7 +272,6 @@ def api_client_fixture(
     )
     yield client
     client.clear_schemes()
-    client.clear_milestones()
     client.clear_authorities()
     client.clear_funding_programmes()
 

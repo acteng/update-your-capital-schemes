@@ -56,14 +56,9 @@ class Scheme:
     @property
     def is_updateable(self) -> bool:
         is_active = self.status == Status.ACTIVE
-        is_active_and_incomplete = self._is_active_and_incomplete(self.milestones.current_milestone)
         is_under_embargo = self._is_under_embargo(self.overview.funding_programme)
         is_eligible_for_authority_update = self._is_eligible_for_authority_update(self.overview.funding_programme)
-        return is_active and is_active_and_incomplete and not is_under_embargo and is_eligible_for_authority_update
-
-    @staticmethod
-    def _is_active_and_incomplete(milestone: Milestone | None) -> bool:
-        return not milestone or (milestone.is_active and not milestone.is_complete)
+        return is_active and not is_under_embargo and is_eligible_for_authority_update
 
     @staticmethod
     def _is_under_embargo(funding_programme: FundingProgramme | None) -> bool:

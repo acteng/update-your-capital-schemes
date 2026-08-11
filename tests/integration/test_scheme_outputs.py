@@ -29,7 +29,6 @@ class TestSchemeOutputs:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
             OutputRevision(
-                id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
                 value=Decimal(1),
@@ -48,14 +47,12 @@ class TestSchemeOutputs:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
             OutputRevision(
-                id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES,
                 value=Decimal("3.000000"),
                 observation_type=ObservationType.PLANNED,
             ),
             OutputRevision(
-                id_=2,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
                 value=Decimal("2.600000"),
@@ -84,7 +81,6 @@ class TestSchemeOutputs:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
             OutputRevision(
-                id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
                 value=Decimal("0.000000"),

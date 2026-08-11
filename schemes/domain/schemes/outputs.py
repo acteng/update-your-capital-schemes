@@ -124,24 +124,17 @@ class OutputTypeMeasure(Enum):
 
 
 class OutputRevision:
-    # TODO: domain identifier should be mandatory for transient instances
     def __init__(
         self,
-        id_: int | None,
         effective: DateRange,
         type_measure: OutputTypeMeasure,
         value: Decimal,
         observation_type: ObservationType,
     ):
-        self._id = id_
         self._effective = effective
         self._type_measure = type_measure
         self._value = value
         self._observation_type = observation_type
-
-    @property
-    def id(self) -> int | None:
-        return self._id
 
     @property
     def effective(self) -> DateRange:

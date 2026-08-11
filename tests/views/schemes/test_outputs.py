@@ -18,21 +18,18 @@ class TestSchemeOutputsContext:
     def test_from_domain_orders_by_type_then_measure(self) -> None:
         output_revisions = [
             OutputRevision(
-                id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_MILES,
                 value=Decimal(30),
                 observation_type=ObservationType.PLANNED,
             ),
             OutputRevision(
-                id_=2,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
                 value=Decimal(20),
                 observation_type=ObservationType.PLANNED,
             ),
             OutputRevision(
-                id_=3,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
@@ -47,7 +44,6 @@ class TestSchemeOutputsContext:
     def test_from_domain_groups_by_type_measure(self) -> None:
         output_revisions = [
             OutputRevision(
-                id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
@@ -68,7 +64,6 @@ class TestSchemeOutputsContext:
     def test_from_domain_when_no_planned(self) -> None:
         output_revisions = [
             OutputRevision(
-                id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(20),

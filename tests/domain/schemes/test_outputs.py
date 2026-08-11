@@ -18,7 +18,6 @@ class TestSchemeOutputs:
         outputs = SchemeOutputs()
         outputs.update_output(
             OutputRevision(
-                id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
@@ -33,14 +32,12 @@ class TestSchemeOutputs:
     def test_get_current_output_revisions(self) -> None:
         outputs = SchemeOutputs()
         output_revision1 = OutputRevision(
-            id_=1,
             effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.PLANNED,
         )
         output_revision2 = OutputRevision(
-            id_=2,
             effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
             value=Decimal(20),
@@ -53,7 +50,6 @@ class TestSchemeOutputs:
     def test_update_output(self) -> None:
         outputs = SchemeOutputs()
         output_revision = OutputRevision(
-            id_=1,
             effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
@@ -67,14 +63,12 @@ class TestSchemeOutputs:
     def test_update_outputs(self) -> None:
         outputs = SchemeOutputs()
         output_revision1 = OutputRevision(
-            id_=1,
             effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.ACTUAL,
         )
         output_revision2 = OutputRevision(
-            id_=2,
             effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
             value=Decimal(20),
@@ -89,7 +83,6 @@ class TestSchemeOutputs:
 class TestOutputRevision:
     def test_create(self) -> None:
         output_revision = OutputRevision(
-            id_=1,
             effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
@@ -97,8 +90,7 @@ class TestOutputRevision:
         )
 
         assert (
-            output_revision.id == 1
-            and output_revision.effective == DateRange(datetime(2020, 1, 1), None)
+            output_revision.effective == DateRange(datetime(2020, 1, 1), None)
             and output_revision.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision.value == Decimal(10)
             and output_revision.observation_type == ObservationType.ACTUAL

@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes.funding import BidStatus, BidStatusRevision
 from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, OverviewRevision, SchemeType
 from schemes.domain.schemes.schemes import Scheme, Status
 
@@ -13,17 +12,12 @@ def build_scheme(
     type_: SchemeType | None = None,
     funding_programme: FundingProgramme | None = None,
     overview_revisions: list[OverviewRevision] | None = None,
-    bid_status: BidStatus | None = None,
-    bid_status_revisions: list[BidStatusRevision] | None = None,
     status: Status = Status.ACTIVE,
 ) -> Scheme:
     if any(
         (name is not None, authority_abbreviation is not None, type_ is not None, funding_programme is not None)
     ) == (overview_revisions is not None):
         assert False, "Either overview fields or revisions must be specified"
-
-    if bid_status is not None and bid_status_revisions is not None:
-        assert False, "Either bid status or revisions must be specified"
 
     if overview_revisions is not None:
         pass
@@ -40,13 +34,6 @@ def build_scheme(
     else:
         assert False, "Overview fields must be specified"
 
-    bid_status_revisions = (
-        bid_status_revisions
-        if bid_status_revisions is not None
-        else [BidStatusRevision(effective=DateRange(datetime.min, None), status=bid_status or BidStatus.FUNDED)]
-    )
-
     scheme = Scheme(reference, status)
     scheme.overview.update_overviews(*overview_revisions)
-    scheme.funding.update_bid_statuses(*bid_status_revisions)
     return scheme

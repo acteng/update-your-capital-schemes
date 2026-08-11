@@ -3,7 +3,6 @@ from datetime import datetime
 import pytest
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes.funding import BidStatus, BidStatusRevision
 from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeType
 from schemes.domain.schemes.schemes import Status
 from tests.builders import build_scheme
@@ -96,48 +95,6 @@ def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
                     type_=SchemeType.DEVELOPMENT,
                     funding_programme=FundingProgrammes.ATF4,
                 )
-            ],
-        )
-
-
-def test_build_scheme_with_minimal_bid_status_fields() -> None:
-    scheme = build_scheme(reference="", name="Wirral Package")
-
-    assert scheme.overview.name == "Wirral Package" and scheme.funding.bid_status == BidStatus.FUNDED
-
-
-def test_build_scheme_with_bid_status_fields() -> None:
-    scheme = build_scheme(reference="", name="Wirral Package", bid_status=BidStatus.SUBMITTED)
-
-    assert scheme.overview.name == "Wirral Package" and scheme.funding.bid_status == BidStatus.SUBMITTED
-
-
-def test_build_scheme_with_bid_status_revision() -> None:
-    scheme = build_scheme(
-        reference="",
-        name="Wirral Package",
-        bid_status_revisions=[
-            BidStatusRevision(effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED)
-        ],
-    )
-
-    assert scheme.overview.name == "Wirral Package" and scheme.funding.bid_status == BidStatus.SUBMITTED
-
-
-def test_build_scheme_with_no_bid_status_revisions() -> None:
-    scheme = build_scheme(reference="", name="Wirral Package", bid_status_revisions=[])
-
-    assert scheme.overview.name == "Wirral Package" and scheme.funding.bid_status_revisions == []
-
-
-def test_cannot_build_scheme_with_bid_status_fields_and_revision() -> None:
-    with pytest.raises(expected_exception=AssertionError, match="Either bid status or revisions must be specified"):
-        build_scheme(
-            reference="",
-            name="Wirral Package",
-            bid_status=BidStatus.SUBMITTED,
-            bid_status_revisions=[
-                BidStatusRevision(effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED)
             ],
         )
 

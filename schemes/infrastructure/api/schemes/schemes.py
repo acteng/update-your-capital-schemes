@@ -9,7 +9,6 @@ from schemes.infrastructure.api.schemes.authority_reviews import (
     CapitalSchemeAuthorityReviewModel,
     CreateCapitalSchemeAuthorityReviewModel,
 )
-from schemes.infrastructure.api.schemes.bid_statuses import CapitalSchemeBidStatusDetailsModel
 from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel
 from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel
 from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel
@@ -21,7 +20,6 @@ from schemes.oauth import AsyncBaseApp, ClientAsyncBaseApp
 class CapitalSchemeModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
-    bid_status_details: CapitalSchemeBidStatusDetailsModel
     status: CapitalSchemeStatusModel
     financials: CollectionModel[CapitalSchemeFinancialModel]
     milestones: CollectionModel[CapitalSchemeMilestoneModel]
@@ -35,7 +33,6 @@ class CapitalSchemeModel(BaseModel):
     ) -> Scheme:
         scheme = Scheme(reference=self.reference, status=self.status.status.to_domain())
         scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
-        scheme.funding.update_bid_status(self.bid_status_details.to_domain())
         scheme.funding.update_financials(*[financial.to_domain() for financial in self.financials.items])
         scheme.milestones.update_milestones(*[milestone.to_domain() for milestone in self.milestones.items])
         scheme.outputs.update_outputs(*[output.to_domain() for output in self.outputs.items])

@@ -55,60 +55,9 @@ class FinancialRevision:
         self._effective = DateRange(self.effective.date_from, effective_date_to)
 
 
-@unique
-class BidStatus(Enum):
-    SUBMITTED = auto()
-    FUNDED = auto()
-    NOT_FUNDED = auto()
-    SPLIT = auto()
-    DELETED = auto()
-
-
-class BidStatusRevision:
-    def __init__(self, effective: DateRange, status: BidStatus):
-        self._effective = effective
-        self._status = status
-
-    @property
-    def effective(self) -> DateRange:
-        return self._effective
-
-    @property
-    def status(self) -> BidStatus:
-        return self._status
-
-
 class SchemeFunding:
     def __init__(self) -> None:
-        self._bid_status_revisions: list[BidStatusRevision] = []
         self._financial_revisions: list[FinancialRevision] = []
-
-    @property
-    def bid_status_revisions(self) -> list[BidStatusRevision]:
-        return list(self._bid_status_revisions)
-
-    def update_bid_status(self, bid_status_revision: BidStatusRevision) -> None:
-        if bid_status_revision.effective.date_to is None:
-            self._ensure_no_current_bid_status()
-
-        self._bid_status_revisions.append(bid_status_revision)
-
-    def update_bid_statuses(self, *bid_status_revisions: BidStatusRevision) -> None:
-        for bid_status_revision in bid_status_revisions:
-            self.update_bid_status(bid_status_revision)
-
-    def _ensure_no_current_bid_status(self) -> None:
-        current_bid_status_revision = self._current_bid_status_revision()
-        if current_bid_status_revision:
-            raise ValueError(f"Current bid status already exists: {current_bid_status_revision}")
-
-    @property
-    def bid_status(self) -> BidStatus | None:
-        current_bid_status_revision = self._current_bid_status_revision()
-        return current_bid_status_revision.status if current_bid_status_revision else None
-
-    def _current_bid_status_revision(self) -> BidStatusRevision | None:
-        return next((revision for revision in self.bid_status_revisions if revision.effective.date_to is None), None)
 
     @property
     def financial_revisions(self) -> list[FinancialRevision]:

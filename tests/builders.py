@@ -29,7 +29,6 @@ def build_scheme(
     elif name is not None:
         overview_revisions = [
             OverviewRevision(
-                id_=None,
                 effective=DateRange(datetime.min, None),
                 name=name,
                 authority_abbreviation=authority_abbreviation or "",

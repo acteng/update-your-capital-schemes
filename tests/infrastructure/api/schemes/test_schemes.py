@@ -94,8 +94,7 @@ class TestCapitalSchemeModel:
 
         (overview_revision1,) = scheme.overview.overview_revisions
         assert (
-            overview_revision1.id is not None
-            and overview_revision1.name == "Wirral Package"
+            overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
             and overview_revision1.type == SchemeType.CONSTRUCTION
@@ -277,8 +276,7 @@ class TestCapitalSchemeItemModel:
 
         (overview_revision1,) = scheme.overview.overview_revisions
         assert (
-            overview_revision1.id is not None
-            and overview_revision1.name == "Wirral Package"
+            overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
             and overview_revision1.type == SchemeType.CONSTRUCTION
@@ -344,8 +342,7 @@ class TestApiSchemeRepository:
         assert scheme
         (overview_revision1,) = scheme.overview.overview_revisions
         assert (
-            overview_revision1.id is not None
-            and overview_revision1.name == "Wirral Package"
+            overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
             and overview_revision1.type == SchemeType.CONSTRUCTION
@@ -603,8 +600,7 @@ class TestApiSchemeRepository:
 
         (overview_revision1,) = scheme1.overview.overview_revisions
         assert (
-            overview_revision1.id is not None
-            and overview_revision1.name == "Wirral Package"
+            overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
             and overview_revision1.type == SchemeType.CONSTRUCTION

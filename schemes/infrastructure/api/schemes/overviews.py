@@ -29,9 +29,8 @@ class CapitalSchemeOverviewModel(BaseModel):
         authority_models: list[AuthorityModel],
         funding_programme_item_models: list[FundingProgrammeModel] | list[FundingProgrammeItemModel],
     ) -> OverviewRevision:
-        # TODO: id, effective
+        # TODO: effective
         return OverviewRevision(
-            id_=0,
             effective=DateRange(date_from=datetime.min, date_to=None),
             name=self.name,
             authority_abbreviation=next(

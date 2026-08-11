@@ -47,7 +47,6 @@ def test_build_scheme_with_overview_revision() -> None:
         reference="",
         overview_revisions=[
             OverviewRevision(
-                id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 name="Wirral Package",
                 authority_abbreviation="LIV",
@@ -90,7 +89,6 @@ def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
             funding_programme=FundingProgrammes.ATF4,
             overview_revisions=[
                 OverviewRevision(
-                    id_=1,
                     effective=DateRange(datetime(2020, 1, 1), None),
                     name="Wirral Package",
                     authority_abbreviation="LIV",

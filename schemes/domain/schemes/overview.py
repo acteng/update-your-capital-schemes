@@ -35,26 +35,19 @@ class FundingProgrammes:
 
 
 class OverviewRevision:
-    # TODO: domain identifier should be mandatory for transient instances
     def __init__(
         self,
-        id_: int | None,
         effective: DateRange,
         name: str,
         authority_abbreviation: str,
         type_: SchemeType,
         funding_programme: FundingProgramme,
     ):
-        self._id = id_
         self._effective = effective
         self._name = name
         self._authority_abbreviation = authority_abbreviation
         self._type = type_
         self._funding_programme = funding_programme
-
-    @property
-    def id(self) -> int | None:
-        return self._id
 
     @property
     def effective(self) -> DateRange:

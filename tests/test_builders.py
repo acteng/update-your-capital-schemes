@@ -8,13 +8,17 @@ from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision,
 from tests.builders import build_scheme
 
 
+def test_build_scheme() -> None:
+    scheme = build_scheme(id_=1, reference="ATE00001", name="")
+
+    assert scheme.id == 1 and scheme.reference == "ATE00001"
+
+
 def test_build_scheme_with_minimal_overview_fields() -> None:
-    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+    scheme = build_scheme(id_=0, reference="", name="Wirral Package")
 
     assert (
-        scheme.id == 1
-        and scheme.reference == "ATE00001"
-        and scheme.overview.name == "Wirral Package"
+        scheme.overview.name == "Wirral Package"
         and scheme.overview.authority_abbreviation == ""
         and scheme.overview.type == SchemeType.CONSTRUCTION
         and scheme.overview.funding_programme == FundingProgrammes.ATF2
@@ -23,8 +27,8 @@ def test_build_scheme_with_minimal_overview_fields() -> None:
 
 def test_build_scheme_with_overview_fields() -> None:
     scheme = build_scheme(
-        id_=1,
-        reference="ATE00001",
+        id_=0,
+        reference="",
         name="Wirral Package",
         authority_abbreviation="LIV",
         type_=SchemeType.DEVELOPMENT,
@@ -32,9 +36,7 @@ def test_build_scheme_with_overview_fields() -> None:
     )
 
     assert (
-        scheme.id == 1
-        and scheme.reference == "ATE00001"
-        and scheme.overview.name == "Wirral Package"
+        scheme.overview.name == "Wirral Package"
         and scheme.overview.authority_abbreviation == "LIV"
         and scheme.overview.type == SchemeType.DEVELOPMENT
         and scheme.overview.funding_programme == FundingProgrammes.ATF4
@@ -43,11 +45,11 @@ def test_build_scheme_with_overview_fields() -> None:
 
 def test_build_scheme_with_overview_revision() -> None:
     scheme = build_scheme(
-        id_=1,
-        reference="ATE00001",
+        id_=0,
+        reference="",
         overview_revisions=[
             OverviewRevision(
-                id_=2,
+                id_=1,
                 effective=DateRange(datetime(2020, 1, 1), None),
                 name="Wirral Package",
                 authority_abbreviation="LIV",
@@ -58,9 +60,7 @@ def test_build_scheme_with_overview_revision() -> None:
     )
 
     assert (
-        scheme.id == 1
-        and scheme.reference == "ATE00001"
-        and scheme.overview.name == "Wirral Package"
+        scheme.overview.name == "Wirral Package"
         and scheme.overview.authority_abbreviation == "LIV"
         and scheme.overview.type == SchemeType.DEVELOPMENT
         and scheme.overview.funding_programme == FundingProgrammes.ATF4
@@ -68,16 +68,16 @@ def test_build_scheme_with_overview_revision() -> None:
 
 
 def test_build_scheme_with_no_overview_revisions() -> None:
-    scheme = build_scheme(id_=1, reference="ATE00001", overview_revisions=[])
+    scheme = build_scheme(id_=0, reference="", overview_revisions=[])
 
-    assert scheme.id == 1 and scheme.reference == "ATE00001" and scheme.overview.overview_revisions == []
+    assert scheme.overview.overview_revisions == []
 
 
 def test_cannot_build_scheme_without_overview() -> None:
     with pytest.raises(
         expected_exception=AssertionError, match="Either overview fields or revisions must be specified"
     ):
-        build_scheme(id_=1, reference="ATE00001")
+        build_scheme(id_=0, reference="")
 
 
 def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
@@ -85,15 +85,15 @@ def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
         expected_exception=AssertionError, match="Either overview fields or revisions must be specified"
     ):
         build_scheme(
-            id_=1,
-            reference="ATE00001",
+            id_=0,
+            reference="",
             name="Wirral Package",
             authority_abbreviation="LIV",
             type_=SchemeType.DEVELOPMENT,
             funding_programme=FundingProgrammes.ATF4,
             overview_revisions=[
                 OverviewRevision(
-                    id_=2,
+                    id_=1,
                     effective=DateRange(datetime(2020, 1, 1), None),
                     name="Wirral Package",
                     authority_abbreviation="LIV",
@@ -105,61 +105,41 @@ def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
 
 
 def test_build_scheme_with_minimal_bid_status_fields() -> None:
-    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+    scheme = build_scheme(id_=0, reference="", name="Wirral Package")
 
-    assert (
-        scheme.id == 1
-        and scheme.reference == "ATE00001"
-        and scheme.overview.name == "Wirral Package"
-        and scheme.funding.bid_status == BidStatus.FUNDED
-    )
+    assert scheme.overview.name == "Wirral Package" and scheme.funding.bid_status == BidStatus.FUNDED
 
 
 def test_build_scheme_with_bid_status_fields() -> None:
-    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", bid_status=BidStatus.SUBMITTED)
+    scheme = build_scheme(id_=0, reference="", name="Wirral Package", bid_status=BidStatus.SUBMITTED)
 
-    assert (
-        scheme.id == 1
-        and scheme.reference == "ATE00001"
-        and scheme.overview.name == "Wirral Package"
-        and scheme.funding.bid_status == BidStatus.SUBMITTED
-    )
+    assert scheme.overview.name == "Wirral Package" and scheme.funding.bid_status == BidStatus.SUBMITTED
 
 
 def test_build_scheme_with_bid_status_revision() -> None:
     scheme = build_scheme(
-        id_=1,
-        reference="ATE00001",
+        id_=0,
+        reference="",
         name="Wirral Package",
         bid_status_revisions=[
             BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED)
         ],
     )
 
-    assert (
-        scheme.id == 1
-        and scheme.reference == "ATE00001"
-        and scheme.overview.name == "Wirral Package"
-        and scheme.funding.bid_status == BidStatus.SUBMITTED
-    )
+    assert scheme.overview.name == "Wirral Package" and scheme.funding.bid_status == BidStatus.SUBMITTED
 
 
 def test_build_scheme_with_no_bid_status_revisions() -> None:
-    scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", bid_status_revisions=[])
+    scheme = build_scheme(id_=0, reference="", name="Wirral Package", bid_status_revisions=[])
 
-    assert (
-        scheme.id == 1
-        and scheme.reference == "ATE00001"
-        and scheme.overview.name == "Wirral Package"
-        and scheme.funding.bid_status_revisions == []
-    )
+    assert scheme.overview.name == "Wirral Package" and scheme.funding.bid_status_revisions == []
 
 
 def test_cannot_build_scheme_with_bid_status_fields_and_revision() -> None:
     with pytest.raises(expected_exception=AssertionError, match="Either bid status or revisions must be specified"):
         build_scheme(
-            id_=1,
-            reference="ATE00001",
+            id_=0,
+            reference="",
             name="Wirral Package",
             bid_status=BidStatus.SUBMITTED,
             bid_status_revisions=[

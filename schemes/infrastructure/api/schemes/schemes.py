@@ -59,7 +59,7 @@ class CapitalSchemeItemModel(BaseModel):
         # TODO: id
         scheme = Scheme(id_=0, reference=self.reference)
         scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
-        # TODO: bid_status
+        # bid status is always funded to match filters in get capital schemes by bid submitting authority
         scheme.funding.update_bid_status(
             BidStatusRevision(id_=0, effective=DateRange(date_from=datetime.min, date_to=None), status=BidStatus.FUNDED)
         )

@@ -24,36 +24,28 @@ class TestScheme:
             session["user"] = {"email": "boardman@example.com"}
 
     async def test_scheme_shows_title(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.title == "Wirral Package - Update your capital schemes - Active Travel England - GOV.UK"
 
     async def test_scheme_shows_back(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.back_url == "/schemes"
 
     async def test_scheme_shows_authority(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.heading and scheme_page.heading.caption == "Liverpool City Region Combined Authority"
 
     async def test_scheme_shows_name(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
@@ -75,7 +67,7 @@ class TestScheme:
         expected_needs_review: bool,
     ) -> None:
         clock.now = datetime(2023, 4, 24)
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
         )
@@ -89,9 +81,7 @@ class TestScheme:
         self, authorities: AuthorityRepository, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
-        await schemes.add(
-            build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
-        )
+        await schemes.add(build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO"))
 
         forbidden_page = await SchemePage.open_when_unauthorized(async_client, reference="ATE00002")
 
@@ -100,7 +90,7 @@ class TestScheme:
     async def test_cannot_scheme_when_no_authority(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
+        await schemes.add(build_scheme(reference="ATE00002", overview_revisions=[]))
 
         forbidden_page = await SchemePage.open_when_unauthorized(async_client, reference="ATE00002")
 
@@ -116,7 +106,6 @@ class TestScheme:
     ) -> None:
         await schemes.add(
             build_scheme(
-                id_=1,
                 reference="ATE00001",
                 name="Wirral Package",
                 authority_abbreviation="LIV",

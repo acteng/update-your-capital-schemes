@@ -55,7 +55,7 @@ class MemorySchemeRepository(SchemeRepository):
                 for scheme in self._schemes.values()
                 if scheme.overview.authority_abbreviation == authority_abbreviation
             ],
-            key=lambda scheme: scheme.id,
+            key=lambda scheme: scheme.reference,
         )
 
     async def update(self, scheme: Scheme) -> None:

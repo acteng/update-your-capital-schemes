@@ -24,16 +24,14 @@ class TestSchemeReview:
             session["user"] = {"email": "boardman@example.com"}
 
     async def test_scheme_shows_confirm(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.review.form.confirm_url == "/schemes/ATE00001"
 
     async def test_scheme_shows_last_reviewed(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
         )
@@ -46,9 +44,7 @@ class TestSchemeReview:
     async def test_scheme_shows_last_reviewed_when_no_authority_reviews(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
@@ -58,7 +54,7 @@ class TestSchemeReview:
         self, clock: Clock, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         clock.now = datetime(2023, 4, 24, 12)
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
@@ -77,9 +73,7 @@ class TestSchemeReview:
     async def test_review_shows_schemes(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         schemes_page = SchemesPage(
             await async_client.post(
@@ -92,9 +86,7 @@ class TestSchemeReview:
     async def test_review_shows_success_notification(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         schemes_page = SchemesPage(
             await async_client.post(
@@ -111,7 +103,7 @@ class TestSchemeReview:
     async def test_cannot_review_when_error(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
         )
@@ -142,9 +134,7 @@ class TestSchemeReview:
     async def test_cannot_review_when_no_csrf_token(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = SchemePage(await async_client.post("/schemes/ATE00001", data={}, follow_redirects=True))
 
@@ -158,9 +148,7 @@ class TestSchemeReview:
     async def test_cannot_review_when_incorrect_csrf_token(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = SchemePage(
             await async_client.post("/schemes/ATE00001", data={"csrf_token": "x"}, follow_redirects=True)
@@ -181,9 +169,7 @@ class TestSchemeReview:
         csrf_token: str,
     ) -> None:
         await authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
-        await schemes.add(
-            build_scheme(id_=2, reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
-        )
+        await schemes.add(build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO"))
 
         response = await async_client.post(
             "/schemes/ATE00002", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}
@@ -194,7 +180,7 @@ class TestSchemeReview:
     async def test_cannot_review_when_no_authority(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
-        await schemes.add(build_scheme(id_=2, reference="ATE00002", overview_revisions=[]))
+        await schemes.add(build_scheme(reference="ATE00002", overview_revisions=[]))
 
         response = await async_client.post(
             "/schemes/ATE00002", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}
@@ -212,7 +198,6 @@ class TestSchemeReview:
     ) -> None:
         await schemes.add(
             build_scheme(
-                id_=1,
                 reference="ATE00001",
                 name="Wirral Package",
                 authority_abbreviation="LIV",

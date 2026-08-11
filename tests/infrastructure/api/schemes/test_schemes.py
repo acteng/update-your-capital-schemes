@@ -45,7 +45,7 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
-        assert scheme.id is not None and scheme.reference == "ATE00001"
+        assert scheme.reference == "ATE00001"
         assert not scheme.funding.financial_revisions
         assert not scheme.milestones.milestone_revisions
         assert not scheme.outputs.output_revisions
@@ -251,7 +251,7 @@ class TestCapitalSchemeItemModel:
             [_dummy_authority_model()], [_dummy_funding_programme_item_model()]
         )
 
-        assert scheme.id is not None and scheme.reference == "ATE00001"
+        assert scheme.reference == "ATE00001"
 
     def test_to_domain_sets_overview_revision(self) -> None:
         authority_model = AuthorityModel(
@@ -317,7 +317,7 @@ class TestApiSchemeRepository:
 
         scheme = await schemes.get("ATE00001")
 
-        assert scheme and scheme.id is not None and scheme.reference == "ATE00001"
+        assert scheme and scheme.reference == "ATE00001"
 
     async def test_get_scheme_sets_overview_revision(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
@@ -561,8 +561,8 @@ class TestApiSchemeRepository:
 
         scheme1, scheme2 = await schemes.get_by_authority("LIV")
 
-        assert scheme1.id is not None and scheme1.reference == "ATE00001"
-        assert scheme2.id is not None and scheme2.reference == "ATE00002"
+        assert scheme1.reference == "ATE00001"
+        assert scheme2.reference == "ATE00002"
 
     async def test_get_schemes_by_authority_sets_overview_revision(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
@@ -780,7 +780,7 @@ class TestApiSchemeRepository:
         assert remote_app.client_count == 1
 
     async def test_update_scheme_financials(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=2,
@@ -809,7 +809,7 @@ class TestApiSchemeRepository:
     async def test_update_scheme_financials_when_no_changes(
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=2,
@@ -825,7 +825,7 @@ class TestApiSchemeRepository:
         assert not api_mock.calls.called
 
     async def test_update_scheme_milestones(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=2,
@@ -879,7 +879,7 @@ class TestApiSchemeRepository:
     async def test_update_scheme_milestones_when_no_changes(
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=2,
@@ -896,7 +896,7 @@ class TestApiSchemeRepository:
         assert not api_mock.calls.called
 
     async def test_update_scheme_authority_reviews(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
             AuthorityReview(id_=None, review_date=datetime(2020, 2, 1), source=DataSource.AUTHORITY_UPDATE),
@@ -913,7 +913,7 @@ class TestApiSchemeRepository:
     async def test_update_scheme_authority_reviews_when_no_changes(
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
         )
@@ -925,7 +925,7 @@ class TestApiSchemeRepository:
     async def test_update_scheme_reuses_client(
         self, api_mock: MockRouter, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=None,

@@ -71,7 +71,7 @@ class TestSchemeFundingContext:
 @pytest.mark.usefixtures("app")
 class TestChangeSpendToDateContext:
     def test_from_domain(self) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=1,

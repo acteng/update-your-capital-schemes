@@ -7,7 +7,6 @@ from schemes.domain.schemes.schemes import Scheme
 
 
 def build_scheme(
-    id_: int,
     reference: str,
     name: str | None = None,
     authority_abbreviation: str | None = None,
@@ -49,7 +48,7 @@ def build_scheme(
         ]
     )
 
-    scheme = Scheme(id_, reference)
+    scheme = Scheme(reference)
     scheme.overview.update_overviews(*overview_revisions)
     scheme.funding.update_bid_statuses(*bid_status_revisions)
     return scheme

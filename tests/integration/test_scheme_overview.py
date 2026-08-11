@@ -30,7 +30,6 @@ class TestSchemeOverview:
     ) -> None:
         await schemes.add(
             build_scheme(
-                id_=1,
                 reference="ATE00001",
                 name="Wirral Package",
                 authority_abbreviation="LIV",
@@ -50,7 +49,6 @@ class TestSchemeOverview:
 
     async def test_scheme_shows_overview(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(
-            id_=1,
             reference="ATE00001",
             name="Wirral Package",
             authority_abbreviation="LIV",

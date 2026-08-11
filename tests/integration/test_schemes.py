@@ -46,7 +46,7 @@ class TestSchemes:
         expected_notification_banner: str,
     ) -> None:
         clock.now = now
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -63,7 +63,7 @@ class TestSchemes:
         self, async_client: AsyncFlaskClient, clock: Clock, schemes: SchemeRepository
     ) -> None:
         clock.now = datetime(2020, 3, 1)
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -80,17 +80,16 @@ class TestSchemes:
 
     async def test_schemes_shows_schemes(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"),
-            build_scheme(id_=2, reference="ATE00002", name="School Streets", authority_abbreviation="LIV"),
+            build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"),
+            build_scheme(reference="ATE00002", name="School Streets", authority_abbreviation="LIV"),
             build_scheme(
-                id_=3,
                 reference="ATE00003",
                 name="Runcorn Busway",
                 authority_abbreviation="LIV",
                 bid_status=BidStatus.SUBMITTED,
             ),
-            build_scheme(id_=4, reference="ATE00004", name="Hospital Fields Road", authority_abbreviation="WYO"),
-            build_scheme(id_=5, reference="ATE00005", overview_revisions=[]),
+            build_scheme(reference="ATE00004", name="Hospital Fields Road", authority_abbreviation="WYO"),
+            build_scheme(reference="ATE00005", overview_revisions=[]),
         )
 
         schemes_page = await SchemesPage.open(async_client)
@@ -104,7 +103,6 @@ class TestSchemes:
     ) -> None:
         await schemes.add(
             build_scheme(
-                id_=1,
                 reference="ATE00001",
                 name="Wirral Package",
                 authority_abbreviation="LIV",
@@ -127,7 +125,6 @@ class TestSchemes:
 
     async def test_schemes_shows_scheme(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(
-            id_=1,
             reference="ATE00001",
             name="Wirral Package",
             authority_abbreviation="LIV",
@@ -155,7 +152,7 @@ class TestSchemes:
         self, clock: Clock, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         clock.now = datetime(2023, 4, 24)
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2023, 1, 2), source=DataSource.ATF3_BID)
         )
@@ -167,9 +164,7 @@ class TestSchemes:
         assert [row.needs_review for row in schemes_page.schemes] == [True]
 
     async def test_scheme_shows_scheme(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         schemes_page = await SchemesPage.open(async_client)
 

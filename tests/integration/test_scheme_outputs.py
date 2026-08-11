@@ -26,7 +26,7 @@ class TestSchemeOutputs:
     async def test_scheme_shows_minimal_outputs(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -45,7 +45,7 @@ class TestSchemeOutputs:
         assert outputs[0].planned == ""
 
     async def test_scheme_shows_outputs(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -81,7 +81,7 @@ class TestSchemeOutputs:
         ]
 
     async def test_scheme_shows_zero_outputs(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        scheme = build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
             OutputRevision(
                 id_=1,
@@ -102,9 +102,7 @@ class TestSchemeOutputs:
     async def test_scheme_shows_message_when_no_outputs(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(
-            build_scheme(id_=1, reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 

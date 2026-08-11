@@ -34,8 +34,7 @@ class CapitalSchemeModel(BaseModel):
         authority_models: list[AuthorityModel],
         funding_programme_item_models: list[FundingProgrammeModel] | list[FundingProgrammeItemModel],
     ) -> Scheme:
-        # TODO: id
-        scheme = Scheme(id_=0, reference=self.reference)
+        scheme = Scheme(reference=self.reference)
         scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
         scheme.funding.update_bid_status(self.bid_status_details.to_domain())
         scheme.funding.update_financials(*[financial.to_domain() for financial in self.financials.items])
@@ -56,8 +55,7 @@ class CapitalSchemeItemModel(BaseModel):
     def to_domain(
         self, authority_models: list[AuthorityModel], funding_programme_item_models: list[FundingProgrammeItemModel]
     ) -> Scheme:
-        # TODO: id
-        scheme = Scheme(id_=0, reference=self.reference)
+        scheme = Scheme(reference=self.reference)
         scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
         # bid status is always funded to match filters in get capital schemes by bid submitting authority
         scheme.funding.update_bid_status(

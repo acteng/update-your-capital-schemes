@@ -6,18 +6,13 @@ from schemes.domain.schemes.reviews import SchemeReviews
 
 
 class Scheme:
-    def __init__(self, id_: int, reference: str):
-        self._id = id_
+    def __init__(self, reference: str):
         self._reference = reference
         self._overview = SchemeOverview()
         self._funding = SchemeFunding()
         self._milestones = SchemeMilestones()
         self._outputs = SchemeOutputs()
         self._reviews = SchemeReviews()
-
-    @property
-    def id(self) -> int:
-        return self._id
 
     @property
     def reference(self) -> str:

@@ -9,13 +9,13 @@ from tests.builders import build_scheme
 
 
 def test_build_scheme() -> None:
-    scheme = build_scheme(id_=1, reference="ATE00001", name="")
+    scheme = build_scheme(reference="ATE00001", name="")
 
-    assert scheme.id == 1 and scheme.reference == "ATE00001"
+    assert scheme.reference == "ATE00001"
 
 
 def test_build_scheme_with_minimal_overview_fields() -> None:
-    scheme = build_scheme(id_=0, reference="", name="Wirral Package")
+    scheme = build_scheme(reference="", name="Wirral Package")
 
     assert (
         scheme.overview.name == "Wirral Package"
@@ -27,7 +27,6 @@ def test_build_scheme_with_minimal_overview_fields() -> None:
 
 def test_build_scheme_with_overview_fields() -> None:
     scheme = build_scheme(
-        id_=0,
         reference="",
         name="Wirral Package",
         authority_abbreviation="LIV",
@@ -45,7 +44,6 @@ def test_build_scheme_with_overview_fields() -> None:
 
 def test_build_scheme_with_overview_revision() -> None:
     scheme = build_scheme(
-        id_=0,
         reference="",
         overview_revisions=[
             OverviewRevision(
@@ -68,7 +66,7 @@ def test_build_scheme_with_overview_revision() -> None:
 
 
 def test_build_scheme_with_no_overview_revisions() -> None:
-    scheme = build_scheme(id_=0, reference="", overview_revisions=[])
+    scheme = build_scheme(reference="", overview_revisions=[])
 
     assert scheme.overview.overview_revisions == []
 
@@ -77,7 +75,7 @@ def test_cannot_build_scheme_without_overview() -> None:
     with pytest.raises(
         expected_exception=AssertionError, match="Either overview fields or revisions must be specified"
     ):
-        build_scheme(id_=0, reference="")
+        build_scheme(reference="")
 
 
 def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
@@ -85,7 +83,6 @@ def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
         expected_exception=AssertionError, match="Either overview fields or revisions must be specified"
     ):
         build_scheme(
-            id_=0,
             reference="",
             name="Wirral Package",
             authority_abbreviation="LIV",
@@ -105,20 +102,19 @@ def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
 
 
 def test_build_scheme_with_minimal_bid_status_fields() -> None:
-    scheme = build_scheme(id_=0, reference="", name="Wirral Package")
+    scheme = build_scheme(reference="", name="Wirral Package")
 
     assert scheme.overview.name == "Wirral Package" and scheme.funding.bid_status == BidStatus.FUNDED
 
 
 def test_build_scheme_with_bid_status_fields() -> None:
-    scheme = build_scheme(id_=0, reference="", name="Wirral Package", bid_status=BidStatus.SUBMITTED)
+    scheme = build_scheme(reference="", name="Wirral Package", bid_status=BidStatus.SUBMITTED)
 
     assert scheme.overview.name == "Wirral Package" and scheme.funding.bid_status == BidStatus.SUBMITTED
 
 
 def test_build_scheme_with_bid_status_revision() -> None:
     scheme = build_scheme(
-        id_=0,
         reference="",
         name="Wirral Package",
         bid_status_revisions=[
@@ -130,7 +126,7 @@ def test_build_scheme_with_bid_status_revision() -> None:
 
 
 def test_build_scheme_with_no_bid_status_revisions() -> None:
-    scheme = build_scheme(id_=0, reference="", name="Wirral Package", bid_status_revisions=[])
+    scheme = build_scheme(reference="", name="Wirral Package", bid_status_revisions=[])
 
     assert scheme.overview.name == "Wirral Package" and scheme.funding.bid_status_revisions == []
 
@@ -138,7 +134,6 @@ def test_build_scheme_with_no_bid_status_revisions() -> None:
 def test_cannot_build_scheme_with_bid_status_fields_and_revision() -> None:
     with pytest.raises(expected_exception=AssertionError, match="Either bid status or revisions must be specified"):
         build_scheme(
-            id_=0,
             reference="",
             name="Wirral Package",
             bid_status=BidStatus.SUBMITTED,

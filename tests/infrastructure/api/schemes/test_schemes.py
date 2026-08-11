@@ -51,21 +51,6 @@ class TestCapitalSchemeModel:
         assert not scheme.outputs.output_revisions
         assert not scheme.reviews.authority_reviews
 
-    def test_to_domain_sets_bid_status_revision(self) -> None:
-        capital_scheme_model = CapitalSchemeModel(
-            reference="ATE00001",
-            overview=_dummy_overview_model(),
-            bid_status_details=CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED),
-            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
-            milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
-            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
-        )
-
-        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
-
-        (bid_status_revision1,) = scheme.funding.bid_status_revisions
-        assert bid_status_revision1.status == BidStatus.FUNDED
-
     def test_to_domain_sets_overview_revision(self) -> None:
         authority_model = AuthorityModel(
             id=AnyUrl("https://api.example/authorities/LIV"),
@@ -99,6 +84,21 @@ class TestCapitalSchemeModel:
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
             and overview_revision1.type == SchemeType.CONSTRUCTION
         )
+
+    def test_to_domain_sets_bid_status_revision(self) -> None:
+        capital_scheme_model = CapitalSchemeModel(
+            reference="ATE00001",
+            overview=_dummy_overview_model(),
+            bid_status_details=CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED),
+            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
+        )
+
+        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+
+        (bid_status_revision1,) = scheme.funding.bid_status_revisions
+        assert bid_status_revision1.status == BidStatus.FUNDED
 
     def test_to_domain_sets_financial_revisions(self) -> None:
         capital_scheme_model = CapitalSchemeModel(

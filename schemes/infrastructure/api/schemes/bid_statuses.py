@@ -21,7 +21,7 @@ class CapitalSchemeBidStatusDetailsModel(BaseModel):
     bid_status: BidStatusModel
 
     def to_domain(self) -> BidStatusRevision:
-        # TODO: id, effective
+        # TODO: effective
         return BidStatusRevision(
-            id_=0, effective=DateRange(date_from=datetime.min, date_to=None), status=self.bid_status.to_domain()
+            effective=DateRange(date_from=datetime.min, date_to=None), status=self.bid_status.to_domain()
         )

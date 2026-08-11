@@ -42,9 +42,7 @@ def build_scheme(
     bid_status_revisions = (
         bid_status_revisions
         if bid_status_revisions is not None
-        else [
-            BidStatusRevision(id_=None, effective=DateRange(datetime.min, None), status=bid_status or BidStatus.FUNDED)
-        ]
+        else [BidStatusRevision(effective=DateRange(datetime.min, None), status=bid_status or BidStatus.FUNDED)]
     )
 
     scheme = Scheme(reference)

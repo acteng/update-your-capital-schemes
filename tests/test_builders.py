@@ -116,7 +116,7 @@ def test_build_scheme_with_bid_status_revision() -> None:
         reference="",
         name="Wirral Package",
         bid_status_revisions=[
-            BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED)
+            BidStatusRevision(effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED)
         ],
     )
 
@@ -136,6 +136,6 @@ def test_cannot_build_scheme_with_bid_status_fields_and_revision() -> None:
             name="Wirral Package",
             bid_status=BidStatus.SUBMITTED,
             bid_status_revisions=[
-                BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED)
+                BidStatusRevision(effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED)
             ],
         )

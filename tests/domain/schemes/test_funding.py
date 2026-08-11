@@ -17,7 +17,7 @@ class TestSchemeFunding:
     def test_get_bid_status_revisions_is_copy(self) -> None:
         funding = SchemeFunding()
         funding.update_bid_status(
-            BidStatusRevision(id_=1, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.FUNDED)
+            BidStatusRevision(effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.FUNDED)
         )
 
         funding.bid_status_revisions.clear()
@@ -27,7 +27,7 @@ class TestSchemeFunding:
     def test_update_bid_status(self) -> None:
         funding = SchemeFunding()
         bid_status_revision = BidStatusRevision(
-            id_=1, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.FUNDED
+            effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.FUNDED
         )
 
         funding.update_bid_status(bid_status_revision)
@@ -37,22 +37,22 @@ class TestSchemeFunding:
     def test_cannot_update_bid_status_with_another_current_bid_status(self) -> None:
         funding = SchemeFunding()
         bid_status_revision = BidStatusRevision(
-            id_=1, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED
+            effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED
         )
         funding.update_bid_status(bid_status_revision)
 
         with pytest.raises(ValueError, match=re.escape(f"Current bid status already exists: {bid_status_revision!r}")):
             funding.update_bid_status(
-                BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.FUNDED)
+                BidStatusRevision(effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.FUNDED)
             )
 
     def test_update_bid_statuses(self) -> None:
         funding = SchemeFunding()
         bid_status_revision1 = BidStatusRevision(
-            id_=1, effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)), status=BidStatus.SUBMITTED
+            effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)), status=BidStatus.SUBMITTED
         )
         bid_status_revision2 = BidStatusRevision(
-            id_=2, effective=DateRange(datetime(2020, 2, 1), None), status=BidStatus.FUNDED
+            effective=DateRange(datetime(2020, 2, 1), None), status=BidStatus.FUNDED
         )
 
         funding.update_bid_statuses(bid_status_revision1, bid_status_revision2)
@@ -63,9 +63,9 @@ class TestSchemeFunding:
         funding = SchemeFunding()
         funding.update_bid_statuses(
             BidStatusRevision(
-                id_=1, effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)), status=BidStatus.SUBMITTED
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)), status=BidStatus.SUBMITTED
             ),
-            BidStatusRevision(id_=2, effective=DateRange(datetime(2020, 2, 1), None), status=BidStatus.FUNDED),
+            BidStatusRevision(effective=DateRange(datetime(2020, 2, 1), None), status=BidStatus.FUNDED),
         )
 
         assert funding.bid_status == BidStatus.FUNDED
@@ -396,14 +396,12 @@ class TestSchemeFunding:
 class TestBidStatusRevision:
     def test_create(self) -> None:
         bid_status_revision = BidStatusRevision(
-            id_=1,
             effective=DateRange(datetime(2020, 1, 1), None),
             status=BidStatus.FUNDED,
         )
 
         assert (
-            bid_status_revision.id == 1
-            and bid_status_revision.effective == DateRange(datetime(2020, 1, 1), None)
+            bid_status_revision.effective == DateRange(datetime(2020, 1, 1), None)
             and bid_status_revision.status == BidStatus.FUNDED
         )
 

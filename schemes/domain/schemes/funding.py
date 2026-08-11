@@ -65,15 +65,9 @@ class BidStatus(Enum):
 
 
 class BidStatusRevision:
-    # TODO: domain identifier should be mandatory for transient instances
-    def __init__(self, id_: int | None, effective: DateRange, status: BidStatus):
-        self._id = id_
+    def __init__(self, effective: DateRange, status: BidStatus):
         self._effective = effective
         self._status = status
-
-    @property
-    def id(self) -> int | None:
-        return self._id
 
     @property
     def effective(self) -> DateRange:

@@ -64,7 +64,7 @@ class TestCapitalSchemeModel:
         scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
 
         (bid_status_revision1,) = scheme.funding.bid_status_revisions
-        assert bid_status_revision1.id is not None and bid_status_revision1.status == BidStatus.FUNDED
+        assert bid_status_revision1.status == BidStatus.FUNDED
 
     def test_to_domain_sets_overview_revision(self) -> None:
         authority_model = AuthorityModel(
@@ -361,7 +361,7 @@ class TestApiSchemeRepository:
 
         assert scheme
         (bid_status_revision1,) = scheme.funding.bid_status_revisions
-        assert bid_status_revision1.id is not None and bid_status_revision1.status == BidStatus.FUNDED
+        assert bid_status_revision1.status == BidStatus.FUNDED
 
     async def test_get_scheme_sets_financial_revisions(
         self, api_mock: MockRouter, schemes: ApiSchemeRepository

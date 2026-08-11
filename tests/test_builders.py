@@ -5,13 +5,14 @@ import pytest
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.funding import BidStatus, BidStatusRevision
 from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeType
+from schemes.domain.schemes.schemes import Status
 from tests.builders import build_scheme
 
 
 def test_build_scheme() -> None:
     scheme = build_scheme(reference="ATE00001", name="")
 
-    assert scheme.reference == "ATE00001"
+    assert scheme.reference == "ATE00001" and scheme.status == Status.ACTIVE
 
 
 def test_build_scheme_with_minimal_overview_fields() -> None:
@@ -139,3 +140,9 @@ def test_cannot_build_scheme_with_bid_status_fields_and_revision() -> None:
                 BidStatusRevision(effective=DateRange(datetime(2020, 1, 1), None), status=BidStatus.SUBMITTED)
             ],
         )
+
+
+def test_build_scheme_with_status() -> None:
+    scheme = build_scheme(reference="", name="", status=Status.PAUSED)
+
+    assert scheme.status == Status.PAUSED

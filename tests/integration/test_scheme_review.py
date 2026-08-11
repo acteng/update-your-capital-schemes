@@ -5,9 +5,8 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import BidStatus
 from schemes.domain.schemes.reviews import AuthorityReview
-from schemes.domain.schemes.schemes import SchemeRepository
+from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.builders import build_scheme
@@ -201,7 +200,7 @@ class TestSchemeReview:
                 reference="ATE00001",
                 name="Wirral Package",
                 authority_abbreviation="LIV",
-                bid_status=BidStatus.SUBMITTED,
+                status=Status.PIPELINE,
             )
         )
 

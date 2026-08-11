@@ -6,6 +6,7 @@ from tests.e2e.api_client import (
     CapitalSchemeModel,
     CapitalSchemeOutputModel,
     CapitalSchemeOverviewModel,
+    CapitalSchemeStatusModel,
     CollectionModel,
 )
 
@@ -17,6 +18,7 @@ def build_capital_scheme_model(
     funding_programme: str,
     type_: str = "construction",
     bid_status_details: CapitalSchemeBidStatusDetailsModel | None = None,
+    status: CapitalSchemeStatusModel | None = None,
     financials: list[CapitalSchemeFinancialModel] | None = None,
     milestones: CapitalSchemeMilestonesModel | None = None,
     outputs: list[CapitalSchemeOutputModel] | None = None,
@@ -31,6 +33,7 @@ def build_capital_scheme_model(
             type=type_,
         ),
         bid_status_details=bid_status_details or CapitalSchemeBidStatusDetailsModel(bid_status="funded"),
+        status=status or CapitalSchemeStatusModel(status="active"),
         financials=CollectionModel[CapitalSchemeFinancialModel](items=financials or []),
         milestones=milestones or CapitalSchemeMilestonesModel(current_milestone=None, items=[]),
         outputs=CollectionModel[CapitalSchemeOutputModel](items=outputs or []),

@@ -23,6 +23,10 @@ class CapitalSchemeBidStatusDetailsModel(BaseModel):
     bid_status: str
 
 
+class CapitalSchemeStatusModel(BaseModel):
+    status: str
+
+
 class CapitalSchemeFinancialModel(BaseModel):
     type: str
     amount: int
@@ -60,6 +64,7 @@ class CapitalSchemeModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
     bid_status_details: CapitalSchemeBidStatusDetailsModel
+    status: CapitalSchemeStatusModel
     financials: CollectionModel[CapitalSchemeFinancialModel]
     milestones: CapitalSchemeMilestonesModel
     outputs: CollectionModel[CapitalSchemeOutputModel]

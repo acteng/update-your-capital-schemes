@@ -5,10 +5,9 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import BidStatus
 from schemes.domain.schemes.overview import FundingProgrammes
 from schemes.domain.schemes.reviews import AuthorityReview
-from schemes.domain.schemes.schemes import SchemeRepository
+from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.builders import build_scheme
@@ -86,7 +85,7 @@ class TestSchemes:
                 reference="ATE00003",
                 name="Runcorn Busway",
                 authority_abbreviation="LIV",
-                bid_status=BidStatus.SUBMITTED,
+                status=Status.PIPELINE,
             ),
             build_scheme(reference="ATE00004", name="Hospital Fields Road", authority_abbreviation="WYO"),
             build_scheme(reference="ATE00005", overview_revisions=[]),

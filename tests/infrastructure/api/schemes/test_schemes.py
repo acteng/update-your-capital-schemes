@@ -14,6 +14,7 @@ from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure
 from schemes.domain.schemes.overview import FundingProgrammes, SchemeType
 from schemes.domain.schemes.reviews import AuthorityReview
+from schemes.domain.schemes.schemes import Status
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.data_sources import DataSourceModel
@@ -27,6 +28,7 @@ from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestone
 from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel, OutputMeasureModel, OutputTypeModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel, CapitalSchemeTypeModel
 from schemes.infrastructure.api.schemes.schemes import ApiSchemeRepository, CapitalSchemeItemModel, CapitalSchemeModel
+from schemes.infrastructure.api.schemes.statuses import CapitalSchemeStatusModel, StatusModel
 from schemes.oauth import ClientAsyncBaseApp
 from tests.builders import build_scheme
 from tests.infrastructure.api.conftest import StubRemoteApp
@@ -38,6 +40,7 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=_dummy_overview_model(),
             bid_status_details=_dummy_bid_status_details_model(),
+            status=_dummy_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
@@ -70,6 +73,7 @@ class TestCapitalSchemeModel:
                 type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
             bid_status_details=_dummy_bid_status_details_model(),
+            status=_dummy_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
@@ -90,6 +94,7 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=_dummy_overview_model(),
             bid_status_details=CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.FUNDED),
+            status=_dummy_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
@@ -100,11 +105,27 @@ class TestCapitalSchemeModel:
         (bid_status_revision1,) = scheme.funding.bid_status_revisions
         assert bid_status_revision1.status == BidStatus.FUNDED
 
+    def test_to_domain_sets_status(self) -> None:
+        capital_scheme_model = CapitalSchemeModel(
+            reference="ATE00001",
+            overview=_dummy_overview_model(),
+            bid_status_details=_dummy_bid_status_details_model(),
+            status=CapitalSchemeStatusModel(status=StatusModel.ACTIVE),
+            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
+            outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
+        )
+
+        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+
+        assert scheme.status == Status.ACTIVE
+
     def test_to_domain_sets_financial_revisions(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
             overview=_dummy_overview_model(),
             bid_status_details=_dummy_bid_status_details_model(),
+            status=_dummy_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](
                 items=[
                     CapitalSchemeFinancialModel(
@@ -140,6 +161,7 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=_dummy_overview_model(),
             bid_status_details=_dummy_bid_status_details_model(),
+            status=_dummy_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](
                 items=[
@@ -183,6 +205,7 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=_dummy_overview_model(),
             bid_status_details=_dummy_bid_status_details_model(),
+            status=_dummy_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](
@@ -222,6 +245,7 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=_dummy_overview_model(),
             bid_status_details=_dummy_bid_status_details_model(),
+            status=_dummy_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
@@ -279,6 +303,15 @@ class TestCapitalSchemeItemModel:
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
             and overview_revision1.type == SchemeType.CONSTRUCTION
         )
+
+    def test_to_domain_sets_status(self) -> None:
+        capital_scheme_item_model = CapitalSchemeItemModel(reference="ATE00001", overview=_dummy_overview_model())
+
+        scheme = capital_scheme_item_model.to_domain(
+            [_dummy_authority_model()], [_dummy_funding_programme_item_model()]
+        )
+
+        assert scheme.status == Status.ACTIVE
 
     def test_to_domain_sets_authority_review(self) -> None:
         capital_scheme_item_model = CapitalSchemeItemModel(
@@ -360,6 +393,17 @@ class TestApiSchemeRepository:
         assert scheme
         (bid_status_revision1,) = scheme.funding.bid_status_revisions
         assert bid_status_revision1.status == BidStatus.FUNDED
+
+    async def test_get_scheme_sets_status(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
+        api_mock.get(_build_funding_programme_json()["@id"]).respond(200, json=_build_funding_programme_json())
+        api_mock.get(_build_authority_json()["@id"]).respond(200, json=_build_authority_json())
+        api_mock.get("/capital-schemes/ATE00001").respond(
+            200, json=_build_capital_scheme_json(reference="ATE00001", status="active")
+        )
+
+        scheme = await schemes.get("ATE00001")
+
+        assert scheme and scheme.status == Status.ACTIVE
 
     async def test_get_scheme_sets_financial_revisions(
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
@@ -602,6 +646,38 @@ class TestApiSchemeRepository:
             and overview_revision1.type == SchemeType.CONSTRUCTION
         )
 
+    async def test_get_schemes_by_authority_sets_status(
+        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
+    ) -> None:
+        api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
+        api_mock.get("/capital-schemes/milestones").respond(200, json={"items": []})
+        api_mock.get("/authorities/LIV").respond(
+            200,
+            json=_build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+            ),
+        )
+        api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
+            200,
+            json={
+                "items": [
+                    _build_capital_scheme_item_json(
+                        reference="ATE00001", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                    ),
+                    _build_capital_scheme_item_json(
+                        reference="ATE00002", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                    ),
+                ]
+            },
+        )
+
+        scheme1, scheme2 = await schemes.get_by_authority("LIV")
+
+        assert scheme1.status == Status.ACTIVE
+        assert scheme2.status == Status.ACTIVE
+
     async def test_get_schemes_by_authority_sets_authority_review(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
@@ -679,7 +755,7 @@ class TestApiSchemeRepository:
 
         assert scheme1.reference == "ATE00001"
 
-    async def test_get_schemes_by_authority_filters_by_bid_status_funded(
+    async def test_get_schemes_by_authority_filters_by_status_active(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(200, json={"items": [_build_funding_programme_item_json()]})
@@ -692,7 +768,7 @@ class TestApiSchemeRepository:
                 bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
             ),
         )
-        api_mock.get("/authorities/LIV/capital-schemes/bid-submitting", params={"bid-status": "funded"}).respond(
+        api_mock.get("/authorities/LIV/capital-schemes/bid-submitting", params={"status": "active"}).respond(
             200,
             json={
                 "items": [
@@ -974,6 +1050,10 @@ def _dummy_bid_status_details_model() -> CapitalSchemeBidStatusDetailsModel:
     return CapitalSchemeBidStatusDetailsModel(bid_status=BidStatusModel.SUBMITTED)
 
 
+def _dummy_status_model() -> CapitalSchemeStatusModel:
+    return CapitalSchemeStatusModel(status=StatusModel.PIPELINE)
+
+
 def _build_funding_programme_json(id_: str | None = None, code: str | None = None) -> dict[str, Any]:
     return {"@id": id_ or "https://api.example/funding-programmes/dummy", "code": code or "dummy"}
 
@@ -1061,6 +1141,7 @@ def _build_capital_scheme_json(
     funding_programme: str | None = None,
     type_: str | None = None,
     bid_status: str | None = None,
+    status: str = "pipeline",
     financials: list[dict[str, Any]] | None = None,
     milestones: list[dict[str, Any]] | None = None,
     outputs: list[dict[str, Any]] | None = None,
@@ -1075,6 +1156,7 @@ def _build_capital_scheme_json(
             type_=type_,
         ),
         "bidStatusDetails": _build_bid_status_details_json(bid_status=bid_status),
+        "status": {"status": status},
         "financials": {"items": financials or []},
         "milestones": {"items": milestones or []},
         "outputs": {"items": outputs or []},

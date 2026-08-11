@@ -1,9 +1,6 @@
-from datetime import datetime
 from typing import Any
 
-from schemes.domain.dates import DateRange
-from schemes.domain.schemes.funding import BidStatus, BidStatusRevision
-from schemes.domain.schemes.schemes import Scheme, SchemeRepository
+from schemes.domain.schemes.schemes import Scheme, SchemeRepository, Status
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
@@ -17,6 +14,7 @@ from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancial
 from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel
 from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel
+from schemes.infrastructure.api.schemes.statuses import CapitalSchemeStatusModel
 from schemes.oauth import AsyncBaseApp, ClientAsyncBaseApp
 
 
@@ -24,6 +22,7 @@ class CapitalSchemeModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
     bid_status_details: CapitalSchemeBidStatusDetailsModel
+    status: CapitalSchemeStatusModel
     financials: CollectionModel[CapitalSchemeFinancialModel]
     milestones: CollectionModel[CapitalSchemeMilestoneModel]
     outputs: CollectionModel[CapitalSchemeOutputModel]
@@ -34,7 +33,7 @@ class CapitalSchemeModel(BaseModel):
         authority_models: list[AuthorityModel],
         funding_programme_item_models: list[FundingProgrammeModel] | list[FundingProgrammeItemModel],
     ) -> Scheme:
-        scheme = Scheme(reference=self.reference)
+        scheme = Scheme(reference=self.reference, status=self.status.status.to_domain())
         scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
         scheme.funding.update_bid_status(self.bid_status_details.to_domain())
         scheme.funding.update_financials(*[financial.to_domain() for financial in self.financials.items])
@@ -55,12 +54,9 @@ class CapitalSchemeItemModel(BaseModel):
     def to_domain(
         self, authority_models: list[AuthorityModel], funding_programme_item_models: list[FundingProgrammeItemModel]
     ) -> Scheme:
-        scheme = Scheme(reference=self.reference)
+        # status is always active to match filters in get capital schemes by bid submitting authority
+        scheme = Scheme(reference=self.reference, status=Status.ACTIVE)
         scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
-        # bid status is always funded to match filters in get capital schemes by bid submitting authority
-        scheme.funding.update_bid_status(
-            BidStatusRevision(effective=DateRange(date_from=datetime.min, date_to=None), status=BidStatus.FUNDED)
-        )
         # TODO: financials, milestones, outputs
 
         if self.authority_review:
@@ -153,7 +149,7 @@ class ApiSchemeRepository(SchemeRepository):
             url,
             params={
                 "funding-programme-code": funding_programme_codes,
-                "bid-status": "funded",
+                "status": "active",
                 "current-milestone": current_milestones,
             },
             request=self._dummy_request(),

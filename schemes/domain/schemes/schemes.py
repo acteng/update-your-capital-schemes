@@ -1,13 +1,24 @@
-from schemes.domain.schemes.funding import BidStatus, SchemeFunding
+from enum import Enum, auto
+
+from schemes.domain.schemes.funding import SchemeFunding
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
 from schemes.domain.schemes.overview import FundingProgramme, SchemeOverview, SchemeType
 from schemes.domain.schemes.reviews import SchemeReviews
 
 
+class Status(Enum):
+    PIPELINE = auto()
+    ACTIVE = auto()
+    PAUSED = auto()
+    CONCLUDED = auto()
+    DELETED = auto()
+
+
 class Scheme:
-    def __init__(self, reference: str):
+    def __init__(self, reference: str, status: Status):
         self._reference = reference
+        self._status = status
         self._overview = SchemeOverview()
         self._funding = SchemeFunding()
         self._milestones = SchemeMilestones()
@@ -17,6 +28,10 @@ class Scheme:
     @property
     def reference(self) -> str:
         return self._reference
+
+    @property
+    def status(self) -> Status:
+        return self._status
 
     @property
     def overview(self) -> SchemeOverview:
@@ -40,11 +55,11 @@ class Scheme:
 
     @property
     def is_updateable(self) -> bool:
-        is_funded = self.funding.bid_status == BidStatus.FUNDED
+        is_active = self.status == Status.ACTIVE
         is_active_and_incomplete = self._is_active_and_incomplete(self.milestones.current_milestone)
         is_under_embargo = self._is_under_embargo(self.overview.funding_programme)
         is_eligible_for_authority_update = self._is_eligible_for_authority_update(self.overview.funding_programme)
-        return is_funded and is_active_and_incomplete and not is_under_embargo and is_eligible_for_authority_update
+        return is_active and is_active_and_incomplete and not is_under_embargo and is_eligible_for_authority_update
 
     @staticmethod
     def _is_active_and_incomplete(milestone: Milestone | None) -> bool:

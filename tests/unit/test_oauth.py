@@ -10,7 +10,7 @@ from httpx import Timeout
 from respx import MockRouter
 
 from schemes.oauth import OAuthExtension
-from tests.oauth import StubAuthorizationServer
+from tests.unit.oauth import StubAuthorizationServer
 
 
 @dataclass(frozen=True)

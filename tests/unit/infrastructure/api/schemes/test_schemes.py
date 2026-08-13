@@ -29,8 +29,8 @@ from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewMo
 from schemes.infrastructure.api.schemes.schemes import ApiSchemeRepository, CapitalSchemeItemModel, CapitalSchemeModel
 from schemes.infrastructure.api.schemes.statuses import CapitalSchemeStatusModel, StatusModel
 from schemes.oauth import ClientAsyncBaseApp
-from tests.domain.builders import build_scheme
-from tests.infrastructure.api.conftest import StubRemoteApp
+from tests.unit.domain.builders import build_scheme
+from tests.unit.infrastructure.api.conftest import StubRemoteApp
 
 
 class TestCapitalSchemeModel:

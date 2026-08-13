@@ -10,9 +10,9 @@ from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputRevision, OutputTypeMeasure
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
-from tests.domain.builders import build_scheme
 from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import SchemePage
+from tests.unit.domain.builders import build_scheme
 
 
 class TestSchemeOutputs:

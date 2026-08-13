@@ -10,9 +10,9 @@ from schemes.domain.schemes.funding import FinancialRevision, FinancialType
 from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
-from tests.domain.builders import build_scheme
 from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import ChangeSpendToDatePage, SchemePage
+from tests.unit.domain.builders import build_scheme
 
 
 class TestSchemeFunding:

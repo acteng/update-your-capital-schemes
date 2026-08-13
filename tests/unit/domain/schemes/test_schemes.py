@@ -6,7 +6,7 @@ from schemes.domain.schemes.outputs import SchemeOutputs
 from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeOverview, SchemeType
 from schemes.domain.schemes.reviews import SchemeReviews
 from schemes.domain.schemes.schemes import Scheme, Status
-from tests.domain.builders import build_scheme
+from tests.unit.domain.builders import build_scheme
 
 
 class TestScheme:

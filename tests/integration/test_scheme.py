@@ -9,9 +9,9 @@ from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
-from tests.domain.builders import build_scheme
 from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import SchemePage
+from tests.unit.domain.builders import build_scheme
 
 
 class TestScheme:

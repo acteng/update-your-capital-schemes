@@ -7,20 +7,22 @@ from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemMo
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel, CapitalSchemeTypeModel
 from schemes.infrastructure.api.schemes.statuses import CapitalSchemeStatusModel, StatusModel
 
+_dummy_funding_programme_url = "https://api.example/funding-programmes/dummy"
+_dummy_authority_url = "https://api.example/authorities/dummy"
+_dummy_bid_submitting_capital_schemes_url = "https://api.example/authorities/dummy/capital-schemes/bid-submitting"
+
 
 def build_funding_programme_item_model(
-    id_: AnyUrl = AnyUrl("https://api.example/funding-programmes/dummy"), code: str = "dummy"
+    id_: AnyUrl = AnyUrl(_dummy_funding_programme_url), code: str = "dummy"
 ) -> FundingProgrammeItemModel:
     return FundingProgrammeItemModel(id=id_, code=code)
 
 
 def build_authority_model(
-    id_: AnyUrl = AnyUrl("https://api.example/authorities/dummy"),
+    id_: AnyUrl = AnyUrl(_dummy_authority_url),
     abbreviation: str = "dummy",
     full_name: str = "dummy",
-    bid_submitting_capital_schemes: AnyUrl = AnyUrl(
-        "https://api.example/authorities/dummy/capital-schemes/bid-submitting"
-    ),
+    bid_submitting_capital_schemes: AnyUrl = AnyUrl(_dummy_bid_submitting_capital_schemes_url),
 ) -> AuthorityModel:
     return AuthorityModel(
         id=id_,
@@ -32,8 +34,8 @@ def build_authority_model(
 
 def build_overview_model(
     name: str = "dummy",
-    bid_submitting_authority: AnyUrl = AnyUrl("https://api.example/authorities/dummy"),
-    funding_programme: AnyUrl = AnyUrl("https://api.example/funding-programmes/dummy"),
+    bid_submitting_authority: AnyUrl = AnyUrl(_dummy_authority_url),
+    funding_programme: AnyUrl = AnyUrl(_dummy_funding_programme_url),
     type_: CapitalSchemeTypeModel = CapitalSchemeTypeModel.DEVELOPMENT,
 ) -> CapitalSchemeOverviewModel:
     return CapitalSchemeOverviewModel(
@@ -45,23 +47,19 @@ def build_status_model(status: StatusModel = StatusModel.PIPELINE) -> CapitalSch
     return CapitalSchemeStatusModel(status=status)
 
 
-def build_funding_programme_json(
-    id_: str = "https://api.example/funding-programmes/dummy", code: str = "dummy"
-) -> dict[str, Any]:
+def build_funding_programme_json(id_: str = _dummy_funding_programme_url, code: str = "dummy") -> dict[str, Any]:
     return {"@id": id_, "code": code}
 
 
-def build_funding_programme_item_json(
-    id_: str = "https://api.example/funding-programmes/dummy", code: str = "dummy"
-) -> dict[str, Any]:
+def build_funding_programme_item_json(id_: str = _dummy_funding_programme_url, code: str = "dummy") -> dict[str, Any]:
     return {"@id": id_, "code": code}
 
 
 def build_authority_json(
-    id_: str = "https://api.example/authorities/dummy",
+    id_: str = _dummy_authority_url,
     abbreviation: str = "dummy",
     full_name: str = "dummy",
-    bid_submitting_capital_schemes: str = "https://api.example/authorities/dummy/capital-schemes/bid-submitting",
+    bid_submitting_capital_schemes: str = _dummy_bid_submitting_capital_schemes_url,
 ) -> dict[str, Any]:
     return {
         "@id": id_,
@@ -73,8 +71,8 @@ def build_authority_json(
 
 def build_overview_json(
     name: str = "dummy",
-    bid_submitting_authority: str = "https://api.example/authorities/dummy",
-    funding_programme: str = "https://api.example/funding-programmes/dummy",
+    bid_submitting_authority: str = _dummy_authority_url,
+    funding_programme: str = _dummy_funding_programme_url,
     type_: str = "development",
 ) -> dict[str, Any]:
     return {

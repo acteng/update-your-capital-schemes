@@ -337,10 +337,12 @@ class TestApiSchemeRepository:
             200,
             json=_build_capital_scheme_json(
                 reference="ATE00001",
-                name="Wirral Package",
-                bid_submitting_authority=f"{api_base_url}/authorities/LIV",
-                funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                type_="construction",
+                overview=_build_overview_json(
+                    name="Wirral Package",
+                    bid_submitting_authority=f"{api_base_url}/authorities/LIV",
+                    funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                    type_="construction",
+                ),
             ),
         )
 
@@ -547,10 +549,12 @@ class TestApiSchemeRepository:
             json={
                 "items": [
                     _build_capital_scheme_item_json(
-                        reference="ATE00001", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        reference="ATE00001",
+                        overview=_build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
                     ),
                     _build_capital_scheme_item_json(
-                        reference="ATE00002", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        reference="ATE00002",
+                        overview=_build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
                     ),
                 ]
             },
@@ -586,10 +590,12 @@ class TestApiSchemeRepository:
                 "items": [
                     _build_capital_scheme_item_json(
                         reference="ATE00001",
-                        name="Wirral Package",
-                        bid_submitting_authority=f"{api_base_url}/authorities/LIV",
-                        funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                        type_="construction",
+                        overview=_build_overview_json(
+                            name="Wirral Package",
+                            bid_submitting_authority=f"{api_base_url}/authorities/LIV",
+                            funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                            type_="construction",
+                        ),
                     )
                 ]
             },
@@ -622,10 +628,12 @@ class TestApiSchemeRepository:
             json={
                 "items": [
                     _build_capital_scheme_item_json(
-                        reference="ATE00001", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        reference="ATE00001",
+                        overview=_build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
                     ),
                     _build_capital_scheme_item_json(
-                        reference="ATE00002", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        reference="ATE00002",
+                        overview=_build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
                     ),
                 ]
             },
@@ -654,7 +662,7 @@ class TestApiSchemeRepository:
                 "items": [
                     _build_capital_scheme_item_json(
                         reference="ATE00001",
-                        bid_submitting_authority=f"{api_base_url}/authorities/LIV",
+                        overview=_build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
                         authority_review=_build_authority_review_json(
                             review_date="2020-01-02T00:00:00Z", source="authority update"
                         ),
@@ -700,8 +708,10 @@ class TestApiSchemeRepository:
                 "items": [
                     _build_capital_scheme_item_json(
                         reference="ATE00001",
-                        bid_submitting_authority=f"{api_base_url}/authorities/LIV",
-                        funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                        overview=_build_overview_json(
+                            bid_submitting_authority=f"{api_base_url}/authorities/LIV",
+                            funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                        ),
                     )
                 ]
             },
@@ -728,7 +738,8 @@ class TestApiSchemeRepository:
             json={
                 "items": [
                     _build_capital_scheme_item_json(
-                        reference="ATE00001", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        reference="ATE00001",
+                        overview=_build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
                     )
                 ]
             },
@@ -755,10 +766,12 @@ class TestApiSchemeRepository:
             json={
                 "items": [
                     _build_capital_scheme_item_json(
-                        reference="ATE00001", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        reference="ATE00001",
+                        overview=_build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
                     ),
                     _build_capital_scheme_item_json(
-                        reference="ATE00002", bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        reference="ATE00002",
+                        overview=_build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
                     ),
                 ]
             },
@@ -1049,10 +1062,7 @@ def _build_create_authority_review_json(source: str | None = None) -> dict[str, 
 
 def _build_capital_scheme_json(
     reference: str | None = None,
-    name: str | None = None,
-    bid_submitting_authority: str | None = None,
-    funding_programme: str | None = None,
-    type_: str | None = None,
+    overview: dict[str, Any] | None = None,
     status: str = "pipeline",
     financials: list[dict[str, Any]] | None = None,
     milestones: list[dict[str, Any]] | None = None,
@@ -1061,12 +1071,7 @@ def _build_capital_scheme_json(
 ) -> dict[str, Any]:
     return {
         "reference": reference or "dummy",
-        "overview": _build_overview_json(
-            name=name,
-            bid_submitting_authority=bid_submitting_authority,
-            funding_programme=funding_programme,
-            type_=type_,
-        ),
+        "overview": overview or _build_overview_json(),
         "status": {"status": status},
         "financials": {"items": financials or []},
         "milestones": {"items": milestones or []},
@@ -1077,19 +1082,11 @@ def _build_capital_scheme_json(
 
 def _build_capital_scheme_item_json(
     reference: str | None = None,
-    name: str | None = None,
-    bid_submitting_authority: str | None = None,
-    funding_programme: str | None = None,
-    type_: str | None = None,
+    overview: dict[str, Any] | None = None,
     authority_review: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
         "reference": reference or "dummy",
-        "overview": _build_overview_json(
-            name=name,
-            bid_submitting_authority=bid_submitting_authority,
-            funding_programme=funding_programme,
-            type_=type_,
-        ),
+        "overview": overview or _build_overview_json(),
         "authorityReview": authority_review if authority_review else None,
     }

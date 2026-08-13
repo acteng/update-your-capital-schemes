@@ -984,84 +984,78 @@ def _dummy_status_model() -> CapitalSchemeStatusModel:
     return CapitalSchemeStatusModel(status=StatusModel.PIPELINE)
 
 
-def _build_funding_programme_json(id_: str | None = None, code: str | None = None) -> dict[str, Any]:
-    return {"@id": id_ or "https://api.example/funding-programmes/dummy", "code": code or "dummy"}
+def _build_funding_programme_json(
+    id_: str = "https://api.example/funding-programmes/dummy", code: str = "dummy"
+) -> dict[str, Any]:
+    return {"@id": id_, "code": code}
 
 
-def _build_funding_programme_item_json(id_: str | None = None, code: str | None = None) -> dict[str, Any]:
-    return {"@id": id_ or "https://api.example/funding-programmes/dummy", "code": code or "dummy"}
+def _build_funding_programme_item_json(
+    id_: str = "https://api.example/funding-programmes/dummy", code: str = "dummy"
+) -> dict[str, Any]:
+    return {"@id": id_, "code": code}
 
 
 def _build_authority_json(
-    id_: str | None = None,
-    abbreviation: str | None = None,
-    full_name: str | None = None,
-    bid_submitting_capital_schemes: str | None = None,
+    id_: str = "https://api.example/authorities/dummy",
+    abbreviation: str = "dummy",
+    full_name: str = "dummy",
+    bid_submitting_capital_schemes: str = "https://api.example/authorities/dummy/capital-schemes/bid-submitting",
 ) -> dict[str, Any]:
     return {
-        "@id": id_ or "https://api.example/authorities/dummy",
-        "abbreviation": abbreviation or "dummy",
-        "fullName": full_name or "dummy",
-        "bidSubmittingCapitalSchemes": bid_submitting_capital_schemes
-        or "https://api.example/authorities/dummy/capital-schemes/bid-submitting",
+        "@id": id_,
+        "abbreviation": abbreviation,
+        "fullName": full_name,
+        "bidSubmittingCapitalSchemes": bid_submitting_capital_schemes,
     }
 
 
 def _build_overview_json(
-    name: str | None = None,
-    bid_submitting_authority: str | None = None,
-    funding_programme: str | None = None,
-    type_: str | None = None,
+    name: str = "dummy",
+    bid_submitting_authority: str = "https://api.example/authorities/dummy",
+    funding_programme: str = "https://api.example/funding-programmes/dummy",
+    type_: str = "development",
 ) -> dict[str, Any]:
     return {
-        "name": name or "dummy",
-        "bidSubmittingAuthority": bid_submitting_authority or "https://api.example/authorities/dummy",
-        "fundingProgramme": funding_programme or "https://api.example/funding-programmes/dummy",
-        "type": type_ or "development",
+        "name": name,
+        "bidSubmittingAuthority": bid_submitting_authority,
+        "fundingProgramme": funding_programme,
+        "type": type_,
     }
 
 
-def _build_financial_json(
-    type_: str | None = None, amount: int | None = None, source: str | None = None
-) -> dict[str, Any]:
-    return {"type": type_ or "expected cost", "amount": amount or 0, "source": source or "Pulse 5"}
+def _build_financial_json(type_: str = "expected cost", amount: int = 0, source: str = "Pulse 5") -> dict[str, Any]:
+    return {"type": type_, "amount": amount, "source": source}
 
 
 def _build_milestone_json(
-    milestone: str | None = None,
-    observation_type: str | None = None,
-    status_date: str | None = None,
-    source: str | None = None,
+    milestone: str = "public consultation completed",
+    observation_type: str = "planned",
+    status_date: str = "1970-01-01",
+    source: str = "Pulse 5",
 ) -> dict[str, Any]:
-    return {
-        "milestone": milestone or "public consultation completed",
-        "observationType": observation_type or "planned",
-        "statusDate": status_date or "1970-01-01",
-        "source": source or "Pulse 5",
-    }
+    return {"milestone": milestone, "observationType": observation_type, "statusDate": status_date, "source": source}
 
 
 def _build_output_json(
-    type_: str | None = None, measure: str | None = None, observation_type: str | None = None, value: str | None = None
+    type_: str = "new segregated cycling facility",
+    measure: str = "miles",
+    observation_type: str = "planned",
+    value: str = "0.000000",
 ) -> dict[str, Any]:
-    return {
-        "type": type_ or "new segregated cycling facility",
-        "measure": measure or "miles",
-        "observationType": observation_type or "planned",
-        "value": value or "0.000000",
-    }
+    return {"type": type_, "measure": measure, "observationType": observation_type, "value": value}
 
 
-def _build_authority_review_json(review_date: str | None = None, source: str | None = None) -> dict[str, Any]:
-    return {"reviewDate": review_date or "1970-01-01T00:00:00Z", "source": source or "Pulse 5"}
+def _build_authority_review_json(review_date: str = "1970-01-01T00:00:00Z", source: str = "Pulse 5") -> dict[str, Any]:
+    return {"reviewDate": review_date, "source": source}
 
 
-def _build_create_authority_review_json(source: str | None = None) -> dict[str, Any]:
-    return {"source": source or "Pulse 5"}
+def _build_create_authority_review_json(source: str = "Pulse 5") -> dict[str, Any]:
+    return {"source": source}
 
 
 def _build_capital_scheme_json(
-    reference: str | None = None,
+    reference: str = "dummy",
     overview: dict[str, Any] | None = None,
     status: str = "pipeline",
     financials: list[dict[str, Any]] | None = None,
@@ -1070,7 +1064,7 @@ def _build_capital_scheme_json(
     authority_review: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
-        "reference": reference or "dummy",
+        "reference": reference,
         "overview": overview or _build_overview_json(),
         "status": {"status": status},
         "financials": {"items": financials or []},
@@ -1081,12 +1075,12 @@ def _build_capital_scheme_json(
 
 
 def _build_capital_scheme_item_json(
-    reference: str | None = None,
+    reference: str = "dummy",
     overview: dict[str, Any] | None = None,
     authority_review: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
-        "reference": reference or "dummy",
+        "reference": reference,
         "overview": overview or _build_overview_json(),
         "authorityReview": authority_review if authority_review else None,
     }

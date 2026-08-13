@@ -1,9 +1,14 @@
 import pytest
 from playwright.sync_api import Page
 
-from tests.e2e.api_client import ApiClient, AuthorityModel, CapitalSchemeAuthorityReviewModel, FundingProgrammeModel
+from tests.e2e.api_client import (
+    ApiClient,
+    AuthorityModel,
+    CapitalSchemeAuthorityReviewModel,
+    FundingProgrammeModel,
+    build_capital_scheme_model,
+)
 from tests.e2e.app_client import AppClient, UserRepr
-from tests.e2e.builders import build_capital_scheme_model
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage

@@ -7,9 +7,9 @@ from tests.e2e.api_client import (
     CapitalSchemeMilestoneModel,
     CapitalSchemeMilestonesModel,
     FundingProgrammeModel,
+    build_capital_scheme_model,
 )
 from tests.e2e.app_client import AppClient, UserRepr
-from tests.e2e.builders import build_capital_scheme_model
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
 from tests.e2e.pages import SchemePage

@@ -37,14 +37,14 @@ class TestCapitalSchemeModel:
     def test_to_domain(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=_dummy_overview_model(),
-            status=_dummy_status_model(),
+            overview=_build_overview_model(),
+            status=_build_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain([_build_authority_model()], [_build_funding_programme_item_model()])
 
         assert scheme.reference == "ATE00001"
         assert not scheme.funding.financial_revisions
@@ -70,7 +70,7 @@ class TestCapitalSchemeModel:
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
                 type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
-            status=_dummy_status_model(),
+            status=_build_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
@@ -89,22 +89,22 @@ class TestCapitalSchemeModel:
     def test_to_domain_sets_status(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=_dummy_overview_model(),
+            overview=_build_overview_model(),
             status=CapitalSchemeStatusModel(status=StatusModel.ACTIVE),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain([_build_authority_model()], [_build_funding_programme_item_model()])
 
         assert scheme.status == Status.ACTIVE
 
     def test_to_domain_sets_financial_revisions(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=_dummy_overview_model(),
-            status=_dummy_status_model(),
+            overview=_build_overview_model(),
+            status=_build_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](
                 items=[
                     CapitalSchemeFinancialModel(
@@ -119,7 +119,7 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain([_build_authority_model()], [_build_funding_programme_item_model()])
 
         financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
@@ -138,8 +138,8 @@ class TestCapitalSchemeModel:
     def test_to_domain_sets_milestone_revisions(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=_dummy_overview_model(),
-            status=_dummy_status_model(),
+            overview=_build_overview_model(),
+            status=_build_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](
                 items=[
@@ -160,7 +160,7 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain([_build_authority_model()], [_build_funding_programme_item_model()])
 
         milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
@@ -181,8 +181,8 @@ class TestCapitalSchemeModel:
     def test_to_domain_sets_output_revisions(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=_dummy_overview_model(),
-            status=_dummy_status_model(),
+            overview=_build_overview_model(),
+            status=_build_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](
@@ -203,7 +203,7 @@ class TestCapitalSchemeModel:
             ),
         )
 
-        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain([_build_authority_model()], [_build_funding_programme_item_model()])
 
         output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
@@ -220,8 +220,8 @@ class TestCapitalSchemeModel:
     def test_to_domain_sets_authority_review(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=_dummy_overview_model(),
-            status=_dummy_status_model(),
+            overview=_build_overview_model(),
+            status=_build_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
@@ -230,7 +230,7 @@ class TestCapitalSchemeModel:
             ),
         )
 
-        scheme = capital_scheme_model.to_domain([_dummy_authority_model()], [_dummy_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain([_build_authority_model()], [_build_funding_programme_item_model()])
 
         (authority_review1,) = scheme.reviews.authority_reviews
         assert (
@@ -242,10 +242,10 @@ class TestCapitalSchemeModel:
 
 class TestCapitalSchemeItemModel:
     def test_to_domain(self) -> None:
-        capital_scheme_item_model = CapitalSchemeItemModel(reference="ATE00001", overview=_dummy_overview_model())
+        capital_scheme_item_model = CapitalSchemeItemModel(reference="ATE00001", overview=_build_overview_model())
 
         scheme = capital_scheme_item_model.to_domain(
-            [_dummy_authority_model()], [_dummy_funding_programme_item_model()]
+            [_build_authority_model()], [_build_funding_programme_item_model()]
         )
 
         assert scheme.reference == "ATE00001"
@@ -281,10 +281,10 @@ class TestCapitalSchemeItemModel:
         )
 
     def test_to_domain_sets_status(self) -> None:
-        capital_scheme_item_model = CapitalSchemeItemModel(reference="ATE00001", overview=_dummy_overview_model())
+        capital_scheme_item_model = CapitalSchemeItemModel(reference="ATE00001", overview=_build_overview_model())
 
         scheme = capital_scheme_item_model.to_domain(
-            [_dummy_authority_model()], [_dummy_funding_programme_item_model()]
+            [_build_authority_model()], [_build_funding_programme_item_model()]
         )
 
         assert scheme.status == Status.ACTIVE
@@ -292,14 +292,14 @@ class TestCapitalSchemeItemModel:
     def test_to_domain_sets_authority_review(self) -> None:
         capital_scheme_item_model = CapitalSchemeItemModel(
             reference="ATE00001",
-            overview=_dummy_overview_model(),
+            overview=_build_overview_model(),
             authority_review=CapitalSchemeAuthorityReviewModel(
                 review_date=datetime(2020, 1, 2, tzinfo=UTC), source=DataSourceModel.AUTHORITY_UPDATE
             ),
         )
 
         scheme = capital_scheme_item_model.to_domain(
-            [_dummy_authority_model()], [_dummy_funding_programme_item_model()]
+            [_build_authority_model()], [_build_funding_programme_item_model()]
         )
 
         (authority_review1,) = scheme.reviews.authority_reviews
@@ -958,30 +958,41 @@ class TestApiSchemeRepository:
         assert remote_app.client_count == 1
 
 
-def _dummy_funding_programme_item_model() -> FundingProgrammeItemModel:
-    return FundingProgrammeItemModel(id=AnyUrl("https://api.example/funding-programmes/dummy"), code="dummy")
+def _build_funding_programme_item_model(
+    id_: AnyUrl = AnyUrl("https://api.example/funding-programmes/dummy"), code: str = "dummy"
+) -> FundingProgrammeItemModel:
+    return FundingProgrammeItemModel(id=id_, code=code)
 
 
-def _dummy_authority_model() -> AuthorityModel:
+def _build_authority_model(
+    id_: AnyUrl = AnyUrl("https://api.example/authorities/dummy"),
+    abbreviation: str = "dummy",
+    full_name: str = "dummy",
+    bid_submitting_capital_schemes: AnyUrl = AnyUrl(
+        "https://api.example/authorities/dummy/capital-schemes/bid-submitting"
+    ),
+) -> AuthorityModel:
     return AuthorityModel(
-        id=AnyUrl("https://api.example/authorities/dummy"),
-        abbreviation="dummy",
-        full_name="dummy",
-        bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/dummy/capital-schemes/bid-submitting"),
+        id=id_,
+        abbreviation=abbreviation,
+        full_name=full_name,
+        bid_submitting_capital_schemes=bid_submitting_capital_schemes,
     )
 
 
-def _dummy_overview_model() -> CapitalSchemeOverviewModel:
+def _build_overview_model(
+    name: str = "dummy",
+    bid_submitting_authority: AnyUrl = AnyUrl("https://api.example/authorities/dummy"),
+    funding_programme: AnyUrl = AnyUrl("https://api.example/funding-programmes/dummy"),
+    type_: CapitalSchemeTypeModel = CapitalSchemeTypeModel.DEVELOPMENT,
+) -> CapitalSchemeOverviewModel:
     return CapitalSchemeOverviewModel(
-        name="dummy",
-        bid_submitting_authority=AnyUrl("https://api.example/authorities/dummy"),
-        funding_programme=AnyUrl("https://api.example/funding-programmes/dummy"),
-        type=CapitalSchemeTypeModel.DEVELOPMENT,
+        name=name, bid_submitting_authority=bid_submitting_authority, funding_programme=funding_programme, type=type_
     )
 
 
-def _dummy_status_model() -> CapitalSchemeStatusModel:
-    return CapitalSchemeStatusModel(status=StatusModel.PIPELINE)
+def _build_status_model(status: StatusModel = StatusModel.PIPELINE) -> CapitalSchemeStatusModel:
+    return CapitalSchemeStatusModel(status=status)
 
 
 def _build_funding_programme_json(

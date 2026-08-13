@@ -22,7 +22,7 @@ from schemes.views.schemes.schemes import (
     SchemesContext,
     SchemeTypeContext,
 )
-from tests.builders import build_scheme
+from tests.domain.builders import build_scheme
 
 
 class TestSchemesContext:

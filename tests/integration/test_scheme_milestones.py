@@ -12,7 +12,7 @@ from schemes.domain.schemes.overview import SchemeType
 from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
-from tests.builders import build_scheme
+from tests.domain.builders import build_scheme
 from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import ChangeMilestoneDatesPage, SchemePage
 

@@ -8,7 +8,7 @@ from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import FinancialRevision, FinancialType, SchemeFunding
 from schemes.views.schemes.funding import ChangeSpendToDateContext, ChangeSpendToDateForm, SchemeFundingContext
-from tests.builders import build_scheme
+from tests.domain.builders import build_scheme
 
 
 class TestSchemeFundingContext:

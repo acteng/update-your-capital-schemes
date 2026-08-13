@@ -5,7 +5,7 @@ import pytest
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeType
 from schemes.domain.schemes.schemes import Status
-from tests.builders import build_scheme
+from tests.domain.builders import build_scheme
 
 
 def test_build_scheme() -> None:

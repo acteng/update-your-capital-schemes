@@ -29,7 +29,7 @@ from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewMo
 from schemes.infrastructure.api.schemes.schemes import ApiSchemeRepository, CapitalSchemeItemModel, CapitalSchemeModel
 from schemes.infrastructure.api.schemes.statuses import CapitalSchemeStatusModel, StatusModel
 from schemes.oauth import ClientAsyncBaseApp
-from tests.builders import build_scheme
+from tests.domain.builders import build_scheme
 from tests.infrastructure.api.conftest import StubRemoteApp
 
 

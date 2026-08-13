@@ -12,7 +12,7 @@ from schemes.domain.schemes.overview import FundingProgrammes, SchemeType
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
-from tests.builders import build_scheme
+from tests.domain.builders import build_scheme
 from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import SchemePage
 

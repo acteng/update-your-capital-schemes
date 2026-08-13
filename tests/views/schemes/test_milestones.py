@@ -20,7 +20,7 @@ from schemes.views.schemes.milestones import (
     SchemeMilestoneRowContext,
     SchemeMilestonesContext,
 )
-from tests.builders import build_scheme
+from tests.domain.builders import build_scheme
 
 
 class TestSchemeMilestonesContext:

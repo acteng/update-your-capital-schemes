@@ -361,7 +361,7 @@ class TestApiSchemeRepository:
         api_mock.get(_build_funding_programme_json()["@id"]).respond(200, json=_build_funding_programme_json())
         api_mock.get(_build_authority_json()["@id"]).respond(200, json=_build_authority_json())
         api_mock.get("/capital-schemes/ATE00001").respond(
-            200, json=_build_capital_scheme_json(reference="ATE00001", status="active")
+            200, json=_build_capital_scheme_json(reference="ATE00001", status=_build_status_json(status="active"))
         )
 
         scheme = await schemes.get("ATE00001")
@@ -1024,6 +1024,10 @@ def _build_overview_json(
     }
 
 
+def _build_status_json(status: str = "pipeline") -> dict[str, Any]:
+    return {"status": status}
+
+
 def _build_financial_json(type_: str = "expected cost", amount: int = 0, source: str = "Pulse 5") -> dict[str, Any]:
     return {"type": type_, "amount": amount, "source": source}
 
@@ -1057,7 +1061,7 @@ def _build_create_authority_review_json(source: str = "Pulse 5") -> dict[str, An
 def _build_capital_scheme_json(
     reference: str = "dummy",
     overview: dict[str, Any] | None = None,
-    status: str = "pipeline",
+    status: dict[str, Any] | None = None,
     financials: list[dict[str, Any]] | None = None,
     milestones: list[dict[str, Any]] | None = None,
     outputs: list[dict[str, Any]] | None = None,
@@ -1066,7 +1070,7 @@ def _build_capital_scheme_json(
     return {
         "reference": reference,
         "overview": overview or _build_overview_json(),
-        "status": {"status": status},
+        "status": status or _build_status_json(),
         "financials": {"items": financials or []},
         "milestones": {"items": milestones or []},
         "outputs": {"items": outputs or []},

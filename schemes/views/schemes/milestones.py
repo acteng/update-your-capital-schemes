@@ -65,7 +65,7 @@ class SchemeMilestonesContext:
                     actual=scheme.milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
                 )
                 for milestone in sorted(
-                    scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.stage_order
+                    scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.milestone_order
                 )
             ]
         )
@@ -138,7 +138,7 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
             pass
 
         for milestone in sorted(
-            scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.stage_order
+            scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.milestone_order
         ):
             field = FormField(
                 form_class=MilestoneDatesForm.create_class(milestone, now),
@@ -162,7 +162,7 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
 
     def update_domain(self, scheme: Scheme, now: datetime) -> None:
         for milestone in sorted(
-            scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.stage_order
+            scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.milestone_order
         ):
             field_name = self._to_field_name(milestone)
             self[field_name].form.update_domain(scheme.milestones, now, milestone)

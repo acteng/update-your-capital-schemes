@@ -21,12 +21,12 @@ class Milestone(Enum):
     SUPERSEDED = (auto(), 10)
     REMOVED = (auto(), 11)
 
-    stage_order: int
+    milestone_order: int
 
-    def __new__(cls, value: int, stage_order: int) -> Self:
+    def __new__(cls, value: int, milestone_order: int) -> Self:
         obj = object.__new__(cls)
         obj._value_ = value
-        obj.stage_order = stage_order
+        obj.milestone_order = milestone_order
         return obj
 
 
@@ -142,7 +142,7 @@ class SchemeMilestones:
             for revision in self.current_milestone_revisions
             if revision.observation_type == ObservationType.ACTUAL
         ]
-        return max(actual_milestones, key=lambda milestone: milestone.stage_order) if actual_milestones else None
+        return max(actual_milestones, key=lambda milestone: milestone.milestone_order) if actual_milestones else None
 
     def get_current_status_date(self, milestone: Milestone, observation_type: ObservationType) -> date | None:
         current_milestone_revision = self._current_milestone_revision(milestone, observation_type)

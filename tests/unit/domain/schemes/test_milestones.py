@@ -294,7 +294,7 @@ class TestMilestoneRevision:
 
 class TestMilestone:
     @pytest.mark.parametrize(
-        "milestone, expected_stage_order",
+        "milestone, expected_milestone_order",
         [
             (Milestone.PUBLIC_CONSULTATION_COMPLETED, 0),
             (Milestone.FEASIBILITY_DESIGN_STARTED, 1),
@@ -310,5 +310,5 @@ class TestMilestone:
             (Milestone.REMOVED, 11),
         ],
     )
-    def test_stage_order(self, milestone: Milestone, expected_stage_order: int) -> None:
-        assert milestone.stage_order == expected_stage_order
+    def test_milestone_order(self, milestone: Milestone, expected_milestone_order: int) -> None:
+        assert milestone.milestone_order == expected_milestone_order

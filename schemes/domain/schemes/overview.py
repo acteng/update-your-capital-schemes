@@ -13,25 +13,24 @@ class SchemeType(Enum):
 @dataclass(frozen=True)
 class FundingProgramme:
     code: str
-    is_under_embargo: bool
     is_eligible_for_authority_update: bool
 
 
 class FundingProgrammes:
-    ATF2 = FundingProgramme("ATF2", False, True)
-    ATF3 = FundingProgramme("ATF3", False, True)
-    ATF4 = FundingProgramme("ATF4", False, True)
-    ATF4E = FundingProgramme("ATF4e", False, True)
-    ATF5 = FundingProgramme("ATF5", False, True)
-    CATF = FundingProgramme("CATF", False, True)
-    CRSTS = FundingProgramme("CRSTS", False, False)
-    IST = FundingProgramme("IST", False, True)
-    LUF1 = FundingProgramme("LUF1", False, False)
-    LUF2 = FundingProgramme("LUF2", False, False)
-    LUF3 = FundingProgramme("LUF3", False, False)
-    MRN = FundingProgramme("MRN", False, False)
-    OTH = FundingProgramme("OTH", False, False)
-    CON = FundingProgramme("CON", False, True)
+    ATF2 = FundingProgramme("ATF2", True)
+    ATF3 = FundingProgramme("ATF3", True)
+    ATF4 = FundingProgramme("ATF4", True)
+    ATF4E = FundingProgramme("ATF4e", True)
+    ATF5 = FundingProgramme("ATF5", True)
+    CATF = FundingProgramme("CATF", True)
+    CRSTS = FundingProgramme("CRSTS", False)
+    IST = FundingProgramme("IST", True)
+    LUF1 = FundingProgramme("LUF1", False)
+    LUF2 = FundingProgramme("LUF2", False)
+    LUF3 = FundingProgramme("LUF3", False)
+    MRN = FundingProgramme("MRN", False)
+    OTH = FundingProgramme("OTH", False)
+    CON = FundingProgramme("CON", True)
 
 
 class OverviewRevision:

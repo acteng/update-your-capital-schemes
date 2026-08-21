@@ -11,8 +11,8 @@ class FundingProgrammeModel(BaseModel):
     code: str
 
     def to_domain(self) -> FundingProgramme:
-        # TODO: is_under_embargo, is_eligible_for_authority_update
-        return FundingProgramme(code=self.code, is_under_embargo=False, is_eligible_for_authority_update=True)
+        # TODO: is_eligible_for_authority_update
+        return FundingProgramme(code=self.code, is_eligible_for_authority_update=True)
 
 
 class FundingProgrammeItemModel(BaseModel):
@@ -20,5 +20,5 @@ class FundingProgrammeItemModel(BaseModel):
     code: str
 
     def to_domain(self) -> FundingProgramme:
-        # TODO: is_under_embargo, is_eligible_for_authority_update
-        return FundingProgramme(code=self.code, is_under_embargo=False, is_eligible_for_authority_update=True)
+        # TODO: is_eligible_for_authority_update
+        return FundingProgramme(code=self.code, is_eligible_for_authority_update=True)

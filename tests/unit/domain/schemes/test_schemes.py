@@ -64,26 +64,7 @@ class TestScheme:
         "funding_programme, expected_updateable",
         [
             (FundingProgrammes.ATF4, True),
-            (FundingProgramme("ATF100", True, False), False),
-        ],
-    )
-    def test_is_updateable_when_not_under_embargo(
-        self, funding_programme: FundingProgramme, expected_updateable: bool
-    ) -> None:
-        scheme = build_scheme(
-            reference="ATE00001",
-            name="Wirral Package",
-            funding_programme=funding_programme,
-            status=Status.ACTIVE,
-        )
-
-        assert scheme.is_updateable == expected_updateable
-
-    @pytest.mark.parametrize(
-        "funding_programme, expected_updateable",
-        [
-            (FundingProgrammes.ATF4, True),
-            (FundingProgramme("ATF100", False, False), False),
+            (FundingProgramme("ATF100", False), False),
         ],
     )
     def test_is_updateable_when_eligible_for_authority_update(
@@ -146,28 +127,6 @@ class TestFundingProgrammes:
     )
     def test_code(self, funding_programme: FundingProgramme, expected_code: str) -> None:
         assert funding_programme.code == expected_code
-
-    @pytest.mark.parametrize(
-        "funding_programme, expected_is_under_embargo",
-        [
-            (FundingProgrammes.ATF2, False),
-            (FundingProgrammes.ATF3, False),
-            (FundingProgrammes.ATF4, False),
-            (FundingProgrammes.ATF4E, False),
-            (FundingProgrammes.ATF5, False),
-            (FundingProgrammes.CATF, False),
-            (FundingProgrammes.CRSTS, False),
-            (FundingProgrammes.IST, False),
-            (FundingProgrammes.LUF1, False),
-            (FundingProgrammes.LUF2, False),
-            (FundingProgrammes.LUF3, False),
-            (FundingProgrammes.MRN, False),
-            (FundingProgrammes.OTH, False),
-            (FundingProgrammes.CON, False),
-        ],
-    )
-    def test_is_under_embargo(self, funding_programme: FundingProgramme, expected_is_under_embargo: bool) -> None:
-        assert funding_programme.is_under_embargo == expected_is_under_embargo
 
     @pytest.mark.parametrize(
         "funding_programme, expected_is_eligible_for_authority_update",

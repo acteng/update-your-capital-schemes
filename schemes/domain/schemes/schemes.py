@@ -56,13 +56,8 @@ class Scheme:
     @property
     def is_updateable(self) -> bool:
         is_active = self.status == Status.ACTIVE
-        is_under_embargo = self._is_under_embargo(self.overview.funding_programme)
         is_eligible_for_authority_update = self._is_eligible_for_authority_update(self.overview.funding_programme)
-        return is_active and not is_under_embargo and is_eligible_for_authority_update
-
-    @staticmethod
-    def _is_under_embargo(funding_programme: FundingProgramme | None) -> bool:
-        return funding_programme.is_under_embargo if funding_programme else False
+        return is_active and is_eligible_for_authority_update
 
     @staticmethod
     def _is_eligible_for_authority_update(funding_programme: FundingProgramme | None) -> bool:

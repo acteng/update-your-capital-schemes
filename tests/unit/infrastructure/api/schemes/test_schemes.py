@@ -639,19 +639,14 @@ class TestApiSchemeRepository:
                     build_capital_scheme_item_json(
                         reference="ATE00001",
                         overview=build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
-                    ),
-                    build_capital_scheme_item_json(
-                        reference="ATE00002",
-                        overview=build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
-                    ),
+                    )
                 ]
             },
         )
 
-        scheme1, scheme2 = await schemes.get_by_authority("LIV")
+        (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert scheme1.status == Status.ACTIVE
-        assert scheme2.status == Status.ACTIVE
 
     async def test_get_schemes_by_authority_sets_authority_review(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository

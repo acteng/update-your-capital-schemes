@@ -10,6 +10,7 @@ from tests.e2e.api_server.capital_schemes import (
     CapitalSchemeAuthorityReviewModel,
     CapitalSchemeModel,
     CapitalSchemeOverviewModel,
+    CapitalSchemeStatusModel,
     capital_schemes,
 )
 from tests.e2e.api_server.collections import CollectionModel
@@ -26,6 +27,7 @@ class CapitalSchemeItemModel(BaseModel):
     id: Annotated[AnyUrl, Field(alias="@id")]
     reference: str
     overview: CapitalSchemeOverviewModel
+    status: CapitalSchemeStatusModel
     authority_review: CapitalSchemeAuthorityReviewModel | None
 
 
@@ -106,5 +108,6 @@ def _to_capital_scheme_item(capital_scheme: CapitalSchemeModel) -> CapitalScheme
         id=AnyUrl(url_for("capital_schemes.get_capital_scheme", reference=capital_scheme.reference, _external=True)),
         reference=capital_scheme.reference,
         overview=capital_scheme.overview,
+        status=capital_scheme.status,
         authority_review=capital_scheme.authority_review,
     )

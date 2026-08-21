@@ -1,6 +1,6 @@
 from typing import Any
 
-from schemes.domain.schemes.schemes import Scheme, SchemeRepository, Status
+from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
@@ -46,13 +46,13 @@ class CapitalSchemeModel(BaseModel):
 class CapitalSchemeItemModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
+    status: CapitalSchemeStatusModel
     authority_review: CapitalSchemeAuthorityReviewModel | None = None
 
     def to_domain(
         self, authority_models: list[AuthorityModel], funding_programme_item_models: list[FundingProgrammeItemModel]
     ) -> Scheme:
-        # status is always active to match filters in get capital schemes by bid submitting authority
-        scheme = Scheme(reference=self.reference, status=Status.ACTIVE)
+        scheme = Scheme(reference=self.reference, status=self.status.status.to_domain())
         scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
         # TODO: financials, milestones, outputs
 

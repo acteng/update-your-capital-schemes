@@ -140,10 +140,12 @@ def build_capital_scheme_json(
 def build_capital_scheme_item_json(
     reference: str = "dummy",
     overview: dict[str, Any] | None = None,
+    status: dict[str, Any] | None = None,
     authority_review: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
         "reference": reference,
         "overview": overview or build_overview_json(),
+        "status": status or build_status_json(),
         "authorityReview": authority_review if authority_review else None,
     }

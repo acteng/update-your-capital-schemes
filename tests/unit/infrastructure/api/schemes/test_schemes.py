@@ -259,7 +259,9 @@ class TestCapitalSchemeModel:
 
 class TestCapitalSchemeItemModel:
     def test_to_domain(self) -> None:
-        capital_scheme_item_model = CapitalSchemeItemModel(reference="ATE00001", overview=build_overview_model())
+        capital_scheme_item_model = CapitalSchemeItemModel(
+            reference="ATE00001", overview=build_overview_model(), status=build_status_model()
+        )
 
         scheme = capital_scheme_item_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
 
@@ -283,6 +285,7 @@ class TestCapitalSchemeItemModel:
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
                 type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
+            status=build_status_model(),
         )
 
         scheme = capital_scheme_item_model.to_domain([authority_model], [funding_programme_item_model])
@@ -296,7 +299,11 @@ class TestCapitalSchemeItemModel:
         )
 
     def test_to_domain_sets_status(self) -> None:
-        capital_scheme_item_model = CapitalSchemeItemModel(reference="ATE00001", overview=build_overview_model())
+        capital_scheme_item_model = CapitalSchemeItemModel(
+            reference="ATE00001",
+            overview=build_overview_model(),
+            status=CapitalSchemeStatusModel(status=StatusModel.ACTIVE),
+        )
 
         scheme = capital_scheme_item_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
 
@@ -306,6 +313,7 @@ class TestCapitalSchemeItemModel:
         capital_scheme_item_model = CapitalSchemeItemModel(
             reference="ATE00001",
             overview=build_overview_model(),
+            status=build_status_model(),
             authority_review=CapitalSchemeAuthorityReviewModel(
                 review_date=datetime(2020, 1, 2, tzinfo=UTC), source=DataSourceModel.AUTHORITY_UPDATE
             ),
@@ -639,6 +647,7 @@ class TestApiSchemeRepository:
                     build_capital_scheme_item_json(
                         reference="ATE00001",
                         overview=build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
+                        status=build_status_json(status="active"),
                     )
                 ]
             },

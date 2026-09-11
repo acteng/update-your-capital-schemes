@@ -1,5 +1,4 @@
-@import "govuk/settings/spacing";
-@import "govuk/helpers/spacing";
+@use "pkg:govuk-frontend/base" as govuk-frontend;
 
 .scheme-name {
   display: flex;
@@ -8,6 +7,6 @@
 }
 
 .scheme-name__tag {
-  margin-left: govuk-spacing(1);
+  margin-left: govuk-frontend.govuk-spacing(1);
   white-space: nowrap;
 }

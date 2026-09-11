@@ -1,19 +1,19 @@
 @use "ate/settings";
 
-$govuk-assets-path: "/static/govuk-frontend/assets/";
-$govuk-font-family: settings.$ate-font-family;
-$govuk-functional-colours: settings.$ate-functional-colours;
-
-@import "govuk";
+@use "pkg:govuk-frontend" with (
+  $govuk-assets-path: "/static/govuk-frontend/assets/",
+  $govuk-font-family: settings.$ate-font-family,
+  $govuk-functional-colours: settings.$ate-functional-colours
+);
 
 // Workaround: https://github.com/alphagov/govuk-frontend/issues/6217
 
 .govuk-notification-banner {
-  border-color: govuk-colour("blue");
-  background-color: govuk-colour("blue");
+  border-color: govuk-frontend.govuk-colour("blue");
+  background-color: govuk-frontend.govuk-colour("blue");
 }
 
 .govuk-notification-banner--success {
-  border-color: govuk-functional-colour("success");
-  background-color: govuk-functional-colour("success");
+  border-color: govuk-frontend.govuk-functional-colour("success");
+  background-color: govuk-frontend.govuk-functional-colour("success");
 }

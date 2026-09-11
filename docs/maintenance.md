@@ -16,7 +16,6 @@ They should be aligned so that they all use the same version of GOV.UK Frontend.
 The following sections detail how to upgrade some of these packages:
 
 * [Upgrading GOV.UK Frontend Jinja Macros package](#upgrading-govuk-frontend-jinja-macros-package)
-* [Upgrading GOV.UK Frontend package](#upgrading-govuk-frontend-package)
 * [Upgrading GOV.UK One Login Service Header package](#upgrading-govuk-one-login-service-header-package)
 
 ## Upgrading Python packages

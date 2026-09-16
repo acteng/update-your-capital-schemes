@@ -1,10 +1,11 @@
-@use "pkg:@active-travel-england/ate-frontend/settings" as ate-frontend;
+// ATE Frontend settings
+@use "pkg:@active-travel-england/ate-frontend/settings";
 
 // GOV.UK Frontend styles with ATE branding
 @use "pkg:govuk-frontend" with (
   $govuk-assets-path: "/static/govuk-frontend/assets/",
-  $govuk-font-family: ate-frontend.$ate-font-family,
-  $govuk-functional-colours: ate-frontend.$ate-functional-colours
+  $govuk-font-family: settings.$ate-font-family,
+  $govuk-functional-colours: settings.$ate-functional-colours
 );
 
 // Workaround: https://github.com/alphagov/govuk-frontend/issues/6217

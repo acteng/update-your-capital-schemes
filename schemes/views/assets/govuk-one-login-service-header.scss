@@ -1,7 +1,12 @@
-@use "pkg:@active-travel-england/ate-frontend/settings" as ate-frontend;
+// ATE Frontend settings
+@use "pkg:@active-travel-england/ate-frontend/settings";
+
+// Configure GOV.UK Frontend for ATE branding
+@use "pkg:govuk-frontend/base" with (
+  $govuk-assets-path: "/static/govuk-frontend/assets/",
+  $govuk-font-family: settings.$ate-font-family,
+  $govuk-functional-colours: settings.$ate-functional-colours
+);
 
 // GOV.UK One Login service header styles with ATE branding
-$govuk-assets-path: "/static/govuk-frontend/assets/";
-$govuk-font-family: ate-frontend.$ate-font-family;
-$govuk-functional-colours: ate-frontend.$ate-functional-colours;
-@import "service-header";
+@use "service-header";

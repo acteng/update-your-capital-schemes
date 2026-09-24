@@ -32,20 +32,20 @@ from tests.unit.domain.builders import build_scheme
 from tests.unit.infrastructure.api.builders import (
     build_authority_json,
     build_authority_model,
-    build_authority_review_json,
+    build_capital_scheme_authority_review_json,
+    build_capital_scheme_financial_json,
     build_capital_scheme_item_json,
     build_capital_scheme_json,
-    build_create_authority_review_json,
-    build_financial_json,
+    build_capital_scheme_milestone_json,
+    build_capital_scheme_output_json,
+    build_capital_scheme_overview_json,
+    build_capital_scheme_overview_model,
+    build_capital_scheme_status_json,
+    build_capital_scheme_status_model,
+    build_create_capital_scheme_authority_review_json,
     build_funding_programme_item_json,
     build_funding_programme_item_model,
     build_funding_programme_json,
-    build_milestone_json,
-    build_output_json,
-    build_overview_json,
-    build_overview_model,
-    build_status_json,
-    build_status_model,
 )
 from tests.unit.infrastructure.api.conftest import StubRemoteApp
 
@@ -54,8 +54,8 @@ class TestCapitalSchemeModel:
     def test_to_domain(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=build_overview_model(),
-            status=build_status_model(),
+            overview=build_capital_scheme_overview_model(),
+            status=build_capital_scheme_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
@@ -87,7 +87,7 @@ class TestCapitalSchemeModel:
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
                 type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
-            status=build_status_model(),
+            status=build_capital_scheme_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
@@ -106,7 +106,7 @@ class TestCapitalSchemeModel:
     def test_to_domain_sets_status(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=build_overview_model(),
+            overview=build_capital_scheme_overview_model(),
             status=CapitalSchemeStatusModel(status=StatusModel.ACTIVE),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
@@ -120,8 +120,8 @@ class TestCapitalSchemeModel:
     def test_to_domain_sets_financial_revisions(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=build_overview_model(),
-            status=build_status_model(),
+            overview=build_capital_scheme_overview_model(),
+            status=build_capital_scheme_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](
                 items=[
                     CapitalSchemeFinancialModel(
@@ -155,8 +155,8 @@ class TestCapitalSchemeModel:
     def test_to_domain_sets_milestone_revisions(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=build_overview_model(),
-            status=build_status_model(),
+            overview=build_capital_scheme_overview_model(),
+            status=build_capital_scheme_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](
                 items=[
@@ -198,8 +198,8 @@ class TestCapitalSchemeModel:
     def test_to_domain_sets_output_revisions(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=build_overview_model(),
-            status=build_status_model(),
+            overview=build_capital_scheme_overview_model(),
+            status=build_capital_scheme_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](
@@ -237,8 +237,8 @@ class TestCapitalSchemeModel:
     def test_to_domain_sets_authority_review(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
-            overview=build_overview_model(),
-            status=build_status_model(),
+            overview=build_capital_scheme_overview_model(),
+            status=build_capital_scheme_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
@@ -260,7 +260,9 @@ class TestCapitalSchemeModel:
 class TestCapitalSchemeItemModel:
     def test_to_domain(self) -> None:
         capital_scheme_item_model = CapitalSchemeItemModel(
-            reference="ATE00001", overview=build_overview_model(), status=build_status_model()
+            reference="ATE00001",
+            overview=build_capital_scheme_overview_model(),
+            status=build_capital_scheme_status_model(),
         )
 
         scheme = capital_scheme_item_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
@@ -285,7 +287,7 @@ class TestCapitalSchemeItemModel:
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
                 type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
-            status=build_status_model(),
+            status=build_capital_scheme_status_model(),
         )
 
         scheme = capital_scheme_item_model.to_domain([authority_model], [funding_programme_item_model])
@@ -301,7 +303,7 @@ class TestCapitalSchemeItemModel:
     def test_to_domain_sets_status(self) -> None:
         capital_scheme_item_model = CapitalSchemeItemModel(
             reference="ATE00001",
-            overview=build_overview_model(),
+            overview=build_capital_scheme_overview_model(),
             status=CapitalSchemeStatusModel(status=StatusModel.ACTIVE),
         )
 
@@ -312,8 +314,8 @@ class TestCapitalSchemeItemModel:
     def test_to_domain_sets_authority_review(self) -> None:
         capital_scheme_item_model = CapitalSchemeItemModel(
             reference="ATE00001",
-            overview=build_overview_model(),
-            status=build_status_model(),
+            overview=build_capital_scheme_overview_model(),
+            status=build_capital_scheme_status_model(),
             authority_review=CapitalSchemeAuthorityReviewModel(
                 review_date=datetime(2020, 1, 2, tzinfo=UTC), source=DataSourceModel.AUTHORITY_UPDATE
             ),
@@ -343,7 +345,7 @@ class TestApiSchemeRepository:
             200,
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_overview_json(
+                overview=build_capital_scheme_overview_json(
                     bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                 ),
@@ -367,7 +369,7 @@ class TestApiSchemeRepository:
             200,
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_overview_json(
+                overview=build_capital_scheme_overview_json(
                     name="Wirral Package",
                     bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
@@ -398,11 +400,11 @@ class TestApiSchemeRepository:
             200,
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_overview_json(
+                overview=build_capital_scheme_overview_json(
                     bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                 ),
-                status=build_status_json(status="active"),
+                status=build_capital_scheme_status_json(status="active"),
             ),
         )
 
@@ -421,13 +423,13 @@ class TestApiSchemeRepository:
             200,
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_overview_json(
+                overview=build_capital_scheme_overview_json(
                     bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                 ),
                 financials=[
-                    build_financial_json(type_="funding allocation", amount=100_000, source="ATF4 bid"),
-                    build_financial_json(type_="spend to date", amount=50_000, source="ATF4 bid"),
+                    build_capital_scheme_financial_json(type_="funding allocation", amount=100_000, source="ATF4 bid"),
+                    build_capital_scheme_financial_json(type_="spend to date", amount=50_000, source="ATF4 bid"),
                 ],
             ),
         )
@@ -460,18 +462,18 @@ class TestApiSchemeRepository:
             200,
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_overview_json(
+                overview=build_capital_scheme_overview_json(
                     bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                 ),
                 milestones=[
-                    build_milestone_json(
+                    build_capital_scheme_milestone_json(
                         milestone="detailed design completed",
                         observation_type="planned",
                         status_date="2020-02-01",
                         source="ATF4 bid",
                     ),
-                    build_milestone_json(
+                    build_capital_scheme_milestone_json(
                         milestone="construction started",
                         observation_type="planned",
                         status_date="2020-03-01",
@@ -511,15 +513,15 @@ class TestApiSchemeRepository:
             200,
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_overview_json(
+                overview=build_capital_scheme_overview_json(
                     bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                 ),
                 outputs=[
-                    build_output_json(
+                    build_capital_scheme_output_json(
                         type_="widening existing footway", measure="miles", observation_type="actual", value="1.500000"
                     ),
-                    build_output_json(
+                    build_capital_scheme_output_json(
                         type_="new segregated cycling facility",
                         measure="miles",
                         observation_type="actual",
@@ -555,11 +557,11 @@ class TestApiSchemeRepository:
             200,
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_overview_json(
+                overview=build_capital_scheme_overview_json(
                     bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                 ),
-                authority_review=build_authority_review_json(
+                authority_review=build_capital_scheme_authority_review_json(
                     review_date="2020-01-02T00:00:00Z", source="authority update"
                 ),
             ),
@@ -586,7 +588,7 @@ class TestApiSchemeRepository:
             200,
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_overview_json(
+                overview=build_capital_scheme_overview_json(
                     bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                 ),
@@ -614,7 +616,7 @@ class TestApiSchemeRepository:
             200,
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_overview_json(
+                overview=build_capital_scheme_overview_json(
                     bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                 ),
@@ -643,11 +645,15 @@ class TestApiSchemeRepository:
                 "items": [
                     build_capital_scheme_item_json(
                         reference="ATE00001",
-                        overview=build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
+                        overview=build_capital_scheme_overview_json(
+                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        ),
                     ),
                     build_capital_scheme_item_json(
                         reference="ATE00002",
-                        overview=build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
+                        overview=build_capital_scheme_overview_json(
+                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        ),
                     ),
                 ]
             },
@@ -681,7 +687,7 @@ class TestApiSchemeRepository:
                 "items": [
                     build_capital_scheme_item_json(
                         reference="ATE00001",
-                        overview=build_overview_json(
+                        overview=build_capital_scheme_overview_json(
                             name="Wirral Package",
                             bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                             funding_programme=f"{api_base_url}/funding-programmes/ATF4",
@@ -720,8 +726,10 @@ class TestApiSchemeRepository:
                 "items": [
                     build_capital_scheme_item_json(
                         reference="ATE00001",
-                        overview=build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
-                        status=build_status_json(status="active"),
+                        overview=build_capital_scheme_overview_json(
+                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        ),
+                        status=build_capital_scheme_status_json(status="active"),
                     )
                 ]
             },
@@ -749,8 +757,10 @@ class TestApiSchemeRepository:
                 "items": [
                     build_capital_scheme_item_json(
                         reference="ATE00001",
-                        overview=build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
-                        authority_review=build_authority_review_json(
+                        overview=build_capital_scheme_overview_json(
+                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        ),
+                        authority_review=build_capital_scheme_authority_review_json(
                             review_date="2020-01-02T00:00:00Z", source="authority update"
                         ),
                     )
@@ -795,7 +805,7 @@ class TestApiSchemeRepository:
                 "items": [
                     build_capital_scheme_item_json(
                         reference="ATE00001",
-                        overview=build_overview_json(
+                        overview=build_capital_scheme_overview_json(
                             bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                             funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                         ),
@@ -826,7 +836,9 @@ class TestApiSchemeRepository:
                 "items": [
                     build_capital_scheme_item_json(
                         reference="ATE00001",
-                        overview=build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
+                        overview=build_capital_scheme_overview_json(
+                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        ),
                     )
                 ]
             },
@@ -854,11 +866,15 @@ class TestApiSchemeRepository:
                 "items": [
                     build_capital_scheme_item_json(
                         reference="ATE00001",
-                        overview=build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
+                        overview=build_capital_scheme_overview_json(
+                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        ),
                     ),
                     build_capital_scheme_item_json(
                         reference="ATE00002",
-                        overview=build_overview_json(bid_submitting_authority=f"{api_base_url}/authorities/LIV"),
+                        overview=build_capital_scheme_overview_json(
+                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
+                        ),
                     ),
                 ]
             },
@@ -888,7 +904,7 @@ class TestApiSchemeRepository:
         )
         create_financial_response = api_mock.post(
             "/capital-schemes/ATE00001/financials",
-            json=build_financial_json(type_="spend to date", amount=60_000, source="authority update"),
+            json=build_capital_scheme_financial_json(type_="spend to date", amount=60_000, source="authority update"),
         ).respond(201)
 
         await schemes.update(scheme)
@@ -945,13 +961,13 @@ class TestApiSchemeRepository:
             "/capital-schemes/ATE00001/milestones",
             json={
                 "items": [
-                    build_milestone_json(
+                    build_capital_scheme_milestone_json(
                         milestone="detailed design completed",
                         observation_type="planned",
                         status_date="2020-03-01",
                         source="authority update",
                     ),
-                    build_milestone_json(
+                    build_capital_scheme_milestone_json(
                         milestone="detailed design completed",
                         observation_type="actual",
                         status_date="2020-04-01",
@@ -992,7 +1008,7 @@ class TestApiSchemeRepository:
         )
         create_authority_review_response = api_mock.post(
             "/capital-schemes/ATE00001/authority-reviews",
-            json=build_create_authority_review_json(source="authority update"),
+            json=build_create_capital_scheme_authority_review_json(source="authority update"),
         ).respond(201)
 
         await schemes.update(scheme)
@@ -1033,11 +1049,11 @@ class TestApiSchemeRepository:
         )
         api_mock.post(
             "/capital-schemes/ATE00001/financials",
-            json=build_financial_json(type_="spend to date", amount=50_000, source="ATF4 bid"),
+            json=build_capital_scheme_financial_json(type_="spend to date", amount=50_000, source="ATF4 bid"),
         ).respond(201)
         api_mock.post(
             "/capital-schemes/ATE00001/financials",
-            json=build_financial_json(type_="spend to date", amount=60_000, source="authority update"),
+            json=build_capital_scheme_financial_json(type_="spend to date", amount=60_000, source="authority update"),
         ).respond(201)
 
         await schemes.update(scheme)

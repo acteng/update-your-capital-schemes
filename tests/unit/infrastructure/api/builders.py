@@ -32,7 +32,7 @@ def build_authority_model(
     )
 
 
-def build_overview_model(
+def build_capital_scheme_overview_model(
     name: str = "dummy",
     bid_submitting_authority: AnyUrl = AnyUrl(_dummy_authority_url),
     funding_programme: AnyUrl = AnyUrl(_dummy_funding_programme_url),
@@ -43,7 +43,7 @@ def build_overview_model(
     )
 
 
-def build_status_model(status: StatusModel = StatusModel.PIPELINE) -> CapitalSchemeStatusModel:
+def build_capital_scheme_status_model(status: StatusModel = StatusModel.PIPELINE) -> CapitalSchemeStatusModel:
     return CapitalSchemeStatusModel(status=status)
 
 
@@ -69,7 +69,7 @@ def build_authority_json(
     }
 
 
-def build_overview_json(
+def build_capital_scheme_overview_json(
     name: str = "dummy",
     bid_submitting_authority: str = _dummy_authority_url,
     funding_programme: str = _dummy_funding_programme_url,
@@ -83,15 +83,17 @@ def build_overview_json(
     }
 
 
-def build_status_json(status: str = "pipeline") -> dict[str, Any]:
+def build_capital_scheme_status_json(status: str = "pipeline") -> dict[str, Any]:
     return {"status": status}
 
 
-def build_financial_json(type_: str = "expected cost", amount: int = 0, source: str = "Pulse 5") -> dict[str, Any]:
+def build_capital_scheme_financial_json(
+    type_: str = "expected cost", amount: int = 0, source: str = "Pulse 5"
+) -> dict[str, Any]:
     return {"type": type_, "amount": amount, "source": source}
 
 
-def build_milestone_json(
+def build_capital_scheme_milestone_json(
     milestone: str = "public consultation completed",
     observation_type: str = "planned",
     status_date: str = "1970-01-01",
@@ -100,7 +102,7 @@ def build_milestone_json(
     return {"milestone": milestone, "observationType": observation_type, "statusDate": status_date, "source": source}
 
 
-def build_output_json(
+def build_capital_scheme_output_json(
     type_: str = "new segregated cycling facility",
     measure: str = "miles",
     observation_type: str = "planned",
@@ -109,11 +111,13 @@ def build_output_json(
     return {"type": type_, "measure": measure, "observationType": observation_type, "value": value}
 
 
-def build_authority_review_json(review_date: str = "1970-01-01T00:00:00Z", source: str = "Pulse 5") -> dict[str, Any]:
+def build_capital_scheme_authority_review_json(
+    review_date: str = "1970-01-01T00:00:00Z", source: str = "Pulse 5"
+) -> dict[str, Any]:
     return {"reviewDate": review_date, "source": source}
 
 
-def build_create_authority_review_json(source: str = "Pulse 5") -> dict[str, Any]:
+def build_create_capital_scheme_authority_review_json(source: str = "Pulse 5") -> dict[str, Any]:
     return {"source": source}
 
 
@@ -128,8 +132,8 @@ def build_capital_scheme_json(
 ) -> dict[str, Any]:
     return {
         "reference": reference,
-        "overview": overview or build_overview_json(),
-        "status": status or build_status_json(),
+        "overview": overview or build_capital_scheme_overview_json(),
+        "status": status or build_capital_scheme_status_json(),
         "financials": {"items": financials or []},
         "milestones": {"items": milestones or []},
         "outputs": {"items": outputs or []},
@@ -145,7 +149,7 @@ def build_capital_scheme_item_json(
 ) -> dict[str, Any]:
     return {
         "reference": reference,
-        "overview": overview or build_overview_json(),
-        "status": status or build_status_json(),
+        "overview": overview or build_capital_scheme_overview_json(),
+        "status": status or build_capital_scheme_status_json(),
         "authorityReview": authority_review if authority_review else None,
     }

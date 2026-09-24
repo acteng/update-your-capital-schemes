@@ -29,7 +29,7 @@ class StubAuthorizationServer:
         return f"{self._url}/token"
 
     def given_configuration_endpoint_returns_configuration(self) -> None:
-        self._respx_mock.get(self.configuration_endpoint).respond(200, json={"token_endpoint": self.token_endpoint})
+        self._respx_mock.get(self.configuration_endpoint).respond(json={"token_endpoint": self.token_endpoint})
 
     def given_token_endpoint_returns_access_token(self, access_token: str, expires_in: int) -> Route:
         # Support multiple method calls to mock different responses

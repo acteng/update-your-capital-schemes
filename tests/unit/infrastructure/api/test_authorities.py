@@ -28,7 +28,7 @@ class TestApiAuthorityRepository:
 
     async def test_get_authority(self, api_mock: MockRouter, authorities: ApiAuthorityRepository) -> None:
         api_mock.get("/authorities/LIV").respond(
-            200, json=build_authority_json(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+            json=build_authority_json(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
 
         authority = await authorities.get("LIV")
@@ -43,7 +43,6 @@ class TestApiAuthorityRepository:
         self, api_mock: MockRouter, authorities: ApiAuthorityRepository
     ) -> None:
         api_mock.get("/authorities/LIV").respond(
-            200,
             json=build_authority_json(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
             | {"foo": "bar"},
         )

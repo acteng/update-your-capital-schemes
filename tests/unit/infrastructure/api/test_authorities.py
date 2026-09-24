@@ -1,11 +1,10 @@
-from typing import Any
-
 import pytest
 from pydantic import AnyUrl
 from respx import MockRouter
 
 from schemes.infrastructure.api.authorities import ApiAuthorityRepository, AuthorityModel
 from schemes.oauth import AsyncBaseApp
+from tests.unit.infrastructure.api.builders import build_authority_json
 
 
 class TestAuthorityModel:
@@ -29,7 +28,7 @@ class TestApiAuthorityRepository:
 
     async def test_get_authority(self, api_mock: MockRouter, authorities: ApiAuthorityRepository) -> None:
         api_mock.get("/authorities/LIV").respond(
-            200, json=_build_authority_json(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+            200, json=build_authority_json(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
 
         authority = await authorities.get("LIV")
@@ -45,7 +44,7 @@ class TestApiAuthorityRepository:
     ) -> None:
         api_mock.get("/authorities/LIV").respond(
             200,
-            json=_build_authority_json(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
+            json=build_authority_json(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
             | {"foo": "bar"},
         )
 
@@ -63,18 +62,3 @@ class TestApiAuthorityRepository:
         api_mock.get("/authorities/WYO").respond(404)
 
         assert await authorities.get("WYO") is None
-
-
-def _build_authority_json(
-    id_: str | None = None,
-    abbreviation: str | None = None,
-    full_name: str | None = None,
-    bid_submitting_capital_schemes: str | None = None,
-) -> dict[str, Any]:
-    return {
-        "@id": id_ or "https://api.example/authorities/dummy",
-        "abbreviation": abbreviation or "dummy",
-        "fullName": full_name or "dummy",
-        "bidSubmittingCapitalSchemes": bid_submitting_capital_schemes
-        or "https://api.example/authorities/dummy/capital-schemes/bid-submitting",
-    }

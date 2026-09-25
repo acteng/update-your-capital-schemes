@@ -28,10 +28,22 @@ class AuthorityModel(BaseModel):
     full_name: str
 
 
+class ImprovementOverviewModel(BaseModel):
+    name: str
+    description: str | None
+    funding_managed_by: str
+    source: str
+
+
+class ImprovementModel(BaseModel):
+    reference: str
+    overview: ImprovementOverviewModel
+
+
 class CapitalSchemeOverviewModel(BaseModel):
     name: str
-    bid_submitting_authority: str
     funding_programme: str
+    improvement: str | None
     type: str
 
 
@@ -81,8 +93,8 @@ class CapitalSchemeModel(BaseModel):
 def build_capital_scheme_model(
     reference: str,
     name: str,
-    bid_submitting_authority: str,
     funding_programme: str,
+    improvement: str | None = None,
     type_: str = "construction",
     status: CapitalSchemeStatusModel | None = None,
     financials: list[CapitalSchemeFinancialModel] | None = None,
@@ -94,8 +106,8 @@ def build_capital_scheme_model(
         reference=reference,
         overview=CapitalSchemeOverviewModel(
             name=name,
-            bid_submitting_authority=bid_submitting_authority,
             funding_programme=funding_programme,
+            improvement=improvement,
             type=type_,
         ),
         status=status or CapitalSchemeStatusModel(status="active"),
@@ -146,6 +158,11 @@ class ApiClient:
 
     def clear_authorities(self) -> None:
         response = self._session.delete(f"{self._url}/authorities", timeout=self.DEFAULT_TIMEOUT)
+        response.raise_for_status()
+
+    def add_improvements(self, *improvements: ImprovementModel) -> None:
+        json = [improvement.to_json() for improvement in improvements]
+        response = self._session.post(f"{self._url}/improvements", json=json, timeout=self.DEFAULT_TIMEOUT)
         response.raise_for_status()
 
     def add_schemes(self, *capital_schemes: CapitalSchemeModel) -> None:

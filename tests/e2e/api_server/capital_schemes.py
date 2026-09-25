@@ -12,8 +12,8 @@ from tests.e2e.api_server.collections import CollectionModel
 
 class CapitalSchemeOverviewModel(BaseModel):
     name: str
-    bid_submitting_authority: AnyUrl
     funding_programme: AnyUrl
+    improvement: AnyUrl | None
     type: str
 
 

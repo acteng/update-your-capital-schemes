@@ -3,7 +3,7 @@ from typing import Any
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
 
-from tests.e2e.api_server import authorities, capital_schemes, clock, funding_programmes
+from tests.e2e.api_server import authorities, capital_schemes, clock, funding_programmes, improvements
 from tests.e2e.api_server.auth import ApiJwtBearerTokenValidator, require_oauth
 
 
@@ -22,6 +22,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     app.register_blueprint(clock.bp, url_prefix="/clock")
     app.register_blueprint(funding_programmes.bp, url_prefix="/funding-programmes")
     app.register_blueprint(authorities.bp, url_prefix="/authorities")
+    app.register_blueprint(improvements.bp, url_prefix="/improvements")
     app.register_blueprint(capital_schemes.bp, url_prefix="/capital-schemes")
 
     return app

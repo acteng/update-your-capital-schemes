@@ -10,6 +10,7 @@ from schemes.infrastructure.api.schemes.authority_reviews import (
     CreateCapitalSchemeAuthorityReviewModel,
 )
 from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel
+from schemes.infrastructure.api.schemes.improvements import ImprovementModel
 from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel
 from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel
@@ -28,11 +29,11 @@ class CapitalSchemeModel(BaseModel):
 
     def to_domain(
         self,
-        authority_models: list[AuthorityModel],
+        authority_model: AuthorityModel,
         funding_programme_item_models: list[FundingProgrammeModel] | list[FundingProgrammeItemModel],
     ) -> Scheme:
         scheme = Scheme(reference=self.reference, status=self.status.status.to_domain())
-        scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
+        scheme.overview.update_overview(self.overview.to_domain(authority_model, funding_programme_item_models))
         scheme.funding.update_financials(*[financial.to_domain() for financial in self.financials.items])
         scheme.milestones.update_milestones(*[milestone.to_domain() for milestone in self.milestones.items])
         scheme.outputs.update_outputs(*[output.to_domain() for output in self.outputs.items])
@@ -50,10 +51,10 @@ class CapitalSchemeItemModel(BaseModel):
     authority_review: CapitalSchemeAuthorityReviewModel | None = None
 
     def to_domain(
-        self, authority_models: list[AuthorityModel], funding_programme_item_models: list[FundingProgrammeItemModel]
+        self, authority_model: AuthorityModel, funding_programme_item_models: list[FundingProgrammeItemModel]
     ) -> Scheme:
         scheme = Scheme(reference=self.reference, status=self.status.status.to_domain())
-        scheme.overview.update_overview(self.overview.to_domain(authority_models, funding_programme_item_models))
+        scheme.overview.update_overview(self.overview.to_domain(authority_model, funding_programme_item_models))
         # TODO: financials, milestones, outputs
 
         if self.authority_review:
@@ -76,15 +77,21 @@ class ApiSchemeRepository(SchemeRepository):
             response.raise_for_status()
             capital_scheme_model = CapitalSchemeModel.model_validate(response.json())
 
-            authority_url = capital_scheme_model.overview.bid_submitting_authority
-            authority_models = [await self._get_authority_model_by_url(client, str(authority_url))]
+            improvement_url = capital_scheme_model.overview.improvement
+            if not improvement_url:
+                return None
+
+            improvement_model = await self._get_improvement_model_by_url(client, str(improvement_url))
+
+            authority_url = improvement_model.overview.funding_managed_by
+            authority_model = await self._get_authority_model_by_url(client, str(authority_url))
 
             funding_programme_url = capital_scheme_model.overview.funding_programme
             funding_programme_models = [
                 await self._get_funding_programme_model_by_url(client, str(funding_programme_url))
             ]
 
-            return capital_scheme_model.to_domain(authority_models, funding_programme_models)
+            return capital_scheme_model.to_domain(authority_model, funding_programme_models)
 
     async def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         async with self._remote_app.client() as client:
@@ -97,10 +104,10 @@ class ApiSchemeRepository(SchemeRepository):
             ]
 
             capital_scheme_items_model = await self._get_capital_scheme_items_model_by_url(
-                client, str(authority_model.bid_submitting_capital_schemes), funding_programme_codes
+                client, str(authority_model.funding_managed_by_capital_schemes), funding_programme_codes
             )
             return [
-                capital_scheme_item_model.to_domain([authority_model], funding_programme_items_model.items)
+                capital_scheme_item_model.to_domain(authority_model, funding_programme_items_model.items)
                 for capital_scheme_item_model in capital_scheme_items_model.items
             ]
 
@@ -147,6 +154,11 @@ class ApiSchemeRepository(SchemeRepository):
         response = await remote_app.get(url, request=self._dummy_request())
         response.raise_for_status()
         return AuthorityModel.model_validate(response.json())
+
+    async def _get_improvement_model_by_url(self, remote_app: AsyncBaseApp, url: str) -> ImprovementModel:
+        response = await remote_app.get(url, request=self._dummy_request())
+        response.raise_for_status()
+        return ImprovementModel.model_validate(response.json())
 
     async def _update_financials(self, remote_app: AsyncBaseApp, scheme: Scheme) -> None:
         for financial_revision in scheme.funding.financial_revisions:

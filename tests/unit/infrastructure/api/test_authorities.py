@@ -13,7 +13,9 @@ class TestAuthorityModel:
             id=AnyUrl("https://api.example/authorities/LIV"),
             abbreviation="LIV",
             full_name="Liverpool City Region Combined Authority",
-            bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/LIV/capital-schemes/bid-submitting"),
+            funding_managed_by_capital_schemes=AnyUrl(
+                "https://api.example/authorities/LIV/capital-schemes/funding-managed-by"
+            ),
         )
 
         authority = authority_model.to_domain()

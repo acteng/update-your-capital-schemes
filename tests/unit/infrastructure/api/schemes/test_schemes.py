@@ -46,6 +46,8 @@ from tests.unit.infrastructure.api.builders import (
     build_funding_programme_item_json,
     build_funding_programme_item_model,
     build_funding_programme_json,
+    build_improvement_json,
+    build_improvement_overview_json,
 )
 from tests.unit.infrastructure.api.conftest import StubRemoteApp
 
@@ -61,7 +63,7 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         assert scheme.reference == "ATE00001"
         assert not scheme.funding.financial_revisions
@@ -74,7 +76,9 @@ class TestCapitalSchemeModel:
             id=AnyUrl("https://api.example/authorities/LIV"),
             abbreviation="LIV",
             full_name="Liverpool City Region Combined Authority",
-            bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/LIV/capital-schemes/bid-submitting"),
+            funding_managed_by_capital_schemes=AnyUrl(
+                "https://api.example/authorities/LIV/capital-schemes/funding-managed-by"
+            ),
         )
         funding_programme_item_model = FundingProgrammeItemModel(
             id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
@@ -83,8 +87,8 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=CapitalSchemeOverviewModel(
                 name="Wirral Package",
-                bid_submitting_authority=AnyUrl("https://api.example/authorities/LIV"),
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
+                improvement=AnyUrl("https://api.example/improvements/IMP00001"),
                 type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
             status=build_capital_scheme_status_model(),
@@ -93,7 +97,7 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain([authority_model], [funding_programme_item_model])
+        scheme = capital_scheme_model.to_domain(authority_model, [funding_programme_item_model])
 
         (overview_revision1,) = scheme.overview.overview_revisions
         assert (
@@ -113,7 +117,7 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         assert scheme.status == Status.ACTIVE
 
@@ -136,7 +140,7 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         financial_revision1, financial_revision2 = scheme.funding.financial_revisions
         assert (
@@ -177,7 +181,7 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
         assert (
@@ -220,7 +224,7 @@ class TestCapitalSchemeModel:
             ),
         )
 
-        scheme = capital_scheme_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         output_revision1, output_revision2 = scheme.outputs.output_revisions
         assert (
@@ -247,7 +251,7 @@ class TestCapitalSchemeModel:
             ),
         )
 
-        scheme = capital_scheme_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         (authority_review1,) = scheme.reviews.authority_reviews
         assert (
@@ -265,7 +269,7 @@ class TestCapitalSchemeItemModel:
             status=build_capital_scheme_status_model(),
         )
 
-        scheme = capital_scheme_item_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
+        scheme = capital_scheme_item_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         assert scheme.reference == "ATE00001"
 
@@ -274,7 +278,9 @@ class TestCapitalSchemeItemModel:
             id=AnyUrl("https://api.example/authorities/LIV"),
             abbreviation="LIV",
             full_name="Liverpool City Region Combined Authority",
-            bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/LIV/capital-schemes/bid-submitting"),
+            funding_managed_by_capital_schemes=AnyUrl(
+                "https://api.example/authorities/LIV/capital-schemes/funding-managed-by"
+            ),
         )
         funding_programme_item_model = FundingProgrammeItemModel(
             id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
@@ -283,14 +289,14 @@ class TestCapitalSchemeItemModel:
             reference="ATE00001",
             overview=CapitalSchemeOverviewModel(
                 name="Wirral Package",
-                bid_submitting_authority=AnyUrl("https://api.example/authorities/LIV"),
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
+                improvement=AnyUrl("https://api.example/improvements/IMP00001"),
                 type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
             status=build_capital_scheme_status_model(),
         )
 
-        scheme = capital_scheme_item_model.to_domain([authority_model], [funding_programme_item_model])
+        scheme = capital_scheme_item_model.to_domain(authority_model, [funding_programme_item_model])
 
         (overview_revision1,) = scheme.overview.overview_revisions
         assert (
@@ -307,7 +313,7 @@ class TestCapitalSchemeItemModel:
             status=CapitalSchemeStatusModel(status=StatusModel.ACTIVE),
         )
 
-        scheme = capital_scheme_item_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
+        scheme = capital_scheme_item_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         assert scheme.status == Status.ACTIVE
 
@@ -321,7 +327,7 @@ class TestCapitalSchemeItemModel:
             ),
         )
 
-        scheme = capital_scheme_item_model.to_domain([build_authority_model()], [build_funding_programme_item_model()])
+        scheme = capital_scheme_item_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         (authority_review1,) = scheme.reviews.authority_reviews
         assert (
@@ -341,12 +347,18 @@ class TestApiSchemeRepository:
             json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
         )
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
+        api_mock.get("/improvements/IMP00001").respond(
+            json=build_improvement_json(
+                id_=f"{api_base_url}/improvement/IMP00001",
+                overview=build_improvement_overview_json(funding_managed_by=f"{api_base_url}/authorities/LIV"),
+            ),
+        )
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
                 overview=build_capital_scheme_overview_json(
-                    bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                    improvement=f"{api_base_url}/improvements/IMP00001",
                 ),
             ),
         )
@@ -364,13 +376,19 @@ class TestApiSchemeRepository:
         api_mock.get("/authorities/LIV").respond(
             json=build_authority_json(id_=f"{api_base_url}/authorities/LIV", abbreviation="LIV")
         )
+        api_mock.get("/improvements/IMP00001").respond(
+            json=build_improvement_json(
+                id_=f"{api_base_url}/improvement/IMP00001",
+                overview=build_improvement_overview_json(funding_managed_by=f"{api_base_url}/authorities/LIV"),
+            ),
+        )
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
                 overview=build_capital_scheme_overview_json(
                     name="Wirral Package",
-                    bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                    improvement=f"{api_base_url}/improvements/IMP00001",
                     type_="construction",
                 ),
             ),
@@ -394,12 +412,18 @@ class TestApiSchemeRepository:
             json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
         )
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
+        api_mock.get("/improvements/IMP00001").respond(
+            json=build_improvement_json(
+                id_=f"{api_base_url}/improvement/IMP00001",
+                overview=build_improvement_overview_json(funding_managed_by=f"{api_base_url}/authorities/LIV"),
+            ),
+        )
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
                 overview=build_capital_scheme_overview_json(
-                    bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                    improvement=f"{api_base_url}/improvements/IMP00001",
                 ),
                 status=build_capital_scheme_status_json(status="active"),
             ),
@@ -416,12 +440,18 @@ class TestApiSchemeRepository:
             json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
         )
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
+        api_mock.get("/improvements/IMP00001").respond(
+            json=build_improvement_json(
+                id_=f"{api_base_url}/improvement/IMP00001",
+                overview=build_improvement_overview_json(funding_managed_by=f"{api_base_url}/authorities/LIV"),
+            ),
+        )
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
                 overview=build_capital_scheme_overview_json(
-                    bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                    improvement=f"{api_base_url}/improvements/IMP00001",
                 ),
                 financials=[
                     build_capital_scheme_financial_json(type_="funding allocation", amount=100_000, source="ATF4 bid"),
@@ -454,12 +484,18 @@ class TestApiSchemeRepository:
             json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
         )
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
+        api_mock.get("/improvements/IMP00001").respond(
+            json=build_improvement_json(
+                id_=f"{api_base_url}/improvement/IMP00001",
+                overview=build_improvement_overview_json(funding_managed_by=f"{api_base_url}/authorities/LIV"),
+            ),
+        )
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
                 overview=build_capital_scheme_overview_json(
-                    bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                    improvement=f"{api_base_url}/improvements/IMP00001",
                 ),
                 milestones=[
                     build_capital_scheme_milestone_json(
@@ -504,12 +540,18 @@ class TestApiSchemeRepository:
             json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
         )
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
+        api_mock.get("/improvements/IMP00001").respond(
+            json=build_improvement_json(
+                id_=f"{api_base_url}/improvement/IMP00001",
+                overview=build_improvement_overview_json(funding_managed_by=f"{api_base_url}/authorities/LIV"),
+            ),
+        )
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
                 overview=build_capital_scheme_overview_json(
-                    bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                    improvement=f"{api_base_url}/improvements/IMP00001",
                 ),
                 outputs=[
                     build_capital_scheme_output_json(
@@ -547,12 +589,18 @@ class TestApiSchemeRepository:
             json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
         )
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
+        api_mock.get("/improvements/IMP00001").respond(
+            json=build_improvement_json(
+                id_=f"{api_base_url}/improvement/IMP00001",
+                overview=build_improvement_overview_json(funding_managed_by=f"{api_base_url}/authorities/LIV"),
+            ),
+        )
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
                 overview=build_capital_scheme_overview_json(
-                    bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                    improvement=f"{api_base_url}/improvements/IMP00001",
                 ),
                 authority_review=build_capital_scheme_authority_review_json(
                     review_date="2020-01-02T00:00:00Z", source="authority update"
@@ -577,12 +625,18 @@ class TestApiSchemeRepository:
             json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
         )
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
+        api_mock.get("/improvements/IMP00001").respond(
+            json=build_improvement_json(
+                id_=f"{api_base_url}/improvement/IMP00001",
+                overview=build_improvement_overview_json(funding_managed_by=f"{api_base_url}/authorities/LIV"),
+            ),
+        )
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
                 overview=build_capital_scheme_overview_json(
-                    bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                    improvement=f"{api_base_url}/improvements/IMP00001",
                 ),
             )
             | {"foo": "bar"},
@@ -591,6 +645,15 @@ class TestApiSchemeRepository:
         scheme = await schemes.get("ATE00001")
 
         assert scheme and scheme.reference == "ATE00001"
+
+    async def test_get_scheme_without_improvement(
+        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
+    ) -> None:
+        api_mock.get("/capital-schemes/ATE00001").respond(json=build_capital_scheme_json(reference="ATE00001"))
+
+        scheme = await schemes.get("ATE00001")
+
+        assert not scheme
 
     async def test_get_scheme_that_does_not_exist(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
         api_mock.get("/capital-schemes/ATE00001").respond(404)
@@ -604,12 +667,18 @@ class TestApiSchemeRepository:
             json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
         )
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
+        api_mock.get("/improvements/IMP00001").respond(
+            json=build_improvement_json(
+                id_=f"{api_base_url}/improvement/IMP00001",
+                overview=build_improvement_overview_json(funding_managed_by=f"{api_base_url}/authorities/LIV"),
+            ),
+        )
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
                 overview=build_capital_scheme_overview_json(
-                    bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                    improvement=f"{api_base_url}/improvements/IMP00001",
                 ),
             ),
         )
@@ -626,24 +695,14 @@ class TestApiSchemeRepository:
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
                 abbreviation="LIV",
-                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+                funding_managed_by_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/funding-managed-by",
             ),
         )
-        api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
+        api_mock.get("/authorities/LIV/capital-schemes/funding-managed-by").respond(
             json={
                 "items": [
-                    build_capital_scheme_item_json(
-                        reference="ATE00001",
-                        overview=build_capital_scheme_overview_json(
-                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
-                        ),
-                    ),
-                    build_capital_scheme_item_json(
-                        reference="ATE00002",
-                        overview=build_capital_scheme_overview_json(
-                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
-                        ),
-                    ),
+                    build_capital_scheme_item_json(reference="ATE00001"),
+                    build_capital_scheme_item_json(reference="ATE00002"),
                 ]
             },
         )
@@ -665,17 +724,16 @@ class TestApiSchemeRepository:
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
                 abbreviation="LIV",
-                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+                funding_managed_by_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/funding-managed-by",
             ),
         )
-        api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
+        api_mock.get("/authorities/LIV/capital-schemes/funding-managed-by").respond(
             json={
                 "items": [
                     build_capital_scheme_item_json(
                         reference="ATE00001",
                         overview=build_capital_scheme_overview_json(
                             name="Wirral Package",
-                            bid_submitting_authority=f"{api_base_url}/authorities/LIV",
                             funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                             type_="construction",
                         ),
@@ -702,18 +760,14 @@ class TestApiSchemeRepository:
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
                 abbreviation="LIV",
-                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+                funding_managed_by_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/funding-managed-by",
             ),
         )
-        api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
+        api_mock.get("/authorities/LIV/capital-schemes/funding-managed-by").respond(
             json={
                 "items": [
                     build_capital_scheme_item_json(
-                        reference="ATE00001",
-                        overview=build_capital_scheme_overview_json(
-                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
-                        ),
-                        status=build_capital_scheme_status_json(status="active"),
+                        reference="ATE00001", status=build_capital_scheme_status_json(status="active")
                     )
                 ]
             },
@@ -731,17 +785,14 @@ class TestApiSchemeRepository:
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
                 abbreviation="LIV",
-                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+                funding_managed_by_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/funding-managed-by",
             ),
         )
-        api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
+        api_mock.get("/authorities/LIV/capital-schemes/funding-managed-by").respond(
             json={
                 "items": [
                     build_capital_scheme_item_json(
                         reference="ATE00001",
-                        overview=build_capital_scheme_overview_json(
-                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
-                        ),
                         authority_review=build_capital_scheme_authority_review_json(
                             review_date="2020-01-02T00:00:00Z", source="authority update"
                         ),
@@ -774,19 +825,18 @@ class TestApiSchemeRepository:
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
                 abbreviation="LIV",
-                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+                funding_managed_by_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/funding-managed-by",
             ),
         )
         api_mock.get(
-            "/authorities/LIV/capital-schemes/bid-submitting", params={"funding-programme-code": ["ATF3", "ATF4"]}
+            "/authorities/LIV/capital-schemes/funding-managed-by", params={"funding-programme-code": ["ATF3", "ATF4"]}
         ).respond(
             json={
                 "items": [
                     build_capital_scheme_item_json(
                         reference="ATE00001",
                         overview=build_capital_scheme_overview_json(
-                            bid_submitting_authority=f"{api_base_url}/authorities/LIV",
-                            funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                            funding_programme=f"{api_base_url}/funding-programmes/ATF4"
                         ),
                     )
                 ]
@@ -805,20 +855,11 @@ class TestApiSchemeRepository:
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
                 abbreviation="LIV",
-                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+                funding_managed_by_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/funding-managed-by",
             ),
         )
-        api_mock.get("/authorities/LIV/capital-schemes/bid-submitting", params={"status": "active"}).respond(
-            json={
-                "items": [
-                    build_capital_scheme_item_json(
-                        reference="ATE00001",
-                        overview=build_capital_scheme_overview_json(
-                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
-                        ),
-                    )
-                ]
-            },
+        api_mock.get("/authorities/LIV/capital-schemes/funding-managed-by", params={"status": "active"}).respond(
+            json={"items": [build_capital_scheme_item_json(reference="ATE00001")]}
         )
 
         (scheme1,) = await schemes.get_by_authority("LIV")
@@ -833,24 +874,14 @@ class TestApiSchemeRepository:
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
                 abbreviation="LIV",
-                bid_submitting_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/bid-submitting",
+                funding_managed_by_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/funding-managed-by",
             ),
         )
-        api_mock.get("/authorities/LIV/capital-schemes/bid-submitting").respond(
+        api_mock.get("/authorities/LIV/capital-schemes/funding-managed-by").respond(
             json={
                 "items": [
-                    build_capital_scheme_item_json(
-                        reference="ATE00001",
-                        overview=build_capital_scheme_overview_json(
-                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
-                        ),
-                    ),
-                    build_capital_scheme_item_json(
-                        reference="ATE00002",
-                        overview=build_capital_scheme_overview_json(
-                            bid_submitting_authority=f"{api_base_url}/authorities/LIV"
-                        ),
-                    ),
+                    build_capital_scheme_item_json(reference="ATE00001"),
+                    build_capital_scheme_item_json(reference="ATE00002"),
                 ]
             },
         )

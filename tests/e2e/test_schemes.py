@@ -7,6 +7,8 @@ from tests.e2e.api_client import (
     CapitalSchemeAuthorityReviewModel,
     CapitalSchemeMilestonesModel,
     FundingProgrammeModel,
+    ImprovementModel,
+    ImprovementOverviewModel,
     build_capital_scheme_model,
 )
 from tests.e2e.app_client import AppClient, UserRepr
@@ -30,12 +32,23 @@ class TestAuthenticated:
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
+        api_client.add_improvements(
+            ImprovementModel(
+                reference="IMP00001",
+                overview=ImprovementOverviewModel(
+                    name="Wirral Package",
+                    description='Improvement for the "Wirral Package" capital scheme created as part of funding devolution.',
+                    funding_managed_by=f"{api_client.base_url}/authorities/LIV",
+                    source="authority update",
+                ),
+            )
+        )
         api_client.add_schemes(
             build_capital_scheme_model(
                 reference="ATE00001",
                 name="Wirral Package",
-                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
                 funding_programme=f"{api_client.base_url}/funding-programmes/ATF3",
+                improvement=f"{api_client.base_url}/improvements/IMP00001",
                 milestones=CapitalSchemeMilestonesModel(current_milestone="detailed design completed", items=[]),
                 authority_review=CapitalSchemeAuthorityReviewModel(
                     review_date="2020-01-02T00:00:00Z", source="ATF3 bid"
@@ -44,8 +57,8 @@ class TestAuthenticated:
             build_capital_scheme_model(
                 reference="ATE00002",
                 name="School Streets",
-                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
                 funding_programme=f"{api_client.base_url}/funding-programmes/ATF4",
+                improvement=f"{api_client.base_url}/improvements/IMP00001",
                 milestones=CapitalSchemeMilestonesModel(current_milestone="construction started", items=[]),
                 authority_review=CapitalSchemeAuthorityReviewModel(
                     review_date="2020-01-03T00:00:00Z", source="ATF4 bid"
@@ -84,12 +97,23 @@ class TestAuthenticated:
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
+        api_client.add_improvements(
+            ImprovementModel(
+                reference="IMP00001",
+                overview=ImprovementOverviewModel(
+                    name="Wirral Package",
+                    description='Improvement for the "Wirral Package" capital scheme created as part of funding devolution.',
+                    funding_managed_by=f"{api_client.base_url}/authorities/LIV",
+                    source="authority update",
+                ),
+            )
+        )
         api_client.add_schemes(
             build_capital_scheme_model(
                 reference="ATE00001",
                 name="Wirral Package",
-                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
                 funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+                improvement=f"{api_client.base_url}/improvements/IMP00001",
             )
         )
         app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
@@ -106,12 +130,23 @@ class TestAuthenticated:
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
+        api_client.add_improvements(
+            ImprovementModel(
+                reference="IMP00001",
+                overview=ImprovementOverviewModel(
+                    name="Wirral Package",
+                    description='Improvement for the "Wirral Package" capital scheme created as part of funding devolution.',
+                    funding_managed_by=f"{api_client.base_url}/authorities/LIV",
+                    source="authority update",
+                ),
+            )
+        )
         api_client.add_schemes(
             build_capital_scheme_model(
                 reference="ATE00001",
                 name="Wirral Package",
-                bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
                 funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+                improvement=f"{api_client.base_url}/improvements/IMP00001",
             )
         )
         app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))

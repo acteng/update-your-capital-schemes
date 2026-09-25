@@ -20,24 +20,20 @@ class CapitalSchemeTypeModel(str, Enum):
 
 class CapitalSchemeOverviewModel(BaseModel):
     name: str
-    bid_submitting_authority: AnyUrl
     funding_programme: AnyUrl
+    improvement: AnyUrl | None = None
     type: CapitalSchemeTypeModel
 
     def to_domain(
         self,
-        authority_models: list[AuthorityModel],
+        authority_model: AuthorityModel,
         funding_programme_item_models: list[FundingProgrammeModel] | list[FundingProgrammeItemModel],
     ) -> OverviewRevision:
         # TODO: effective
         return OverviewRevision(
             effective=DateRange(date_from=datetime.min, date_to=None),
             name=self.name,
-            authority_abbreviation=next(
-                authority_model.abbreviation
-                for authority_model in authority_models
-                if authority_model.id == self.bid_submitting_authority
-            ),
+            authority_abbreviation=authority_model.abbreviation,
             type_=self.type.to_domain(),
             funding_programme=next(
                 funding_programme_item_model.to_domain()

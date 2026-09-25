@@ -14,13 +14,14 @@ from tests.e2e.api_server.capital_schemes import (
     capital_schemes,
 )
 from tests.e2e.api_server.collections import CollectionModel
+from tests.e2e.api_server.improvements import improvements
 
 
 class AuthorityModel(BaseModel):
     id: Annotated[AnyUrl | None, Field(alias="@id")] = None
     abbreviation: str
     full_name: str
-    bid_submitting_capital_schemes: AnyUrl | None = None
+    funding_managed_by_capital_schemes: AnyUrl | None = None
 
 
 class CapitalSchemeItemModel(BaseModel):
@@ -46,10 +47,10 @@ def add_authorities() -> Response:
                 url_for("authorities.get_authority", abbreviation=authority.abbreviation, _external=True)
             )
 
-        if not authority.bid_submitting_capital_schemes:
-            authority.bid_submitting_capital_schemes = AnyUrl(
+        if not authority.funding_managed_by_capital_schemes:
+            authority.funding_managed_by_capital_schemes = AnyUrl(
                 url_for(
-                    "authorities.get_authority_bid_submitting_capital_schemes",
+                    "authorities.get_authority_funding_managed_by_capital_schemes",
                     abbreviation=authority.abbreviation,
                     _external=True,
                 )
@@ -71,9 +72,9 @@ def get_authority(abbreviation: str) -> dict[str, Any]:
     return authority.to_json()
 
 
-@bp.get("<abbreviation>/capital-schemes/bid-submitting")
+@bp.get("<abbreviation>/capital-schemes/funding-managed-by")
 @require_oauth()
-def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str, Any]:
+def get_authority_funding_managed_by_capital_schemes(abbreviation: str) -> dict[str, Any]:
     args = MultiDict(request.args)
     funding_programme_codes = args.poplist("funding-programme-code")
     status = args.pop("status", None)
@@ -88,7 +89,7 @@ def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str,
     capital_scheme_items = [
         _to_capital_scheme_item(capital_scheme)
         for capital_scheme in capital_schemes.values()
-        if capital_scheme.overview.bid_submitting_authority == authority_url
+        if _is_funding_managed_by(capital_scheme, authority_url)
         and (not funding_programme_urls or capital_scheme.overview.funding_programme in funding_programme_urls)
         and (not status or capital_scheme.status.status == status)
     ]
@@ -101,6 +102,16 @@ def get_authority_bid_submitting_capital_schemes(abbreviation: str) -> dict[str,
 def clear_authorities() -> Response:
     authorities.clear()
     return Response(status=204)
+
+
+def _is_funding_managed_by(capital_scheme: CapitalSchemeModel, authority_url: AnyUrl) -> bool:
+    improvement_url = capital_scheme.overview.improvement
+
+    if not improvement_url:
+        return False
+
+    improvement = improvements[improvement_url]
+    return improvement.overview.funding_managed_by == authority_url
 
 
 def _to_capital_scheme_item(capital_scheme: CapitalSchemeModel) -> CapitalSchemeItemModel:

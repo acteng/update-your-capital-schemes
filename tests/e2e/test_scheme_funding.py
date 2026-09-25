@@ -6,6 +6,8 @@ from tests.e2e.api_client import (
     AuthorityModel,
     CapitalSchemeFinancialModel,
     FundingProgrammeModel,
+    ImprovementModel,
+    ImprovementOverviewModel,
     build_capital_scheme_model,
 )
 from tests.e2e.app_client import AppClient, UserRepr
@@ -18,12 +20,23 @@ from tests.e2e.pages import SchemePage
 def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
+    api_client.add_improvements(
+        ImprovementModel(
+            reference="IMP00001",
+            overview=ImprovementOverviewModel(
+                name="Wirral Package",
+                description='Improvement for the "Wirral Package" capital scheme created as part of funding devolution.',
+                funding_managed_by=f"{api_client.base_url}/authorities/LIV",
+                source="authority update",
+            ),
+        )
+    )
     api_client.add_schemes(
         build_capital_scheme_model(
             reference="ATE00001",
             name="Wirral Package",
-            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            improvement=f"{api_client.base_url}/improvements/IMP00001",
             financials=[
                 CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
                 CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
@@ -48,12 +61,23 @@ def test_change_spend_to_date(
 ) -> None:
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
+    api_client.add_improvements(
+        ImprovementModel(
+            reference="IMP00001",
+            overview=ImprovementOverviewModel(
+                name="Wirral Package",
+                description='Improvement for the "Wirral Package" capital scheme created as part of funding devolution.',
+                funding_managed_by=f"{api_client.base_url}/authorities/LIV",
+                source="authority update",
+            ),
+        )
+    )
     api_client.add_schemes(
         build_capital_scheme_model(
             reference="ATE00001",
             name="Wirral Package",
-            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            improvement=f"{api_client.base_url}/improvements/IMP00001",
             financials=[
                 CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
                 CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
@@ -81,12 +105,23 @@ def test_cannot_change_spend_to_date_when_error(
 ) -> None:
     api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
+    api_client.add_improvements(
+        ImprovementModel(
+            reference="IMP00001",
+            overview=ImprovementOverviewModel(
+                name="Wirral Package",
+                description='Improvement for the "Wirral Package" capital scheme created as part of funding devolution.',
+                funding_managed_by=f"{api_client.base_url}/authorities/LIV",
+                source="authority update",
+            ),
+        )
+    )
     api_client.add_schemes(
         build_capital_scheme_model(
             reference="ATE00001",
             name="Wirral Package",
-            bid_submitting_authority=f"{api_client.base_url}/authorities/LIV",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
+            improvement=f"{api_client.base_url}/improvements/IMP00001",
             financials=[
                 CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
                 CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),

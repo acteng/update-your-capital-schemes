@@ -9,7 +9,10 @@ from schemes.infrastructure.api.schemes.statuses import CapitalSchemeStatusModel
 
 _dummy_funding_programme_url = "https://api.example/funding-programmes/dummy"
 _dummy_authority_url = "https://api.example/authorities/dummy"
-_dummy_bid_submitting_capital_schemes_url = "https://api.example/authorities/dummy/capital-schemes/bid-submitting"
+_dummy_funding_managed_by_capital_schemes_url = (
+    "https://api.example/authorities/dummy/capital-schemes/funding-managed-by"
+)
+_dummy_improvement_url = "https://api.example/improvements/dummy"
 
 
 def build_funding_programme_item_model(
@@ -22,24 +25,24 @@ def build_authority_model(
     id_: AnyUrl = AnyUrl(_dummy_authority_url),
     abbreviation: str = "dummy",
     full_name: str = "dummy",
-    bid_submitting_capital_schemes: AnyUrl = AnyUrl(_dummy_bid_submitting_capital_schemes_url),
+    funding_managed_by_capital_schemes: AnyUrl = AnyUrl(_dummy_funding_managed_by_capital_schemes_url),
 ) -> AuthorityModel:
     return AuthorityModel(
         id=id_,
         abbreviation=abbreviation,
         full_name=full_name,
-        bid_submitting_capital_schemes=bid_submitting_capital_schemes,
+        funding_managed_by_capital_schemes=funding_managed_by_capital_schemes,
     )
 
 
 def build_capital_scheme_overview_model(
     name: str = "dummy",
-    bid_submitting_authority: AnyUrl = AnyUrl(_dummy_authority_url),
     funding_programme: AnyUrl = AnyUrl(_dummy_funding_programme_url),
+    improvement: AnyUrl | None = None,
     type_: CapitalSchemeTypeModel = CapitalSchemeTypeModel.DEVELOPMENT,
 ) -> CapitalSchemeOverviewModel:
     return CapitalSchemeOverviewModel(
-        name=name, bid_submitting_authority=bid_submitting_authority, funding_programme=funding_programme, type=type_
+        name=name, funding_programme=funding_programme, improvement=improvement, type=type_
     )
 
 
@@ -59,26 +62,41 @@ def build_authority_json(
     id_: str = _dummy_authority_url,
     abbreviation: str = "dummy",
     full_name: str = "dummy",
-    bid_submitting_capital_schemes: str = _dummy_bid_submitting_capital_schemes_url,
+    funding_managed_by_capital_schemes: str = _dummy_funding_managed_by_capital_schemes_url,
 ) -> dict[str, Any]:
     return {
         "@id": id_,
         "abbreviation": abbreviation,
         "fullName": full_name,
-        "bidSubmittingCapitalSchemes": bid_submitting_capital_schemes,
+        "fundingManagedByCapitalSchemes": funding_managed_by_capital_schemes,
     }
+
+
+def build_improvement_overview_json(
+    name: str = "dummy",
+    description: str | None = None,
+    funding_managed_by: str = _dummy_authority_url,
+    source: str = "Pulse 5",
+) -> dict[str, Any]:
+    return {"name": name, "description": description, "fundingManagedBy": funding_managed_by, "source": source}
+
+
+def build_improvement_json(
+    id_: str = _dummy_improvement_url, reference: str = "dummy", overview: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    return {"@id": id_, "reference": reference, "overview": overview or build_improvement_overview_json()}
 
 
 def build_capital_scheme_overview_json(
     name: str = "dummy",
-    bid_submitting_authority: str = _dummy_authority_url,
     funding_programme: str = _dummy_funding_programme_url,
+    improvement: str | None = None,
     type_: str = "development",
 ) -> dict[str, Any]:
     return {
         "name": name,
-        "bidSubmittingAuthority": bid_submitting_authority,
         "fundingProgramme": funding_programme,
+        "improvement": improvement,
         "type": type_,
     }
 

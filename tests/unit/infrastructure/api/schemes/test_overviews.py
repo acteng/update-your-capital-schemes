@@ -25,19 +25,21 @@ class TestCapitalSchemeOverviewModel:
             id=AnyUrl("https://api.example/authorities/LIV"),
             abbreviation="LIV",
             full_name="Liverpool City Region Combined Authority",
-            bid_submitting_capital_schemes=AnyUrl("https://api.example/authorities/LIV/capital-schemes/bid-submitting"),
+            funding_managed_by_capital_schemes=AnyUrl(
+                "https://api.example/authorities/LIV/capital-schemes/funding-managed-by"
+            ),
         )
         funding_programme_item_model = FundingProgrammeItemModel(
             id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
         )
         overview_model = CapitalSchemeOverviewModel(
             name="Wirral Package",
-            bid_submitting_authority=AnyUrl("https://api.example/authorities/LIV"),
             funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
+            improvement=AnyUrl("https://api.example/improvements/IMP00001"),
             type=CapitalSchemeTypeModel.CONSTRUCTION,
         )
 
-        overview_revision = overview_model.to_domain([authority_model], [funding_programme_item_model])
+        overview_revision = overview_model.to_domain(authority_model, [funding_programme_item_model])
 
         assert (
             overview_revision.name == "Wirral Package"

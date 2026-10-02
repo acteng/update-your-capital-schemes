@@ -163,8 +163,6 @@ class SchemeOverviewContext:
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> Self:
-        type_ = scheme.overview.type
-        assert type_
         funding_programme = scheme.overview.funding_programme
         assert funding_programme
 

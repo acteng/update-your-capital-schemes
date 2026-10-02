@@ -221,7 +221,6 @@ class SchemeOverviewComponent(SummaryCardComponent):
     def __init__(self, title: Tag):
         super().__init__(title)
         self.reference = (self._get_definition("Reference")[0].string or "").strip()
-        self.scheme_type = (self._get_definition("Scheme type")[0].string or "").strip()
         self.funding_programme = (self._get_definition("Funding programme")[0].string or "").strip()
         self.current_milestone = (self._get_definition("Current milestone")[0].string or "").strip()
 

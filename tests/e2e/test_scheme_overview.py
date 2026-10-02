@@ -38,7 +38,6 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
             name="Wirral Package",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF4",
             improvement=f"{api_client.base_url}/improvements/IMP00001",
-            type_="construction",
             milestones=CapitalSchemeMilestonesModel(
                 current_milestone="detailed design completed",
                 items=[
@@ -59,7 +58,6 @@ def test_scheme_overview(app_client: AppClient, api_client: ApiClient, oidc_clie
 
     assert (
         scheme_page.overview.reference == "ATE00001"
-        and scheme_page.overview.scheme_type == "Construction"
         and scheme_page.overview.funding_programme == "ATF4"
         and scheme_page.overview.current_milestone == "Detailed design completed"
     )

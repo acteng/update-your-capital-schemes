@@ -8,7 +8,7 @@ from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
-from schemes.domain.schemes.overview import FundingProgrammes, SchemeType
+from schemes.domain.schemes.overview import FundingProgrammes
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
@@ -33,7 +33,6 @@ class TestSchemeOverview:
                 reference="ATE00001",
                 name="Wirral Package",
                 authority_abbreviation="LIV",
-                type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             )
         )
@@ -42,7 +41,6 @@ class TestSchemeOverview:
 
         assert (
             scheme_page.overview.reference == "ATE00001"
-            and scheme_page.overview.scheme_type == "Construction"
             and scheme_page.overview.funding_programme == "ATF4"
             and scheme_page.overview.current_milestone == ""
         )
@@ -52,7 +50,6 @@ class TestSchemeOverview:
             reference="ATE00001",
             name="Wirral Package",
             authority_abbreviation="LIV",
-            type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
         scheme.milestones.update_milestone(
@@ -74,7 +71,6 @@ class TestSchemeOverview:
 
         assert (
             scheme_page.overview.reference == "ATE00001"
-            and scheme_page.overview.scheme_type == "Construction"
             and scheme_page.overview.funding_programme == "ATF4"
             and scheme_page.overview.current_milestone == "Detailed design completed"
         )

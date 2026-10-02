@@ -10,7 +10,7 @@ from werkzeug import Response as BaseResponse
 from schemes.dicts import as_shallow_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
-from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeType
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
@@ -156,22 +156,8 @@ async def get(
 
 
 @dataclass(frozen=True)
-class SchemeTypeContext:
-    name: str
-    _NAMES: ClassVar[Mapping[SchemeType, str]] = {
-        SchemeType.DEVELOPMENT: "Development",
-        SchemeType.CONSTRUCTION: "Construction",
-    }
-
-    @classmethod
-    def from_domain(cls, type_: SchemeType) -> Self:
-        return cls(name=cls._NAMES[type_])
-
-
-@dataclass(frozen=True)
 class SchemeOverviewContext:
     reference: str
-    type: SchemeTypeContext
     funding_programme: FundingProgrammeContext
     current_milestone: MilestoneContext
 
@@ -184,7 +170,6 @@ class SchemeOverviewContext:
 
         return cls(
             reference=scheme.reference,
-            type=SchemeTypeContext.from_domain(type_),
             funding_programme=FundingProgrammeContext.from_domain(funding_programme),
             current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
         )

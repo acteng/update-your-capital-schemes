@@ -11,7 +11,7 @@ from schemes.domain.schemes.funding import FinancialRevision, FinancialType
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputRevision, OutputTypeMeasure
-from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeType
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.views.schemes.milestones import MilestoneContext
 from schemes.views.schemes.schemes import (
@@ -20,7 +20,6 @@ from schemes.views.schemes.schemes import (
     SchemeOverviewContext,
     SchemeRowContext,
     SchemesContext,
-    SchemeTypeContext,
 )
 from tests.unit.domain.builders import build_scheme
 
@@ -244,13 +243,6 @@ class TestSchemeOverviewContext:
 
         assert context.reference == "ATE00001"
 
-    def test_from_domain_sets_type(self) -> None:
-        scheme = build_scheme(reference="", name="", type_=SchemeType.CONSTRUCTION)
-
-        context = SchemeOverviewContext.from_domain(scheme)
-
-        assert context.type == SchemeTypeContext(name="Construction")
-
     def test_from_domain_sets_funding_programme(self) -> None:
         scheme = build_scheme(reference="", name="", funding_programme=FundingProgrammes.ATF4)
 
@@ -289,17 +281,6 @@ class TestSchemeOverviewContext:
         context = SchemeOverviewContext.from_domain(scheme)
 
         assert context.current_milestone == MilestoneContext(name=None)
-
-
-class TestSchemeTypeContext:
-    @pytest.mark.parametrize(
-        "type_, expected_name",
-        [(SchemeType.DEVELOPMENT, "Development"), (SchemeType.CONSTRUCTION, "Construction")],
-    )
-    def test_from_domain(self, type_: SchemeType, expected_name: str) -> None:
-        context = SchemeTypeContext.from_domain(type_)
-
-        assert context == SchemeTypeContext(name=expected_name)
 
 
 class TestFundingProgrammeContext:

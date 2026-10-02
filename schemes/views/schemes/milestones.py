@@ -56,16 +56,16 @@ class SchemeMilestonesContext:
     milestones: list[SchemeMilestoneRowContext]
 
     @classmethod
-    def from_domain(cls, scheme: Scheme) -> Self:
+    def from_domain(cls, milestones: SchemeMilestones) -> Self:
         return cls(
             milestones=[
                 SchemeMilestoneRowContext(
                     milestone=MilestoneContext.from_domain(milestone),
-                    planned=scheme.milestones.get_current_status_date(milestone, ObservationType.PLANNED),
-                    actual=scheme.milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
+                    planned=milestones.get_current_status_date(milestone, ObservationType.PLANNED),
+                    actual=milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
                 )
                 for milestone in sorted(
-                    scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.milestone_order
+                    milestones.milestones_eligible_for_authority_update, key=lambda milestone: milestone.milestone_order
                 )
             ]
         )
@@ -133,12 +133,12 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
     construction_completed: FormField[MilestoneDatesForm]
 
     @staticmethod
-    def create_class(scheme: Scheme, now: datetime) -> type[ChangeMilestoneDatesForm]:
+    def create_class(milestones: SchemeMilestones, now: datetime) -> type[ChangeMilestoneDatesForm]:
         class DynamicChangeMilestoneDatesForm(ChangeMilestoneDatesForm):
             pass
 
         for milestone in sorted(
-            scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.milestone_order
+            milestones.milestones_eligible_for_authority_update, key=lambda milestone: milestone.milestone_order
         ):
             field = FormField(
                 form_class=MilestoneDatesForm.create_class(milestone, now),
@@ -150,22 +150,22 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
         return DynamicChangeMilestoneDatesForm
 
     @classmethod
-    def from_domain(cls, scheme: Scheme, now: datetime) -> ChangeMilestoneDatesForm:
-        form_class = cls.create_class(scheme, now)
+    def from_domain(cls, milestones: SchemeMilestones, now: datetime) -> ChangeMilestoneDatesForm:
+        form_class = cls.create_class(milestones, now)
 
         return form_class(
             data={
-                cls._to_field_name(milestone): MilestoneDatesForm.from_domain(scheme.milestones, milestone, now).data
-                for milestone in scheme.milestones_eligible_for_authority_update
+                cls._to_field_name(milestone): MilestoneDatesForm.from_domain(milestones, milestone, now).data
+                for milestone in milestones.milestones_eligible_for_authority_update
             }
         )
 
-    def update_domain(self, scheme: Scheme, now: datetime) -> None:
+    def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
         for milestone in sorted(
-            scheme.milestones_eligible_for_authority_update, key=lambda milestone: milestone.milestone_order
+            milestones.milestones_eligible_for_authority_update, key=lambda milestone: milestone.milestone_order
         ):
             field_name = self._to_field_name(milestone)
-            self[field_name].form.update_domain(scheme.milestones, now, milestone)
+            self[field_name].form.update_domain(milestones, now, milestone)
 
     @staticmethod
     def _to_field_name(milestone: Milestone) -> str:
@@ -183,4 +183,6 @@ class ChangeMilestoneDatesContext:
         name = scheme.overview.name
         assert name is not None
 
-        return cls(reference=scheme.reference, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme, now))
+        return cls(
+            reference=scheme.reference, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme.milestones, now)
+        )

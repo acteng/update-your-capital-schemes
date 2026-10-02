@@ -1,9 +1,9 @@
 import pytest
 
 from schemes.domain.schemes.funding import SchemeFunding
-from schemes.domain.schemes.milestones import Milestone, SchemeMilestones
+from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
-from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeOverview, SchemeType
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeOverview
 from schemes.domain.schemes.reviews import SchemeReviews
 from schemes.domain.schemes.schemes import Scheme, Status
 from tests.unit.domain.builders import build_scheme
@@ -83,26 +83,6 @@ class TestScheme:
         scheme = build_scheme(reference="ATE00001", status=Status.ACTIVE, overview_revisions=[])
 
         assert scheme.is_updateable is True
-
-    def test_milestones_eligible_for_authority_update_when_development(self) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package", type_=SchemeType.DEVELOPMENT)
-
-        assert scheme.milestones_eligible_for_authority_update == {
-            Milestone.FEASIBILITY_DESIGN_COMPLETED,
-            Milestone.PRELIMINARY_DESIGN_COMPLETED,
-            Milestone.DETAILED_DESIGN_COMPLETED,
-        }
-
-    def test_milestones_eligible_for_authority_update_when_construction(self) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package", type_=SchemeType.CONSTRUCTION)
-
-        assert scheme.milestones_eligible_for_authority_update == {
-            Milestone.FEASIBILITY_DESIGN_COMPLETED,
-            Milestone.PRELIMINARY_DESIGN_COMPLETED,
-            Milestone.DETAILED_DESIGN_COMPLETED,
-            Milestone.CONSTRUCTION_STARTED,
-            Milestone.CONSTRUCTION_COMPLETED,
-        }
 
 
 class TestFundingProgrammes:

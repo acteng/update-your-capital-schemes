@@ -8,7 +8,6 @@ from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
-from schemes.domain.schemes.overview import SchemeType
 from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
@@ -49,84 +48,8 @@ class TestSchemeMilestones:
             {"milestone": "Construction completed", "planned": "", "actual": ""},
         ]
 
-    async def test_scheme_shows_development_milestones(
-        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
-    ) -> None:
-        scheme = build_scheme(
-            reference="ATE00001",
-            name="Wirral Package",
-            authority_abbreviation="LIV",
-            type_=SchemeType.DEVELOPMENT,
-        )
-        scheme.milestones.update_milestones(
-            MilestoneRevision(
-                1,
-                DateRange(datetime(2020, 1, 1), None),
-                Milestone.FEASIBILITY_DESIGN_COMPLETED,
-                ObservationType.PLANNED,
-                date(2020, 2, 1),
-                DataSource.ATF4_BID,
-            ),
-            MilestoneRevision(
-                2,
-                DateRange(datetime(2020, 1, 1), None),
-                Milestone.FEASIBILITY_DESIGN_COMPLETED,
-                ObservationType.ACTUAL,
-                date(2020, 2, 2),
-                DataSource.ATF4_BID,
-            ),
-            MilestoneRevision(
-                3,
-                DateRange(datetime(2020, 1, 1), None),
-                Milestone.PRELIMINARY_DESIGN_COMPLETED,
-                ObservationType.PLANNED,
-                date(2020, 3, 1),
-                DataSource.ATF4_BID,
-            ),
-            MilestoneRevision(
-                4,
-                DateRange(datetime(2020, 1, 1), None),
-                Milestone.PRELIMINARY_DESIGN_COMPLETED,
-                ObservationType.ACTUAL,
-                date(2020, 3, 2),
-                DataSource.ATF4_BID,
-            ),
-            MilestoneRevision(
-                5,
-                DateRange(datetime(2020, 1, 1), None),
-                Milestone.DETAILED_DESIGN_COMPLETED,
-                ObservationType.PLANNED,
-                date(2020, 4, 1),
-                DataSource.ATF4_BID,
-            ),
-            MilestoneRevision(
-                6,
-                DateRange(datetime(2020, 1, 1), None),
-                Milestone.DETAILED_DESIGN_COMPLETED,
-                ObservationType.ACTUAL,
-                date(2020, 4, 2),
-                DataSource.ATF4_BID,
-            ),
-        )
-        await schemes.add(scheme)
-
-        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
-
-        assert scheme_page.milestones.milestones.to_dicts() == [
-            {"milestone": "Feasibility design completed", "planned": "1 Feb 2020", "actual": "2 Feb 2020"},
-            {"milestone": "Preliminary design completed", "planned": "1 Mar 2020", "actual": "2 Mar 2020"},
-            {"milestone": "Detailed design completed", "planned": "1 Apr 2020", "actual": "2 Apr 2020"},
-        ]
-
-    async def test_scheme_shows_construction_milestones(
-        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
-    ) -> None:
-        scheme = build_scheme(
-            reference="ATE00001",
-            name="Wirral Package",
-            authority_abbreviation="LIV",
-            type_=SchemeType.CONSTRUCTION,
-        )
+    async def test_scheme_shows_milestones(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 1,
@@ -250,14 +173,7 @@ class TestSchemeMilestones:
     async def test_milestones_form_shows_fields(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(
-            build_scheme(
-                reference="ATE00001",
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                type_=SchemeType.CONSTRUCTION,
-            )
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         change_milestone_dates_page = await ChangeMilestoneDatesPage.open(async_client, reference="ATE00001")
 
@@ -365,19 +281,15 @@ class TestSchemeMilestones:
 
         assert not_found_page.is_visible and not_found_page.is_not_found
 
-    @pytest.mark.parametrize("scheme_type", [SchemeType.DEVELOPMENT, SchemeType.CONSTRUCTION])
     async def test_milestones_updates_milestones(
         self,
         clock: Clock,
         schemes: SchemeRepository,
         async_client: AsyncFlaskClient,
         csrf_token: str,
-        scheme_type: SchemeType,
     ) -> None:
         clock.now = datetime(2020, 2, 1, 13)
-        scheme = build_scheme(
-            reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV", type_=scheme_type
-        )
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,

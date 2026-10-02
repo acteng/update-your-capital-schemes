@@ -197,7 +197,7 @@ class SchemeContext:
             needs_review=scheme.reviews.needs_review(reporting_window),
             overview=SchemeOverviewContext.from_domain(scheme),
             funding=SchemeFundingContext.from_domain(scheme.funding),
-            milestones=SchemeMilestonesContext.from_domain(scheme),
+            milestones=SchemeMilestonesContext.from_domain(scheme.milestones),
             outputs=SchemeOutputsContext.from_domain(scheme.outputs.current_output_revisions),
             review=SchemeReviewContext.from_domain(scheme.reviews),
         )
@@ -289,12 +289,12 @@ async def milestones(
         abort(403)
 
     now = clock.now
-    form = ChangeMilestoneDatesForm.from_domain(scheme, now)
+    form = ChangeMilestoneDatesForm.from_domain(scheme.milestones, now)
 
     if not form.validate():
         return await milestones_form(reference)
 
-    form.update_domain(scheme, now)
+    form.update_domain(scheme.milestones, now)
     await schemes.update(scheme)
 
     return redirect(url_for("schemes.get", reference=reference))

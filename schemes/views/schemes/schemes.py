@@ -15,11 +15,7 @@ from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
 from schemes.views.auth.bearer import async_bearer_auth
-from schemes.views.schemes.funding import (
-    ChangeSpendToDateContext,
-    ChangeSpendToDateForm,
-    SchemeFundingContext,
-)
+from schemes.views.schemes.funding import ChangeSpendToDateContext, ChangeSpendToDateForm, SchemeFundingContext
 from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,
     ChangeMilestoneDatesForm,

@@ -1,28 +1,18 @@
 from datetime import datetime
-from enum import Enum
 
 from pydantic import AnyUrl
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes.overview import OverviewRevision, SchemeType
+from schemes.domain.schemes.overview import OverviewRevision
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel, FundingProgrammeModel
-
-
-class CapitalSchemeTypeModel(str, Enum):
-    DEVELOPMENT = "development"
-    CONSTRUCTION = "construction"
-
-    def to_domain(self) -> SchemeType:
-        return SchemeType[self.name]
 
 
 class CapitalSchemeOverviewModel(BaseModel):
     name: str
     funding_programme: AnyUrl
     improvement: AnyUrl | None = None
-    type: CapitalSchemeTypeModel
 
     def to_domain(
         self,
@@ -34,7 +24,6 @@ class CapitalSchemeOverviewModel(BaseModel):
             effective=DateRange(date_from=datetime.min, date_to=None),
             name=self.name,
             authority_abbreviation=authority_model.abbreviation,
-            type_=self.type.to_domain(),
             funding_programme=next(
                 funding_programme_item_model.to_domain()
                 for funding_programme_item_model in funding_programme_item_models

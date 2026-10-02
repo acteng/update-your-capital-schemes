@@ -1,13 +1,6 @@
 from dataclasses import dataclass
-from enum import Enum, auto, unique
 
 from schemes.domain.dates import DateRange
-
-
-@unique
-class SchemeType(Enum):
-    DEVELOPMENT = auto()
-    CONSTRUCTION = auto()
 
 
 @dataclass(frozen=True)
@@ -39,13 +32,11 @@ class OverviewRevision:
         effective: DateRange,
         name: str,
         authority_abbreviation: str,
-        type_: SchemeType,
         funding_programme: FundingProgramme,
     ):
         self._effective = effective
         self._name = name
         self._authority_abbreviation = authority_abbreviation
-        self._type = type_
         self._funding_programme = funding_programme
 
     @property
@@ -59,10 +50,6 @@ class OverviewRevision:
     @property
     def authority_abbreviation(self) -> str:
         return self._authority_abbreviation
-
-    @property
-    def type(self) -> SchemeType:
-        return self._type
 
     @property
     def funding_programme(self) -> FundingProgramme:
@@ -93,11 +80,6 @@ class SchemeOverview:
     def authority_abbreviation(self) -> str | None:
         current_overview_revision = self._current_overview_revision()
         return current_overview_revision.authority_abbreviation if current_overview_revision else None
-
-    @property
-    def type(self) -> SchemeType | None:
-        current_overview_revision = self._current_overview_revision()
-        return current_overview_revision.type if current_overview_revision else None
 
     @property
     def funding_programme(self) -> FundingProgramme | None:

@@ -1,22 +1,9 @@
-import pytest
 from pydantic import AnyUrl
 
-from schemes.domain.schemes.overview import FundingProgrammes, SchemeType
+from schemes.domain.schemes.overview import FundingProgrammes
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
-from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel, CapitalSchemeTypeModel
-
-
-class TestCapitalSchemeTypeModel:
-    @pytest.mark.parametrize(
-        "type_model, expected_type",
-        [
-            (CapitalSchemeTypeModel.DEVELOPMENT, SchemeType.DEVELOPMENT),
-            (CapitalSchemeTypeModel.CONSTRUCTION, SchemeType.CONSTRUCTION),
-        ],
-    )
-    def test_to_domain(self, type_model: CapitalSchemeTypeModel, expected_type: SchemeType) -> None:
-        assert type_model.to_domain() == expected_type
+from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel
 
 
 class TestCapitalSchemeOverviewModel:
@@ -36,7 +23,6 @@ class TestCapitalSchemeOverviewModel:
             name="Wirral Package",
             funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
             improvement=AnyUrl("https://api.example/improvements/IMP00001"),
-            type=CapitalSchemeTypeModel.CONSTRUCTION,
         )
 
         overview_revision = overview_model.to_domain(authority_model, [funding_programme_item_model])
@@ -45,5 +31,4 @@ class TestCapitalSchemeOverviewModel:
             overview_revision.name == "Wirral Package"
             and overview_revision.authority_abbreviation == "LIV"
             and overview_revision.funding_programme == FundingProgrammes.ATF4
-            and overview_revision.type == SchemeType.CONSTRUCTION
         )

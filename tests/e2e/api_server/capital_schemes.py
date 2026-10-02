@@ -14,7 +14,6 @@ class CapitalSchemeOverviewModel(BaseModel):
     name: str
     funding_programme: AnyUrl
     improvement: AnyUrl | None
-    type: str
 
 
 class CapitalSchemeStatusModel(BaseModel):

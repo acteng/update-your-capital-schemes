@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeType
+from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision
 from schemes.domain.schemes.schemes import Status
 from tests.unit.domain.builders import build_scheme
 
@@ -20,7 +20,6 @@ def test_build_scheme_with_minimal_overview_fields() -> None:
     assert (
         scheme.overview.name == "Wirral Package"
         and scheme.overview.authority_abbreviation == ""
-        and scheme.overview.type == SchemeType.CONSTRUCTION
         and scheme.overview.funding_programme == FundingProgrammes.ATF2
     )
 
@@ -30,14 +29,12 @@ def test_build_scheme_with_overview_fields() -> None:
         reference="",
         name="Wirral Package",
         authority_abbreviation="LIV",
-        type_=SchemeType.DEVELOPMENT,
         funding_programme=FundingProgrammes.ATF4,
     )
 
     assert (
         scheme.overview.name == "Wirral Package"
         and scheme.overview.authority_abbreviation == "LIV"
-        and scheme.overview.type == SchemeType.DEVELOPMENT
         and scheme.overview.funding_programme == FundingProgrammes.ATF4
     )
 
@@ -50,7 +47,6 @@ def test_build_scheme_with_overview_revision() -> None:
                 effective=DateRange(datetime(2020, 1, 1), None),
                 name="Wirral Package",
                 authority_abbreviation="LIV",
-                type_=SchemeType.DEVELOPMENT,
                 funding_programme=FundingProgrammes.ATF4,
             )
         ],
@@ -59,7 +55,6 @@ def test_build_scheme_with_overview_revision() -> None:
     assert (
         scheme.overview.name == "Wirral Package"
         and scheme.overview.authority_abbreviation == "LIV"
-        and scheme.overview.type == SchemeType.DEVELOPMENT
         and scheme.overview.funding_programme == FundingProgrammes.ATF4
     )
 
@@ -85,14 +80,12 @@ def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
             reference="",
             name="Wirral Package",
             authority_abbreviation="LIV",
-            type_=SchemeType.DEVELOPMENT,
             funding_programme=FundingProgrammes.ATF4,
             overview_revisions=[
                 OverviewRevision(
                     effective=DateRange(datetime(2020, 1, 1), None),
                     name="Wirral Package",
                     authority_abbreviation="LIV",
-                    type_=SchemeType.DEVELOPMENT,
                     funding_programme=FundingProgrammes.ATF4,
                 )
             ],

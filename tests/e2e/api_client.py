@@ -44,7 +44,6 @@ class CapitalSchemeOverviewModel(BaseModel):
     name: str
     funding_programme: str
     improvement: str | None
-    type: str
 
 
 class CapitalSchemeStatusModel(BaseModel):
@@ -95,7 +94,6 @@ def build_capital_scheme_model(
     name: str,
     funding_programme: str,
     improvement: str | None = None,
-    type_: str = "construction",
     status: CapitalSchemeStatusModel | None = None,
     financials: list[CapitalSchemeFinancialModel] | None = None,
     milestones: CapitalSchemeMilestonesModel | None = None,
@@ -108,7 +106,6 @@ def build_capital_scheme_model(
             name=name,
             funding_programme=funding_programme,
             improvement=improvement,
-            type=type_,
         ),
         status=status or CapitalSchemeStatusModel(status="active"),
         financials=CollectionModel[CapitalSchemeFinancialModel](items=financials or []),

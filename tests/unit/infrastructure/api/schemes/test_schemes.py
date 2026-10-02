@@ -11,7 +11,7 @@ from schemes.domain.schemes.funding import FinancialRevision, FinancialType
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure
-from schemes.domain.schemes.overview import FundingProgrammes, SchemeType
+from schemes.domain.schemes.overview import FundingProgrammes
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import Status
 from schemes.infrastructure.api.authorities import AuthorityModel
@@ -24,7 +24,7 @@ from schemes.infrastructure.api.schemes.authority_reviews import CapitalSchemeAu
 from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel
 from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel, MilestoneModel
 from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel, OutputMeasureModel, OutputTypeModel
-from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel, CapitalSchemeTypeModel
+from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel
 from schemes.infrastructure.api.schemes.schemes import ApiSchemeRepository, CapitalSchemeItemModel, CapitalSchemeModel
 from schemes.infrastructure.api.schemes.statuses import CapitalSchemeStatusModel, StatusModel
 from schemes.oauth import ClientAsyncBaseApp
@@ -89,7 +89,6 @@ class TestCapitalSchemeModel:
                 name="Wirral Package",
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
                 improvement=AnyUrl("https://api.example/improvements/IMP00001"),
-                type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
             status=build_capital_scheme_status_model(),
             financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
@@ -104,7 +103,6 @@ class TestCapitalSchemeModel:
             overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
-            and overview_revision1.type == SchemeType.CONSTRUCTION
         )
 
     def test_to_domain_sets_status(self) -> None:
@@ -291,7 +289,6 @@ class TestCapitalSchemeItemModel:
                 name="Wirral Package",
                 funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
                 improvement=AnyUrl("https://api.example/improvements/IMP00001"),
-                type=CapitalSchemeTypeModel.CONSTRUCTION,
             ),
             status=build_capital_scheme_status_model(),
         )
@@ -303,7 +300,6 @@ class TestCapitalSchemeItemModel:
             overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
-            and overview_revision1.type == SchemeType.CONSTRUCTION
         )
 
     def test_to_domain_sets_status(self) -> None:
@@ -389,7 +385,6 @@ class TestApiSchemeRepository:
                     name="Wirral Package",
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                     improvement=f"{api_base_url}/improvements/IMP00001",
-                    type_="construction",
                 ),
             ),
         )
@@ -402,7 +397,6 @@ class TestApiSchemeRepository:
             overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
-            and overview_revision1.type == SchemeType.CONSTRUCTION
         )
 
     async def test_get_scheme_sets_status(
@@ -733,9 +727,7 @@ class TestApiSchemeRepository:
                     build_capital_scheme_item_json(
                         reference="ATE00001",
                         overview=build_capital_scheme_overview_json(
-                            name="Wirral Package",
-                            funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                            type_="construction",
+                            name="Wirral Package", funding_programme=f"{api_base_url}/funding-programmes/ATF4"
                         ),
                     )
                 ]
@@ -749,7 +741,6 @@ class TestApiSchemeRepository:
             overview_revision1.name == "Wirral Package"
             and overview_revision1.authority_abbreviation == "LIV"
             and overview_revision1.funding_programme == FundingProgrammes.ATF4
-            and overview_revision1.type == SchemeType.CONSTRUCTION
         )
 
     async def test_get_schemes_by_authority_sets_status(

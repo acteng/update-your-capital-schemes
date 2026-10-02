@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from schemes.domain.dates import DateRange
-from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeOverview, SchemeType
+from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeOverview
 
 
 class TestSchemeOverview:
@@ -17,7 +17,6 @@ class TestSchemeOverview:
                 effective=DateRange(datetime(2020, 1, 1), None),
                 name="Wirral Package",
                 authority_abbreviation="LIV",
-                type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             )
         )
@@ -32,7 +31,6 @@ class TestSchemeOverview:
             effective=DateRange(datetime(2020, 1, 1), None),
             name="Wirral Package",
             authority_abbreviation="LIV",
-            type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
 
@@ -46,14 +44,12 @@ class TestSchemeOverview:
             effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
             name="Wirral Package",
             authority_abbreviation="LIV",
-            type_=SchemeType.DEVELOPMENT,
             funding_programme=FundingProgrammes.ATF3,
         )
         overview_revision2 = OverviewRevision(
             effective=DateRange(datetime(2020, 2, 1), None),
             name="School Streets",
             authority_abbreviation="WYO",
-            type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
 
@@ -68,14 +64,12 @@ class TestSchemeOverview:
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 name="Wirral Package",
                 authority_abbreviation="LIV",
-                type_=SchemeType.DEVELOPMENT,
                 funding_programme=FundingProgrammes.ATF3,
             ),
             OverviewRevision(
                 effective=DateRange(datetime(2020, 2, 1), None),
                 name="School Streets",
                 authority_abbreviation="WYO",
-                type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             ),
         )
@@ -94,14 +88,12 @@ class TestSchemeOverview:
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 name="Wirral Package",
                 authority_abbreviation="LIV",
-                type_=SchemeType.DEVELOPMENT,
                 funding_programme=FundingProgrammes.ATF3,
             ),
             OverviewRevision(
                 effective=DateRange(datetime(2020, 2, 1), None),
                 name="School Streets",
                 authority_abbreviation="WYO",
-                type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             ),
         )
@@ -113,32 +105,6 @@ class TestSchemeOverview:
 
         assert overview.authority_abbreviation is None
 
-    def test_get_type(self) -> None:
-        overview = SchemeOverview()
-        overview.update_overviews(
-            OverviewRevision(
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                type_=SchemeType.DEVELOPMENT,
-                funding_programme=FundingProgrammes.ATF3,
-            ),
-            OverviewRevision(
-                effective=DateRange(datetime(2020, 2, 1), None),
-                name="Wirral Package",
-                authority_abbreviation="WYO",
-                type_=SchemeType.CONSTRUCTION,
-                funding_programme=FundingProgrammes.ATF4,
-            ),
-        )
-
-        assert overview.type == SchemeType.CONSTRUCTION
-
-    def test_get_type_when_no_revisions(self) -> None:
-        overview = SchemeOverview()
-
-        assert overview.type is None
-
     def test_get_funding_programme(self) -> None:
         overview = SchemeOverview()
         overview.update_overviews(
@@ -146,14 +112,12 @@ class TestSchemeOverview:
                 effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 name="Wirral Package",
                 authority_abbreviation="LIV",
-                type_=SchemeType.DEVELOPMENT,
                 funding_programme=FundingProgrammes.ATF3,
             ),
             OverviewRevision(
                 effective=DateRange(datetime(2020, 2, 1), None),
                 name="Wirral Package",
                 authority_abbreviation="WYO",
-                type_=SchemeType.CONSTRUCTION,
                 funding_programme=FundingProgrammes.ATF4,
             ),
         )
@@ -172,7 +136,6 @@ class TestOverviewRevision:
             effective=DateRange(datetime(2020, 1, 1), None),
             name="Wirral Package",
             authority_abbreviation="LIV",
-            type_=SchemeType.CONSTRUCTION,
             funding_programme=FundingProgrammes.ATF4,
         )
 
@@ -180,6 +143,5 @@ class TestOverviewRevision:
             overview_revision.effective == DateRange(datetime(2020, 1, 1), None)
             and overview_revision.name == "Wirral Package"
             and overview_revision.authority_abbreviation == "LIV"
-            and overview_revision.type == SchemeType.CONSTRUCTION
             and overview_revision.funding_programme == FundingProgrammes.ATF4
         )

@@ -29,7 +29,7 @@
     "govuk-frontend": "~6.3.0"
   },
   "devDependencies": {
-    "sass": "~1.100.0",
+    "sass": "~1.105.0",
     "terser": "~5.48.0"
   },
   "engines": {

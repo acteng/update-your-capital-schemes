@@ -88,12 +88,12 @@ After upgrading GOV.UK Frontend Jinja Macros, update the header template:
 1. Replace the crown logo with the ATE logo by applying the following patch:
 
    ```diff
-   -        {{ govukLogo({
-   -          'classes': "govuk-header__logotype",
-   -          'ariaLabelText': "GOV.UK"
-   -        }) | trim | indent(8) }}
-   +        <img class="govuk-header__logotype ate-header__logotype" src="{{ url_for('static', filename='ate-frontend/assets/ate-header/ate-logo-white.png') }}" alt="Active Travel England"/>
-   +        <img class="govuk-header__logotype ate-header__logotype--focus" src="{{ url_for('static', filename='ate-frontend/assets/ate-header/ate-logo-black.png') }}" alt="Active Travel England"/>
+   -    {{ govukLogo({
+   -      'classes': "govuk-header__logotype",
+   -      'ariaLabelText': "GOV.UK"
+   -    }) | trim | indent(8) }}
+   +    <img class="govuk-header__logotype ate-header__logotype" src="{{ url_for('static', filename='ate-frontend/assets/ate-header/ate-logo-white.png') }}" alt="Active Travel England"/>
+   +    <img class="govuk-header__logotype ate-header__logotype--focus" src="{{ url_for('static', filename='ate-frontend/assets/ate-header/ate-logo-black.png') }}" alt="Active Travel England"/>
    ```
 
 #### GOV.UK footer component

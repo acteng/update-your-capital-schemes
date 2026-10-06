@@ -1,0 +1,75 @@
+{#
+Component options:
+  - oneLoginLink (string): Option to overwrite the default One Login Home link. Defaults to "https://home.account.gov.uk/"
+  - signOutLink (string): Option to overwrite the default signed out page. Defaults to "https://home.account.gov.uk/sign-out"
+  - lng (string): Option to overwrite the default language. Defaults to English unless "cy" is specified for Welsh.
+  - homepageLink (string): Option to overwrite the default GOV.UK link. Defaults to "https://home.account.gov.uk/"
+  - signOutFormAction (string): For services that require a POST request to sign out, this option allows you to set the form action URL for the sign out form. If this option is provided, the "Sign out" link will be rendered as a form that submits a POST request to the specified URL. Overrules `signOutLink` option if both are provided.
+  - signOutFormHiddenInputsHtml (html string): Option to add hidden input fields to the sign out form. This is useful for including CSRF tokens or other necessary hidden data when using a POST request for signing out.
+
+#}
+{%- set lngQueryString = "?lng=cy" if (params.lng == "cy") else "" -%}
+{%- set signOutLinkText = "Allgofnodi" if (params.lng == "cy") else "Sign out" -%}
+{%- set oneLoginLink = params.oneLoginLink if params.oneLoginLink else (["https://home.account.gov.uk", lngQueryString] | join) -%}
+{%- set homepageLink = params.homepageLink if params.homepageLink else "https://www.gov.uk/" -%}
+{%- set signOutLink = params.signOutLink if params.signOutLink else (["https://home.account.gov.uk/sign-out", lngQueryString] | join) -%}
+
+{%- macro oneLoginIcon(modifier="default") -%}
+  {%- set class = "rebranded-cross-service-header__logo--nav" if modifier == "nav" else "" %}
+  <svg focusable="false" xmlns="http://www.w3.org/2000/svg" width="15" height="30" viewBox="150 150 250 250" fill="currentcolor" class="rebranded-cross-service-header__logo {{class}}" aria-hidden="true">
+    <path d="M300.002 312.261C249.445 312.261 208.346 271.165 208.346 220.608C208.346 170.051 249.445 128.954 300.002 128.954C350.559 128.954 391.655 170.051 391.655 220.608C391.655 271.165 350.559 312.261 300.002 312.261ZM300.002 170.892C272.673 170.892 250.389 193.175 250.389 220.504C250.389 247.83 272.673 270.113 300.002 270.113C327.33 270.113 349.611 247.83 349.611 220.504C349.611 193.175 327.33 170.892 300.002 170.892Z" />
+    <path d="M221.275 471.046H179.231V365.202H420.769V407.246H221.275V471.046Z"/>
+  </svg>
+{%- endmacro -%}
+<div class="rebranded-cross-service-header" data-module="one-login-header">
+  <div class="rebranded-one-login-header" data-one-login-header-nav>
+    <div class="rebranded-one-login-header__container govuk-width-container">
+      <div class="rebranded-one-login-header__logo">
+        <a href="{{ homepageLink }}" class="rebranded-one-login-header__link rebranded-one-login-header__link--homepage">
+          <img class="ate-service-header__logotype" src="{{ url_for('static', filename='ate-frontend/assets/ate-header/ate-logo-white.png') }}" alt="Active Travel England"/>
+          <img class="ate-service-header__logotype--focus" src="{{ url_for('static', filename='ate-frontend/assets/ate-header/ate-logo-black.png') }}" alt="Active Travel England"/>
+        </a>
+      </div>
+      <button type="button"
+        aria-controls="one-login-header__nav"
+        aria-label="Show GOV.UK One Login menu"
+        data-open-class="rebranded-cross-service-header__toggle--open"
+        data-label-for-show="Show GOV.UK One Login menu"
+        data-label-for-hide="Hide GOV.UK One Login menu"
+        aria-expanded="false"
+        class="rebranded-cross-service-header__toggle js-x-header-toggle">
+        <span class="rebranded-cross-service-header__toggle-content-wrapper">
+          {{- oneLoginIcon() }}
+          <span class="rebranded-cross-service-header__toggle-content">One Login</span>
+        </span>
+      </button>
+      <nav aria-label="GOV.UK One Login" class="rebranded-one-login-header__nav" data-open-class="rebranded-one-login-header__nav--open" id="one-login-header__nav">
+        <ul class="rebranded-one-login-header__nav__list">
+          <li class="rebranded-one-login-header__nav__list-item">
+            <a class="rebranded-one-login-header__nav__link" href="{{ oneLoginLink }}">
+              <span class="rebranded-one-login-header__nav__text">
+                {{- oneLoginIcon("nav") }}
+                GOV.UK One Login
+              </span>
+            </a>
+          </li>
+          <li class="rebranded-one-login-header__nav__list-item">
+            {% if params.signOutFormAction %}
+              <form method="post" class="rebranded-one-login-header__nav__form" action="{{ params.signOutFormAction }}">
+                {{ params.signOutFormHiddenInputsHtml | safe }}
+                <button type="submit" class="rebranded-one-login-header__nav__button">
+                  <span class="rebranded-one-login-header__nav__text rebranded-one-login-header__nav__text--sign-out">{{ signOutLinkText }}</span>
+                </button>
+              </form>
+            {% else %}
+            <!-- REPLACE SIGN OUT URL PLACEHOLDER WITH SIGN OUT PAGE FOR YOUR SERVICE -->
+            <a class="rebranded-one-login-header__nav__link" href="{{ signOutLink }}">
+              <span class="rebranded-one-login-header__nav__text rebranded-one-login-header__nav__text--sign-out">{{ signOutLinkText }}</span>
+            </a>
+            {% endif %}
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

@@ -183,18 +183,8 @@ After upgrading GOV.UK One Login Service Header:
 
 1. The package [doesn't provide Jinja templates](https://github.com/govuk-one-login/service-header/issues/25), so copy
    the contents of the installed package's [service header Nunjucks template](../node_modules/@govuk-one-login/service-header/dist/nunjucks/service-header/template.njk)
-   to [schemes/views/templates/ate_service_header/macro.html](../schemes/views/templates/ate_service_header/macro.html)
-   replacing the contents of the Jinja macro:
-
-   ```
-   {% macro ateServiceHeader(params) %}
-
-   <PASTE HERE>
-
-   {% endmacro %}
-   ```
-
-   And update the template for Jinja by applying the following patch:
+   to [schemes/views/templates/ate_service_header/template.html](../schemes/views/templates/ate_service_header/template.html)
+   and update the template for Jinja by applying the following patch:
 
    ```diff
    -{%- set lngQueryString = "?lng=cy" if (params.lng === "cy") else "" -%}

@@ -2,8 +2,14 @@
 {% from "ate_service_header/macro.html" import ateServiceHeader -%}
 
 {% block head %}
-    {{ super() }}
+    {#
+        GOV.UK One Login service header styles need to be between GOV.UK Frontend and ATE Frontend, so repeat the
+        stylesheets in `base.html`.
+    #}
+    <link href="{{ url_for('static', filename='govuk-frontend/govuk-frontend.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='govuk-one-login-service-header/govuk-one-login-service-header.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='ate-frontend/ate-frontend.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='application.min.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block govukHeader %}

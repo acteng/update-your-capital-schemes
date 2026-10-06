@@ -18,6 +18,7 @@ The following sections detail how to upgrade some of these packages:
 
 * [Upgrading GOV.UK Frontend Jinja Macros package](#upgrading-govuk-frontend-jinja-macros-package)
 * [Upgrading GOV.UK One Login Service Header package](#upgrading-govuk-one-login-service-header-package)
+* [Upgrading ATE Frontend package](#upgrading-ate-frontend-package)
 
 ## Upgrading Python packages
 
@@ -154,6 +155,21 @@ To upgrade packages to their latest patch versions:
 ```bash
 npm upgrade
 ```
+
+### Upgrading ATE Frontend package
+
+After upgrading ATE Frontend:
+
+1. Install the updated package:
+
+   ```bash
+   npm install
+   ```
+
+1. The package [doesn't provide Jinja templates](https://github.com/acteng/ate-frontend/issues/2), so copy the contents
+   of the installed package's [ATE header Nunjucks template](../node_modules/@active-travel-england/ate-frontend/dist/ate/components/ate-header/template.njk)
+   to [schemes/views/templates/ate_header/template.html](../schemes/views/templates/ate_header/template.html) and update
+   the template for Jinja
 
 ### Upgrading GOV.UK One Login Service Header package
 

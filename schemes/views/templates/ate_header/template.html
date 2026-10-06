@@ -1,0 +1,12 @@
+{% from "govuk_frontend_jinja/components/generic-header/macro.html" import govukGenericHeader -%}
+
+{% set logoContent %}
+    <img class="ate-header__logotype" src="{{ url_for('static', filename='ate-frontend/assets/ate-header/ate-logo-white.png') }}" alt="Active Travel England"/>
+    <img class="ate-header__logotype--focus" src="{{ url_for('static', filename='ate-frontend/assets/ate-header/ate-logo-black.png') }}" alt="Active Travel England"/>
+{% endset %}
+
+{{ govukGenericHeader({
+    "logoHtml": logoContent,
+    "url": params.homepageUrl | default("//gov.uk", true),
+    "classes": "ate-header",
+}) }}

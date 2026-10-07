@@ -72,6 +72,7 @@ class FundingProgrammeContext:
         FundingProgrammes.OTH: "OTH",
         FundingProgrammes.CON: "CON",
         FundingProgrammes.NCN: "NCN",
+        FundingProgrammes.BUS: "BUS",
     }
 
     @classmethod

@@ -104,6 +104,7 @@ class TestFundingProgrammes:
             (FundingProgrammes.OTH, "OTH"),
             (FundingProgrammes.CON, "CON"),
             (FundingProgrammes.NCN, "NCN"),
+            (FundingProgrammes.BUS, "BUS"),
         ],
     )
     def test_code(self, funding_programme: FundingProgramme, expected_code: str) -> None:
@@ -127,6 +128,7 @@ class TestFundingProgrammes:
             (FundingProgrammes.OTH, False),
             (FundingProgrammes.CON, True),
             (FundingProgrammes.NCN, True),
+            (FundingProgrammes.BUS, True),
         ],
     )
     def test_is_eligible_for_authority_update(

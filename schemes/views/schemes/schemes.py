@@ -71,6 +71,7 @@ class FundingProgrammeContext:
         FundingProgrammes.MRN: "MRN",
         FundingProgrammes.OTH: "OTH",
         FundingProgrammes.CON: "CON",
+        FundingProgrammes.NCN: "NCN",
     }
 
     @classmethod

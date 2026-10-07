@@ -24,6 +24,7 @@ class FundingProgrammes:
     MRN = FundingProgramme("MRN", False)
     OTH = FundingProgramme("OTH", False)
     CON = FundingProgramme("CON", True)
+    NCN = FundingProgramme("NCN", True)
 
 
 class OverviewRevision:

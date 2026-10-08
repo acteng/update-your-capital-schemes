@@ -12,10 +12,16 @@
 
 .govuk-notification-banner {
   border-color: govuk-frontend.govuk-colour("blue");
+}
+
+.govuk-notification-banner__header {
   background-color: govuk-frontend.govuk-colour("blue");
 }
 
 .govuk-notification-banner--success {
   border-color: govuk-frontend.govuk-functional-colour("success");
+}
+
+.govuk-notification-banner--success .govuk-notification-banner__header {
   background-color: govuk-frontend.govuk-functional-colour("success");
 }

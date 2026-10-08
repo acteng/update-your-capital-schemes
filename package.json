@@ -24,9 +24,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@active-travel-england/ate-frontend": "~0.3.0",
+    "@active-travel-england/ate-frontend": "~0.4.0-alpha.1",
     "@govuk-one-login/service-header": "~6.0.0",
-    "govuk-frontend": "~6.3.0"
+    "govuk-frontend": "~6.4.0"
   },
   "devDependencies": {
     "sass": "~1.105.0",

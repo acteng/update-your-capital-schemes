@@ -7,25 +7,25 @@ from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemMo
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel
 from schemes.infrastructure.api.schemes.statuses import CapitalSchemeStatusModel, StatusModel
 
-_dummy_funding_programme_url = "https://api.example/funding-programmes/dummy"
-_dummy_authority_url = "https://api.example/authorities/dummy"
-_dummy_funding_managed_by_capital_schemes_url = (
+_dummy_funding_programme_url = AnyUrl("https://api.example/funding-programmes/dummy")
+_dummy_authority_url = AnyUrl("https://api.example/authorities/dummy")
+_dummy_funding_managed_by_capital_schemes_url = AnyUrl(
     "https://api.example/authorities/dummy/capital-schemes/funding-managed-by"
 )
-_dummy_improvement_url = "https://api.example/improvements/dummy"
+_dummy_improvement_url = AnyUrl("https://api.example/improvements/dummy")
 
 
 def build_funding_programme_item_model(
-    id_: AnyUrl = AnyUrl(_dummy_funding_programme_url), code: str = "dummy"
+    id_: AnyUrl = _dummy_funding_programme_url, code: str = "dummy"
 ) -> FundingProgrammeItemModel:
     return FundingProgrammeItemModel(id=id_, code=code)
 
 
 def build_authority_model(
-    id_: AnyUrl = AnyUrl(_dummy_authority_url),
+    id_: AnyUrl = _dummy_authority_url,
     abbreviation: str = "dummy",
     full_name: str = "dummy",
-    funding_managed_by_capital_schemes: AnyUrl = AnyUrl(_dummy_funding_managed_by_capital_schemes_url),
+    funding_managed_by_capital_schemes: AnyUrl = _dummy_funding_managed_by_capital_schemes_url,
 ) -> AuthorityModel:
     return AuthorityModel(
         id=id_,
@@ -37,7 +37,7 @@ def build_authority_model(
 
 def build_capital_scheme_overview_model(
     name: str = "dummy",
-    funding_programme: AnyUrl = AnyUrl(_dummy_funding_programme_url),
+    funding_programme: AnyUrl = _dummy_funding_programme_url,
     improvement: AnyUrl | None = None,
 ) -> CapitalSchemeOverviewModel:
     return CapitalSchemeOverviewModel(name=name, funding_programme=funding_programme, improvement=improvement)
@@ -47,19 +47,21 @@ def build_capital_scheme_status_model(status: StatusModel = StatusModel.PIPELINE
     return CapitalSchemeStatusModel(status=status)
 
 
-def build_funding_programme_json(id_: str = _dummy_funding_programme_url, code: str = "dummy") -> dict[str, Any]:
+def build_funding_programme_json(id_: str = str(_dummy_funding_programme_url), code: str = "dummy") -> dict[str, Any]:
     return {"@id": id_, "code": code}
 
 
-def build_funding_programme_item_json(id_: str = _dummy_funding_programme_url, code: str = "dummy") -> dict[str, Any]:
+def build_funding_programme_item_json(
+    id_: str = str(_dummy_funding_programme_url), code: str = "dummy"
+) -> dict[str, Any]:
     return {"@id": id_, "code": code}
 
 
 def build_authority_json(
-    id_: str = _dummy_authority_url,
+    id_: str = str(_dummy_authority_url),
     abbreviation: str = "dummy",
     full_name: str = "dummy",
-    funding_managed_by_capital_schemes: str = _dummy_funding_managed_by_capital_schemes_url,
+    funding_managed_by_capital_schemes: str = str(_dummy_funding_managed_by_capital_schemes_url),
 ) -> dict[str, Any]:
     return {
         "@id": id_,
@@ -72,21 +74,21 @@ def build_authority_json(
 def build_improvement_overview_json(
     name: str = "dummy",
     description: str | None = None,
-    funding_managed_by: str = _dummy_authority_url,
+    funding_managed_by: str = str(_dummy_authority_url),
     source: str = "Pulse 5",
 ) -> dict[str, Any]:
     return {"name": name, "description": description, "fundingManagedBy": funding_managed_by, "source": source}
 
 
 def build_improvement_json(
-    id_: str = _dummy_improvement_url, reference: str = "dummy", overview: dict[str, Any] | None = None
+    id_: str = str(_dummy_improvement_url), reference: str = "dummy", overview: dict[str, Any] | None = None
 ) -> dict[str, Any]:
     return {"@id": id_, "reference": reference, "overview": overview or build_improvement_overview_json()}
 
 
 def build_capital_scheme_overview_json(
     name: str = "dummy",
-    funding_programme: str = _dummy_funding_programme_url,
+    funding_programme: str = str(_dummy_funding_programme_url),
     improvement: str | None = None,
 ) -> dict[str, Any]:
     return {

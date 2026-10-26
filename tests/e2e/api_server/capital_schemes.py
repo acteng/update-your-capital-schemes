@@ -26,6 +26,21 @@ class CapitalSchemeFinancialModel(BaseModel):
     source: str
 
 
+class CapitalSchemeFundingModel(BaseModel):
+    amount: int
+    source: str
+
+
+class CapitalSchemeSpendModel(BaseModel):
+    amount: int
+    source: str
+
+
+class CapitalSchemeFinancialsModel(BaseModel):
+    funding: CollectionModel[CapitalSchemeFundingModel]
+    spend: CapitalSchemeSpendModel | None
+
+
 class CapitalSchemeMilestoneModel(BaseModel):
     milestone: str
     observation_type: str
@@ -57,7 +72,7 @@ class CapitalSchemeModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
     status: CapitalSchemeStatusModel
-    financials: CollectionModel[CapitalSchemeFinancialModel]
+    financials: CapitalSchemeFinancialsModel
     milestones: CapitalSchemeMilestonesModel
     outputs: CollectionModel[CapitalSchemeOutputModel]
     authority_review: CapitalSchemeAuthorityReviewModel | None
@@ -97,9 +112,9 @@ def add_capital_scheme_financial(reference: str) -> Response:
         abort(404)
 
     financial = CapitalSchemeFinancialModel.model_validate(request.json)
-    # remove current financials of same type
-    capital_scheme.financials.items = [f for f in capital_scheme.financials.items if f.type != financial.type]
-    capital_scheme.financials.items.append(financial)
+    if financial.type != "spend to date":
+        abort(422)
+    capital_scheme.financials.spend = CapitalSchemeSpendModel(amount=financial.amount, source=financial.source)
 
     return make_response(financial.to_json(), 201)
 

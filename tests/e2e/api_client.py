@@ -50,10 +50,19 @@ class CapitalSchemeStatusModel(BaseModel):
     status: str
 
 
-class CapitalSchemeFinancialModel(BaseModel):
-    type: str
+class CapitalSchemeFundingModel(BaseModel):
     amount: int
     source: str
+
+
+class CapitalSchemeSpendModel(BaseModel):
+    amount: int
+    source: str
+
+
+class CapitalSchemeFinancialsModel(BaseModel):
+    funding: CollectionModel[CapitalSchemeFundingModel]
+    spend: CapitalSchemeSpendModel | None
 
 
 class CapitalSchemeMilestoneModel(BaseModel):
@@ -83,7 +92,7 @@ class CapitalSchemeModel(BaseModel):
     reference: str
     overview: CapitalSchemeOverviewModel
     status: CapitalSchemeStatusModel
-    financials: CollectionModel[CapitalSchemeFinancialModel]
+    financials: CapitalSchemeFinancialsModel
     milestones: CapitalSchemeMilestonesModel
     outputs: CollectionModel[CapitalSchemeOutputModel]
     authority_review: CapitalSchemeAuthorityReviewModel | None
@@ -95,7 +104,7 @@ def build_capital_scheme_model(
     funding_programme: str,
     improvement: str | None = None,
     status: CapitalSchemeStatusModel | None = None,
-    financials: list[CapitalSchemeFinancialModel] | None = None,
+    financials: CapitalSchemeFinancialsModel | None = None,
     milestones: CapitalSchemeMilestonesModel | None = None,
     outputs: list[CapitalSchemeOutputModel] | None = None,
     authority_review: CapitalSchemeAuthorityReviewModel | None = None,
@@ -108,7 +117,8 @@ def build_capital_scheme_model(
             improvement=improvement,
         ),
         status=status or CapitalSchemeStatusModel(status="active"),
-        financials=CollectionModel[CapitalSchemeFinancialModel](items=financials or []),
+        financials=financials
+        or CapitalSchemeFinancialsModel(funding=CollectionModel[CapitalSchemeFundingModel](items=[]), spend=None),
         milestones=milestones or CapitalSchemeMilestonesModel(current_milestone=None, items=[]),
         outputs=CollectionModel[CapitalSchemeOutputModel](items=outputs or []),
         authority_review=authority_review,

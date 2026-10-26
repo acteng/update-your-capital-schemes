@@ -108,6 +108,20 @@ def build_capital_scheme_financial_json(
     return {"type": type_, "amount": amount, "source": source}
 
 
+def build_capital_scheme_financials_json(
+    funding: list[dict[str, Any]] | None = None, spend: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    return {"funding": {"items": funding or []}, "spend": spend}
+
+
+def build_capital_scheme_funding_json(amount: int = 0, source: str = "Pulse 5") -> dict[str, Any]:
+    return {"amount": amount, "source": source}
+
+
+def build_capital_scheme_spend_json(amount: int = 0, source: str = "Pulse 5") -> dict[str, Any]:
+    return {"amount": amount, "source": source}
+
+
 def build_capital_scheme_milestone_json(
     milestone: str = "public consultation completed",
     observation_type: str = "planned",
@@ -140,7 +154,7 @@ def build_capital_scheme_json(
     reference: str = "dummy",
     overview: dict[str, Any] | None = None,
     status: dict[str, Any] | None = None,
-    financials: list[dict[str, Any]] | None = None,
+    financials: dict[str, Any] | None = None,
     milestones: list[dict[str, Any]] | None = None,
     outputs: list[dict[str, Any]] | None = None,
     authority_review: dict[str, Any] | None = None,
@@ -149,7 +163,7 @@ def build_capital_scheme_json(
         "reference": reference,
         "overview": overview or build_capital_scheme_overview_json(),
         "status": status or build_capital_scheme_status_json(),
-        "financials": {"items": financials or []},
+        "financials": financials or build_capital_scheme_financials_json(),
         "milestones": {"items": milestones or []},
         "outputs": {"items": outputs or []},
         "authorityReview": authority_review if authority_review else None,

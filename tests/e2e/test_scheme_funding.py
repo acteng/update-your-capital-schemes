@@ -4,7 +4,10 @@ from playwright.sync_api import Page
 from tests.e2e.api_client import (
     ApiClient,
     AuthorityModel,
-    CapitalSchemeFinancialModel,
+    CapitalSchemeFinancialsModel,
+    CapitalSchemeFundingModel,
+    CapitalSchemeSpendModel,
+    CollectionModel,
     FundingProgrammeModel,
     ImprovementModel,
     ImprovementOverviewModel,
@@ -37,10 +40,12 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
             name="Wirral Package",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             improvement=f"{api_client.base_url}/improvements/IMP00001",
-            financials=[
-                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
-                CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
-            ],
+            financials=CapitalSchemeFinancialsModel(
+                funding=CollectionModel[CapitalSchemeFundingModel](
+                    items=[CapitalSchemeFundingModel(amount=100_000, source="ATF4 bid")]
+                ),
+                spend=CapitalSchemeSpendModel(amount=50_000, source="ATF4 bid"),
+            ),
         )
     )
     app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
@@ -78,10 +83,12 @@ def test_change_spend_to_date(
             name="Wirral Package",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             improvement=f"{api_client.base_url}/improvements/IMP00001",
-            financials=[
-                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
-                CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
-            ],
+            financials=CapitalSchemeFinancialsModel(
+                funding=CollectionModel[CapitalSchemeFundingModel](
+                    items=[CapitalSchemeFundingModel(amount=100_000, source="ATF4 bid")]
+                ),
+                spend=CapitalSchemeSpendModel(amount=50_000, source="ATF4 bid"),
+            ),
         )
     )
     app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
@@ -93,10 +100,9 @@ def test_change_spend_to_date(
 
     assert scheme_page.heading.text == "Wirral Package"
     assert scheme_page.funding.spend_to_date == "£60,000"
-    assert api_client.get_scheme(reference="ATE00001").financials.items == [
-        CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
-        CapitalSchemeFinancialModel(type="spend to date", amount=60_000, source="authority update"),
-    ]
+    assert api_client.get_scheme(reference="ATE00001").financials.spend == CapitalSchemeSpendModel(
+        amount=60_000, source="authority update"
+    )
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
@@ -122,10 +128,12 @@ def test_cannot_change_spend_to_date_when_error(
             name="Wirral Package",
             funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             improvement=f"{api_client.base_url}/improvements/IMP00001",
-            financials=[
-                CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
-                CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
-            ],
+            financials=CapitalSchemeFinancialsModel(
+                funding=CollectionModel[CapitalSchemeFundingModel](
+                    items=[CapitalSchemeFundingModel(amount=100_000, source="ATF4 bid")]
+                ),
+                spend=CapitalSchemeSpendModel(amount=50_000, source="ATF4 bid"),
+            ),
         )
     )
     app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
@@ -148,7 +156,6 @@ def test_cannot_change_spend_to_date_when_error(
         and change_spend_to_date_page.form.amount.error == "Error: Enter spend to date"
         and change_spend_to_date_page.form.amount.value == ""
     )
-    assert api_client.get_scheme(reference="ATE00001").financials.items == [
-        CapitalSchemeFinancialModel(type="funding allocation", amount=100_000, source="ATF4 bid"),
-        CapitalSchemeFinancialModel(type="spend to date", amount=50_000, source="ATF4 bid"),
-    ]
+    assert api_client.get_scheme(reference="ATE00001").financials.spend == CapitalSchemeSpendModel(
+        amount=50_000, source="ATF4 bid"
+    )

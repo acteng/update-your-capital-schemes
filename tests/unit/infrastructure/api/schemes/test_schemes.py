@@ -17,11 +17,14 @@ from schemes.domain.schemes.schemes import Status
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.data_sources import DataSourceModel
-from schemes.infrastructure.api.financial_types import FinancialTypeModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
 from schemes.infrastructure.api.schemes.authority_reviews import CapitalSchemeAuthorityReviewModel
-from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel
+from schemes.infrastructure.api.schemes.financials import (
+    CapitalSchemeFinancialsModel,
+    CapitalSchemeFundingModel,
+    CapitalSchemeSpendModel,
+)
 from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel, MilestoneModel
 from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel, OutputMeasureModel, OutputTypeModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel
@@ -34,12 +37,15 @@ from tests.unit.infrastructure.api.builders import (
     build_authority_model,
     build_capital_scheme_authority_review_json,
     build_capital_scheme_financial_json,
+    build_capital_scheme_financials_json,
+    build_capital_scheme_funding_json,
     build_capital_scheme_item_json,
     build_capital_scheme_json,
     build_capital_scheme_milestone_json,
     build_capital_scheme_output_json,
     build_capital_scheme_overview_json,
     build_capital_scheme_overview_model,
+    build_capital_scheme_spend_json,
     build_capital_scheme_status_json,
     build_capital_scheme_status_model,
     build_create_capital_scheme_authority_review_json,
@@ -58,7 +64,9 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=build_capital_scheme_overview_model(),
             status=build_capital_scheme_status_model(),
-            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            financials=CapitalSchemeFinancialsModel(
+                funding=CollectionModel[CapitalSchemeFundingModel](items=[]), spend=None
+            ),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
@@ -91,7 +99,9 @@ class TestCapitalSchemeModel:
                 improvement=AnyUrl("https://api.example/improvements/IMP00001"),
             ),
             status=build_capital_scheme_status_model(),
-            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            financials=CapitalSchemeFinancialsModel(
+                funding=CollectionModel[CapitalSchemeFundingModel](items=[]), spend=None
+            ),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
@@ -110,7 +120,9 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=build_capital_scheme_overview_model(),
             status=CapitalSchemeStatusModel(status=StatusModel.ACTIVE),
-            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            financials=CapitalSchemeFinancialsModel(
+                funding=CollectionModel[CapitalSchemeFundingModel](items=[]), spend=None
+            ),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
@@ -124,15 +136,11 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=build_capital_scheme_overview_model(),
             status=build_capital_scheme_status_model(),
-            financials=CollectionModel[CapitalSchemeFinancialModel](
-                items=[
-                    CapitalSchemeFinancialModel(
-                        type=FinancialTypeModel.FUNDING_ALLOCATION, amount=100_000, source=DataSourceModel.ATF4_BID
-                    ),
-                    CapitalSchemeFinancialModel(
-                        type=FinancialTypeModel.SPEND_TO_DATE, amount=50_000, source=DataSourceModel.ATF4_BID
-                    ),
-                ]
+            financials=CapitalSchemeFinancialsModel(
+                funding=CollectionModel[CapitalSchemeFundingModel](
+                    items=[CapitalSchemeFundingModel(amount=100_000, source=DataSourceModel.ATF4_BID)]
+                ),
+                spend=CapitalSchemeSpendModel(amount=50_000, source=DataSourceModel.ATF4_BID),
             ),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
@@ -159,7 +167,9 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=build_capital_scheme_overview_model(),
             status=build_capital_scheme_status_model(),
-            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            financials=CapitalSchemeFinancialsModel(
+                funding=CollectionModel[CapitalSchemeFundingModel](items=[]), spend=None
+            ),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](
                 items=[
                     CapitalSchemeMilestoneModel(
@@ -202,7 +212,9 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=build_capital_scheme_overview_model(),
             status=build_capital_scheme_status_model(),
-            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            financials=CapitalSchemeFinancialsModel(
+                funding=CollectionModel[CapitalSchemeFundingModel](items=[]), spend=None
+            ),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](
                 items=[
@@ -241,7 +253,9 @@ class TestCapitalSchemeModel:
             reference="ATE00001",
             overview=build_capital_scheme_overview_model(),
             status=build_capital_scheme_status_model(),
-            financials=CollectionModel[CapitalSchemeFinancialModel](items=[]),
+            financials=CapitalSchemeFinancialsModel(
+                funding=CollectionModel[CapitalSchemeFundingModel](items=[]), spend=None
+            ),
             milestones=CollectionModel[CapitalSchemeMilestoneModel](items=[]),
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
             authority_review=CapitalSchemeAuthorityReviewModel(
@@ -447,10 +461,10 @@ class TestApiSchemeRepository:
                     funding_programme=f"{api_base_url}/funding-programmes/ATF4",
                     improvement=f"{api_base_url}/improvements/IMP00001",
                 ),
-                financials=[
-                    build_capital_scheme_financial_json(type_="funding allocation", amount=100_000, source="ATF4 bid"),
-                    build_capital_scheme_financial_json(type_="spend to date", amount=50_000, source="ATF4 bid"),
-                ],
+                financials=build_capital_scheme_financials_json(
+                    funding=[build_capital_scheme_funding_json(amount=100_000, source="ATF4 bid")],
+                    spend=build_capital_scheme_spend_json(amount=50_000, source="ATF4 bid"),
+                ),
             ),
         )
 

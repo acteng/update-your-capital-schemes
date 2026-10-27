@@ -36,7 +36,6 @@ from tests.unit.infrastructure.api.builders import (
     build_authority_json,
     build_authority_model,
     build_capital_scheme_authority_review_json,
-    build_capital_scheme_financial_json,
     build_capital_scheme_financials_json,
     build_capital_scheme_funding_json,
     build_capital_scheme_item_json,
@@ -895,7 +894,9 @@ class TestApiSchemeRepository:
 
         assert remote_app.client_count == 1
 
-    async def test_update_scheme_financials(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
+    async def test_update_scheme_financials_with_spend_to_date(
+        self, api_mock: MockRouter, schemes: ApiSchemeRepository
+    ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
             FinancialRevision(
@@ -913,14 +914,39 @@ class TestApiSchemeRepository:
                 source=DataSource.AUTHORITY_UPDATE,
             ),
         )
-        create_financial_response = api_mock.post(
-            "/capital-schemes/ATE00001/financials",
-            json=build_capital_scheme_financial_json(type_="spend to date", amount=60_000, source="authority update"),
+        create_spend_response = api_mock.post(
+            "/capital-schemes/ATE00001/financials/spend",
+            json=build_capital_scheme_spend_json(amount=60_000, source="authority update"),
         ).respond(201)
 
         await schemes.update(scheme)
 
-        assert create_financial_response.call_count == 1
+        assert create_spend_response.call_count == 1
+
+    async def test_update_scheme_financials_ignores_other_financial_type(
+        self, api_mock: MockRouter, schemes: ApiSchemeRepository
+    ) -> None:
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
+        scheme.funding.update_financials(
+            FinancialRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
+                type_=FinancialType.EXPECTED_COST,
+                amount=50_000,
+                source=DataSource.ATF4_BID,
+            ),
+            FinancialRevision(
+                id_=None,
+                effective=DateRange(datetime(2020, 2, 1), None),
+                type_=FinancialType.EXPECTED_COST,
+                amount=60_000,
+                source=DataSource.AUTHORITY_UPDATE,
+            ),
+        )
+
+        await schemes.update(scheme)
+
+        assert not api_mock.calls.called
 
     async def test_update_scheme_financials_when_no_changes(
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
@@ -1059,12 +1085,12 @@ class TestApiSchemeRepository:
             ),
         )
         api_mock.post(
-            "/capital-schemes/ATE00001/financials",
-            json=build_capital_scheme_financial_json(type_="spend to date", amount=50_000, source="ATF4 bid"),
+            "/capital-schemes/ATE00001/financials/spend",
+            json=build_capital_scheme_spend_json(amount=50_000, source="ATF4 bid"),
         ).respond(201)
         api_mock.post(
-            "/capital-schemes/ATE00001/financials",
-            json=build_capital_scheme_financial_json(type_="spend to date", amount=60_000, source="authority update"),
+            "/capital-schemes/ATE00001/financials/spend",
+            json=build_capital_scheme_spend_json(amount=60_000, source="authority update"),
         ).respond(201)
 
         await schemes.update(scheme)

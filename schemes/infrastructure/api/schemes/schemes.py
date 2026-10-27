@@ -1,5 +1,6 @@
 from typing import Any
 
+from schemes.domain.schemes.funding import FinancialType
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
@@ -9,7 +10,7 @@ from schemes.infrastructure.api.schemes.authority_reviews import (
     CapitalSchemeAuthorityReviewModel,
     CreateCapitalSchemeAuthorityReviewModel,
 )
-from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialModel, CapitalSchemeFinancialsModel
+from schemes.infrastructure.api.schemes.financials import CapitalSchemeFinancialsModel, CapitalSchemeSpendModel
 from schemes.infrastructure.api.schemes.improvements import ImprovementModel
 from schemes.infrastructure.api.schemes.milestones import CapitalSchemeMilestoneModel
 from schemes.infrastructure.api.schemes.outputs import CapitalSchemeOutputModel
@@ -162,17 +163,17 @@ class ApiSchemeRepository(SchemeRepository):
 
     async def _update_financials(self, remote_app: AsyncBaseApp, scheme: Scheme) -> None:
         for financial_revision in scheme.funding.financial_revisions:
-            if financial_revision.id is None:
-                financial_model = CapitalSchemeFinancialModel.from_domain(financial_revision)
-                await self._create_financial(remote_app, scheme.reference, financial_model)
+            if financial_revision.id is None and financial_revision.type == FinancialType.SPEND_TO_DATE:
+                spend_model = CapitalSchemeSpendModel.from_domain(financial_revision)
+                await self._create_spend(remote_app, scheme.reference, spend_model)
 
-    async def _create_financial(
-        self, remote_app: AsyncBaseApp, capital_scheme_reference: str, financial_model: CapitalSchemeFinancialModel
+    async def _create_spend(
+        self, remote_app: AsyncBaseApp, capital_scheme_reference: str, spend_model: CapitalSchemeSpendModel
     ) -> None:
-        financial_json = financial_model.model_dump(mode="json", by_alias=True)
+        spend_json = spend_model.model_dump(mode="json", by_alias=True)
         response = await remote_app.post(
-            f"/capital-schemes/{capital_scheme_reference}/financials",
-            json=financial_json,
+            f"/capital-schemes/{capital_scheme_reference}/financials/spend",
+            json=spend_json,
             request=self._dummy_request(),
         )
         response.raise_for_status()

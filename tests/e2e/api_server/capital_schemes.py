@@ -103,20 +103,18 @@ def get_capital_scheme(reference: str) -> dict[str, Any]:
     return capital_scheme.to_json()
 
 
-@bp.post("<reference>/financials")
+@bp.post("<reference>/financials/spend")
 @require_oauth()
-def add_capital_scheme_financial(reference: str) -> Response:
+def add_capital_scheme_spend(reference: str) -> Response:
     capital_scheme = capital_schemes.get(reference)
 
     if not capital_scheme:
         abort(404)
 
-    financial = CapitalSchemeFinancialModel.model_validate(request.json)
-    if financial.type != "spend to date":
-        abort(422)
-    capital_scheme.financials.spend = CapitalSchemeSpendModel(amount=financial.amount, source=financial.source)
+    spend = CapitalSchemeSpendModel.model_validate(request.json)
+    capital_scheme.financials.spend = spend
 
-    return make_response(financial.to_json(), 201)
+    return make_response(spend.to_json(), 201)
 
 
 @bp.post("<reference>/milestones")

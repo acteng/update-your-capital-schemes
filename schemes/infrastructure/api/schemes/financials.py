@@ -6,21 +6,6 @@ from schemes.domain.schemes.funding import FinancialRevision, FinancialType
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.data_sources import DataSourceModel
-from schemes.infrastructure.api.financial_types import FinancialTypeModel
-
-
-class CapitalSchemeFinancialModel(BaseModel):
-    type: FinancialTypeModel
-    amount: int
-    source: DataSourceModel
-
-    @classmethod
-    def from_domain(cls, financial_revision: FinancialRevision) -> Self:
-        return cls(
-            type=FinancialTypeModel.from_domain(financial_revision.type),
-            amount=financial_revision.amount,
-            source=DataSourceModel.from_domain(financial_revision.source),
-        )
 
 
 class CapitalSchemeFundingModel(BaseModel):
@@ -41,6 +26,13 @@ class CapitalSchemeFundingModel(BaseModel):
 class CapitalSchemeSpendModel(BaseModel):
     amount: int
     source: DataSourceModel
+
+    @classmethod
+    def from_domain(cls, financial_revision: FinancialRevision) -> Self:
+        if financial_revision.type != FinancialType.SPEND_TO_DATE:
+            raise ValueError(f"Invalid financial type: {financial_revision.type}")
+
+        return cls(amount=financial_revision.amount, source=DataSourceModel.from_domain(financial_revision.source))
 
     def to_domain(self) -> FinancialRevision:
         # TODO: id, effective

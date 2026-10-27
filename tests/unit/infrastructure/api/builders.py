@@ -102,12 +102,6 @@ def build_capital_scheme_status_json(status: str = "pipeline") -> dict[str, Any]
     return {"status": status}
 
 
-def build_capital_scheme_financial_json(
-    type_: str = "expected cost", amount: int = 0, source: str = "Pulse 5"
-) -> dict[str, Any]:
-    return {"type": type_, "amount": amount, "source": source}
-
-
 def build_capital_scheme_financials_json(
     funding: list[dict[str, Any]] | None = None, spend: dict[str, Any] | None = None
 ) -> dict[str, Any]:

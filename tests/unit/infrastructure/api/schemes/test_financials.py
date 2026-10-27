@@ -30,20 +30,6 @@ class TestCapitalSchemeFinancialModel:
             type=FinancialTypeModel.FUNDING_ALLOCATION, amount=100_000, source=DataSourceModel.ATF4_BID
         )
 
-    def test_to_domain(self) -> None:
-        financial_model = CapitalSchemeFinancialModel(
-            type=FinancialTypeModel.FUNDING_ALLOCATION, amount=100_000, source=DataSourceModel.ATF4_BID
-        )
-
-        financial_revision = financial_model.to_domain()
-
-        assert (
-            financial_revision.id is not None
-            and financial_revision.type == FinancialType.FUNDING_ALLOCATION
-            and financial_revision.amount == 100_000
-            and financial_revision.source == DataSource.ATF4_BID
-        )
-
 
 class TestCapitalSchemeFundingModel:
     def test_to_domain(self) -> None:

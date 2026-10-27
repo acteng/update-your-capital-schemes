@@ -22,16 +22,6 @@ class CapitalSchemeFinancialModel(BaseModel):
             source=DataSourceModel.from_domain(financial_revision.source),
         )
 
-    def to_domain(self) -> FinancialRevision:
-        # TODO: id, effective
-        return FinancialRevision(
-            id_=0,
-            effective=DateRange(date_from=datetime.min, date_to=None),
-            type_=self.type.to_domain(),
-            amount=self.amount,
-            source=self.source.to_domain(),
-        )
-
 
 class CapitalSchemeFundingModel(BaseModel):
     amount: int

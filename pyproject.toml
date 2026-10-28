@@ -80,6 +80,7 @@ ignore_missing_imports = true
 live_server_scope = "package"
 addopts = "--screenshot only-on-failure"
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 
 # ruff
 

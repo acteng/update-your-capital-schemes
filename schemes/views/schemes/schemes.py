@@ -92,8 +92,8 @@ class SchemeRowContext:
     def from_domain(cls, reporting_window: ReportingWindow, scheme: Scheme) -> Self:
         return cls(
             reference=scheme.reference,
-            funding_programme=FundingProgrammeContext.from_domain(scheme.overview.funding_programme),
-            name=scheme.overview.name,
+            funding_programme=FundingProgrammeContext.from_domain(scheme.overview.overview_revision.funding_programme),
+            name=scheme.overview.overview_revision.name,
             needs_review=scheme.reviews.needs_review(reporting_window),
             last_reviewed=scheme.reviews.last_reviewed,
         )
@@ -140,7 +140,7 @@ async def get(
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
+    if user.authority_abbreviation != scheme.overview.overview_revision.authority_abbreviation:
         abort(403)
 
     context = SchemeContext.from_domain(reporting_window, authority, scheme)
@@ -158,7 +158,7 @@ class SchemeOverviewContext:
     def from_domain(cls, scheme: Scheme) -> Self:
         return cls(
             reference=scheme.reference,
-            funding_programme=FundingProgrammeContext.from_domain(scheme.overview.funding_programme),
+            funding_programme=FundingProgrammeContext.from_domain(scheme.overview.overview_revision.funding_programme),
             current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
         )
 
@@ -180,7 +180,7 @@ class SchemeContext:
         return cls(
             reference=scheme.reference,
             authority_name=authority.name,
-            name=scheme.overview.name,
+            name=scheme.overview.overview_revision.name,
             needs_review=scheme.reviews.needs_review(reporting_window),
             overview=SchemeOverviewContext.from_domain(scheme),
             funding=SchemeFundingContext.from_domain(scheme.funding),
@@ -202,7 +202,7 @@ async def spend_to_date_form(reference: str, users: UserRepository, schemes: Sch
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
+    if user.authority_abbreviation != scheme.overview.overview_revision.authority_abbreviation:
         abort(403)
 
     context = ChangeSpendToDateContext.from_domain(scheme)
@@ -224,7 +224,7 @@ async def spend_to_date(
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
+    if user.authority_abbreviation != scheme.overview.overview_revision.authority_abbreviation:
         abort(403)
 
     form = ChangeSpendToDateForm.from_domain(scheme.funding)
@@ -250,7 +250,7 @@ async def milestones_form(reference: str, clock: Clock, users: UserRepository, s
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
+    if user.authority_abbreviation != scheme.overview.overview_revision.authority_abbreviation:
         abort(403)
 
     context = ChangeMilestoneDatesContext.from_domain(scheme, clock.now)
@@ -272,7 +272,7 @@ async def milestones(
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
+    if user.authority_abbreviation != scheme.overview.overview_revision.authority_abbreviation:
         abort(403)
 
     now = clock.now
@@ -299,7 +299,7 @@ async def review(clock: Clock, users: UserRepository, schemes: SchemeRepository,
     if not (scheme and scheme.is_updateable):
         abort(404)
 
-    if user.authority_abbreviation != scheme.overview.authority_abbreviation:
+    if user.authority_abbreviation != scheme.overview.overview_revision.authority_abbreviation:
         abort(403)
 
     form = SchemeReviewForm()
@@ -310,5 +310,5 @@ async def review(clock: Clock, users: UserRepository, schemes: SchemeRepository,
     form.update_domain(scheme.reviews, clock.now)
     await schemes.update(scheme)
 
-    flash(f"{scheme.overview.name} has been reviewed")
+    flash(f"{scheme.overview.overview_revision.name} has been reviewed")
     return redirect(url_for("schemes.index"))

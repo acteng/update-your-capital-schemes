@@ -52,15 +52,3 @@ class SchemeOverview:
     @property
     def overview_revision(self) -> OverviewRevision:
         return self._overview_revision
-
-    @property
-    def name(self) -> str:
-        return self._overview_revision.name
-
-    @property
-    def authority_abbreviation(self) -> str:
-        return self._overview_revision.authority_abbreviation
-
-    @property
-    def funding_programme(self) -> FundingProgramme:
-        return self._overview_revision.funding_programme

@@ -3,7 +3,7 @@ from enum import Enum, auto
 from schemes.domain.schemes.funding import SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
-from schemes.domain.schemes.overview import FundingProgramme, OverviewRevision
+from schemes.domain.schemes.overview import FundingProgramme, SchemeOverview
 from schemes.domain.schemes.reviews import SchemeReviews
 
 
@@ -16,10 +16,10 @@ class Status(Enum):
 
 
 class Scheme:
-    def __init__(self, reference: str, overview_revision: OverviewRevision, status: Status):
+    def __init__(self, reference: str, overview: SchemeOverview, status: Status):
         self._reference = reference
         self._status = status
-        self._overview_revision = overview_revision
+        self._overview = overview
         self._funding = SchemeFunding()
         self._milestones = SchemeMilestones()
         self._outputs = SchemeOutputs()
@@ -34,8 +34,8 @@ class Scheme:
         return self._status
 
     @property
-    def overview_revision(self) -> OverviewRevision:
-        return self._overview_revision
+    def overview(self) -> SchemeOverview:
+        return self._overview
 
     @property
     def funding(self) -> SchemeFunding:
@@ -56,9 +56,7 @@ class Scheme:
     @property
     def is_updateable(self) -> bool:
         is_active = self.status == Status.ACTIVE
-        is_eligible_for_authority_update = self._is_eligible_for_authority_update(
-            self.overview_revision.funding_programme
-        )
+        is_eligible_for_authority_update = self._is_eligible_for_authority_update(self.overview.funding_programme)
         return is_active and is_eligible_for_authority_update
 
     @staticmethod

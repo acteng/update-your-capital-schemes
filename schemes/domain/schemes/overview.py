@@ -26,7 +26,7 @@ class FundingProgrammes:
     BUS = FundingProgramme("BUS", True)
 
 
-class OverviewRevision:
+class SchemeOverview:
     def __init__(self, name: str, authority_abbreviation: str, funding_programme: FundingProgramme):
         self._name = name
         self._authority_abbreviation = authority_abbreviation

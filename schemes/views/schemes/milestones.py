@@ -182,6 +182,6 @@ class ChangeMilestoneDatesContext:
     def from_domain(cls, scheme: Scheme, now: datetime) -> Self:
         return cls(
             reference=scheme.reference,
-            name=scheme.overview_revision.name,
+            name=scheme.overview.name,
             form=ChangeMilestoneDatesForm.from_domain(scheme.milestones, now),
         )

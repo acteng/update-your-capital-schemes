@@ -53,7 +53,7 @@ class MemorySchemeRepository(SchemeRepository):
             [
                 deepcopy(scheme)
                 for scheme in self._schemes.values()
-                if scheme.overview_revision.authority_abbreviation == authority_abbreviation
+                if scheme.overview.authority_abbreviation == authority_abbreviation
             ],
             key=lambda scheme: scheme.reference,
         )

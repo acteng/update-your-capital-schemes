@@ -1,6 +1,6 @@
 from pydantic import AnyUrl
 
-from schemes.domain.schemes.overview import OverviewRevision
+from schemes.domain.schemes.overview import SchemeOverview
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel, FundingProgrammeModel
@@ -15,8 +15,8 @@ class CapitalSchemeOverviewModel(BaseModel):
         self,
         authority_model: AuthorityModel,
         funding_programme_item_models: list[FundingProgrammeModel] | list[FundingProgrammeItemModel],
-    ) -> OverviewRevision:
-        return OverviewRevision(
+    ) -> SchemeOverview:
+        return SchemeOverview(
             name=self.name,
             authority_abbreviation=authority_model.abbreviation,
             funding_programme=next(

@@ -3,7 +3,7 @@ import pytest
 from schemes.domain.schemes.funding import SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
-from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, OverviewRevision
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeOverview
 from schemes.domain.schemes.reviews import SchemeReviews
 from schemes.domain.schemes.schemes import Scheme, Status
 from tests.unit.domain.builders import build_scheme
@@ -11,17 +11,13 @@ from tests.unit.domain.builders import build_scheme
 
 class TestScheme:
     def test_create(self) -> None:
-        overview_revision = OverviewRevision(
+        overview = SchemeOverview(
             name="Wirral Package", authority_abbreviation="LIV", funding_programme=FundingProgrammes.ATF4
         )
 
-        scheme = Scheme(reference="ATE00001", overview_revision=overview_revision, status=Status.ACTIVE)
+        scheme = Scheme(reference="ATE00001", overview=overview, status=Status.ACTIVE)
 
-        assert (
-            scheme.reference == "ATE00001"
-            and scheme.overview_revision == overview_revision
-            and scheme.status == Status.ACTIVE
-        )
+        assert scheme.reference == "ATE00001" and scheme.overview == overview and scheme.status == Status.ACTIVE
 
     def test_get_funding(self) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")

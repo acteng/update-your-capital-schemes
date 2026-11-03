@@ -35,7 +35,7 @@ class CapitalSchemeModel(BaseModel):
     ) -> Scheme:
         scheme = Scheme(
             reference=self.reference,
-            overview_revision=self.overview.to_domain(authority_model, funding_programme_item_models),
+            overview=self.overview.to_domain(authority_model, funding_programme_item_models),
             status=self.status.status.to_domain(),
         )
         scheme.funding.update_financials(*self.financials.to_domain())
@@ -59,7 +59,7 @@ class CapitalSchemeItemModel(BaseModel):
     ) -> Scheme:
         scheme = Scheme(
             reference=self.reference,
-            overview_revision=self.overview.to_domain(authority_model, funding_programme_item_models),
+            overview=self.overview.to_domain(authority_model, funding_programme_item_models),
             status=self.status.status.to_domain(),
         )
         # TODO: financials, milestones, outputs

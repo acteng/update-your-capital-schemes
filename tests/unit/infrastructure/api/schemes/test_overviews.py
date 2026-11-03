@@ -25,10 +25,10 @@ class TestCapitalSchemeOverviewModel:
             improvement=AnyUrl("https://api.example/improvements/IMP00001"),
         )
 
-        overview_revision = overview_model.to_domain(authority_model, [funding_programme_item_model])
+        overview = overview_model.to_domain(authority_model, [funding_programme_item_model])
 
         assert (
-            overview_revision.name == "Wirral Package"
-            and overview_revision.authority_abbreviation == "LIV"
-            and overview_revision.funding_programme == FundingProgrammes.ATF4
+            overview.name == "Wirral Package"
+            and overview.authority_abbreviation == "LIV"
+            and overview.funding_programme == FundingProgrammes.ATF4
         )

@@ -78,7 +78,7 @@ class TestCapitalSchemeModel:
         assert not scheme.outputs.output_revisions
         assert not scheme.reviews.authority_reviews
 
-    def test_to_domain_sets_overview_revision(self) -> None:
+    def test_to_domain_sets_overview(self) -> None:
         authority_model = AuthorityModel(
             id=AnyUrl("https://api.example/authorities/LIV"),
             abbreviation="LIV",
@@ -108,9 +108,9 @@ class TestCapitalSchemeModel:
         scheme = capital_scheme_model.to_domain(authority_model, [funding_programme_item_model])
 
         assert (
-            scheme.overview_revision.name == "Wirral Package"
-            and scheme.overview_revision.authority_abbreviation == "LIV"
-            and scheme.overview_revision.funding_programme == FundingProgrammes.ATF4
+            scheme.overview.name == "Wirral Package"
+            and scheme.overview.authority_abbreviation == "LIV"
+            and scheme.overview.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_to_domain_sets_status(self) -> None:
@@ -283,7 +283,7 @@ class TestCapitalSchemeItemModel:
 
         assert scheme.reference == "ATE00001"
 
-    def test_to_domain_sets_overview_revision(self) -> None:
+    def test_to_domain_sets_overview(self) -> None:
         authority_model = AuthorityModel(
             id=AnyUrl("https://api.example/authorities/LIV"),
             abbreviation="LIV",
@@ -308,9 +308,9 @@ class TestCapitalSchemeItemModel:
         scheme = capital_scheme_item_model.to_domain(authority_model, [funding_programme_item_model])
 
         assert (
-            scheme.overview_revision.name == "Wirral Package"
-            and scheme.overview_revision.authority_abbreviation == "LIV"
-            and scheme.overview_revision.funding_programme == FundingProgrammes.ATF4
+            scheme.overview.name == "Wirral Package"
+            and scheme.overview.authority_abbreviation == "LIV"
+            and scheme.overview.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_to_domain_sets_status(self) -> None:
@@ -374,7 +374,7 @@ class TestApiSchemeRepository:
 
         assert scheme and scheme.reference == "ATE00001"
 
-    async def test_get_scheme_sets_overview_revision(
+    async def test_get_scheme_sets_overview(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes/ATF4").respond(
@@ -404,9 +404,9 @@ class TestApiSchemeRepository:
 
         assert scheme
         assert (
-            scheme.overview_revision.name == "Wirral Package"
-            and scheme.overview_revision.authority_abbreviation == "LIV"
-            and scheme.overview_revision.funding_programme == FundingProgrammes.ATF4
+            scheme.overview.name == "Wirral Package"
+            and scheme.overview.authority_abbreviation == "LIV"
+            and scheme.overview.funding_programme == FundingProgrammes.ATF4
         )
 
     async def test_get_scheme_sets_status(
@@ -716,7 +716,7 @@ class TestApiSchemeRepository:
         assert scheme1.reference == "ATE00001"
         assert scheme2.reference == "ATE00002"
 
-    async def test_get_schemes_by_authority_sets_overview_revision(
+    async def test_get_schemes_by_authority_sets_overview(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes").respond(
@@ -747,9 +747,9 @@ class TestApiSchemeRepository:
         (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert (
-            scheme1.overview_revision.name == "Wirral Package"
-            and scheme1.overview_revision.authority_abbreviation == "LIV"
-            and scheme1.overview_revision.funding_programme == FundingProgrammes.ATF4
+            scheme1.overview.name == "Wirral Package"
+            and scheme1.overview.authority_abbreviation == "LIV"
+            and scheme1.overview.funding_programme == FundingProgrammes.ATF4
         )
 
     async def test_get_schemes_by_authority_sets_status(

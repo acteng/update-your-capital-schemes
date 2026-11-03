@@ -108,8 +108,7 @@ class TestCapitalSchemeModel:
         scheme = capital_scheme_model.to_domain(authority_model, [funding_programme_item_model])
 
         assert (
-            scheme.overview.overview_revision
-            and scheme.overview.overview_revision.name == "Wirral Package"
+            scheme.overview.overview_revision.name == "Wirral Package"
             and scheme.overview.overview_revision.authority_abbreviation == "LIV"
             and scheme.overview.overview_revision.funding_programme == FundingProgrammes.ATF4
         )
@@ -309,8 +308,7 @@ class TestCapitalSchemeItemModel:
         scheme = capital_scheme_item_model.to_domain(authority_model, [funding_programme_item_model])
 
         assert (
-            scheme.overview.overview_revision
-            and scheme.overview.overview_revision.name == "Wirral Package"
+            scheme.overview.overview_revision.name == "Wirral Package"
             and scheme.overview.overview_revision.authority_abbreviation == "LIV"
             and scheme.overview.overview_revision.funding_programme == FundingProgrammes.ATF4
         )
@@ -406,8 +404,7 @@ class TestApiSchemeRepository:
 
         assert scheme
         assert (
-            scheme.overview.overview_revision
-            and scheme.overview.overview_revision.name == "Wirral Package"
+            scheme.overview.overview_revision.name == "Wirral Package"
             and scheme.overview.overview_revision.authority_abbreviation == "LIV"
             and scheme.overview.overview_revision.funding_programme == FundingProgrammes.ATF4
         )
@@ -750,8 +747,7 @@ class TestApiSchemeRepository:
         (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert (
-            scheme1.overview.overview_revision
-            and scheme1.overview.overview_revision.name == "Wirral Package"
+            scheme1.overview.overview_revision.name == "Wirral Package"
             and scheme1.overview.overview_revision.authority_abbreviation == "LIV"
             and scheme1.overview.overview_revision.funding_programme == FundingProgrammes.ATF4
         )

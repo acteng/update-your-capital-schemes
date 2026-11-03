@@ -2,27 +2,20 @@ from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes,
 from schemes.domain.schemes.schemes import Scheme, Status
 
 
-class _Unset:
-    pass
-
-
-_UNSET = _Unset()
-
-
 def build_scheme(
     reference: str,
     name: str | None = None,
     authority_abbreviation: str | None = None,
     funding_programme: FundingProgramme | None = None,
-    overview_revision: OverviewRevision | None | _Unset = _UNSET,
+    overview_revision: OverviewRevision | None = None,
     status: Status = Status.ACTIVE,
 ) -> Scheme:
     if any((name is not None, authority_abbreviation is not None, funding_programme is not None)) == (
-        not isinstance(overview_revision, _Unset)
+        overview_revision is not None
     ):
         assert False, "Either overview fields or revision must be specified"
 
-    if not isinstance(overview_revision, _Unset):
+    if overview_revision is not None:
         pass
     elif name is not None:
         overview_revision = OverviewRevision(
@@ -33,7 +26,4 @@ def build_scheme(
     else:
         assert False, "Overview fields must be specified"
 
-    scheme = Scheme(reference, status)
-    if overview_revision:
-        scheme.overview.update_overview(overview_revision)
-    return scheme
+    return Scheme(reference, overview_revision, status)

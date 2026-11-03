@@ -90,15 +90,10 @@ class SchemeRowContext:
 
     @classmethod
     def from_domain(cls, reporting_window: ReportingWindow, scheme: Scheme) -> Self:
-        funding_programme = scheme.overview.funding_programme
-        assert funding_programme
-        name = scheme.overview.name
-        assert name is not None
-
         return cls(
             reference=scheme.reference,
-            funding_programme=FundingProgrammeContext.from_domain(funding_programme),
-            name=name,
+            funding_programme=FundingProgrammeContext.from_domain(scheme.overview.funding_programme),
+            name=scheme.overview.name,
             needs_review=scheme.reviews.needs_review(reporting_window),
             last_reviewed=scheme.reviews.last_reviewed,
         )
@@ -161,12 +156,9 @@ class SchemeOverviewContext:
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> Self:
-        funding_programme = scheme.overview.funding_programme
-        assert funding_programme
-
         return cls(
             reference=scheme.reference,
-            funding_programme=FundingProgrammeContext.from_domain(funding_programme),
+            funding_programme=FundingProgrammeContext.from_domain(scheme.overview.funding_programme),
             current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
         )
 
@@ -185,13 +177,10 @@ class SchemeContext:
 
     @classmethod
     def from_domain(cls, reporting_window: ReportingWindow, authority: Authority, scheme: Scheme) -> Self:
-        name = scheme.overview.name
-        assert name is not None
-
         return cls(
             reference=scheme.reference,
             authority_name=authority.name,
-            name=name,
+            name=scheme.overview.name,
             needs_review=scheme.reviews.needs_review(reporting_window),
             overview=SchemeOverviewContext.from_domain(scheme),
             funding=SchemeFundingContext.from_domain(scheme.funding),

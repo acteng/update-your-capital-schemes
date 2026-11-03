@@ -3,7 +3,7 @@ from enum import Enum, auto
 from schemes.domain.schemes.funding import SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
-from schemes.domain.schemes.overview import FundingProgramme, SchemeOverview
+from schemes.domain.schemes.overview import FundingProgramme, OverviewRevision, SchemeOverview
 from schemes.domain.schemes.reviews import SchemeReviews
 
 
@@ -16,10 +16,10 @@ class Status(Enum):
 
 
 class Scheme:
-    def __init__(self, reference: str, status: Status):
+    def __init__(self, reference: str, overview_revision: OverviewRevision, status: Status):
         self._reference = reference
         self._status = status
-        self._overview = SchemeOverview()
+        self._overview = SchemeOverview(overview_revision)
         self._funding = SchemeFunding()
         self._milestones = SchemeMilestones()
         self._outputs = SchemeOutputs()

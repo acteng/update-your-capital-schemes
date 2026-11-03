@@ -176,17 +176,6 @@ class TestSchemeReview:
 
         assert response.status_code == 403
 
-    async def test_cannot_review_when_no_authority(
-        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
-    ) -> None:
-        await schemes.add(build_scheme(reference="ATE00002", overview_revision=None))
-
-        response = await async_client.post(
-            "/schemes/ATE00002", data={"csrf_token": csrf_token, "up_to_date": "confirmed"}
-        )
-
-        assert response.status_code == 403
-
     def test_cannot_review_when_unknown_scheme(self, client: FlaskClient, csrf_token: str) -> None:
         response = client.post("/schemes/ATE00001", data={"csrf_token": csrf_token, "up_to_date": "confirmed"})
 

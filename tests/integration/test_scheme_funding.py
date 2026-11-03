@@ -234,15 +234,6 @@ class TestSchemeFunding:
 
         assert forbidden_page.is_visible and forbidden_page.is_forbidden
 
-    async def test_cannot_spend_to_date_form_when_no_authority(
-        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
-    ) -> None:
-        await schemes.add(build_scheme(reference="ATE00002", overview_revision=None))
-
-        forbidden_page = await ChangeSpendToDatePage.open_when_unauthorized(async_client, reference="ATE00002")
-
-        assert forbidden_page.is_visible and forbidden_page.is_forbidden
-
     async def test_cannot_spend_to_date_form_when_unknown_scheme(self, async_client: AsyncFlaskClient) -> None:
         not_found_page = await ChangeSpendToDatePage.open_when_not_found(async_client, reference="ATE00001")
 
@@ -404,17 +395,6 @@ class TestSchemeFunding:
     ) -> None:
         await authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
         await schemes.add(build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO"))
-
-        response = await async_client.post(
-            "/schemes/ATE00002/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"}
-        )
-
-        assert response.status_code == 403
-
-    async def test_cannot_spend_to_date_when_no_authority(
-        self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
-    ) -> None:
-        await schemes.add(build_scheme(reference="ATE00002", overview_revision=None))
 
         response = await async_client.post(
             "/schemes/ATE00002/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"}

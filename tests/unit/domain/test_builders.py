@@ -51,12 +51,6 @@ def test_build_scheme_with_overview_revision() -> None:
     )
 
 
-def test_build_scheme_with_no_overview_revision() -> None:
-    scheme = build_scheme(reference="", overview_revision=None)
-
-    assert not scheme.overview.overview_revision
-
-
 def test_cannot_build_scheme_without_overview() -> None:
     with pytest.raises(expected_exception=AssertionError, match="Either overview fields or revision must be specified"):
         build_scheme(reference="")

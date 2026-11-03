@@ -33,8 +33,11 @@ class CapitalSchemeModel(BaseModel):
         authority_model: AuthorityModel,
         funding_programme_item_models: list[FundingProgrammeModel] | list[FundingProgrammeItemModel],
     ) -> Scheme:
-        scheme = Scheme(reference=self.reference, status=self.status.status.to_domain())
-        scheme.overview.update_overview(self.overview.to_domain(authority_model, funding_programme_item_models))
+        scheme = Scheme(
+            reference=self.reference,
+            overview_revision=self.overview.to_domain(authority_model, funding_programme_item_models),
+            status=self.status.status.to_domain(),
+        )
         scheme.funding.update_financials(*self.financials.to_domain())
         scheme.milestones.update_milestones(*[milestone.to_domain() for milestone in self.milestones.items])
         scheme.outputs.update_outputs(*[output.to_domain() for output in self.outputs.items])
@@ -54,8 +57,11 @@ class CapitalSchemeItemModel(BaseModel):
     def to_domain(
         self, authority_model: AuthorityModel, funding_programme_item_models: list[FundingProgrammeItemModel]
     ) -> Scheme:
-        scheme = Scheme(reference=self.reference, status=self.status.status.to_domain())
-        scheme.overview.update_overview(self.overview.to_domain(authority_model, funding_programme_item_models))
+        scheme = Scheme(
+            reference=self.reference,
+            overview_revision=self.overview.to_domain(authority_model, funding_programme_item_models),
+            status=self.status.status.to_domain(),
+        )
         # TODO: financials, milestones, outputs
 
         if self.authority_review:

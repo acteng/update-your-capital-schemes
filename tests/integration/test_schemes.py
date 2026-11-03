@@ -88,7 +88,6 @@ class TestSchemes:
                 status=Status.PIPELINE,
             ),
             build_scheme(reference="ATE00004", name="Hospital Fields Road", authority_abbreviation="WYO"),
-            build_scheme(reference="ATE00005", overview_revision=None),
         )
 
         schemes_page = await SchemesPage.open(async_client)

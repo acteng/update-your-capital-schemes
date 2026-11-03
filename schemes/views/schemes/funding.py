@@ -66,12 +66,9 @@ class ChangeSpendToDateContext:
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> Self:
-        name = scheme.overview.name
-        assert name is not None
-
         return cls(
             reference=scheme.reference,
-            name=name,
+            name=scheme.overview.name,
             funding_allocation=scheme.funding.funding_allocation,
             form=ChangeSpendToDateForm.from_domain(scheme.funding),
         )

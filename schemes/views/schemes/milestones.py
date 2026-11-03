@@ -180,9 +180,8 @@ class ChangeMilestoneDatesContext:
 
     @classmethod
     def from_domain(cls, scheme: Scheme, now: datetime) -> Self:
-        name = scheme.overview.name
-        assert name is not None
-
         return cls(
-            reference=scheme.reference, name=name, form=ChangeMilestoneDatesForm.from_domain(scheme.milestones, now)
+            reference=scheme.reference,
+            name=scheme.overview.name,
+            form=ChangeMilestoneDatesForm.from_domain(scheme.milestones, now),
         )

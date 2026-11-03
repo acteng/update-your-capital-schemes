@@ -3,7 +3,7 @@ import pytest
 from schemes.domain.schemes.funding import SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
-from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeOverview
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, OverviewRevision, SchemeOverview
 from schemes.domain.schemes.reviews import SchemeReviews
 from schemes.domain.schemes.schemes import Scheme, Status
 from tests.unit.domain.builders import build_scheme
@@ -11,9 +11,17 @@ from tests.unit.domain.builders import build_scheme
 
 class TestScheme:
     def test_create(self) -> None:
-        scheme = Scheme(reference="ATE00001", status=Status.ACTIVE)
+        overview_revision = OverviewRevision(
+            name="Wirral Package", authority_abbreviation="LIV", funding_programme=FundingProgrammes.ATF4
+        )
 
-        assert scheme.reference == "ATE00001" and scheme.status == Status.ACTIVE
+        scheme = Scheme(reference="ATE00001", overview_revision=overview_revision, status=Status.ACTIVE)
+
+        assert (
+            scheme.reference == "ATE00001"
+            and scheme.overview.overview_revision == overview_revision
+            and scheme.status == Status.ACTIVE
+        )
 
     def test_get_overview(self) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
@@ -78,11 +86,6 @@ class TestScheme:
         )
 
         assert scheme.is_updateable == expected_updateable
-
-    def test_is_updateable_when_no_overview_revision(self) -> None:
-        scheme = build_scheme(reference="ATE00001", status=Status.ACTIVE, overview_revision=None)
-
-        assert scheme.is_updateable is True
 
 
 class TestFundingProgrammes:

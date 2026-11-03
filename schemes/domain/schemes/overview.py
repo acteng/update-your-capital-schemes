@@ -46,24 +46,21 @@ class OverviewRevision:
 
 
 class SchemeOverview:
-    def __init__(self) -> None:
-        self._overview_revision: OverviewRevision | None = None
-
-    @property
-    def overview_revision(self) -> OverviewRevision | None:
-        return self._overview_revision
-
-    def update_overview(self, overview_revision: OverviewRevision) -> None:
+    def __init__(self, overview_revision: OverviewRevision) -> None:
         self._overview_revision = overview_revision
 
     @property
-    def name(self) -> str | None:
-        return self._overview_revision.name if self._overview_revision else None
+    def overview_revision(self) -> OverviewRevision:
+        return self._overview_revision
 
     @property
-    def authority_abbreviation(self) -> str | None:
-        return self._overview_revision.authority_abbreviation if self._overview_revision else None
+    def name(self) -> str:
+        return self._overview_revision.name
 
     @property
-    def funding_programme(self) -> FundingProgramme | None:
-        return self._overview_revision.funding_programme if self._overview_revision else None
+    def authority_abbreviation(self) -> str:
+        return self._overview_revision.authority_abbreviation
+
+    @property
+    def funding_programme(self) -> FundingProgramme:
+        return self._overview_revision.funding_programme

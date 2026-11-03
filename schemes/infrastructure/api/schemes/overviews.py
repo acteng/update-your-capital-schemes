@@ -1,8 +1,5 @@
-from datetime import datetime
-
 from pydantic import AnyUrl
 
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.overview import OverviewRevision
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
@@ -19,9 +16,7 @@ class CapitalSchemeOverviewModel(BaseModel):
         authority_model: AuthorityModel,
         funding_programme_item_models: list[FundingProgrammeModel] | list[FundingProgrammeItemModel],
     ) -> OverviewRevision:
-        # TODO: effective
         return OverviewRevision(
-            effective=DateRange(date_from=datetime.min, date_to=None),
             name=self.name,
             authority_abbreviation=authority_model.abbreviation,
             funding_programme=next(

@@ -89,7 +89,7 @@ class TestScheme:
     async def test_cannot_scheme_when_no_authority(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00002", overview_revisions=[]))
+        await schemes.add(build_scheme(reference="ATE00002", overview_revision=None))
 
         forbidden_page = await SchemePage.open_when_unauthorized(async_client, reference="ATE00002")
 

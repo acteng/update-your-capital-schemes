@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from schemes.domain.dates import DateRange
-
 
 @dataclass(frozen=True)
 class FundingProgramme:
@@ -29,21 +27,10 @@ class FundingProgrammes:
 
 
 class OverviewRevision:
-    def __init__(
-        self,
-        effective: DateRange,
-        name: str,
-        authority_abbreviation: str,
-        funding_programme: FundingProgramme,
-    ):
-        self._effective = effective
+    def __init__(self, name: str, authority_abbreviation: str, funding_programme: FundingProgramme):
         self._name = name
         self._authority_abbreviation = authority_abbreviation
         self._funding_programme = funding_programme
-
-    @property
-    def effective(self) -> DateRange:
-        return self._effective
 
     @property
     def name(self) -> str:
@@ -60,33 +47,23 @@ class OverviewRevision:
 
 class SchemeOverview:
     def __init__(self) -> None:
-        self._overview_revisions: list[OverviewRevision] = []
+        self._overview_revision: OverviewRevision | None = None
 
     @property
-    def overview_revisions(self) -> list[OverviewRevision]:
-        return list(self._overview_revisions)
+    def overview_revision(self) -> OverviewRevision | None:
+        return self._overview_revision
 
     def update_overview(self, overview_revision: OverviewRevision) -> None:
-        self._overview_revisions.append(overview_revision)
-
-    def update_overviews(self, *overview_revisions: OverviewRevision) -> None:
-        for overview_revision in overview_revisions:
-            self.update_overview(overview_revision)
+        self._overview_revision = overview_revision
 
     @property
     def name(self) -> str | None:
-        current_overview_revision = self._current_overview_revision()
-        return current_overview_revision.name if current_overview_revision else None
+        return self._overview_revision.name if self._overview_revision else None
 
     @property
     def authority_abbreviation(self) -> str | None:
-        current_overview_revision = self._current_overview_revision()
-        return current_overview_revision.authority_abbreviation if current_overview_revision else None
+        return self._overview_revision.authority_abbreviation if self._overview_revision else None
 
     @property
     def funding_programme(self) -> FundingProgramme | None:
-        current_overview_revision = self._current_overview_revision()
-        return current_overview_revision.funding_programme if current_overview_revision else None
-
-    def _current_overview_revision(self) -> OverviewRevision | None:
-        return next((overview for overview in self.overview_revisions if overview.effective.date_to is None), None)
+        return self._overview_revision.funding_programme if self._overview_revision else None

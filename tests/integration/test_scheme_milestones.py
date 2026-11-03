@@ -254,7 +254,7 @@ class TestSchemeMilestones:
     async def test_cannot_milestones_form_when_no_authority(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00002", overview_revisions=[]))
+        await schemes.add(build_scheme(reference="ATE00002", overview_revision=None))
 
         forbidden_page = await ChangeMilestoneDatesPage.open_when_unauthorized(async_client, reference="ATE00002")
 
@@ -444,7 +444,7 @@ class TestSchemeMilestones:
     async def test_cannot_milestones_when_no_authority(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00002", overview_revisions=[]))
+        await schemes.add(build_scheme(reference="ATE00002", overview_revision=None))
 
         response = await async_client.post("/schemes/ATE00002/milestones", data={"csrf_token": csrf_token})
 

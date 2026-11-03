@@ -80,7 +80,7 @@ class TestScheme:
         assert scheme.is_updateable == expected_updateable
 
     def test_is_updateable_when_no_overview_revision(self) -> None:
-        scheme = build_scheme(reference="ATE00001", status=Status.ACTIVE, overview_revisions=[])
+        scheme = build_scheme(reference="ATE00001", status=Status.ACTIVE, overview_revision=None)
 
         assert scheme.is_updateable is True
 

@@ -1,8 +1,5 @@
-from datetime import datetime
-
 import pytest
 
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision
 from schemes.domain.schemes.schemes import Status
 from tests.unit.domain.builders import build_scheme
@@ -42,14 +39,9 @@ def test_build_scheme_with_overview_fields() -> None:
 def test_build_scheme_with_overview_revision() -> None:
     scheme = build_scheme(
         reference="",
-        overview_revisions=[
-            OverviewRevision(
-                effective=DateRange(datetime(2020, 1, 1), None),
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                funding_programme=FundingProgrammes.ATF4,
-            )
-        ],
+        overview_revision=OverviewRevision(
+            name="Wirral Package", authority_abbreviation="LIV", funding_programme=FundingProgrammes.ATF4
+        ),
     )
 
     assert (
@@ -59,36 +51,27 @@ def test_build_scheme_with_overview_revision() -> None:
     )
 
 
-def test_build_scheme_with_no_overview_revisions() -> None:
-    scheme = build_scheme(reference="", overview_revisions=[])
+def test_build_scheme_with_no_overview_revision() -> None:
+    scheme = build_scheme(reference="", overview_revision=None)
 
-    assert scheme.overview.overview_revisions == []
+    assert not scheme.overview.overview_revision
 
 
 def test_cannot_build_scheme_without_overview() -> None:
-    with pytest.raises(
-        expected_exception=AssertionError, match="Either overview fields or revisions must be specified"
-    ):
+    with pytest.raises(expected_exception=AssertionError, match="Either overview fields or revision must be specified"):
         build_scheme(reference="")
 
 
 def test_cannot_build_scheme_with_overview_fields_and_revision() -> None:
-    with pytest.raises(
-        expected_exception=AssertionError, match="Either overview fields or revisions must be specified"
-    ):
+    with pytest.raises(expected_exception=AssertionError, match="Either overview fields or revision must be specified"):
         build_scheme(
             reference="",
             name="Wirral Package",
             authority_abbreviation="LIV",
             funding_programme=FundingProgrammes.ATF4,
-            overview_revisions=[
-                OverviewRevision(
-                    effective=DateRange(datetime(2020, 1, 1), None),
-                    name="Wirral Package",
-                    authority_abbreviation="LIV",
-                    funding_programme=FundingProgrammes.ATF4,
-                )
-            ],
+            overview_revision=OverviewRevision(
+                name="Wirral Package", authority_abbreviation="LIV", funding_programme=FundingProgrammes.ATF4
+            ),
         )
 
 

@@ -1,15 +1,4 @@
-from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision, SchemeOverview
-
-
-class TestSchemeOverview:
-    def test_create(self) -> None:
-        overview_revision = OverviewRevision(
-            name="Wirral Package", authority_abbreviation="LIV", funding_programme=FundingProgrammes.ATF4
-        )
-
-        overview = SchemeOverview(overview_revision)
-
-        assert overview.overview_revision == overview_revision
+from schemes.domain.schemes.overview import FundingProgrammes, OverviewRevision
 
 
 class TestOverviewRevision:

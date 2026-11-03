@@ -68,7 +68,7 @@ class ChangeSpendToDateContext:
     def from_domain(cls, scheme: Scheme) -> Self:
         return cls(
             reference=scheme.reference,
-            name=scheme.overview.overview_revision.name,
+            name=scheme.overview_revision.name,
             funding_allocation=scheme.funding.funding_allocation,
             form=ChangeSpendToDateForm.from_domain(scheme.funding),
         )

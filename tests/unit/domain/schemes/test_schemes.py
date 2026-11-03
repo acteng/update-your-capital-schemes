@@ -3,7 +3,7 @@ import pytest
 from schemes.domain.schemes.funding import SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
-from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, OverviewRevision, SchemeOverview
+from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, OverviewRevision
 from schemes.domain.schemes.reviews import SchemeReviews
 from schemes.domain.schemes.schemes import Scheme, Status
 from tests.unit.domain.builders import build_scheme
@@ -19,14 +19,9 @@ class TestScheme:
 
         assert (
             scheme.reference == "ATE00001"
-            and scheme.overview.overview_revision == overview_revision
+            and scheme.overview_revision == overview_revision
             and scheme.status == Status.ACTIVE
         )
-
-    def test_get_overview(self) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
-
-        assert isinstance(scheme.overview, SchemeOverview)
 
     def test_get_funding(self) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")

@@ -43,12 +43,3 @@ class OverviewRevision:
     @property
     def funding_programme(self) -> FundingProgramme:
         return self._funding_programme
-
-
-class SchemeOverview:
-    def __init__(self, overview_revision: OverviewRevision) -> None:
-        self._overview_revision = overview_revision
-
-    @property
-    def overview_revision(self) -> OverviewRevision:
-        return self._overview_revision

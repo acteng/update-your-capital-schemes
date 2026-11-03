@@ -108,9 +108,9 @@ class TestCapitalSchemeModel:
         scheme = capital_scheme_model.to_domain(authority_model, [funding_programme_item_model])
 
         assert (
-            scheme.overview.overview_revision.name == "Wirral Package"
-            and scheme.overview.overview_revision.authority_abbreviation == "LIV"
-            and scheme.overview.overview_revision.funding_programme == FundingProgrammes.ATF4
+            scheme.overview_revision.name == "Wirral Package"
+            and scheme.overview_revision.authority_abbreviation == "LIV"
+            and scheme.overview_revision.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_to_domain_sets_status(self) -> None:
@@ -308,9 +308,9 @@ class TestCapitalSchemeItemModel:
         scheme = capital_scheme_item_model.to_domain(authority_model, [funding_programme_item_model])
 
         assert (
-            scheme.overview.overview_revision.name == "Wirral Package"
-            and scheme.overview.overview_revision.authority_abbreviation == "LIV"
-            and scheme.overview.overview_revision.funding_programme == FundingProgrammes.ATF4
+            scheme.overview_revision.name == "Wirral Package"
+            and scheme.overview_revision.authority_abbreviation == "LIV"
+            and scheme.overview_revision.funding_programme == FundingProgrammes.ATF4
         )
 
     def test_to_domain_sets_status(self) -> None:
@@ -404,9 +404,9 @@ class TestApiSchemeRepository:
 
         assert scheme
         assert (
-            scheme.overview.overview_revision.name == "Wirral Package"
-            and scheme.overview.overview_revision.authority_abbreviation == "LIV"
-            and scheme.overview.overview_revision.funding_programme == FundingProgrammes.ATF4
+            scheme.overview_revision.name == "Wirral Package"
+            and scheme.overview_revision.authority_abbreviation == "LIV"
+            and scheme.overview_revision.funding_programme == FundingProgrammes.ATF4
         )
 
     async def test_get_scheme_sets_status(
@@ -747,9 +747,9 @@ class TestApiSchemeRepository:
         (scheme1,) = await schemes.get_by_authority("LIV")
 
         assert (
-            scheme1.overview.overview_revision.name == "Wirral Package"
-            and scheme1.overview.overview_revision.authority_abbreviation == "LIV"
-            and scheme1.overview.overview_revision.funding_programme == FundingProgrammes.ATF4
+            scheme1.overview_revision.name == "Wirral Package"
+            and scheme1.overview_revision.authority_abbreviation == "LIV"
+            and scheme1.overview_revision.funding_programme == FundingProgrammes.ATF4
         )
 
     async def test_get_schemes_by_authority_sets_status(

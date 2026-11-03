@@ -15,9 +15,9 @@ def test_build_scheme_with_minimal_overview_fields() -> None:
     scheme = build_scheme(reference="", name="Wirral Package")
 
     assert (
-        scheme.overview.overview_revision.name == "Wirral Package"
-        and scheme.overview.overview_revision.authority_abbreviation == ""
-        and scheme.overview.overview_revision.funding_programme == FundingProgrammes.ATF2
+        scheme.overview_revision.name == "Wirral Package"
+        and scheme.overview_revision.authority_abbreviation == ""
+        and scheme.overview_revision.funding_programme == FundingProgrammes.ATF2
     )
 
 
@@ -30,9 +30,9 @@ def test_build_scheme_with_overview_fields() -> None:
     )
 
     assert (
-        scheme.overview.overview_revision.name == "Wirral Package"
-        and scheme.overview.overview_revision.authority_abbreviation == "LIV"
-        and scheme.overview.overview_revision.funding_programme == FundingProgrammes.ATF4
+        scheme.overview_revision.name == "Wirral Package"
+        and scheme.overview_revision.authority_abbreviation == "LIV"
+        and scheme.overview_revision.funding_programme == FundingProgrammes.ATF4
     )
 
 
@@ -45,9 +45,9 @@ def test_build_scheme_with_overview_revision() -> None:
     )
 
     assert (
-        scheme.overview.overview_revision.name == "Wirral Package"
-        and scheme.overview.overview_revision.authority_abbreviation == "LIV"
-        and scheme.overview.overview_revision.funding_programme == FundingProgrammes.ATF4
+        scheme.overview_revision.name == "Wirral Package"
+        and scheme.overview_revision.authority_abbreviation == "LIV"
+        and scheme.overview_revision.funding_programme == FundingProgrammes.ATF4
     )
 
 

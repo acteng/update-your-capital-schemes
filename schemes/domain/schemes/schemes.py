@@ -3,7 +3,7 @@ from enum import Enum, auto
 from schemes.domain.schemes.funding import SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
-from schemes.domain.schemes.overview import FundingProgramme, OverviewRevision, SchemeOverview
+from schemes.domain.schemes.overview import FundingProgramme, OverviewRevision
 from schemes.domain.schemes.reviews import SchemeReviews
 
 
@@ -19,7 +19,7 @@ class Scheme:
     def __init__(self, reference: str, overview_revision: OverviewRevision, status: Status):
         self._reference = reference
         self._status = status
-        self._overview = SchemeOverview(overview_revision)
+        self._overview_revision = overview_revision
         self._funding = SchemeFunding()
         self._milestones = SchemeMilestones()
         self._outputs = SchemeOutputs()
@@ -34,8 +34,8 @@ class Scheme:
         return self._status
 
     @property
-    def overview(self) -> SchemeOverview:
-        return self._overview
+    def overview_revision(self) -> OverviewRevision:
+        return self._overview_revision
 
     @property
     def funding(self) -> SchemeFunding:
@@ -57,7 +57,7 @@ class Scheme:
     def is_updateable(self) -> bool:
         is_active = self.status == Status.ACTIVE
         is_eligible_for_authority_update = self._is_eligible_for_authority_update(
-            self.overview.overview_revision.funding_programme
+            self.overview_revision.funding_programme
         )
         return is_active and is_eligible_for_authority_update
 

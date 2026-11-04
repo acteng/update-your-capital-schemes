@@ -4,7 +4,6 @@ import pytest
 from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import FinancialRevision, FinancialType
 from schemes.domain.schemes.schemes import SchemeRepository, Status
@@ -40,19 +39,9 @@ class TestSchemeFunding:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financials(
             FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
+                id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID
             ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=50_000,
-                source=DataSource.ATF4_BID,
-            ),
+            FinancialRevision(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID),
         )
         await schemes.add(scheme)
 
@@ -67,20 +56,8 @@ class TestSchemeFunding:
     async def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=0,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=0,
-                source=DataSource.ATF4_BID,
-            ),
+            FinancialRevision(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=0, source=DataSource.ATF4_BID),
+            FinancialRevision(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=0, source=DataSource.ATF4_BID),
         )
         await schemes.add(scheme)
 
@@ -136,13 +113,7 @@ class TestSchemeFunding:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financials(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
-            )
+            FinancialRevision(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
 
@@ -164,13 +135,7 @@ class TestSchemeFunding:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financial(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=50_000,
-                source=DataSource.ATF4_BID,
-            )
+            FinancialRevision(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
 
@@ -183,13 +148,7 @@ class TestSchemeFunding:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financial(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=0,
-                source=DataSource.ATF4_BID,
-            )
+            FinancialRevision(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=0, source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
 
@@ -262,19 +221,9 @@ class TestSchemeFunding:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financials(
             FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
+                id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID
             ),
-            FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=50_000,
-                source=DataSource.ATF4_BID,
-            ),
+            FinancialRevision(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID),
         )
         await schemes.add(scheme)
 
@@ -282,13 +231,11 @@ class TestSchemeFunding:
 
         actual_scheme = await schemes.get("ATE00001")
         assert actual_scheme
-        _, financial_revision2, financial_revision3 = actual_scheme.funding.financial_revisions
-        assert financial_revision2.id == 2 and financial_revision2.effective.date_to == datetime(2020, 2, 1, 13)
+        _, financial_revision2 = actual_scheme.funding.financial_revisions
         assert (
-            financial_revision3.effective == DateRange(datetime(2020, 2, 1, 13), None)
-            and financial_revision3.type == FinancialType.SPEND_TO_DATE
-            and financial_revision3.amount == 60_000
-            and financial_revision3.source == DataSource.AUTHORITY_UPDATE
+            financial_revision2.type == FinancialType.SPEND_TO_DATE
+            and financial_revision2.amount == 60_000
+            and financial_revision2.source == DataSource.AUTHORITY_UPDATE
         )
 
     async def test_spend_to_date_shows_scheme(
@@ -296,13 +243,7 @@ class TestSchemeFunding:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financial(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
-                type_=FinancialType.FUNDING_ALLOCATION,
-                amount=100_000,
-                source=DataSource.ATF4_BID,
-            )
+            FinancialRevision(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
 
@@ -317,13 +258,7 @@ class TestSchemeFunding:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.funding.update_financial(
-            FinancialRevision(
-                id_=1,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=50_000,
-                source=DataSource.ATF4_BID,
-            )
+            FinancialRevision(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
 
@@ -346,7 +281,6 @@ class TestSchemeFunding:
         (financial_revision1,) = actual_scheme.funding.financial_revisions
         assert (
             financial_revision1.id == 1
-            and financial_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and financial_revision1.type == FinancialType.SPEND_TO_DATE
             and financial_revision1.amount == 50_000
             and financial_revision1.source == DataSource.ATF4_BID

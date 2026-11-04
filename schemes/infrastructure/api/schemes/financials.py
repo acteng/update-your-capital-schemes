@@ -1,7 +1,5 @@
-from datetime import datetime
 from typing import Self
 
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.funding import FinancialRevision, FinancialType
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
@@ -13,13 +11,9 @@ class CapitalSchemeFundingModel(BaseModel):
     source: DataSourceModel
 
     def to_domain(self) -> FinancialRevision:
-        # TODO: id, effective
+        # TODO: id
         return FinancialRevision(
-            id_=0,
-            effective=DateRange(date_from=datetime.min, date_to=None),
-            type_=FinancialType.FUNDING_ALLOCATION,
-            amount=self.amount,
-            source=self.source.to_domain(),
+            id_=0, type_=FinancialType.FUNDING_ALLOCATION, amount=self.amount, source=self.source.to_domain()
         )
 
 
@@ -35,10 +29,9 @@ class CapitalSchemeSpendModel(BaseModel):
         return cls(amount=financial_revision.amount, source=DataSourceModel.from_domain(financial_revision.source))
 
     def to_domain(self) -> FinancialRevision:
-        # TODO: id, effective
+        # TODO: id
         return FinancialRevision(
             id_=0,
-            effective=DateRange(date_from=datetime.min, date_to=None),
             type_=FinancialType.SPEND_TO_DATE,
             amount=self.amount,
             source=self.source.to_domain(),

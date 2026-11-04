@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Self
 
 from flask_wtf import FlaskForm
@@ -47,9 +46,9 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
         funding_allocation = funding.funding_allocation or 0
         return cls(max_amount=funding_allocation, data={"amount": funding.spend_to_date})
 
-    def update_domain(self, funding: SchemeFunding, now: datetime) -> None:
+    def update_domain(self, funding: SchemeFunding) -> None:
         assert self.amount.data is not None
-        funding.update_spend_to_date(now=now, amount=self.amount.data)
+        funding.update_spend_to_date(self.amount.data)
 
     @staticmethod
     def validate_amount(form: ChangeSpendToDateForm, field: CustomMessageIntegerField) -> None:

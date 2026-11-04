@@ -1,7 +1,5 @@
-from datetime import datetime
 from enum import Enum, auto, unique
 
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 
 
@@ -16,9 +14,8 @@ class FinancialType(Enum):
 
 class FinancialRevision:
     # TODO: domain identifier should be mandatory for transient instances
-    def __init__(self, id_: int | None, effective: DateRange, type_: FinancialType, amount: int, source: DataSource):
+    def __init__(self, id_: int | None, type_: FinancialType, amount: int, source: DataSource):
         self._id = id_
-        self._effective = effective
         self._type = type_
         self._amount = amount
         self._source = source
@@ -26,10 +23,6 @@ class FinancialRevision:
     @property
     def id(self) -> int | None:
         return self._id
-
-    @property
-    def effective(self) -> DateRange:
-        return self._effective
 
     @property
     def type(self) -> FinancialType:
@@ -44,15 +37,12 @@ class FinancialRevision:
         return self._source
 
     @property
-    def is_current_funding_allocation(self) -> bool:
-        return self.type == FinancialType.FUNDING_ALLOCATION and self.effective.date_to is None
+    def is_funding_allocation(self) -> bool:
+        return self.type == FinancialType.FUNDING_ALLOCATION
 
     @property
-    def is_current_spend_to_date(self) -> bool:
-        return self.type == FinancialType.SPEND_TO_DATE and self.effective.date_to is None
-
-    def close(self, effective_date_to: datetime) -> None:
-        self._effective = DateRange(self.effective.date_from, effective_date_to)
+    def is_spend_to_date(self) -> bool:
+        return self.type == FinancialType.SPEND_TO_DATE
 
 
 class SchemeFunding:
@@ -64,8 +54,8 @@ class SchemeFunding:
         return list(self._financial_revisions)
 
     def update_financial(self, financial_revision: FinancialRevision) -> None:
-        if financial_revision.is_current_spend_to_date:
-            self._ensure_no_current_spend_to_date()
+        if financial_revision.is_spend_to_date:
+            self._ensure_no_spend_to_date()
 
         self._financial_revisions.append(financial_revision)
 
@@ -73,38 +63,34 @@ class SchemeFunding:
         for financial_revision in financial_revisions:
             self.update_financial(financial_revision)
 
-    def _ensure_no_current_spend_to_date(self) -> None:
-        current_spend_to_date = self._current_spend_to_date
-        if current_spend_to_date:
-            raise ValueError(f"Current spend to date already exists: {current_spend_to_date}")
+    def _ensure_no_spend_to_date(self) -> None:
+        spend_to_date = self._spend_to_date
+        if spend_to_date:
+            raise ValueError(f"Spend to date already exists: {spend_to_date}")
 
     @property
-    def _current_spend_to_date(self) -> FinancialRevision | None:
-        return next((revision for revision in self._financial_revisions if revision.is_current_spend_to_date), None)
+    def _spend_to_date(self) -> FinancialRevision | None:
+        return next((revision for revision in self._financial_revisions if revision.is_spend_to_date), None)
 
-    def update_spend_to_date(self, now: datetime, amount: int) -> None:
-        current_spend_to_date = self._current_spend_to_date
-        if current_spend_to_date:
-            current_spend_to_date.close(now)
+    def update_spend_to_date(self, amount: int) -> None:
+        spend_to_date = self._spend_to_date
+        if spend_to_date:
+            self._financial_revisions.remove(spend_to_date)
 
         self.update_financial(
             FinancialRevision(
-                id_=None,
-                effective=DateRange(now, None),
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=amount,
-                source=DataSource.AUTHORITY_UPDATE,
+                id_=None, type_=FinancialType.SPEND_TO_DATE, amount=amount, source=DataSource.AUTHORITY_UPDATE
             )
         )
 
     @property
     def funding_allocation(self) -> int | None:
-        amounts = [revision.amount for revision in self._financial_revisions if revision.is_current_funding_allocation]
+        amounts = [revision.amount for revision in self._financial_revisions if revision.is_funding_allocation]
         return sum(amounts) if amounts else None
 
     @property
     def spend_to_date(self) -> int | None:
-        amounts = (revision.amount for revision in self._financial_revisions if revision.is_current_spend_to_date)
+        amounts = (revision.amount for revision in self._financial_revisions if revision.is_spend_to_date)
         return next(amounts, None)
 
     @property

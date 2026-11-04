@@ -213,9 +213,7 @@ async def spend_to_date_form(reference: str, users: UserRepository, schemes: Sch
 @bp.post("<reference>/spend-to-date")
 @async_bearer_auth
 @inject.autoparams()
-async def spend_to_date(
-    clock: Clock, users: UserRepository, schemes: SchemeRepository, reference: str
-) -> str | BaseResponse:
+async def spend_to_date(users: UserRepository, schemes: SchemeRepository, reference: str) -> str | BaseResponse:
     user_info = session["user"]
     user = users.get(user_info["email"])
     assert user
@@ -232,7 +230,7 @@ async def spend_to_date(
     if not form.validate():
         return await spend_to_date_form(reference)
 
-    form.update_domain(scheme.funding, clock.now)
+    form.update_domain(scheme.funding)
     await schemes.update(scheme)
 
     return redirect(url_for("schemes.get", reference=reference))

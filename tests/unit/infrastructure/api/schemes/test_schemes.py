@@ -896,19 +896,11 @@ class TestApiSchemeRepository:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
             FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=50_000,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
                 id_=None,
-                effective=DateRange(datetime(2020, 2, 1), None),
                 type_=FinancialType.SPEND_TO_DATE,
                 amount=60_000,
                 source=DataSource.AUTHORITY_UPDATE,
-            ),
+            )
         )
         create_spend_response = api_mock.post(
             "/capital-schemes/ATE00001/financials/spend",
@@ -925,15 +917,7 @@ class TestApiSchemeRepository:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
             FinancialRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
-                type_=FinancialType.EXPECTED_COST,
-                amount=50_000,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
                 id_=None,
-                effective=DateRange(datetime(2020, 2, 1), None),
                 type_=FinancialType.EXPECTED_COST,
                 amount=60_000,
                 source=DataSource.AUTHORITY_UPDATE,
@@ -951,7 +935,6 @@ class TestApiSchemeRepository:
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 type_=FinancialType.SPEND_TO_DATE,
                 amount=50_000,
                 source=DataSource.ATF4_BID,
@@ -1067,26 +1050,21 @@ class TestApiSchemeRepository:
         scheme.funding.update_financials(
             FinancialRevision(
                 id_=None,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=50_000,
-                source=DataSource.ATF4_BID,
-            ),
-            FinancialRevision(
-                id_=None,
-                effective=DateRange(datetime(2020, 2, 1), None),
                 type_=FinancialType.SPEND_TO_DATE,
                 amount=60_000,
                 source=DataSource.AUTHORITY_UPDATE,
             ),
         )
-        api_mock.post(
-            "/capital-schemes/ATE00001/financials/spend",
-            json=build_capital_scheme_spend_json(amount=50_000, source="ATF4 bid"),
-        ).respond(201)
+        scheme.reviews.update_authority_reviews(
+            AuthorityReview(id_=None, review_date=datetime(2020, 1, 1), source=DataSource.AUTHORITY_UPDATE)
+        )
         api_mock.post(
             "/capital-schemes/ATE00001/financials/spend",
             json=build_capital_scheme_spend_json(amount=60_000, source="authority update"),
+        ).respond(201)
+        api_mock.post(
+            "/capital-schemes/ATE00001/authority-reviews",
+            json=build_create_capital_scheme_authority_review_json(source="authority update"),
         ).respond(201)
 
         await schemes.update(scheme)

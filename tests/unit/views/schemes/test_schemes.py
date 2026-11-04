@@ -200,22 +200,15 @@ class TestSchemeContext:
         scheme = build_scheme(reference="", name="", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
             OutputRevision(
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
-                observation_type=ObservationType.PLANNED,
-            ),
-            OutputRevision(
-                effective=DateRange(datetime(2020, 2, 1), None),
-                type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
-                value=Decimal(20),
                 observation_type=ObservationType.PLANNED,
             ),
         )
 
         context = SchemeContext.from_domain(dummy_reporting_window(), authority, scheme)
 
-        assert context.outputs.outputs[0].planned == Decimal(20)
+        assert context.outputs.outputs[0].planned == Decimal(10)
 
     def test_from_domain_sets_review(self) -> None:
         authority = Authority(abbreviation="LIV", name="")

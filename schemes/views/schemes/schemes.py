@@ -185,7 +185,7 @@ class SchemeContext:
             overview=SchemeOverviewContext.from_domain(scheme),
             funding=SchemeFundingContext.from_domain(scheme.funding),
             milestones=SchemeMilestonesContext.from_domain(scheme.milestones),
-            outputs=SchemeOutputsContext.from_domain(scheme.outputs.current_output_revisions),
+            outputs=SchemeOutputsContext.from_domain(scheme.outputs.output_revisions),
             review=SchemeReviewContext.from_domain(scheme.reviews),
         )
 

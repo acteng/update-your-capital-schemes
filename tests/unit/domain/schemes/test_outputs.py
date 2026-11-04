@@ -1,9 +1,7 @@
-from datetime import datetime
 from decimal import Decimal
 
 import pytest
 
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, OutputType, OutputTypeMeasure, SchemeOutputs
 
@@ -18,7 +16,6 @@ class TestSchemeOutputs:
         outputs = SchemeOutputs()
         outputs.update_output(
             OutputRevision(
-                effective=DateRange(datetime(2020, 1, 1), None),
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.ACTUAL,
@@ -29,28 +26,9 @@ class TestSchemeOutputs:
 
         assert outputs.output_revisions
 
-    def test_get_current_output_revisions(self) -> None:
-        outputs = SchemeOutputs()
-        output_revision1 = OutputRevision(
-            effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
-            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-            value=Decimal(10),
-            observation_type=ObservationType.PLANNED,
-        )
-        output_revision2 = OutputRevision(
-            effective=DateRange(datetime(2020, 1, 1), None),
-            type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
-            value=Decimal(20),
-            observation_type=ObservationType.PLANNED,
-        )
-        outputs.update_outputs(output_revision1, output_revision2)
-
-        assert outputs.current_output_revisions == [output_revision2]
-
     def test_update_output(self) -> None:
         outputs = SchemeOutputs()
         output_revision = OutputRevision(
-            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.ACTUAL,
@@ -63,13 +41,11 @@ class TestSchemeOutputs:
     def test_update_outputs(self) -> None:
         outputs = SchemeOutputs()
         output_revision1 = OutputRevision(
-            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.ACTUAL,
         )
         output_revision2 = OutputRevision(
-            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
             value=Decimal(20),
             observation_type=ObservationType.ACTUAL,
@@ -83,15 +59,13 @@ class TestSchemeOutputs:
 class TestOutputRevision:
     def test_create(self) -> None:
         output_revision = OutputRevision(
-            effective=DateRange(datetime(2020, 1, 1), None),
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.ACTUAL,
         )
 
         assert (
-            output_revision.effective == DateRange(datetime(2020, 1, 1), None)
-            and output_revision.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            output_revision.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
             and output_revision.value == Decimal(10)
             and output_revision.observation_type == ObservationType.ACTUAL
         )

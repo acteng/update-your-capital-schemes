@@ -2,7 +2,6 @@ from decimal import Decimal
 from enum import Enum, IntEnum, auto, unique
 from typing import Self
 
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.observations import ObservationType
 
 
@@ -124,21 +123,10 @@ class OutputTypeMeasure(Enum):
 
 
 class OutputRevision:
-    def __init__(
-        self,
-        effective: DateRange,
-        type_measure: OutputTypeMeasure,
-        value: Decimal,
-        observation_type: ObservationType,
-    ):
-        self._effective = effective
+    def __init__(self, type_measure: OutputTypeMeasure, value: Decimal, observation_type: ObservationType):
         self._type_measure = type_measure
         self._value = value
         self._observation_type = observation_type
-
-    @property
-    def effective(self) -> DateRange:
-        return self._effective
 
     @property
     def type_measure(self) -> OutputTypeMeasure:
@@ -160,10 +148,6 @@ class SchemeOutputs:
     @property
     def output_revisions(self) -> list[OutputRevision]:
         return list(self._output_revisions)
-
-    @property
-    def current_output_revisions(self) -> list[OutputRevision]:
-        return [revision for revision in self._output_revisions if revision.effective.date_to is None]
 
     def update_output(self, output_revision: OutputRevision) -> None:
         self._output_revisions.append(output_revision)

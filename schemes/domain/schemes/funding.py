@@ -99,11 +99,7 @@ class SchemeFunding:
 
     @property
     def funding_allocation(self) -> int | None:
-        amounts = [
-            revision.amount
-            for revision in self._financial_revisions
-            if revision.type == FinancialType.FUNDING_ALLOCATION and revision.is_current_funding_allocation
-        ]
+        amounts = [revision.amount for revision in self._financial_revisions if revision.is_current_funding_allocation]
         return sum(amounts) if amounts else None
 
     @property

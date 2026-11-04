@@ -168,9 +168,9 @@ class ApiSchemeRepository(SchemeRepository):
         return ImprovementModel.model_validate(response.json())
 
     async def _update_financials(self, remote_app: AsyncBaseApp, scheme: Scheme) -> None:
-        for financial_revision in scheme.funding.financial_revisions:
-            if financial_revision.id is None and financial_revision.type == FinancialType.SPEND_TO_DATE:
-                spend_model = CapitalSchemeSpendModel.from_domain(financial_revision)
+        for financial in scheme.funding.financials:
+            if financial.id is None and financial.type == FinancialType.SPEND_TO_DATE:
+                spend_model = CapitalSchemeSpendModel.from_domain(financial)
                 await self._create_spend(remote_app, scheme.reference, spend_model)
 
     async def _create_spend(

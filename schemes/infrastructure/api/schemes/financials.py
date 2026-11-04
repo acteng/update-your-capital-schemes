@@ -1,6 +1,6 @@
 from typing import Self
 
-from schemes.domain.schemes.funding import FinancialRevision, FinancialType
+from schemes.domain.schemes.funding import FinancialType, SchemeFinancial
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.data_sources import DataSourceModel
@@ -10,9 +10,9 @@ class CapitalSchemeFundingModel(BaseModel):
     amount: int
     source: DataSourceModel
 
-    def to_domain(self) -> FinancialRevision:
+    def to_domain(self) -> SchemeFinancial:
         # TODO: id
-        return FinancialRevision(
+        return SchemeFinancial(
             id_=0, type_=FinancialType.FUNDING_ALLOCATION, amount=self.amount, source=self.source.to_domain()
         )
 
@@ -22,15 +22,15 @@ class CapitalSchemeSpendModel(BaseModel):
     source: DataSourceModel
 
     @classmethod
-    def from_domain(cls, financial_revision: FinancialRevision) -> Self:
-        if financial_revision.type != FinancialType.SPEND_TO_DATE:
-            raise ValueError(f"Invalid financial type: {financial_revision.type}")
+    def from_domain(cls, financial: SchemeFinancial) -> Self:
+        if financial.type != FinancialType.SPEND_TO_DATE:
+            raise ValueError(f"Invalid financial type: {financial.type}")
 
-        return cls(amount=financial_revision.amount, source=DataSourceModel.from_domain(financial_revision.source))
+        return cls(amount=financial.amount, source=DataSourceModel.from_domain(financial.source))
 
-    def to_domain(self) -> FinancialRevision:
+    def to_domain(self) -> SchemeFinancial:
         # TODO: id
-        return FinancialRevision(
+        return SchemeFinancial(
             id_=0,
             type_=FinancialType.SPEND_TO_DATE,
             amount=self.amount,
@@ -42,8 +42,8 @@ class CapitalSchemeFinancialsModel(BaseModel):
     funding: CollectionModel[CapitalSchemeFundingModel]
     spend: CapitalSchemeSpendModel | None
 
-    def to_domain(self) -> list[FinancialRevision]:
-        financial_revisions = [funding.to_domain() for funding in self.funding.items]
+    def to_domain(self) -> list[SchemeFinancial]:
+        financials = [funding.to_domain() for funding in self.funding.items]
         if self.spend:
-            financial_revisions.append(self.spend.to_domain())
-        return financial_revisions
+            financials.append(self.spend.to_domain())
+        return financials

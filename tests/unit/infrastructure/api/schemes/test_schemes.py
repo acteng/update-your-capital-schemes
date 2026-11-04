@@ -7,7 +7,7 @@ from respx import MockRouter
 
 from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import FinancialRevision, FinancialType
+from schemes.domain.schemes.funding import FinancialType, SchemeFinancial
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure
@@ -73,7 +73,7 @@ class TestCapitalSchemeModel:
         scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         assert scheme.reference == "ATE00001"
-        assert not scheme.funding.financial_revisions
+        assert not scheme.funding.financials
         assert not scheme.milestones.milestone_revisions
         assert not scheme.outputs.output_revisions
         assert not scheme.reviews.authority_reviews
@@ -129,7 +129,7 @@ class TestCapitalSchemeModel:
 
         assert scheme.status == Status.ACTIVE
 
-    def test_to_domain_sets_financial_revisions(self) -> None:
+    def test_to_domain_sets_financials(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
             overview=build_capital_scheme_overview_model(),
@@ -146,18 +146,18 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
-        financial_revision1, financial_revision2 = scheme.funding.financial_revisions
+        financial1, financial2 = scheme.funding.financials
         assert (
-            financial_revision1.id is not None
-            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
-            and financial_revision1.amount == 100_000
-            and financial_revision1.source == DataSource.ATF4_BID
+            financial1.id is not None
+            and financial1.type == FinancialType.FUNDING_ALLOCATION
+            and financial1.amount == 100_000
+            and financial1.source == DataSource.ATF4_BID
         )
         assert (
-            financial_revision2.id is not None
-            and financial_revision2.type == FinancialType.SPEND_TO_DATE
-            and financial_revision2.amount == 50_000
-            and financial_revision2.source == DataSource.ATF4_BID
+            financial2.id is not None
+            and financial2.type == FinancialType.SPEND_TO_DATE
+            and financial2.amount == 50_000
+            and financial2.source == DataSource.ATF4_BID
         )
 
     def test_to_domain_sets_milestone_revisions(self) -> None:
@@ -437,7 +437,7 @@ class TestApiSchemeRepository:
 
         assert scheme and scheme.status == Status.ACTIVE
 
-    async def test_get_scheme_sets_financial_revisions(
+    async def test_get_scheme_sets_financials(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes/ATF4").respond(
@@ -467,18 +467,18 @@ class TestApiSchemeRepository:
         scheme = await schemes.get("ATE00001")
 
         assert scheme
-        financial_revision1, financial_revision2 = scheme.funding.financial_revisions
+        financial1, financial2 = scheme.funding.financials
         assert (
-            financial_revision1.id is not None
-            and financial_revision1.type == FinancialType.FUNDING_ALLOCATION
-            and financial_revision1.amount == 100_000
-            and financial_revision1.source == DataSource.ATF4_BID
+            financial1.id is not None
+            and financial1.type == FinancialType.FUNDING_ALLOCATION
+            and financial1.amount == 100_000
+            and financial1.source == DataSource.ATF4_BID
         )
         assert (
-            financial_revision2.id is not None
-            and financial_revision2.type == FinancialType.SPEND_TO_DATE
-            and financial_revision2.amount == 50_000
-            and financial_revision2.source == DataSource.ATF4_BID
+            financial2.id is not None
+            and financial2.type == FinancialType.SPEND_TO_DATE
+            and financial2.amount == 50_000
+            and financial2.source == DataSource.ATF4_BID
         )
 
     async def test_get_scheme_sets_milestone_revisions(
@@ -895,7 +895,7 @@ class TestApiSchemeRepository:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
-            FinancialRevision(
+            SchemeFinancial(
                 id_=None,
                 type_=FinancialType.SPEND_TO_DATE,
                 amount=60_000,
@@ -916,7 +916,7 @@ class TestApiSchemeRepository:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
-            FinancialRevision(
+            SchemeFinancial(
                 id_=None,
                 type_=FinancialType.EXPECTED_COST,
                 amount=60_000,
@@ -933,7 +933,7 @@ class TestApiSchemeRepository:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
-            FinancialRevision(
+            SchemeFinancial(
                 id_=2,
                 type_=FinancialType.SPEND_TO_DATE,
                 amount=50_000,
@@ -1048,7 +1048,7 @@ class TestApiSchemeRepository:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
-            FinancialRevision(
+            SchemeFinancial(
                 id_=None,
                 type_=FinancialType.SPEND_TO_DATE,
                 amount=60_000,

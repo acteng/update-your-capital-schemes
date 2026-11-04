@@ -3,7 +3,7 @@ from flask_wtf.csrf import generate_csrf
 from werkzeug.datastructures import MultiDict
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import FinancialRevision, FinancialType, SchemeFunding
+from schemes.domain.schemes.funding import FinancialType, SchemeFinancial, SchemeFunding
 from schemes.views.schemes.funding import ChangeSpendToDateContext, ChangeSpendToDateForm, SchemeFundingContext
 from tests.unit.domain.builders import build_scheme
 
@@ -12,7 +12,7 @@ class TestSchemeFundingContext:
     def test_from_domain_sets_funding_allocation(self) -> None:
         funding = SchemeFunding()
         funding.update_financial(
-            FinancialRevision(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID)
+            SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID)
         )
 
         context = SchemeFundingContext.from_domain(funding)
@@ -22,7 +22,7 @@ class TestSchemeFundingContext:
     def test_from_domain_sets_spend_to_date(self) -> None:
         funding = SchemeFunding()
         funding.update_financial(
-            FinancialRevision(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID)
+            SchemeFinancial(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID)
         )
 
         context = SchemeFundingContext.from_domain(funding)
@@ -32,10 +32,8 @@ class TestSchemeFundingContext:
     def test_from_domain_sets_allocation_still_to_spend(self) -> None:
         funding = SchemeFunding()
         funding.update_financials(
-            FinancialRevision(
-                id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=110_000, source=DataSource.ATF4_BID
-            ),
-            FinancialRevision(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID),
+            SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=110_000, source=DataSource.ATF4_BID),
+            SchemeFinancial(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID),
         )
 
         context = SchemeFundingContext.from_domain(funding)
@@ -48,10 +46,8 @@ class TestChangeSpendToDateContext:
     def test_from_domain(self) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.funding.update_financials(
-            FinancialRevision(
-                id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID
-            ),
-            FinancialRevision(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=40_000, source=DataSource.ATF4_BID),
+            SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID),
+            SchemeFinancial(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=40_000, source=DataSource.ATF4_BID),
         )
 
         context = ChangeSpendToDateContext.from_domain(scheme)
@@ -69,10 +65,8 @@ class TestChangeSpendToDateForm:
     def test_from_domain(self) -> None:
         funding = SchemeFunding()
         funding.update_financials(
-            FinancialRevision(
-                id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID
-            ),
-            FinancialRevision(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID),
+            SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID),
+            SchemeFinancial(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID),
         )
 
         form = ChangeSpendToDateForm.from_domain(funding)
@@ -90,16 +84,16 @@ class TestChangeSpendToDateForm:
         form = ChangeSpendToDateForm(max_amount=0, formdata=MultiDict([("amount", "60000")]))
         funding = SchemeFunding()
         funding.update_financial(
-            FinancialRevision(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID)
+            SchemeFinancial(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID)
         )
 
         form.update_domain(funding)
 
-        (financial_revision,) = funding.financial_revisions
+        (financial,) = funding.financials
         assert (
-            financial_revision.type == FinancialType.SPEND_TO_DATE
-            and financial_revision.amount == 60_000
-            and financial_revision.source == DataSource.AUTHORITY_UPDATE
+            financial.type == FinancialType.SPEND_TO_DATE
+            and financial.amount == 60_000
+            and financial.source == DataSource.AUTHORITY_UPDATE
         )
 
     def test_update_domain_with_zero_amount(self) -> None:
@@ -108,7 +102,7 @@ class TestChangeSpendToDateForm:
 
         form.update_domain(funding)
 
-        assert funding.financial_revisions[0].amount == 0
+        assert funding.financials[0].amount == 0
 
     def test_validate_when_valid(self) -> None:
         form = ChangeSpendToDateForm(

@@ -61,8 +61,8 @@ class SchemeMilestonesContext:
             milestones=[
                 SchemeMilestoneRowContext(
                     milestone=MilestoneContext.from_domain(milestone),
-                    planned=milestones.get_current_status_date(milestone, ObservationType.PLANNED),
-                    actual=milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
+                    planned=milestones.get_status_date(milestone, ObservationType.PLANNED),
+                    actual=milestones.get_status_date(milestone, ObservationType.ACTUAL),
                 )
                 for milestone in sorted(
                     milestones.milestones_eligible_for_authority_update, key=lambda milestone: milestone.milestone_order
@@ -111,18 +111,18 @@ class MilestoneDatesForm(Form):
         form_class = MilestoneDatesForm.create_class(milestone, now)
 
         return form_class(
-            planned=milestones.get_current_status_date(milestone, ObservationType.PLANNED),
-            actual=milestones.get_current_status_date(milestone, ObservationType.ACTUAL),
+            planned=milestones.get_status_date(milestone, ObservationType.PLANNED),
+            actual=milestones.get_status_date(milestone, ObservationType.ACTUAL),
         )
 
-    def update_domain(self, milestones: SchemeMilestones, now: datetime, milestone: Milestone) -> None:
-        current_planned_date = milestones.get_current_status_date(milestone, ObservationType.PLANNED)
+    def update_domain(self, milestones: SchemeMilestones, milestone: Milestone) -> None:
+        current_planned_date = milestones.get_status_date(milestone, ObservationType.PLANNED)
         if self.planned.data and current_planned_date != self.planned.data:
-            milestones.update_milestone_date(now, milestone, ObservationType.PLANNED, self.planned.data)
+            milestones.update_milestone_date(milestone, ObservationType.PLANNED, self.planned.data)
 
-        current_actual_date = milestones.get_current_status_date(milestone, ObservationType.ACTUAL)
+        current_actual_date = milestones.get_status_date(milestone, ObservationType.ACTUAL)
         if self.actual.data and current_actual_date != self.actual.data:
-            milestones.update_milestone_date(now, milestone, ObservationType.ACTUAL, self.actual.data)
+            milestones.update_milestone_date(milestone, ObservationType.ACTUAL, self.actual.data)
 
 
 class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
@@ -160,12 +160,12 @@ class ChangeMilestoneDatesForm(FlaskForm):  # type: ignore
             }
         )
 
-    def update_domain(self, milestones: SchemeMilestones, now: datetime) -> None:
+    def update_domain(self, milestones: SchemeMilestones) -> None:
         for milestone in sorted(
             milestones.milestones_eligible_for_authority_update, key=lambda milestone: milestone.milestone_order
         ):
             field_name = self._to_field_name(milestone)
-            self[field_name].form.update_domain(milestones, now, milestone)
+            self[field_name].form.update_domain(milestones, milestone)
 
     @staticmethod
     def _to_field_name(milestone: Milestone) -> str:

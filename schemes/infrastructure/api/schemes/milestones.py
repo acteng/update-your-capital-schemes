@@ -1,8 +1,7 @@
-from datetime import date, datetime
+from datetime import date
 from enum import Enum
 from typing import Self
 
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.data_sources import DataSourceModel
@@ -47,10 +46,9 @@ class CapitalSchemeMilestoneModel(BaseModel):
         )
 
     def to_domain(self) -> MilestoneRevision:
-        # TODO: id, effective
+        # TODO: id
         return MilestoneRevision(
             id_=0,
-            effective=DateRange(date_from=datetime.min, date_to=None),
             milestone=self.milestone.to_domain(),
             observation_type=self.observation_type.to_domain(),
             status_date=self.status_date,

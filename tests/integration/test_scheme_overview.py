@@ -4,7 +4,6 @@ import pytest
 from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
@@ -55,7 +54,6 @@ class TestSchemeOverview:
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),

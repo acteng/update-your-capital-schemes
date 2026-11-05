@@ -279,7 +279,7 @@ async def milestones(
     if not form.validate():
         return await milestones_form(reference)
 
-    form.update_domain(scheme.milestones, now)
+    form.update_domain(scheme.milestones)
     await schemes.update(scheme)
 
     return redirect(url_for("schemes.get", reference=reference))

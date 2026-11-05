@@ -5,7 +5,6 @@ import pytest
 from pydantic import AnyUrl
 from respx import MockRouter
 
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import FinancialType, SchemeFinancial
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
@@ -949,16 +948,7 @@ class TestApiSchemeRepository:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.milestones.update_milestones(
             MilestoneRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 2, 1),
-                source=DataSource.ATF4_BID,
-            ),
-            MilestoneRevision(
                 id_=None,
-                effective=DateRange(datetime(2020, 2, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 3, 1),
@@ -966,7 +956,6 @@ class TestApiSchemeRepository:
             ),
             MilestoneRevision(
                 id_=None,
-                effective=DateRange(datetime(2020, 2, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 4, 1),
@@ -1004,7 +993,6 @@ class TestApiSchemeRepository:
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),

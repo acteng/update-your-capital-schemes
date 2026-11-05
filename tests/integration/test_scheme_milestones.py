@@ -4,7 +4,6 @@ import pytest
 from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
@@ -53,7 +52,6 @@ class TestSchemeMilestones:
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 1,
-                DateRange(datetime(2020, 1, 1), None),
                 Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 2, 1),
@@ -61,7 +59,6 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 2,
-                DateRange(datetime(2020, 1, 1), None),
                 Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 ObservationType.ACTUAL,
                 date(2020, 2, 2),
@@ -69,7 +66,6 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 3,
-                DateRange(datetime(2020, 1, 1), None),
                 Milestone.PRELIMINARY_DESIGN_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 3, 1),
@@ -77,7 +73,6 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 4,
-                DateRange(datetime(2020, 1, 1), None),
                 Milestone.PRELIMINARY_DESIGN_COMPLETED,
                 ObservationType.ACTUAL,
                 date(2020, 3, 2),
@@ -85,7 +80,6 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 5,
-                DateRange(datetime(2020, 1, 1), None),
                 Milestone.DETAILED_DESIGN_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 4, 1),
@@ -93,7 +87,6 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 6,
-                DateRange(datetime(2020, 1, 1), None),
                 Milestone.DETAILED_DESIGN_COMPLETED,
                 ObservationType.ACTUAL,
                 date(2020, 4, 2),
@@ -101,7 +94,6 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 7,
-                DateRange(datetime(2020, 1, 1), None),
                 Milestone.CONSTRUCTION_STARTED,
                 ObservationType.PLANNED,
                 date(2020, 5, 1),
@@ -109,7 +101,6 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 8,
-                DateRange(datetime(2020, 1, 1), None),
                 Milestone.CONSTRUCTION_STARTED,
                 ObservationType.ACTUAL,
                 date(2020, 5, 2),
@@ -117,7 +108,6 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 9,
-                DateRange(datetime(2020, 1, 1), None),
                 Milestone.CONSTRUCTION_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 6, 1),
@@ -125,7 +115,6 @@ class TestSchemeMilestones:
             ),
             MilestoneRevision(
                 10,
-                DateRange(datetime(2020, 1, 1), None),
                 Milestone.CONSTRUCTION_COMPLETED,
                 ObservationType.ACTUAL,
                 date(2020, 6, 2),
@@ -210,7 +199,6 @@ class TestSchemeMilestones:
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
@@ -284,7 +272,6 @@ class TestSchemeMilestones:
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
@@ -300,14 +287,13 @@ class TestSchemeMilestones:
 
         actual_scheme = await schemes.get("ATE00001")
         assert actual_scheme
-        milestone_revision1, milestone_revision2 = actual_scheme.milestones.milestone_revisions
-        assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 2, 1, 13)
+        (milestone_revision,) = actual_scheme.milestones.milestone_revisions
         assert (
-            milestone_revision2.effective == DateRange(datetime(2020, 2, 1, 13), None)
-            and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision2.observation_type == ObservationType.ACTUAL
-            and milestone_revision2.status_date == date(2020, 1, 3)
-            and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
+            milestone_revision.id is None
+            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision.observation_type == ObservationType.ACTUAL
+            and milestone_revision.status_date == date(2020, 1, 3)
+            and milestone_revision.source == DataSource.AUTHORITY_UPDATE
         )
 
     async def test_milestones_shows_scheme(
@@ -326,7 +312,6 @@ class TestSchemeMilestones:
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
@@ -361,7 +346,6 @@ class TestSchemeMilestones:
         (milestone_revision1,) = actual_scheme.milestones.milestone_revisions
         assert (
             milestone_revision1.id == 1
-            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == ObservationType.ACTUAL
             and milestone_revision1.status_date == date(2020, 1, 2)

@@ -6,7 +6,6 @@ from flask_wtf.csrf import generate_csrf
 from werkzeug.datastructures import MultiDict
 from wtforms import Form, FormField, ValidationError
 
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision, SchemeMilestones
 from schemes.domain.schemes.observations import ObservationType
@@ -46,36 +45,18 @@ class TestSchemeMilestonesContext:
             (Milestone.CONSTRUCTION_COMPLETED, "Construction completed"),
         ],
     )
-    def test_from_domain_sets_current_milestone_dates(self, milestone: Milestone, expected_milestone_name: str) -> None:
+    def test_from_domain_sets_milestone_dates(self, milestone: Milestone, expected_milestone_name: str) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
-                milestone=milestone,
-                observation_type=ObservationType.PLANNED,
-                status_date=date(2020, 2, 1),
-                source=DataSource.ATF4_BID,
-            ),
-            MilestoneRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 2, 1), None),
                 milestone=milestone,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 3, 1),
                 source=DataSource.ATF4_BID,
             ),
             MilestoneRevision(
-                id_=3,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
-                milestone=milestone,
-                observation_type=ObservationType.ACTUAL,
-                status_date=date(2020, 4, 1),
-                source=DataSource.ATF4_BID,
-            ),
-            MilestoneRevision(
-                id_=4,
-                effective=DateRange(datetime(2020, 2, 1), None),
+                id_=2,
                 milestone=milestone,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 5, 1),
@@ -149,7 +130,6 @@ class TestChangeMilestoneDatesContext:
         scheme.milestones.update_milestone(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 3, 1),
@@ -234,15 +214,6 @@ class TestMilestoneDatesForm:
         milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
-                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-                observation_type=observation_type,
-                status_date=date(2020, 1, 1),
-                source=DataSource.ATF4_BID,
-            ),
-            MilestoneRevision(
-                id_=2,
-                effective=DateRange(datetime(2020, 2, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
                 status_date=date(2020, 2, 1),
@@ -271,7 +242,6 @@ class TestMilestoneDatesForm:
         milestones.update_milestone(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
                 status_date=date(2020, 1, 2),
@@ -279,16 +249,15 @@ class TestMilestoneDatesForm:
             )
         )
 
-        form.update_domain(milestones, datetime(2020, 2, 1, 13), Milestone.DETAILED_DESIGN_COMPLETED)
+        form.update_domain(milestones, Milestone.DETAILED_DESIGN_COMPLETED)
 
-        milestone_revision1, milestone_revision2 = milestones.milestone_revisions
-        assert milestone_revision1.id == 1 and milestone_revision1.effective.date_to == datetime(2020, 2, 1, 13)
+        (milestone_revision,) = milestones.milestone_revisions
         assert (
-            milestone_revision2.effective == DateRange(datetime(2020, 2, 1, 13), None)
-            and milestone_revision2.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision2.observation_type == observation_type
-            and milestone_revision2.status_date == date(2020, 1, 3)
-            and milestone_revision2.source == DataSource.AUTHORITY_UPDATE
+            milestone_revision.id is None
+            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone_revision.observation_type == observation_type
+            and milestone_revision.status_date == date(2020, 1, 3)
+            and milestone_revision.source == DataSource.AUTHORITY_UPDATE
         )
 
     @pytest.mark.parametrize(
@@ -303,7 +272,6 @@ class TestMilestoneDatesForm:
         milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
                 status_date=date(2020, 1, 2),
@@ -311,12 +279,11 @@ class TestMilestoneDatesForm:
             )
         )
 
-        form.update_domain(milestones, datetime(2020, 2, 1, 13), Milestone.DETAILED_DESIGN_COMPLETED)
+        form.update_domain(milestones, Milestone.DETAILED_DESIGN_COMPLETED)
 
         (milestone_revision1,) = milestones.milestone_revisions
         assert (
             milestone_revision1.id == 1
-            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == observation_type
             and milestone_revision1.status_date == date(2020, 1, 2)
@@ -333,7 +300,6 @@ class TestMilestoneDatesForm:
         milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1, 12), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
                 status_date=date(2020, 1, 2),
@@ -341,12 +307,11 @@ class TestMilestoneDatesForm:
             )
         )
 
-        form.update_domain(milestones, datetime(2020, 2, 1, 13), Milestone.DETAILED_DESIGN_COMPLETED)
+        form.update_domain(milestones, Milestone.DETAILED_DESIGN_COMPLETED)
 
         (milestone_revision1,) = milestones.milestone_revisions
         assert (
             milestone_revision1.id == 1
-            and milestone_revision1.effective == DateRange(datetime(2020, 1, 1, 12), None)
             and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone_revision1.observation_type == observation_type
             and milestone_revision1.status_date == date(2020, 1, 2)
@@ -525,7 +490,6 @@ class TestChangeMilestoneDatesForm:
         milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -533,7 +497,6 @@ class TestChangeMilestoneDatesForm:
             ),
             MilestoneRevision(
                 id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.PRELIMINARY_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
@@ -541,7 +504,6 @@ class TestChangeMilestoneDatesForm:
             ),
             MilestoneRevision(
                 id_=3,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 3),
@@ -549,7 +511,6 @@ class TestChangeMilestoneDatesForm:
             ),
             MilestoneRevision(
                 id_=3,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 4),
@@ -557,7 +518,6 @@ class TestChangeMilestoneDatesForm:
             ),
             MilestoneRevision(
                 id_=3,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.CONSTRUCTION_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 5),
@@ -586,12 +546,8 @@ class TestChangeMilestoneDatesForm:
             construction_completed={"actual": datetime(2020, 1, 5)},
         )
 
-        form.update_domain(milestones, datetime(2020, 2, 1, 13))
+        form.update_domain(milestones)
 
-        assert all(
-            milestone_revision.effective.date_from == datetime(2020, 2, 1, 13)
-            for milestone_revision in milestones.milestone_revisions
-        )
         assert [milestone_revision.status_date for milestone_revision in milestones.milestone_revisions] == [
             datetime(2020, 1, 1),
             datetime(2020, 1, 2),

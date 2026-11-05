@@ -1,8 +1,7 @@
-from datetime import date, datetime
+from datetime import date
 from enum import Enum, auto
 from typing import Self
 
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.observations import ObservationType
 
@@ -35,14 +34,12 @@ class MilestoneRevision:
     def __init__(
         self,
         id_: int | None,
-        effective: DateRange,
         milestone: Milestone,
         observation_type: ObservationType,
         status_date: date,
         source: DataSource,
     ):
         self._id = id_
-        self._effective = effective
         self._milestone = milestone
         self._observation_type = observation_type
         self._status_date = status_date
@@ -51,10 +48,6 @@ class MilestoneRevision:
     @property
     def id(self) -> int | None:
         return self._id
-
-    @property
-    def effective(self) -> DateRange:
-        return self._effective
 
     @property
     def milestone(self) -> Milestone:
@@ -71,9 +64,6 @@ class MilestoneRevision:
     @property
     def source(self) -> DataSource:
         return self._source
-
-    def close(self, effective_date_to: datetime) -> None:
-        self._effective = DateRange(self.effective.date_from, effective_date_to)
 
 
 class SchemeMilestones:
@@ -94,29 +84,19 @@ class SchemeMilestones:
     def milestone_revisions(self) -> list[MilestoneRevision]:
         return list(self._milestone_revisions)
 
-    @property
-    def current_milestone_revisions(self) -> list[MilestoneRevision]:
-        return [revision for revision in self._milestone_revisions if revision.effective.date_to is None]
-
     def update_milestone(self, milestone_revision: MilestoneRevision) -> None:
-        if milestone_revision.effective.date_to is None:
-            self._ensure_no_current_milestone_revision(
-                milestone_revision.milestone, milestone_revision.observation_type
-            )
+        self._ensure_no_milestone_revision(milestone_revision.milestone, milestone_revision.observation_type)
 
         self._milestone_revisions.append(milestone_revision)
 
-    def update_milestone_date(
-        self, now: datetime, milestone: Milestone, observation_type: ObservationType, status_date: date
-    ) -> None:
-        current_milestone_revision = self._current_milestone_revision(milestone, observation_type)
-        if current_milestone_revision:
-            current_milestone_revision.close(now)
+    def update_milestone_date(self, milestone: Milestone, observation_type: ObservationType, status_date: date) -> None:
+        milestone_revision = self._milestone_revision(milestone, observation_type)
+        if milestone_revision:
+            self._milestone_revisions.remove(milestone_revision)
 
         self.update_milestone(
             MilestoneRevision(
                 id_=None,
-                effective=DateRange(now, None),
                 milestone=milestone,
                 observation_type=observation_type,
                 status_date=status_date,
@@ -124,18 +104,16 @@ class SchemeMilestones:
             )
         )
 
-    def _ensure_no_current_milestone_revision(self, milestone: Milestone, observation_type: ObservationType) -> None:
-        current_milestone_revision = self._current_milestone_revision(milestone, observation_type)
-        if current_milestone_revision:
-            raise ValueError(f"Current milestone already exists: {current_milestone_revision}")
+    def _ensure_no_milestone_revision(self, milestone: Milestone, observation_type: ObservationType) -> None:
+        milestone_revision = self._milestone_revision(milestone, observation_type)
+        if milestone_revision:
+            raise ValueError(f"Milestone already exists: {milestone_revision}")
 
-    def _current_milestone_revision(
-        self, milestone: Milestone, observation_type: ObservationType
-    ) -> MilestoneRevision | None:
+    def _milestone_revision(self, milestone: Milestone, observation_type: ObservationType) -> MilestoneRevision | None:
         return next(
             (
                 revision
-                for revision in self.current_milestone_revisions
+                for revision in self.milestone_revisions
                 if revision.milestone == milestone and revision.observation_type == observation_type
             ),
             None,
@@ -149,11 +127,11 @@ class SchemeMilestones:
     def current_milestone(self) -> Milestone | None:
         actual_milestones = [
             revision.milestone
-            for revision in self.current_milestone_revisions
+            for revision in self.milestone_revisions
             if revision.observation_type == ObservationType.ACTUAL
         ]
         return max(actual_milestones, key=lambda milestone: milestone.milestone_order) if actual_milestones else None
 
-    def get_current_status_date(self, milestone: Milestone, observation_type: ObservationType) -> date | None:
-        current_milestone_revision = self._current_milestone_revision(milestone, observation_type)
-        return current_milestone_revision.status_date if current_milestone_revision else None
+    def get_status_date(self, milestone: Milestone, observation_type: ObservationType) -> date | None:
+        milestone_revision = self._milestone_revision(milestone, observation_type)
+        return milestone_revision.status_date if milestone_revision else None

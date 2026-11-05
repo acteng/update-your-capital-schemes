@@ -183,7 +183,6 @@ class TestSchemeContext:
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 2, 1), None),
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
@@ -242,7 +241,6 @@ class TestSchemeOverviewContext:
         scheme.milestones.update_milestones(
             MilestoneRevision(
                 id_=1,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -250,7 +248,6 @@ class TestSchemeOverviewContext:
             ),
             MilestoneRevision(
                 id_=2,
-                effective=DateRange(datetime(2020, 1, 1), None),
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),

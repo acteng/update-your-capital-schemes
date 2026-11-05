@@ -1,8 +1,7 @@
-from datetime import date, datetime
+from datetime import date
 
 import pytest
 
-from schemes.domain.dates import DateRange
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
@@ -40,7 +39,6 @@ class TestCapitalSchemeMilestoneModel:
     def test_from_domain(self) -> None:
         milestone_revision = MilestoneRevision(
             id_=1,
-            effective=DateRange(datetime(2020, 1, 1), datetime(2020, 2, 1)),
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.PLANNED,
             status_date=date(2020, 2, 1),

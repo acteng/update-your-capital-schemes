@@ -75,7 +75,7 @@ class TestCapitalSchemeModel:
         assert scheme.reference == "ATE00001"
         assert not scheme.funding.financials
         assert not scheme.milestones.milestone_revisions
-        assert not scheme.outputs.output_revisions
+        assert not scheme.outputs.outputs
         assert not scheme.reviews.authority_reviews
 
     def test_to_domain_sets_overview(self) -> None:
@@ -205,7 +205,7 @@ class TestCapitalSchemeModel:
             and milestone_revision2.source == DataSource.ATF4_BID
         )
 
-    def test_to_domain_sets_output_revisions(self) -> None:
+    def test_to_domain_sets_outputs(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
             overview=build_capital_scheme_overview_model(),
@@ -234,16 +234,16 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
-        output_revision1, output_revision2 = scheme.outputs.output_revisions
+        output1, output2 = scheme.outputs.outputs
         assert (
-            output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
-            and output_revision1.observation_type == ObservationType.ACTUAL
-            and output_revision1.value == Decimal("1.5")
+            output1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
+            and output1.observation_type == ObservationType.ACTUAL
+            and output1.value == Decimal("1.5")
         )
         assert (
-            output_revision2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
-            and output_revision2.observation_type == ObservationType.ACTUAL
-            and output_revision2.value == Decimal(2)
+            output2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
+            and output2.observation_type == ObservationType.ACTUAL
+            and output2.value == Decimal(2)
         )
 
     def test_to_domain_sets_authority_review(self) -> None:
@@ -537,7 +537,7 @@ class TestApiSchemeRepository:
             and milestone_revision2.source == DataSource.ATF4_BID
         )
 
-    async def test_get_scheme_sets_output_revisions(
+    async def test_get_scheme_sets_outputs(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes/ATF4").respond(
@@ -574,16 +574,16 @@ class TestApiSchemeRepository:
         scheme = await schemes.get("ATE00001")
 
         assert scheme
-        output_revision1, output_revision2 = scheme.outputs.output_revisions
+        output1, output2 = scheme.outputs.outputs
         assert (
-            output_revision1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
-            and output_revision1.observation_type == ObservationType.ACTUAL
-            and output_revision1.value == Decimal("1.5")
+            output1.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
+            and output1.observation_type == ObservationType.ACTUAL
+            and output1.value == Decimal("1.5")
         )
         assert (
-            output_revision2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
-            and output_revision2.observation_type == ObservationType.ACTUAL
-            and output_revision2.value == Decimal(2)
+            output2.type_measure == OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES
+            and output2.observation_type == ObservationType.ACTUAL
+            and output2.value == Decimal(2)
         )
 
     async def test_get_scheme_sets_authority_review(

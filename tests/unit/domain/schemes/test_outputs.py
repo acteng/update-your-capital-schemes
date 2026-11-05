@@ -3,71 +3,71 @@ from decimal import Decimal
 import pytest
 
 from schemes.domain.schemes.observations import ObservationType
-from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, OutputType, OutputTypeMeasure, SchemeOutputs
+from schemes.domain.schemes.outputs import OutputMeasure, OutputType, OutputTypeMeasure, SchemeOutput, SchemeOutputs
 
 
 class TestSchemeOutputs:
     def test_create(self) -> None:
         outputs = SchemeOutputs()
 
-        assert outputs.output_revisions == []
+        assert outputs.outputs == []
 
-    def test_get_output_revisions_is_copy(self) -> None:
+    def test_get_outputs_is_copy(self) -> None:
         outputs = SchemeOutputs()
         outputs.update_output(
-            OutputRevision(
+            SchemeOutput(
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.ACTUAL,
             )
         )
 
-        outputs.output_revisions.clear()
+        outputs.outputs.clear()
 
-        assert outputs.output_revisions
+        assert outputs.outputs
 
     def test_update_output(self) -> None:
         outputs = SchemeOutputs()
-        output_revision = OutputRevision(
+        output = SchemeOutput(
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.ACTUAL,
         )
 
-        outputs.update_output(output_revision)
+        outputs.update_output(output)
 
-        assert outputs.output_revisions == [output_revision]
+        assert outputs.outputs == [output]
 
     def test_update_outputs(self) -> None:
         outputs = SchemeOutputs()
-        output_revision1 = OutputRevision(
+        output1 = SchemeOutput(
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.ACTUAL,
         )
-        output_revision2 = OutputRevision(
+        output2 = SchemeOutput(
             type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
             value=Decimal(20),
             observation_type=ObservationType.ACTUAL,
         )
 
-        outputs.update_outputs(output_revision1, output_revision2)
+        outputs.update_outputs(output1, output2)
 
-        assert outputs.output_revisions == [output_revision1, output_revision2]
+        assert outputs.outputs == [output1, output2]
 
 
-class TestOutputRevision:
+class TestSchemeOutput:
     def test_create(self) -> None:
-        output_revision = OutputRevision(
+        output = SchemeOutput(
             type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
             value=Decimal(10),
             observation_type=ObservationType.ACTUAL,
         )
 
         assert (
-            output_revision.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
-            and output_revision.value == Decimal(10)
-            and output_revision.observation_type == ObservationType.ACTUAL
+            output.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            and output.value == Decimal(10)
+            and output.observation_type == ObservationType.ACTUAL
         )
 
 

@@ -10,7 +10,7 @@ from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import FinancialType, SchemeFinancial
 from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
 from schemes.domain.schemes.observations import ObservationType
-from schemes.domain.schemes.outputs import OutputRevision, OutputTypeMeasure
+from schemes.domain.schemes.outputs import OutputTypeMeasure, SchemeOutput
 from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.views.schemes.milestones import MilestoneContext
@@ -199,7 +199,7 @@ class TestSchemeContext:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", name="", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
-            OutputRevision(
+            SchemeOutput(
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.PLANNED,

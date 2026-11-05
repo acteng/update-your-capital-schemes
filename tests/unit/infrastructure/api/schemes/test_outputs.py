@@ -80,10 +80,10 @@ class TestCapitalSchemeOutputModel:
             value=Decimal("1.5"),
         )
 
-        output_revision = output_model.to_domain()
+        output = output_model.to_domain()
 
         assert (
-            output_revision.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
-            and output_revision.observation_type == ObservationType.ACTUAL
-            and output_revision.value == Decimal("1.5")
+            output.type_measure == OutputTypeMeasure.WIDENING_EXISTING_FOOTWAY_MILES
+            and output.observation_type == ObservationType.ACTUAL
+            and output.value == Decimal("1.5")
         )

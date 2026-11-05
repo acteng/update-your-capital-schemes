@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 
 from schemes.domain.schemes.observations import ObservationType
-from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, OutputType, OutputTypeMeasure
+from schemes.domain.schemes.outputs import OutputMeasure, OutputType, OutputTypeMeasure, SchemeOutput
 from schemes.views.schemes.outputs import (
     OutputMeasureContext,
     OutputTypeContext,
@@ -14,38 +14,38 @@ from schemes.views.schemes.outputs import (
 
 class TestSchemeOutputsContext:
     def test_from_domain_orders_by_type_then_measure(self) -> None:
-        output_revisions = [
-            OutputRevision(
+        outputs = [
+            SchemeOutput(
                 type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_MILES,
                 value=Decimal(30),
                 observation_type=ObservationType.PLANNED,
             ),
-            OutputRevision(
+            SchemeOutput(
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
                 value=Decimal(20),
                 observation_type=ObservationType.PLANNED,
             ),
-            OutputRevision(
+            SchemeOutput(
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.PLANNED,
             ),
         ]
 
-        context = SchemeOutputsContext.from_domain(output_revisions)
+        context = SchemeOutputsContext.from_domain(outputs)
 
         assert [output.planned for output in context.outputs] == [Decimal(10), Decimal(20), Decimal(30)]
 
     def test_from_domain_groups_by_type_measure(self) -> None:
-        output_revisions = [
-            OutputRevision(
+        outputs = [
+            SchemeOutput(
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(10),
                 observation_type=ObservationType.PLANNED,
             )
         ]
 
-        context = SchemeOutputsContext.from_domain(output_revisions)
+        context = SchemeOutputsContext.from_domain(outputs)
 
         assert context.outputs == [
             SchemeOutputRowContext(
@@ -56,15 +56,15 @@ class TestSchemeOutputsContext:
         ]
 
     def test_from_domain_when_no_planned(self) -> None:
-        output_revisions = [
-            OutputRevision(
+        outputs = [
+            SchemeOutput(
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
                 value=Decimal(20),
                 observation_type=ObservationType.ACTUAL,
             ),
         ]
 
-        context = SchemeOutputsContext.from_domain(output_revisions)
+        context = SchemeOutputsContext.from_domain(outputs)
 
         assert context.outputs[0].planned is None
 

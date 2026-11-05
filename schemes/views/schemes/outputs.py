@@ -7,7 +7,7 @@ from itertools import groupby
 from typing import ClassVar, Self
 
 from schemes.domain.schemes.observations import ObservationType
-from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, OutputType
+from schemes.domain.schemes.outputs import OutputMeasure, OutputType, SchemeOutput
 
 
 @dataclass(frozen=True)
@@ -75,7 +75,7 @@ class SchemeOutputsContext:
     outputs: list[SchemeOutputRowContext]
 
     @classmethod
-    def from_domain(cls, output_revisions: list[OutputRevision]) -> Self:
+    def from_domain(cls, outputs: list[SchemeOutput]) -> Self:
         return cls(
             outputs=[
                 SchemeOutputRowContext(
@@ -84,16 +84,16 @@ class SchemeOutputsContext:
                     planned=cls._get_value(group, ObservationType.PLANNED),
                 )
                 for (type_, measure), group in groupby(
-                    sorted(output_revisions, key=cls._by_type_and_measure), cls._by_type_and_measure
+                    sorted(outputs, key=cls._by_type_and_measure), cls._by_type_and_measure
                 )
             ]
         )
 
     @staticmethod
-    def _by_type_and_measure(output_revision: OutputRevision) -> tuple[OutputType, OutputMeasure]:
-        return output_revision.type_measure.type, output_revision.type_measure.measure
+    def _by_type_and_measure(output: SchemeOutput) -> tuple[OutputType, OutputMeasure]:
+        return output.type_measure.type, output.type_measure.measure
 
     @staticmethod
-    def _get_value(output_revisions: Iterator[OutputRevision], observation_type: ObservationType) -> Decimal | None:
-        revisions = (revision.value for revision in output_revisions if revision.observation_type == observation_type)
-        return next(revisions, None)
+    def _get_value(outputs: Iterator[SchemeOutput], observation_type: ObservationType) -> Decimal | None:
+        values = (output.value for output in outputs if output.observation_type == observation_type)
+        return next(values, None)

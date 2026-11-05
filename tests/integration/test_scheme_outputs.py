@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes.observations import ObservationType
-from schemes.domain.schemes.outputs import OutputRevision, OutputTypeMeasure
+from schemes.domain.schemes.outputs import OutputTypeMeasure, SchemeOutput
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
 from tests.integration.conftest import AsyncFlaskClient
@@ -26,7 +26,7 @@ class TestSchemeOutputs:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
-            OutputRevision(
+            SchemeOutput(
                 type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
                 value=Decimal(1),
                 observation_type=ObservationType.ACTUAL,
@@ -43,12 +43,12 @@ class TestSchemeOutputs:
     async def test_scheme_shows_outputs(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
-            OutputRevision(
+            SchemeOutput(
                 type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES,
                 value=Decimal("3.000000"),
                 observation_type=ObservationType.PLANNED,
             ),
-            OutputRevision(
+            SchemeOutput(
                 type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_NUMBER_OF_JUNCTIONS,
                 value=Decimal("2.600000"),
                 observation_type=ObservationType.PLANNED,
@@ -75,7 +75,7 @@ class TestSchemeOutputs:
     async def test_scheme_shows_zero_outputs(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.outputs.update_outputs(
-            OutputRevision(
+            SchemeOutput(
                 type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
                 value=Decimal("0.000000"),
                 observation_type=ObservationType.PLANNED,

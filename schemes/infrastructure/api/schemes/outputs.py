@@ -1,7 +1,7 @@
 from decimal import Decimal
 from enum import Enum
 
-from schemes.domain.schemes.outputs import OutputMeasure, OutputRevision, OutputType, OutputTypeMeasure
+from schemes.domain.schemes.outputs import OutputMeasure, OutputType, OutputTypeMeasure, SchemeOutput
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
 
@@ -55,8 +55,8 @@ class CapitalSchemeOutputModel(BaseModel):
     observation_type: ObservationTypeModel
     value: Decimal
 
-    def to_domain(self) -> OutputRevision:
-        return OutputRevision(
+    def to_domain(self) -> SchemeOutput:
+        return SchemeOutput(
             type_measure=OutputTypeMeasure.from_type_and_measure(self.type.to_domain(), self.measure.to_domain()),
             value=self.value,
             observation_type=self.observation_type.to_domain(),

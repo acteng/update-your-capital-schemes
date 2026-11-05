@@ -122,7 +122,7 @@ class OutputTypeMeasure(Enum):
         return member
 
 
-class OutputRevision:
+class SchemeOutput:
     def __init__(self, type_measure: OutputTypeMeasure, value: Decimal, observation_type: ObservationType):
         self._type_measure = type_measure
         self._value = value
@@ -143,15 +143,15 @@ class OutputRevision:
 
 class SchemeOutputs:
     def __init__(self) -> None:
-        self._output_revisions: list[OutputRevision] = []
+        self._outputs: list[SchemeOutput] = []
 
     @property
-    def output_revisions(self) -> list[OutputRevision]:
-        return list(self._output_revisions)
+    def outputs(self) -> list[SchemeOutput]:
+        return list(self._outputs)
 
-    def update_output(self, output_revision: OutputRevision) -> None:
-        self._output_revisions.append(output_revision)
+    def update_output(self, output: SchemeOutput) -> None:
+        self._outputs.append(output)
 
-    def update_outputs(self, *output_revisions: OutputRevision) -> None:
-        for output_revision in output_revisions:
-            self.update_output(output_revision)
+    def update_outputs(self, *outputs: SchemeOutput) -> None:
+        for output in outputs:
+            self.update_output(output)

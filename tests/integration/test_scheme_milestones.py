@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
+from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
@@ -50,70 +50,70 @@ class TestSchemeMilestones:
     async def test_scheme_shows_milestones(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 1,
                 Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 2, 1),
                 DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 2,
                 Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 ObservationType.ACTUAL,
                 date(2020, 2, 2),
                 DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 3,
                 Milestone.PRELIMINARY_DESIGN_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 3, 1),
                 DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 4,
                 Milestone.PRELIMINARY_DESIGN_COMPLETED,
                 ObservationType.ACTUAL,
                 date(2020, 3, 2),
                 DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 5,
                 Milestone.DETAILED_DESIGN_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 4, 1),
                 DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 6,
                 Milestone.DETAILED_DESIGN_COMPLETED,
                 ObservationType.ACTUAL,
                 date(2020, 4, 2),
                 DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 7,
                 Milestone.CONSTRUCTION_STARTED,
                 ObservationType.PLANNED,
                 date(2020, 5, 1),
                 DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 8,
                 Milestone.CONSTRUCTION_STARTED,
                 ObservationType.ACTUAL,
                 date(2020, 5, 2),
                 DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 9,
                 Milestone.CONSTRUCTION_COMPLETED,
                 ObservationType.PLANNED,
                 date(2020, 6, 1),
                 DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 10,
                 Milestone.CONSTRUCTION_COMPLETED,
                 ObservationType.ACTUAL,
@@ -197,7 +197,7 @@ class TestSchemeMilestones:
     async def test_milestones_form_shows_date(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -270,7 +270,7 @@ class TestSchemeMilestones:
         clock.now = datetime(2020, 2, 1, 13)
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -287,13 +287,13 @@ class TestSchemeMilestones:
 
         actual_scheme = await schemes.get("ATE00001")
         assert actual_scheme
-        (milestone_revision,) = actual_scheme.milestones.milestone_revisions
+        (milestone,) = actual_scheme.milestones.milestones
         assert (
-            milestone_revision.id is None
-            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision.observation_type == ObservationType.ACTUAL
-            and milestone_revision.status_date == date(2020, 1, 3)
-            and milestone_revision.source == DataSource.AUTHORITY_UPDATE
+            milestone.id is None
+            and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone.observation_type == ObservationType.ACTUAL
+            and milestone.status_date == date(2020, 1, 3)
+            and milestone.source == DataSource.AUTHORITY_UPDATE
         )
 
     async def test_milestones_shows_scheme(
@@ -310,7 +310,7 @@ class TestSchemeMilestones:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -343,13 +343,13 @@ class TestSchemeMilestones:
         )
         actual_scheme = await schemes.get("ATE00001")
         assert actual_scheme
-        (milestone_revision1,) = actual_scheme.milestones.milestone_revisions
+        (milestone1,) = actual_scheme.milestones.milestones
         assert (
-            milestone_revision1.id == 1
-            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision1.observation_type == ObservationType.ACTUAL
-            and milestone_revision1.status_date == date(2020, 1, 2)
-            and milestone_revision1.source == DataSource.ATF4_BID
+            milestone1.id == 1
+            and milestone1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone1.observation_type == ObservationType.ACTUAL
+            and milestone1.status_date == date(2020, 1, 2)
+            and milestone1.source == DataSource.ATF4_BID
         )
 
     async def test_cannot_milestones_when_future_actual_date(

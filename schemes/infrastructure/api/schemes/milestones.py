@@ -2,7 +2,7 @@ from datetime import date
 from enum import Enum
 from typing import Self
 
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
+from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.data_sources import DataSourceModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
@@ -37,17 +37,17 @@ class CapitalSchemeMilestoneModel(BaseModel):
     source: DataSourceModel
 
     @classmethod
-    def from_domain(cls, milestone_revision: MilestoneRevision) -> Self:
+    def from_domain(cls, milestone: SchemeMilestone) -> Self:
         return cls(
-            milestone=MilestoneModel.from_domain(milestone_revision.milestone),
-            observation_type=ObservationTypeModel.from_domain(milestone_revision.observation_type),
-            status_date=milestone_revision.status_date,
-            source=DataSourceModel.from_domain(milestone_revision.source),
+            milestone=MilestoneModel.from_domain(milestone.milestone),
+            observation_type=ObservationTypeModel.from_domain(milestone.observation_type),
+            status_date=milestone.status_date,
+            source=DataSourceModel.from_domain(milestone.source),
         )
 
-    def to_domain(self) -> MilestoneRevision:
+    def to_domain(self) -> SchemeMilestone:
         # TODO: id
-        return MilestoneRevision(
+        return SchemeMilestone(
             id_=0,
             milestone=self.milestone.to_domain(),
             observation_type=self.observation_type.to_domain(),

@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
+from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.overview import FundingProgrammes
 from schemes.domain.schemes.reviews import AuthorityReview
@@ -52,7 +52,7 @@ class TestSchemeOverview:
             funding_programme=FundingProgrammes.ATF4,
         )
         scheme.milestones.update_milestone(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,

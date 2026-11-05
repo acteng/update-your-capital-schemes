@@ -4,7 +4,7 @@ from datetime import date
 import pytest
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision, SchemeMilestones
+from schemes.domain.schemes.milestones import Milestone, SchemeMilestone, SchemeMilestones
 from schemes.domain.schemes.observations import ObservationType
 
 
@@ -12,7 +12,7 @@ class TestSchemeMilestones:
     def test_create(self) -> None:
         milestones = SchemeMilestones()
 
-        assert milestones.milestone_revisions == []
+        assert milestones.milestones == []
 
     def test_milestones_eligible_for_authority_update(self) -> None:
         milestones = SchemeMilestones()
@@ -25,10 +25,10 @@ class TestSchemeMilestones:
             Milestone.CONSTRUCTION_COMPLETED,
         }
 
-    def test_get_milestone_revisions_is_copy(self) -> None:
+    def test_get_milestones_is_copy(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestone(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -37,13 +37,13 @@ class TestSchemeMilestones:
             )
         )
 
-        milestones.milestone_revisions.clear()
+        milestones.milestones.clear()
 
-        assert milestones.milestone_revisions
+        assert milestones.milestones
 
     def test_update_milestone(self) -> None:
         milestones = SchemeMilestones()
-        milestone_revision = MilestoneRevision(
+        milestone = SchemeMilestone(
             id_=1,
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
@@ -51,24 +51,24 @@ class TestSchemeMilestones:
             source=DataSource.ATF4_BID,
         )
 
-        milestones.update_milestone(milestone_revision)
+        milestones.update_milestone(milestone)
 
-        assert milestones.milestone_revisions == [milestone_revision]
+        assert milestones.milestones == [milestone]
 
-    def test_cannot_update_milestone_with_existing_revision(self) -> None:
+    def test_cannot_update_milestone_with_existing_milestone(self) -> None:
         milestones = SchemeMilestones()
-        milestone_revision = MilestoneRevision(
+        milestone = SchemeMilestone(
             id_=1,
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2000, 1, 1),
             source=DataSource.ATF4_BID,
         )
-        milestones.update_milestone(milestone_revision)
+        milestones.update_milestone(milestone)
 
-        with pytest.raises(ValueError, match=re.escape(f"Milestone already exists: {milestone_revision!r}")):
+        with pytest.raises(ValueError, match=re.escape(f"Milestone already exists: {milestone!r}")):
             milestones.update_milestone(
-                MilestoneRevision(
+                SchemeMilestone(
                     id_=2,
                     milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                     observation_type=ObservationType.ACTUAL,
@@ -79,14 +79,14 @@ class TestSchemeMilestones:
 
     def test_update_milestones(self) -> None:
         milestones = SchemeMilestones()
-        milestone_revision1 = MilestoneRevision(
+        milestone1 = SchemeMilestone(
             id_=1,
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
             source=DataSource.ATF4_BID,
         )
-        milestone_revision2 = MilestoneRevision(
+        milestone2 = SchemeMilestone(
             id_=2,
             milestone=Milestone.CONSTRUCTION_STARTED,
             observation_type=ObservationType.ACTUAL,
@@ -94,14 +94,14 @@ class TestSchemeMilestones:
             source=DataSource.ATF4_BID,
         )
 
-        milestones.update_milestones(milestone_revision1, milestone_revision2)
+        milestones.update_milestones(milestone1, milestone2)
 
-        assert milestones.milestone_revisions == [milestone_revision1, milestone_revision2]
+        assert milestones.milestones == [milestone1, milestone2]
 
-    def test_update_milestone_date_removes_existing_revision(self) -> None:
+    def test_update_milestone_date_removes_existing_milestone(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestone(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -116,9 +116,9 @@ class TestSchemeMilestones:
             status_date=date(2020, 1, 3),
         )
 
-        assert 1 not in (milestone_revision.id for milestone_revision in milestones.milestone_revisions)
+        assert 1 not in (milestone.id for milestone in milestones.milestones)
 
-    def test_update_milestone_date_adds_new_revision(self) -> None:
+    def test_update_milestone_date_adds_new_milestone(self) -> None:
         milestones = SchemeMilestones()
 
         milestones.update_milestone_date(
@@ -127,25 +127,25 @@ class TestSchemeMilestones:
             status_date=date(2020, 1, 3),
         )
 
-        (milestone_revision,) = milestones.milestone_revisions
+        (milestone,) = milestones.milestones
         assert (
-            milestone_revision.id is None
-            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision.observation_type == ObservationType.ACTUAL
-            and milestone_revision.status_date == date(2020, 1, 3)
+            milestone.id is None
+            and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone.observation_type == ObservationType.ACTUAL
+            and milestone.status_date == date(2020, 1, 3)
         )
 
     def test_get_current_milestone_selects_actual_observation_type(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=2,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -159,14 +159,14 @@ class TestSchemeMilestones:
     def test_get_current_milestone_selects_latest_milestone(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=2,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
@@ -177,7 +177,7 @@ class TestSchemeMilestones:
 
         assert milestones.current_milestone == Milestone.CONSTRUCTION_STARTED
 
-    def test_get_current_milestone_when_no_revisions(self) -> None:
+    def test_get_current_milestone_when_no_milestones(self) -> None:
         milestones = SchemeMilestones()
 
         assert milestones.current_milestone is None
@@ -185,14 +185,14 @@ class TestSchemeMilestones:
     def test_get_status_date_selects_milestone(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=2,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
@@ -208,14 +208,14 @@ class TestSchemeMilestones:
     def test_get_status_date_selects_observation_type(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=2,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -228,7 +228,7 @@ class TestSchemeMilestones:
 
         assert status_date == date(2020, 2, 1)
 
-    def test_get_status_date_when_no_revisions(self) -> None:
+    def test_get_status_date_when_no_milestones(self) -> None:
         milestones = SchemeMilestones()
 
         status_date = milestones.get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL)
@@ -236,9 +236,9 @@ class TestSchemeMilestones:
         assert status_date is None
 
 
-class TestMilestoneRevision:
+class TestSchemeMilestone:
     def test_create(self) -> None:
-        milestone_revision = MilestoneRevision(
+        milestone = SchemeMilestone(
             id_=1,
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
@@ -247,11 +247,11 @@ class TestMilestoneRevision:
         )
 
         assert (
-            milestone_revision.id == 1
-            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision.observation_type == ObservationType.ACTUAL
-            and milestone_revision.status_date == date(2020, 1, 1)
-            and milestone_revision.source == DataSource.ATF4_BID
+            milestone.id == 1
+            and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone.observation_type == ObservationType.ACTUAL
+            and milestone.status_date == date(2020, 1, 1)
+            and milestone.source == DataSource.ATF4_BID
         )
 
 

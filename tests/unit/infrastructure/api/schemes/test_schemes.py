@@ -7,7 +7,7 @@ from respx import MockRouter
 
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import FinancialType, SchemeFinancial
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
+from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure
 from schemes.domain.schemes.overview import FundingProgrammes
@@ -73,7 +73,7 @@ class TestCapitalSchemeModel:
 
         assert scheme.reference == "ATE00001"
         assert not scheme.funding.financials
-        assert not scheme.milestones.milestone_revisions
+        assert not scheme.milestones.milestones
         assert not scheme.outputs.outputs
         assert not scheme.reviews.authority_reviews
 
@@ -159,7 +159,7 @@ class TestCapitalSchemeModel:
             and financial2.source == DataSource.ATF4_BID
         )
 
-    def test_to_domain_sets_milestone_revisions(self) -> None:
+    def test_to_domain_sets_milestones(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
             overview=build_capital_scheme_overview_model(),
@@ -188,20 +188,20 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
-        milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
+        milestone1, milestone2 = scheme.milestones.milestones
         assert (
-            milestone_revision1.id is not None
-            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision1.observation_type == ObservationType.PLANNED
-            and milestone_revision1.status_date == date(2020, 2, 1)
-            and milestone_revision1.source == DataSource.ATF4_BID
+            milestone1.id is not None
+            and milestone1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone1.observation_type == ObservationType.PLANNED
+            and milestone1.status_date == date(2020, 2, 1)
+            and milestone1.source == DataSource.ATF4_BID
         )
         assert (
-            milestone_revision2.id is not None
-            and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
-            and milestone_revision2.observation_type == ObservationType.PLANNED
-            and milestone_revision2.status_date == date(2020, 3, 1)
-            and milestone_revision2.source == DataSource.ATF4_BID
+            milestone2.id is not None
+            and milestone2.milestone == Milestone.CONSTRUCTION_STARTED
+            and milestone2.observation_type == ObservationType.PLANNED
+            and milestone2.status_date == date(2020, 3, 1)
+            and milestone2.source == DataSource.ATF4_BID
         )
 
     def test_to_domain_sets_outputs(self) -> None:
@@ -480,7 +480,7 @@ class TestApiSchemeRepository:
             and financial2.source == DataSource.ATF4_BID
         )
 
-    async def test_get_scheme_sets_milestone_revisions(
+    async def test_get_scheme_sets_milestones(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
         api_mock.get("/funding-programmes/ATF4").respond(
@@ -520,20 +520,20 @@ class TestApiSchemeRepository:
         scheme = await schemes.get("ATE00001")
 
         assert scheme
-        milestone_revision1, milestone_revision2 = scheme.milestones.milestone_revisions
+        milestone1, milestone2 = scheme.milestones.milestones
         assert (
-            milestone_revision1.id is not None
-            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision1.observation_type == ObservationType.PLANNED
-            and milestone_revision1.status_date == date(2020, 2, 1)
-            and milestone_revision1.source == DataSource.ATF4_BID
+            milestone1.id is not None
+            and milestone1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone1.observation_type == ObservationType.PLANNED
+            and milestone1.status_date == date(2020, 2, 1)
+            and milestone1.source == DataSource.ATF4_BID
         )
         assert (
-            milestone_revision2.id is not None
-            and milestone_revision2.milestone == Milestone.CONSTRUCTION_STARTED
-            and milestone_revision2.observation_type == ObservationType.PLANNED
-            and milestone_revision2.status_date == date(2020, 3, 1)
-            and milestone_revision2.source == DataSource.ATF4_BID
+            milestone2.id is not None
+            and milestone2.milestone == Milestone.CONSTRUCTION_STARTED
+            and milestone2.observation_type == ObservationType.PLANNED
+            and milestone2.status_date == date(2020, 3, 1)
+            and milestone2.source == DataSource.ATF4_BID
         )
 
     async def test_get_scheme_sets_outputs(
@@ -947,14 +947,14 @@ class TestApiSchemeRepository:
     async def test_update_scheme_milestones(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=None,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 3, 1),
                 source=DataSource.AUTHORITY_UPDATE,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=None,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -991,7 +991,7 @@ class TestApiSchemeRepository:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=2,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,

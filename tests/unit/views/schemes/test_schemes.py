@@ -8,7 +8,7 @@ from schemes.domain.dates import DateRange
 from schemes.domain.reporting_window import ReportingWindow
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.funding import FinancialType, SchemeFinancial
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
+from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure, SchemeOutput
 from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes
@@ -181,7 +181,7 @@ class TestSchemeContext:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", name="", authority_abbreviation="LIV")
         scheme.milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
@@ -239,14 +239,14 @@ class TestSchemeOverviewContext:
     def test_from_domain_sets_current_milestone(self) -> None:
         scheme = build_scheme(reference="", name="")
         scheme.milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=2,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
@@ -259,7 +259,7 @@ class TestSchemeOverviewContext:
 
         assert context.current_milestone == MilestoneContext(name="Construction started")
 
-    def test_from_domain_sets_current_milestone_when_no_revisions(self) -> None:
+    def test_from_domain_sets_current_milestone_when_no_milestones(self) -> None:
         scheme = build_scheme(reference="", name="")
 
         context = SchemeOverviewContext.from_domain(scheme)

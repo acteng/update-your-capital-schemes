@@ -7,7 +7,7 @@ from werkzeug.datastructures import MultiDict
 from wtforms import Form, FormField, ValidationError
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision, SchemeMilestones
+from schemes.domain.schemes.milestones import Milestone, SchemeMilestone, SchemeMilestones
 from schemes.domain.schemes.observations import ObservationType
 from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,
@@ -48,14 +48,14 @@ class TestSchemeMilestonesContext:
     def test_from_domain_sets_milestone_dates(self, milestone: Milestone, expected_milestone_name: str) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=milestone,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 3, 1),
                 source=DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=2,
                 milestone=milestone,
                 observation_type=ObservationType.ACTUAL,
@@ -85,7 +85,7 @@ class TestSchemeMilestonesContext:
             "Construction completed",
         ],
     )
-    def test_from_domain_sets_milestone_dates_when_no_revisions(self, expected_milestone_name: str) -> None:
+    def test_from_domain_sets_milestone_dates_when_no_milestones(self, expected_milestone_name: str) -> None:
         milestones = SchemeMilestones()
 
         context = SchemeMilestonesContext.from_domain(milestones)
@@ -128,7 +128,7 @@ class TestChangeMilestoneDatesContext:
     def test_from_domain(self) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
         scheme.milestones.update_milestone(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
@@ -212,7 +212,7 @@ class TestMilestoneDatesForm:
     def test_from_domain(self, observation_type: ObservationType, field_name: str) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
@@ -240,7 +240,7 @@ class TestMilestoneDatesForm:
         form = form_class(formdata=MultiDict([(field_name, "3"), (field_name, "1"), (field_name, "2020")]))
         milestones = SchemeMilestones()
         milestones.update_milestone(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
@@ -251,13 +251,13 @@ class TestMilestoneDatesForm:
 
         form.update_domain(milestones, Milestone.DETAILED_DESIGN_COMPLETED)
 
-        (milestone_revision,) = milestones.milestone_revisions
+        (milestone,) = milestones.milestones
         assert (
-            milestone_revision.id is None
-            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision.observation_type == observation_type
-            and milestone_revision.status_date == date(2020, 1, 3)
-            and milestone_revision.source == DataSource.AUTHORITY_UPDATE
+            milestone.id is None
+            and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone.observation_type == observation_type
+            and milestone.status_date == date(2020, 1, 3)
+            and milestone.source == DataSource.AUTHORITY_UPDATE
         )
 
     @pytest.mark.parametrize(
@@ -270,7 +270,7 @@ class TestMilestoneDatesForm:
         form = form_class(formdata=MultiDict([(field_name, ""), (field_name, ""), (field_name, "")]))
         milestones = SchemeMilestones()
         milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
@@ -281,13 +281,13 @@ class TestMilestoneDatesForm:
 
         form.update_domain(milestones, Milestone.DETAILED_DESIGN_COMPLETED)
 
-        (milestone_revision1,) = milestones.milestone_revisions
+        (milestone1,) = milestones.milestones
         assert (
-            milestone_revision1.id == 1
-            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision1.observation_type == observation_type
-            and milestone_revision1.status_date == date(2020, 1, 2)
-            and milestone_revision1.source == DataSource.ATF4_BID
+            milestone1.id == 1
+            and milestone1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone1.observation_type == observation_type
+            and milestone1.status_date == date(2020, 1, 2)
+            and milestone1.source == DataSource.ATF4_BID
         )
 
     @pytest.mark.parametrize(
@@ -298,7 +298,7 @@ class TestMilestoneDatesForm:
         form = form_class(formdata=MultiDict([(field_name, "2"), (field_name, "1"), (field_name, "2020")]))
         milestones = SchemeMilestones()
         milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
@@ -309,13 +309,13 @@ class TestMilestoneDatesForm:
 
         form.update_domain(milestones, Milestone.DETAILED_DESIGN_COMPLETED)
 
-        (milestone_revision1,) = milestones.milestone_revisions
+        (milestone1,) = milestones.milestones
         assert (
-            milestone_revision1.id == 1
-            and milestone_revision1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision1.observation_type == observation_type
-            and milestone_revision1.status_date == date(2020, 1, 2)
-            and milestone_revision1.source == DataSource.ATF4_BID
+            milestone1.id == 1
+            and milestone1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone1.observation_type == observation_type
+            and milestone1.status_date == date(2020, 1, 2)
+            and milestone1.source == DataSource.ATF4_BID
         )
 
     @pytest.mark.parametrize(
@@ -488,35 +488,35 @@ class TestChangeMilestoneDatesForm:
     def test_from_domain(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=1,
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=2,
                 milestone=Milestone.PRELIMINARY_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
                 source=DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=3,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 3),
                 source=DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=3,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 4),
                 source=DataSource.ATF4_BID,
             ),
-            MilestoneRevision(
+            SchemeMilestone(
                 id_=3,
                 milestone=Milestone.CONSTRUCTION_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
@@ -548,7 +548,7 @@ class TestChangeMilestoneDatesForm:
 
         form.update_domain(milestones)
 
-        assert [milestone_revision.status_date for milestone_revision in milestones.milestone_revisions] == [
+        assert [milestone.status_date for milestone in milestones.milestones] == [
             datetime(2020, 1, 1),
             datetime(2020, 1, 2),
             datetime(2020, 1, 3),

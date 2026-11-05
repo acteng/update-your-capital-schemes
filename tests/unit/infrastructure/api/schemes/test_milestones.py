@@ -3,7 +3,7 @@ from datetime import date
 import pytest
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.milestones import Milestone, MilestoneRevision
+from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.infrastructure.api.data_sources import DataSourceModel
 from schemes.infrastructure.api.observation_types import ObservationTypeModel
@@ -37,7 +37,7 @@ class TestMilestoneModel:
 
 class TestCapitalSchemeMilestoneModel:
     def test_from_domain(self) -> None:
-        milestone_revision = MilestoneRevision(
+        milestone = SchemeMilestone(
             id_=1,
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.PLANNED,
@@ -45,7 +45,7 @@ class TestCapitalSchemeMilestoneModel:
             source=DataSource.ATF4_BID,
         )
 
-        milestone_model = CapitalSchemeMilestoneModel.from_domain(milestone_revision)
+        milestone_model = CapitalSchemeMilestoneModel.from_domain(milestone)
 
         assert milestone_model == CapitalSchemeMilestoneModel(
             milestone=MilestoneModel.DETAILED_DESIGN_COMPLETED,
@@ -62,12 +62,12 @@ class TestCapitalSchemeMilestoneModel:
             source=DataSourceModel.ATF4_BID,
         )
 
-        milestone_revision = milestone_model.to_domain()
+        milestone = milestone_model.to_domain()
 
         assert (
-            milestone_revision.id is not None
-            and milestone_revision.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone_revision.observation_type == ObservationType.PLANNED
-            and milestone_revision.status_date == date(2020, 2, 1)
-            and milestone_revision.source == DataSource.ATF4_BID
+            milestone.id is not None
+            and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone.observation_type == ObservationType.PLANNED
+            and milestone.status_date == date(2020, 2, 1)
+            and milestone.source == DataSource.ATF4_BID
         )

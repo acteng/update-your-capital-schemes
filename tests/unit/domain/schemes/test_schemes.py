@@ -9,6 +9,58 @@ from schemes.domain.schemes.schemes import Scheme, Status
 from tests.unit.domain.builders import build_scheme
 
 
+class TestFundingProgrammes:
+    @pytest.mark.parametrize(
+        "funding_programme, expected_code",
+        [
+            (FundingProgrammes.ATF2, "ATF2"),
+            (FundingProgrammes.ATF3, "ATF3"),
+            (FundingProgrammes.ATF4, "ATF4"),
+            (FundingProgrammes.ATF4E, "ATF4e"),
+            (FundingProgrammes.ATF5, "ATF5"),
+            (FundingProgrammes.CATF, "CATF"),
+            (FundingProgrammes.CRSTS, "CRSTS"),
+            (FundingProgrammes.IST, "IST"),
+            (FundingProgrammes.LUF1, "LUF1"),
+            (FundingProgrammes.LUF2, "LUF2"),
+            (FundingProgrammes.LUF3, "LUF3"),
+            (FundingProgrammes.MRN, "MRN"),
+            (FundingProgrammes.OTH, "OTH"),
+            (FundingProgrammes.CON, "CON"),
+            (FundingProgrammes.NCN, "NCN"),
+            (FundingProgrammes.BUS, "BUS"),
+        ],
+    )
+    def test_code(self, funding_programme: FundingProgramme, expected_code: str) -> None:
+        assert funding_programme.code == expected_code
+
+    @pytest.mark.parametrize(
+        "funding_programme, expected_is_eligible_for_authority_update",
+        [
+            (FundingProgrammes.ATF2, True),
+            (FundingProgrammes.ATF3, True),
+            (FundingProgrammes.ATF4, True),
+            (FundingProgrammes.ATF4E, True),
+            (FundingProgrammes.ATF5, True),
+            (FundingProgrammes.CATF, True),
+            (FundingProgrammes.CRSTS, False),
+            (FundingProgrammes.IST, True),
+            (FundingProgrammes.LUF1, False),
+            (FundingProgrammes.LUF2, False),
+            (FundingProgrammes.LUF3, False),
+            (FundingProgrammes.MRN, False),
+            (FundingProgrammes.OTH, False),
+            (FundingProgrammes.CON, True),
+            (FundingProgrammes.NCN, True),
+            (FundingProgrammes.BUS, True),
+        ],
+    )
+    def test_is_eligible_for_authority_update(
+        self, funding_programme: FundingProgramme, expected_is_eligible_for_authority_update: bool
+    ) -> None:
+        assert funding_programme.is_eligible_for_authority_update == expected_is_eligible_for_authority_update
+
+
 class TestScheme:
     def test_create(self) -> None:
         overview = SchemeOverview(
@@ -77,55 +129,3 @@ class TestScheme:
         )
 
         assert scheme.is_updateable == expected_updateable
-
-
-class TestFundingProgrammes:
-    @pytest.mark.parametrize(
-        "funding_programme, expected_code",
-        [
-            (FundingProgrammes.ATF2, "ATF2"),
-            (FundingProgrammes.ATF3, "ATF3"),
-            (FundingProgrammes.ATF4, "ATF4"),
-            (FundingProgrammes.ATF4E, "ATF4e"),
-            (FundingProgrammes.ATF5, "ATF5"),
-            (FundingProgrammes.CATF, "CATF"),
-            (FundingProgrammes.CRSTS, "CRSTS"),
-            (FundingProgrammes.IST, "IST"),
-            (FundingProgrammes.LUF1, "LUF1"),
-            (FundingProgrammes.LUF2, "LUF2"),
-            (FundingProgrammes.LUF3, "LUF3"),
-            (FundingProgrammes.MRN, "MRN"),
-            (FundingProgrammes.OTH, "OTH"),
-            (FundingProgrammes.CON, "CON"),
-            (FundingProgrammes.NCN, "NCN"),
-            (FundingProgrammes.BUS, "BUS"),
-        ],
-    )
-    def test_code(self, funding_programme: FundingProgramme, expected_code: str) -> None:
-        assert funding_programme.code == expected_code
-
-    @pytest.mark.parametrize(
-        "funding_programme, expected_is_eligible_for_authority_update",
-        [
-            (FundingProgrammes.ATF2, True),
-            (FundingProgrammes.ATF3, True),
-            (FundingProgrammes.ATF4, True),
-            (FundingProgrammes.ATF4E, True),
-            (FundingProgrammes.ATF5, True),
-            (FundingProgrammes.CATF, True),
-            (FundingProgrammes.CRSTS, False),
-            (FundingProgrammes.IST, True),
-            (FundingProgrammes.LUF1, False),
-            (FundingProgrammes.LUF2, False),
-            (FundingProgrammes.LUF3, False),
-            (FundingProgrammes.MRN, False),
-            (FundingProgrammes.OTH, False),
-            (FundingProgrammes.CON, True),
-            (FundingProgrammes.NCN, True),
-            (FundingProgrammes.BUS, True),
-        ],
-    )
-    def test_is_eligible_for_authority_update(
-        self, funding_programme: FundingProgramme, expected_is_eligible_for_authority_update: bool
-    ) -> None:
-        assert funding_programme.is_eligible_for_authority_update == expected_is_eligible_for_authority_update

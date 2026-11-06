@@ -8,6 +8,47 @@ from schemes.domain.schemes.milestones import Milestone, SchemeMilestone, Scheme
 from schemes.domain.schemes.observations import ObservationType
 
 
+class TestMilestone:
+    @pytest.mark.parametrize(
+        "milestone, expected_milestone_order",
+        [
+            (Milestone.PUBLIC_CONSULTATION_COMPLETED, 0),
+            (Milestone.FEASIBILITY_DESIGN_STARTED, 1),
+            (Milestone.FEASIBILITY_DESIGN_COMPLETED, 2),
+            (Milestone.PRELIMINARY_DESIGN_COMPLETED, 3),
+            (Milestone.OUTLINE_DESIGN_COMPLETED, 4),
+            (Milestone.DETAILED_DESIGN_COMPLETED, 5),
+            (Milestone.CONSTRUCTION_STARTED, 6),
+            (Milestone.CONSTRUCTION_COMPLETED, 7),
+            (Milestone.FUNDING_COMPLETED, 8),
+            (Milestone.NOT_PROGRESSED, 9),
+            (Milestone.SUPERSEDED, 10),
+            (Milestone.REMOVED, 11),
+        ],
+    )
+    def test_milestone_order(self, milestone: Milestone, expected_milestone_order: int) -> None:
+        assert milestone.milestone_order == expected_milestone_order
+
+
+class TestSchemeMilestone:
+    def test_create(self) -> None:
+        milestone = SchemeMilestone(
+            id_=1,
+            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+            observation_type=ObservationType.ACTUAL,
+            status_date=date(2020, 1, 1),
+            source=DataSource.ATF4_BID,
+        )
+
+        assert (
+            milestone.id == 1
+            and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
+            and milestone.observation_type == ObservationType.ACTUAL
+            and milestone.status_date == date(2020, 1, 1)
+            and milestone.source == DataSource.ATF4_BID
+        )
+
+
 class TestSchemeMilestones:
     def test_create(self) -> None:
         milestones = SchemeMilestones()
@@ -234,44 +275,3 @@ class TestSchemeMilestones:
         status_date = milestones.get_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL)
 
         assert status_date is None
-
-
-class TestSchemeMilestone:
-    def test_create(self) -> None:
-        milestone = SchemeMilestone(
-            id_=1,
-            milestone=Milestone.DETAILED_DESIGN_COMPLETED,
-            observation_type=ObservationType.ACTUAL,
-            status_date=date(2020, 1, 1),
-            source=DataSource.ATF4_BID,
-        )
-
-        assert (
-            milestone.id == 1
-            and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
-            and milestone.observation_type == ObservationType.ACTUAL
-            and milestone.status_date == date(2020, 1, 1)
-            and milestone.source == DataSource.ATF4_BID
-        )
-
-
-class TestMilestone:
-    @pytest.mark.parametrize(
-        "milestone, expected_milestone_order",
-        [
-            (Milestone.PUBLIC_CONSULTATION_COMPLETED, 0),
-            (Milestone.FEASIBILITY_DESIGN_STARTED, 1),
-            (Milestone.FEASIBILITY_DESIGN_COMPLETED, 2),
-            (Milestone.PRELIMINARY_DESIGN_COMPLETED, 3),
-            (Milestone.OUTLINE_DESIGN_COMPLETED, 4),
-            (Milestone.DETAILED_DESIGN_COMPLETED, 5),
-            (Milestone.CONSTRUCTION_STARTED, 6),
-            (Milestone.CONSTRUCTION_COMPLETED, 7),
-            (Milestone.FUNDING_COMPLETED, 8),
-            (Milestone.NOT_PROGRESSED, 9),
-            (Milestone.SUPERSEDED, 10),
-            (Milestone.REMOVED, 11),
-        ],
-    )
-    def test_milestone_order(self, milestone: Milestone, expected_milestone_order: int) -> None:
-        assert milestone.milestone_order == expected_milestone_order

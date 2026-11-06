@@ -6,6 +6,36 @@ from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.financials import FinancialType, SchemeFinancial, SchemeFinancials
 
 
+class TestSchemeFinancial:
+    def test_create(self) -> None:
+        financial = SchemeFinancial(
+            id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID
+        )
+
+        assert (
+            financial.id == 1
+            and financial.type == FinancialType.FUNDING_ALLOCATION
+            and financial.amount == 100_000
+            and financial.source == DataSource.ATF4_BID
+        )
+
+    @pytest.mark.parametrize(
+        "type_, expected", [(FinancialType.FUNDING_ALLOCATION, True), (FinancialType.SPEND_TO_DATE, False)]
+    )
+    def test_is_funding_allocation(self, type_: FinancialType, expected: bool) -> None:
+        financial = SchemeFinancial(id_=1, type_=type_, amount=0, source=DataSource.ATF4_BID)
+
+        assert financial.is_funding_allocation == expected
+
+    @pytest.mark.parametrize(
+        "type_, expected", [(FinancialType.SPEND_TO_DATE, True), (FinancialType.FUNDING_ALLOCATION, False)]
+    )
+    def test_is_spend_to_date(self, type_: FinancialType, expected: bool) -> None:
+        financial = SchemeFinancial(id_=1, type_=type_, amount=0, source=DataSource.ATF4_BID)
+
+        assert financial.is_spend_to_date == expected
+
+
 class TestSchemeFinancials:
     def test_create(self) -> None:
         financials = SchemeFinancials()
@@ -172,33 +202,3 @@ class TestSchemeFinancials:
         financials = SchemeFinancials()
 
         assert financials.allocation_still_to_spend == 0
-
-
-class TestSchemeFinancial:
-    def test_create(self) -> None:
-        financial = SchemeFinancial(
-            id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID
-        )
-
-        assert (
-            financial.id == 1
-            and financial.type == FinancialType.FUNDING_ALLOCATION
-            and financial.amount == 100_000
-            and financial.source == DataSource.ATF4_BID
-        )
-
-    @pytest.mark.parametrize(
-        "type_, expected", [(FinancialType.FUNDING_ALLOCATION, True), (FinancialType.SPEND_TO_DATE, False)]
-    )
-    def test_is_funding_allocation(self, type_: FinancialType, expected: bool) -> None:
-        financial = SchemeFinancial(id_=1, type_=type_, amount=0, source=DataSource.ATF4_BID)
-
-        assert financial.is_funding_allocation == expected
-
-    @pytest.mark.parametrize(
-        "type_, expected", [(FinancialType.SPEND_TO_DATE, True), (FinancialType.FUNDING_ALLOCATION, False)]
-    )
-    def test_is_spend_to_date(self, type_: FinancialType, expected: bool) -> None:
-        financial = SchemeFinancial(id_=1, type_=type_, amount=0, source=DataSource.ATF4_BID)
-
-        assert financial.is_spend_to_date == expected

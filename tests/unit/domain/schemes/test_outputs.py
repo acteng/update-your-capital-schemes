@@ -6,71 +6,6 @@ from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputMeasure, OutputType, OutputTypeMeasure, SchemeOutput, SchemeOutputs
 
 
-class TestSchemeOutputs:
-    def test_create(self) -> None:
-        outputs = SchemeOutputs()
-
-        assert outputs.outputs == []
-
-    def test_get_outputs_is_copy(self) -> None:
-        outputs = SchemeOutputs()
-        outputs.update_output(
-            SchemeOutput(
-                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-                value=Decimal(10),
-                observation_type=ObservationType.ACTUAL,
-            )
-        )
-
-        outputs.outputs.clear()
-
-        assert outputs.outputs
-
-    def test_update_output(self) -> None:
-        outputs = SchemeOutputs()
-        output = SchemeOutput(
-            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-            value=Decimal(10),
-            observation_type=ObservationType.ACTUAL,
-        )
-
-        outputs.update_output(output)
-
-        assert outputs.outputs == [output]
-
-    def test_update_outputs(self) -> None:
-        outputs = SchemeOutputs()
-        output1 = SchemeOutput(
-            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-            value=Decimal(10),
-            observation_type=ObservationType.ACTUAL,
-        )
-        output2 = SchemeOutput(
-            type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
-            value=Decimal(20),
-            observation_type=ObservationType.ACTUAL,
-        )
-
-        outputs.update_outputs(output1, output2)
-
-        assert outputs.outputs == [output1, output2]
-
-
-class TestSchemeOutput:
-    def test_create(self) -> None:
-        output = SchemeOutput(
-            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
-            value=Decimal(10),
-            observation_type=ObservationType.ACTUAL,
-        )
-
-        assert (
-            output.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
-            and output.value == Decimal(10)
-            and output.observation_type == ObservationType.ACTUAL
-        )
-
-
 class TestOutputTypeMeasure:
     @pytest.mark.parametrize(
         "type_, measure, expected_type_measure",
@@ -213,3 +148,68 @@ class TestOutputTypeMeasure:
             OutputTypeMeasure.from_type_and_measure(
                 OutputType.IMPROVEMENTS_TO_EXISTING_ROUTE, OutputMeasure.NUMBER_OF_PARKING_SPACES
             )
+
+
+class TestSchemeOutput:
+    def test_create(self) -> None:
+        output = SchemeOutput(
+            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+            value=Decimal(10),
+            observation_type=ObservationType.ACTUAL,
+        )
+
+        assert (
+            output.type_measure == OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES
+            and output.value == Decimal(10)
+            and output.observation_type == ObservationType.ACTUAL
+        )
+
+
+class TestSchemeOutputs:
+    def test_create(self) -> None:
+        outputs = SchemeOutputs()
+
+        assert outputs.outputs == []
+
+    def test_get_outputs_is_copy(self) -> None:
+        outputs = SchemeOutputs()
+        outputs.update_output(
+            SchemeOutput(
+                type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+                value=Decimal(10),
+                observation_type=ObservationType.ACTUAL,
+            )
+        )
+
+        outputs.outputs.clear()
+
+        assert outputs.outputs
+
+    def test_update_output(self) -> None:
+        outputs = SchemeOutputs()
+        output = SchemeOutput(
+            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+            value=Decimal(10),
+            observation_type=ObservationType.ACTUAL,
+        )
+
+        outputs.update_output(output)
+
+        assert outputs.outputs == [output]
+
+    def test_update_outputs(self) -> None:
+        outputs = SchemeOutputs()
+        output1 = SchemeOutput(
+            type_measure=OutputTypeMeasure.IMPROVEMENTS_TO_EXISTING_ROUTE_MILES,
+            value=Decimal(10),
+            observation_type=ObservationType.ACTUAL,
+        )
+        output2 = SchemeOutput(
+            type_measure=OutputTypeMeasure.RESTRICTION_OR_REDUCTION_OF_CAR_PARKING_AVAILABILITY_NUMBER_OF_PARKING_SPACES,
+            value=Decimal(20),
+            observation_type=ObservationType.ACTUAL,
+        )
+
+        outputs.update_outputs(output1, output2)
+
+        assert outputs.outputs == [output1, output2]

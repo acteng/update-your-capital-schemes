@@ -8,6 +8,17 @@ from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.reviews import AuthorityReview, SchemeReviews
 
 
+class TestAuthorityReview:
+    def test_create(self) -> None:
+        authority_review = AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+
+        assert (
+            authority_review.id == 1
+            and authority_review.review_date == datetime(2020, 1, 2)
+            and authority_review.source == DataSource.ATF4_BID
+        )
+
+
 class TestSchemeReviews:
     def test_create(self) -> None:
         reviews = SchemeReviews()
@@ -77,14 +88,3 @@ class TestSchemeReviews:
         reviews = SchemeReviews()
 
         assert reviews.needs_review(reporting_window)
-
-
-class TestAuthorityReview:
-    def test_create(self) -> None:
-        authority_review = AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
-
-        assert (
-            authority_review.id == 1
-            and authority_review.review_date == datetime(2020, 1, 2)
-            and authority_review.source == DataSource.ATF4_BID
-        )

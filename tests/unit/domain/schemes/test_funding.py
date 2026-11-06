@@ -162,7 +162,7 @@ class TestSchemeFunding:
 
         assert funding.funding_allocation == 100_000
 
-    def test_get_funding_allocation_selects_latest_revision(self) -> None:
+    def test_get_funding_allocation_selects_current_revision(self) -> None:
         funding = SchemeFunding()
         funding.update_financials(
             FinancialRevision(
@@ -237,7 +237,7 @@ class TestSchemeFunding:
 
         assert funding.spend_to_date == 100_000
 
-    def test_get_spend_to_date_selects_latest_revision(self) -> None:
+    def test_get_spend_to_date_selects_current_revision(self) -> None:
         funding = SchemeFunding()
         funding.update_financials(
             FinancialRevision(

@@ -215,7 +215,7 @@ class TestSchemeMilestones:
 
         assert milestones.current_milestone == Milestone.CONSTRUCTION_STARTED
 
-    def test_get_current_milestone_selects_latest_revision(self) -> None:
+    def test_get_current_milestone_selects_current_revision(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestone(
             MilestoneRevision(
@@ -235,7 +235,7 @@ class TestSchemeMilestones:
 
         assert milestones.current_milestone is None
 
-    def test_get_current_status_date_selects_latest_revision(self) -> None:
+    def test_get_current_status_date_selects_current_revision(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             MilestoneRevision(

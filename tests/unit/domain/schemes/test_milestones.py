@@ -235,6 +235,56 @@ class TestSchemeMilestones:
 
         assert milestones.current_milestone is None
 
+    def test_get_current_status_date_selects_milestone(self) -> None:
+        milestones = SchemeMilestones()
+        milestones.update_milestones(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.CONSTRUCTION_STARTED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 2, 1),
+                source=DataSource.ATF4_BID,
+            ),
+        )
+
+        status_date = milestones.get_current_status_date(Milestone.CONSTRUCTION_STARTED, ObservationType.ACTUAL)
+
+        assert status_date == date(2020, 2, 1)
+
+    def test_get_current_status_date_selects_observation_type(self) -> None:
+        milestones = SchemeMilestones()
+        milestones.update_milestones(
+            MilestoneRevision(
+                id_=1,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.PLANNED,
+                status_date=date(2020, 1, 1),
+                source=DataSource.ATF4_BID,
+            ),
+            MilestoneRevision(
+                id_=2,
+                effective=DateRange(datetime(2020, 1, 1), None),
+                milestone=Milestone.DETAILED_DESIGN_COMPLETED,
+                observation_type=ObservationType.ACTUAL,
+                status_date=date(2020, 2, 1),
+                source=DataSource.ATF4_BID,
+            ),
+        )
+
+        status_date = milestones.get_current_status_date(Milestone.DETAILED_DESIGN_COMPLETED, ObservationType.ACTUAL)
+
+        assert status_date == date(2020, 2, 1)
+
     def test_get_current_status_date_selects_current_revision(self) -> None:
         milestones = SchemeMilestones()
         milestones.update_milestones(

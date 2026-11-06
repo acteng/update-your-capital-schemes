@@ -1,32 +1,10 @@
-from enum import Enum, auto, unique
-
 from schemes.domain.schemes.data_sources import DataSource
 
 
-@unique
-class FinancialType(Enum):
-    EXPECTED_COST = auto()
-    ACTUAL_COST = auto()
-    FUNDING_ALLOCATION = auto()
-    SPEND_TO_DATE = auto()
-    FUNDING_REQUEST = auto()
-
-
-class SchemeFinancial:
-    # TODO: domain identifier should be mandatory for transient instances
-    def __init__(self, id_: int | None, type_: FinancialType, amount: int, source: DataSource):
-        self._id = id_
-        self._type = type_
+class SchemeFunding:
+    def __init__(self, amount: int, source: DataSource):
         self._amount = amount
         self._source = source
-
-    @property
-    def id(self) -> int | None:
-        return self._id
-
-    @property
-    def type(self) -> FinancialType:
-        return self._type
 
     @property
     def amount(self) -> int:
@@ -36,62 +14,62 @@ class SchemeFinancial:
     def source(self) -> DataSource:
         return self._source
 
-    @property
-    def is_funding_allocation(self) -> bool:
-        return self.type == FinancialType.FUNDING_ALLOCATION
+
+class SchemeSpend:
+    # TODO: domain identifier should be mandatory for transient instances
+    def __init__(self, id_: int | None, amount: int, source: DataSource):
+        self._id = id_
+        self._amount = amount
+        self._source = source
 
     @property
-    def is_spend_to_date(self) -> bool:
-        return self.type == FinancialType.SPEND_TO_DATE
+    def id(self) -> int | None:
+        return self._id
+
+    @property
+    def amount(self) -> int:
+        return self._amount
+
+    @property
+    def source(self) -> DataSource:
+        return self._source
 
 
 class SchemeFinancials:
     def __init__(self) -> None:
-        self._financials: list[SchemeFinancial] = []
+        self._fundings: list[SchemeFunding] = []
+        self._spend: SchemeSpend | None = None
 
     @property
-    def financials(self) -> list[SchemeFinancial]:
-        return list(self._financials)
-
-    def update_financial(self, financial: SchemeFinancial) -> None:
-        if financial.is_spend_to_date:
-            self._ensure_no_spend_to_date()
-
-        self._financials.append(financial)
-
-    def update_financials(self, *financials: SchemeFinancial) -> None:
-        for financial in financials:
-            self.update_financial(financial)
-
-    def _ensure_no_spend_to_date(self) -> None:
-        spend_to_date = self._spend_to_date
-        if spend_to_date:
-            raise ValueError(f"Spend to date already exists: {spend_to_date}")
+    def fundings(self) -> list[SchemeFunding]:
+        return list(self._fundings)
 
     @property
-    def _spend_to_date(self) -> SchemeFinancial | None:
-        return next((financial for financial in self._financials if financial.is_spend_to_date), None)
+    def spend(self) -> SchemeSpend | None:
+        return self._spend
+
+    def update_funding(self, funding: SchemeFunding) -> None:
+        self._fundings.append(funding)
+
+    def update_fundings(self, *fundings: SchemeFunding) -> None:
+        for financial in fundings:
+            self.update_funding(financial)
+
+    def update_spend(self, spend: SchemeSpend) -> None:
+        self._spend = spend
 
     def update_spend_to_date(self, amount: int) -> None:
-        spend_to_date = self._spend_to_date
-        if spend_to_date:
-            self._financials.remove(spend_to_date)
-
-        self.update_financial(
-            SchemeFinancial(
-                id_=None, type_=FinancialType.SPEND_TO_DATE, amount=amount, source=DataSource.AUTHORITY_UPDATE
-            )
-        )
+        self.update_spend(SchemeSpend(id_=None, amount=amount, source=DataSource.AUTHORITY_UPDATE))
 
     @property
     def funding_allocation(self) -> int | None:
-        amounts = [financial.amount for financial in self._financials if financial.is_funding_allocation]
+        amounts = [funding.amount for funding in self.fundings]
         return sum(amounts) if amounts else None
 
     @property
     def spend_to_date(self) -> int | None:
-        amounts = (financial.amount for financial in self._financials if financial.is_spend_to_date)
-        return next(amounts, None)
+        spend = self.spend
+        return spend.amount if spend else None
 
     @property
     def allocation_still_to_spend(self) -> int:

@@ -7,7 +7,7 @@ from schemes.domain.authorities import Authority
 from schemes.domain.dates import DateRange
 from schemes.domain.reporting_window import ReportingWindow
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.financials import FinancialType, SchemeFinancial
+from schemes.domain.schemes.financials import SchemeFunding
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure, SchemeOutput
@@ -169,9 +169,7 @@ class TestSchemeContext:
     def test_from_domain_sets_funding(self) -> None:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", name="", authority_abbreviation="LIV")
-        scheme.financials.update_financial(
-            SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(amount=100_000, source=DataSource.ATF4_BID))
 
         context = SchemeContext.from_domain(dummy_reporting_window(), authority, scheme)
 

@@ -6,7 +6,7 @@ from pydantic import AnyUrl
 from respx import MockRouter
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.financials import FinancialType, SchemeFinancial
+from schemes.domain.schemes.financials import SchemeSpend
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure
@@ -72,7 +72,7 @@ class TestCapitalSchemeModel:
         scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         assert scheme.reference == "ATE00001"
-        assert not scheme.financials.financials
+        assert not scheme.financials.fundings and not scheme.financials.spend
         assert not scheme.milestones.milestones
         assert not scheme.outputs.outputs
         assert not scheme.reviews.authority_reviews
@@ -145,19 +145,10 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
-        financial1, financial2 = scheme.financials.financials
-        assert (
-            financial1.id is not None
-            and financial1.type == FinancialType.FUNDING_ALLOCATION
-            and financial1.amount == 100_000
-            and financial1.source == DataSource.ATF4_BID
-        )
-        assert (
-            financial2.id is not None
-            and financial2.type == FinancialType.SPEND_TO_DATE
-            and financial2.amount == 50_000
-            and financial2.source == DataSource.ATF4_BID
-        )
+        (funding,) = scheme.financials.fundings
+        spend = scheme.financials.spend
+        assert funding.amount == 100_000 and funding.source == DataSource.ATF4_BID
+        assert spend and spend.id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
 
     def test_to_domain_sets_milestones(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
@@ -466,19 +457,10 @@ class TestApiSchemeRepository:
         scheme = await schemes.get("ATE00001")
 
         assert scheme
-        financial1, financial2 = scheme.financials.financials
-        assert (
-            financial1.id is not None
-            and financial1.type == FinancialType.FUNDING_ALLOCATION
-            and financial1.amount == 100_000
-            and financial1.source == DataSource.ATF4_BID
-        )
-        assert (
-            financial2.id is not None
-            and financial2.type == FinancialType.SPEND_TO_DATE
-            and financial2.amount == 50_000
-            and financial2.source == DataSource.ATF4_BID
-        )
+        (funding,) = scheme.financials.fundings
+        spend = scheme.financials.spend
+        assert funding.amount == 100_000 and funding.source == DataSource.ATF4_BID
+        assert spend and spend.id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
 
     async def test_get_scheme_sets_milestones(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
@@ -889,18 +871,9 @@ class TestApiSchemeRepository:
 
         assert remote_app.client_count == 1
 
-    async def test_update_scheme_financials_with_spend_to_date(
-        self, api_mock: MockRouter, schemes: ApiSchemeRepository
-    ) -> None:
+    async def test_update_scheme_spend(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
-        scheme.financials.update_financials(
-            SchemeFinancial(
-                id_=None,
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=60_000,
-                source=DataSource.AUTHORITY_UPDATE,
-            )
-        )
+        scheme.financials.update_spend(SchemeSpend(id_=None, amount=60_000, source=DataSource.AUTHORITY_UPDATE))
         create_spend_response = api_mock.post(
             "/capital-schemes/ATE00001/financials/spend",
             json=build_capital_scheme_spend_json(amount=60_000, source="authority update"),
@@ -910,35 +883,11 @@ class TestApiSchemeRepository:
 
         assert create_spend_response.call_count == 1
 
-    async def test_update_scheme_financials_ignores_other_financial_type(
+    async def test_update_scheme_spend_when_no_changes(
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
-        scheme.financials.update_financials(
-            SchemeFinancial(
-                id_=None,
-                type_=FinancialType.EXPECTED_COST,
-                amount=60_000,
-                source=DataSource.AUTHORITY_UPDATE,
-            ),
-        )
-
-        await schemes.update(scheme)
-
-        assert not api_mock.calls.called
-
-    async def test_update_scheme_financials_when_no_changes(
-        self, api_mock: MockRouter, schemes: ApiSchemeRepository
-    ) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
-        scheme.financials.update_financials(
-            SchemeFinancial(
-                id_=2,
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=50_000,
-                source=DataSource.ATF4_BID,
-            )
-        )
+        scheme.financials.update_spend(SchemeSpend(id_=2, amount=50_000, source=DataSource.ATF4_BID))
 
         await schemes.update(scheme)
 
@@ -1035,14 +984,7 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
-        scheme.financials.update_financials(
-            SchemeFinancial(
-                id_=None,
-                type_=FinancialType.SPEND_TO_DATE,
-                amount=60_000,
-                source=DataSource.AUTHORITY_UPDATE,
-            ),
-        )
+        scheme.financials.update_spend(SchemeSpend(id_=None, amount=60_000, source=DataSource.AUTHORITY_UPDATE))
         scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=None, review_date=datetime(2020, 1, 1), source=DataSource.AUTHORITY_UPDATE)
         )

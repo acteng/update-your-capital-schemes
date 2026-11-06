@@ -183,7 +183,7 @@ class SchemeContext:
             name=scheme.overview.name,
             needs_review=scheme.reviews.needs_review(reporting_window),
             overview=SchemeOverviewContext.from_domain(scheme),
-            funding=SchemeFundingContext.from_domain(scheme.funding),
+            funding=SchemeFundingContext.from_domain(scheme.financials),
             milestones=SchemeMilestonesContext.from_domain(scheme.milestones),
             outputs=SchemeOutputsContext.from_domain(scheme.outputs.outputs),
             review=SchemeReviewContext.from_domain(scheme.reviews),
@@ -225,12 +225,12 @@ async def spend_to_date(users: UserRepository, schemes: SchemeRepository, refere
     if user.authority_abbreviation != scheme.overview.authority_abbreviation:
         abort(403)
 
-    form = ChangeSpendToDateForm.from_domain(scheme.funding)
+    form = ChangeSpendToDateForm.from_domain(scheme.financials)
 
     if not form.validate():
         return await spend_to_date_form(reference)
 
-    form.update_domain(scheme.funding)
+    form.update_domain(scheme.financials)
     await schemes.update(scheme)
 
     return redirect(url_for("schemes.get", reference=reference))

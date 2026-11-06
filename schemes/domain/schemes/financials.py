@@ -45,7 +45,7 @@ class SchemeFinancial:
         return self.type == FinancialType.SPEND_TO_DATE
 
 
-class SchemeFunding:
+class SchemeFinancials:
     def __init__(self) -> None:
         self._financials: list[SchemeFinancial] = []
 

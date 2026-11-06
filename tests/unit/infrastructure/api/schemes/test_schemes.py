@@ -6,7 +6,7 @@ from pydantic import AnyUrl
 from respx import MockRouter
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import FinancialType, SchemeFinancial
+from schemes.domain.schemes.financials import FinancialType, SchemeFinancial
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure
@@ -72,7 +72,7 @@ class TestCapitalSchemeModel:
         scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
         assert scheme.reference == "ATE00001"
-        assert not scheme.funding.financials
+        assert not scheme.financials.financials
         assert not scheme.milestones.milestones
         assert not scheme.outputs.outputs
         assert not scheme.reviews.authority_reviews
@@ -145,7 +145,7 @@ class TestCapitalSchemeModel:
 
         scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_item_model()])
 
-        financial1, financial2 = scheme.funding.financials
+        financial1, financial2 = scheme.financials.financials
         assert (
             financial1.id is not None
             and financial1.type == FinancialType.FUNDING_ALLOCATION
@@ -466,7 +466,7 @@ class TestApiSchemeRepository:
         scheme = await schemes.get("ATE00001")
 
         assert scheme
-        financial1, financial2 = scheme.funding.financials
+        financial1, financial2 = scheme.financials.financials
         assert (
             financial1.id is not None
             and financial1.type == FinancialType.FUNDING_ALLOCATION
@@ -893,7 +893,7 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
-        scheme.funding.update_financials(
+        scheme.financials.update_financials(
             SchemeFinancial(
                 id_=None,
                 type_=FinancialType.SPEND_TO_DATE,
@@ -914,7 +914,7 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
-        scheme.funding.update_financials(
+        scheme.financials.update_financials(
             SchemeFinancial(
                 id_=None,
                 type_=FinancialType.EXPECTED_COST,
@@ -931,7 +931,7 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
-        scheme.funding.update_financials(
+        scheme.financials.update_financials(
             SchemeFinancial(
                 id_=2,
                 type_=FinancialType.SPEND_TO_DATE,
@@ -1035,7 +1035,7 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package")
-        scheme.funding.update_financials(
+        scheme.financials.update_financials(
             SchemeFinancial(
                 id_=None,
                 type_=FinancialType.SPEND_TO_DATE,

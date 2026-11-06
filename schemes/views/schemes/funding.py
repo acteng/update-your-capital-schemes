@@ -7,7 +7,7 @@ from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovTextInput
 from wtforms.validators import InputRequired, NumberRange, ValidationError
 
-from schemes.domain.schemes.funding import SchemeFunding
+from schemes.domain.schemes.financials import SchemeFinancials
 from schemes.domain.schemes.schemes import Scheme
 from schemes.views.forms import CustomMessageIntegerField
 
@@ -19,11 +19,11 @@ class SchemeFundingContext:
     allocation_still_to_spend: int
 
     @classmethod
-    def from_domain(cls, funding: SchemeFunding) -> Self:
+    def from_domain(cls, financials: SchemeFinancials) -> Self:
         return cls(
-            funding_allocation=funding.funding_allocation,
-            spend_to_date=funding.spend_to_date,
-            allocation_still_to_spend=funding.allocation_still_to_spend,
+            funding_allocation=financials.funding_allocation,
+            spend_to_date=financials.spend_to_date,
+            allocation_still_to_spend=financials.allocation_still_to_spend,
         )
 
 
@@ -42,13 +42,13 @@ class ChangeSpendToDateForm(FlaskForm):  # type: ignore
         self.max_amount = max_amount
 
     @classmethod
-    def from_domain(cls, funding: SchemeFunding) -> Self:
-        funding_allocation = funding.funding_allocation or 0
-        return cls(max_amount=funding_allocation, data={"amount": funding.spend_to_date})
+    def from_domain(cls, financials: SchemeFinancials) -> Self:
+        funding_allocation = financials.funding_allocation or 0
+        return cls(max_amount=funding_allocation, data={"amount": financials.spend_to_date})
 
-    def update_domain(self, funding: SchemeFunding) -> None:
+    def update_domain(self, financials: SchemeFinancials) -> None:
         assert self.amount.data is not None
-        funding.update_spend_to_date(self.amount.data)
+        financials.update_spend_to_date(self.amount.data)
 
     @staticmethod
     def validate_amount(form: ChangeSpendToDateForm, field: CustomMessageIntegerField) -> None:
@@ -68,6 +68,6 @@ class ChangeSpendToDateContext:
         return cls(
             reference=scheme.reference,
             name=scheme.overview.name,
-            funding_allocation=scheme.funding.funding_allocation,
-            form=ChangeSpendToDateForm.from_domain(scheme.funding),
+            funding_allocation=scheme.financials.funding_allocation,
+            form=ChangeSpendToDateForm.from_domain(scheme.financials),
         )

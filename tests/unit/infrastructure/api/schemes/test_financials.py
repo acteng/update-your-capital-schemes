@@ -1,7 +1,7 @@
 import pytest
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import FinancialType, SchemeFinancial
+from schemes.domain.schemes.financials import FinancialType, SchemeFinancial
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.data_sources import DataSourceModel
 from schemes.infrastructure.api.schemes.financials import (

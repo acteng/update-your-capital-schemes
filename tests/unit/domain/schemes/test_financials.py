@@ -3,49 +3,49 @@ import re
 import pytest
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import FinancialType, SchemeFinancial, SchemeFunding
+from schemes.domain.schemes.financials import FinancialType, SchemeFinancial, SchemeFinancials
 
 
-class TestSchemeFunding:
+class TestSchemeFinancials:
     def test_create(self) -> None:
-        funding = SchemeFunding()
+        financials = SchemeFinancials()
 
-        assert funding.financials == []
+        assert financials.financials == []
 
     def test_get_financials_is_copy(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financial(
+        financials = SchemeFinancials()
+        financials.update_financial(
             SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID)
         )
 
-        funding.financials.clear()
+        financials.financials.clear()
 
-        assert funding.financials
+        assert financials.financials
 
     def test_update_financial(self) -> None:
-        funding = SchemeFunding()
+        financials = SchemeFinancials()
         financial = SchemeFinancial(
             id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID
         )
 
-        funding.update_financial(financial)
+        financials.update_financial(financial)
 
-        assert funding.financials == [financial]
+        assert financials.financials == [financial]
 
     def test_cannot_update_financial_with_another_spend_to_date(self) -> None:
-        funding = SchemeFunding()
+        financials = SchemeFinancials()
         financial = SchemeFinancial(
             id_=1, type_=FinancialType.SPEND_TO_DATE, amount=100_000, source=DataSource.ATF4_BID
         )
-        funding.update_financial(financial)
+        financials.update_financial(financial)
 
         with pytest.raises(ValueError, match=re.escape(f"Spend to date already exists: {financial!r}")):
-            funding.update_financial(
+            financials.update_financial(
                 SchemeFinancial(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=200_000, source=DataSource.ATF4_BID)
             )
 
     def test_update_financials(self) -> None:
-        funding = SchemeFunding()
+        financials = SchemeFinancials()
         financial1 = SchemeFinancial(
             id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID
         )
@@ -53,26 +53,26 @@ class TestSchemeFunding:
             id_=2, type_=FinancialType.EXPECTED_COST, amount=200_000, source=DataSource.ATF4_BID
         )
 
-        funding.update_financials(financial1, financial2)
+        financials.update_financials(financial1, financial2)
 
-        assert funding.financials == [financial1, financial2]
+        assert financials.financials == [financial1, financial2]
 
     def test_update_spend_to_date_removes_current_financial(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financial(
+        financials = SchemeFinancials()
+        financials.update_financial(
             SchemeFinancial(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID)
         )
 
-        funding.update_spend_to_date(60_000)
+        financials.update_spend_to_date(60_000)
 
-        assert 1 not in (financial.id for financial in funding.financials)
+        assert 1 not in (financial.id for financial in financials.financials)
 
     def test_update_spend_to_date_adds_new_financial(self) -> None:
-        funding = SchemeFunding()
+        financials = SchemeFinancials()
 
-        funding.update_spend_to_date(60_000)
+        financials.update_spend_to_date(60_000)
 
-        financial = funding.financials[0]
+        financial = financials.financials[0]
         assert (
             financial.id is None
             and financial.type == FinancialType.SPEND_TO_DATE
@@ -81,97 +81,97 @@ class TestSchemeFunding:
         )
 
     def test_get_funding_allocation_sums_amounts(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
+        financials = SchemeFinancials()
+        financials.update_financials(
             SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID),
             SchemeFinancial(
                 id_=2, type_=FinancialType.FUNDING_ALLOCATION, amount=20_000, source=DataSource.CHANGE_CONTROL
             ),
         )
 
-        assert funding.funding_allocation == 120_000
+        assert financials.funding_allocation == 120_000
 
     def test_get_funding_allocation_selects_financial_type(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
+        financials = SchemeFinancials()
+        financials.update_financials(
             SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID),
             SchemeFinancial(id_=2, type_=FinancialType.EXPECTED_COST, amount=200_000, source=DataSource.ATF4_BID),
         )
 
-        assert funding.funding_allocation == 100_000
+        assert financials.funding_allocation == 100_000
 
     def test_get_funding_allocation_when_no_matching_financials(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financial(
+        financials = SchemeFinancials()
+        financials.update_financial(
             SchemeFinancial(id_=1, type_=FinancialType.EXPECTED_COST, amount=100_000, source=DataSource.ATF4_BID)
         )
 
-        assert funding.funding_allocation is None
+        assert financials.funding_allocation is None
 
     def test_get_funding_allocation_when_no_financials(self) -> None:
-        funding = SchemeFunding()
+        financials = SchemeFinancials()
 
-        assert funding.funding_allocation is None
+        assert financials.funding_allocation is None
 
     def test_get_spend_to_date(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financial(
+        financials = SchemeFinancials()
+        financials.update_financial(
             SchemeFinancial(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=100_000, source=DataSource.ATF4_BID)
         )
 
-        assert funding.spend_to_date == 100_000
+        assert financials.spend_to_date == 100_000
 
     def test_get_spend_to_date_selects_financial_type(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
+        financials = SchemeFinancials()
+        financials.update_financials(
             SchemeFinancial(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=100_000, source=DataSource.ATF4_BID),
             SchemeFinancial(id_=2, type_=FinancialType.EXPECTED_COST, amount=200_000, source=DataSource.ATF4_BID),
         )
 
-        assert funding.spend_to_date == 100_000
+        assert financials.spend_to_date == 100_000
 
     def test_get_spend_to_date_when_no_matching_financials(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financial(
+        financials = SchemeFinancials()
+        financials.update_financial(
             SchemeFinancial(id_=1, type_=FinancialType.EXPECTED_COST, amount=100_000, source=DataSource.ATF4_BID)
         )
 
-        assert funding.spend_to_date is None
+        assert financials.spend_to_date is None
 
     def test_get_spend_to_date_when_no_financials(self) -> None:
-        funding = SchemeFunding()
+        financials = SchemeFinancials()
 
-        assert funding.spend_to_date is None
+        assert financials.spend_to_date is None
 
     def test_get_allocation_still_to_spend(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
+        financials = SchemeFinancials()
+        financials.update_financials(
             SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID),
             SchemeFinancial(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID),
         )
 
-        assert funding.allocation_still_to_spend == 50_000
+        assert financials.allocation_still_to_spend == 50_000
 
     def test_get_allocation_still_to_spend_when_no_funding_allocation(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
+        financials = SchemeFinancials()
+        financials.update_financials(
             SchemeFinancial(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID)
         )
 
-        assert funding.allocation_still_to_spend == -50_000
+        assert financials.allocation_still_to_spend == -50_000
 
     def test_get_allocation_still_to_spend_when_no_spend_to_date(self) -> None:
-        funding = SchemeFunding()
-        funding.update_financials(
+        financials = SchemeFinancials()
+        financials.update_financials(
             SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID)
         )
 
-        assert funding.allocation_still_to_spend == 100_000
+        assert financials.allocation_still_to_spend == 100_000
 
     def test_get_allocation_still_to_spend_when_no_financials(self) -> None:
-        funding = SchemeFunding()
+        financials = SchemeFinancials()
 
-        assert funding.allocation_still_to_spend == 0
+        assert financials.allocation_still_to_spend == 0
 
 
 class TestSchemeFinancial:

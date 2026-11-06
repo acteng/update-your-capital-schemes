@@ -1,6 +1,6 @@
 from typing import Self
 
-from schemes.domain.schemes.funding import FinancialType, SchemeFinancial
+from schemes.domain.schemes.financials import FinancialType, SchemeFinancial
 from schemes.infrastructure.api.base import BaseModel
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.data_sources import DataSourceModel

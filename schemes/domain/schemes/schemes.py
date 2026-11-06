@@ -1,6 +1,6 @@
 from enum import Enum, auto
 
-from schemes.domain.schemes.funding import SchemeFunding
+from schemes.domain.schemes.financials import SchemeFinancials
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
 from schemes.domain.schemes.overview import FundingProgramme, SchemeOverview
@@ -20,7 +20,7 @@ class Scheme:
         self._reference = reference
         self._status = status
         self._overview = overview
-        self._funding = SchemeFunding()
+        self._financials = SchemeFinancials()
         self._milestones = SchemeMilestones()
         self._outputs = SchemeOutputs()
         self._reviews = SchemeReviews()
@@ -38,8 +38,8 @@ class Scheme:
         return self._overview
 
     @property
-    def funding(self) -> SchemeFunding:
-        return self._funding
+    def financials(self) -> SchemeFinancials:
+        return self._financials
 
     @property
     def milestones(self) -> SchemeMilestones:

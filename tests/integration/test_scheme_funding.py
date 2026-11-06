@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.funding import FinancialType, SchemeFinancial
+from schemes.domain.schemes.financials import FinancialType, SchemeFinancial
 from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
@@ -37,7 +37,7 @@ class TestSchemeFunding:
 
     async def test_scheme_shows_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.funding.update_financials(
+        scheme.financials.update_financials(
             SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID),
             SchemeFinancial(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID),
         )
@@ -53,7 +53,7 @@ class TestSchemeFunding:
 
     async def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.funding.update_financials(
+        scheme.financials.update_financials(
             SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=0, source=DataSource.ATF4_BID),
             SchemeFinancial(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=0, source=DataSource.ATF4_BID),
         )
@@ -110,7 +110,7 @@ class TestSchemeFunding:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.funding.update_financials(
+        scheme.financials.update_financials(
             SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
@@ -132,7 +132,7 @@ class TestSchemeFunding:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.funding.update_financial(
+        scheme.financials.update_financial(
             SchemeFinancial(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
@@ -145,7 +145,7 @@ class TestSchemeFunding:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.funding.update_financial(
+        scheme.financials.update_financial(
             SchemeFinancial(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=0, source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
@@ -217,7 +217,7 @@ class TestSchemeFunding:
     ) -> None:
         clock.now = datetime(2020, 2, 1, 13)
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.funding.update_financials(
+        scheme.financials.update_financials(
             SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID),
             SchemeFinancial(id_=2, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID),
         )
@@ -227,7 +227,7 @@ class TestSchemeFunding:
 
         actual_scheme = await schemes.get("ATE00001")
         assert actual_scheme
-        _, financial2 = actual_scheme.funding.financials
+        _, financial2 = actual_scheme.financials.financials
         assert (
             financial2.type == FinancialType.SPEND_TO_DATE
             and financial2.amount == 60_000
@@ -238,7 +238,7 @@ class TestSchemeFunding:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.funding.update_financial(
+        scheme.financials.update_financial(
             SchemeFinancial(id_=1, type_=FinancialType.FUNDING_ALLOCATION, amount=100_000, source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
@@ -253,7 +253,7 @@ class TestSchemeFunding:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.funding.update_financial(
+        scheme.financials.update_financial(
             SchemeFinancial(id_=1, type_=FinancialType.SPEND_TO_DATE, amount=50_000, source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
@@ -274,7 +274,7 @@ class TestSchemeFunding:
         )
         actual_scheme = await schemes.get("ATE00001")
         assert actual_scheme
-        (financial1,) = actual_scheme.funding.financials
+        (financial1,) = actual_scheme.financials.financials
         assert (
             financial1.id == 1
             and financial1.type == FinancialType.SPEND_TO_DATE

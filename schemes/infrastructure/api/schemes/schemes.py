@@ -1,6 +1,6 @@
 from typing import Any
 
-from schemes.domain.schemes.funding import FinancialType
+from schemes.domain.schemes.financials import FinancialType
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
@@ -38,7 +38,7 @@ class CapitalSchemeModel(BaseModel):
             overview=self.overview.to_domain(authority_model, funding_programme_item_models),
             status=self.status.status.to_domain(),
         )
-        scheme.funding.update_financials(*self.financials.to_domain())
+        scheme.financials.update_financials(*self.financials.to_domain())
         scheme.milestones.update_milestones(*[milestone.to_domain() for milestone in self.milestones.items])
         scheme.outputs.update_outputs(*[output.to_domain() for output in self.outputs.items])
 
@@ -168,7 +168,7 @@ class ApiSchemeRepository(SchemeRepository):
         return ImprovementModel.model_validate(response.json())
 
     async def _update_financials(self, remote_app: AsyncBaseApp, scheme: Scheme) -> None:
-        for financial in scheme.funding.financials:
+        for financial in scheme.financials.financials:
             if financial.id is None and financial.type == FinancialType.SPEND_TO_DATE:
                 spend_model = CapitalSchemeSpendModel.from_domain(financial)
                 await self._create_spend(remote_app, scheme.reference, spend_model)

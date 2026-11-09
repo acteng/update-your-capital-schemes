@@ -1,9 +1,13 @@
 from collections.abc import Callable
 from datetime import date, datetime
-from typing import Any, Self
+from typing import TYPE_CHECKING, Any, Self
 
 from govuk_frontend_wtf.wtforms_widgets import GovCheckboxInput, GovDateInput
 from wtforms import DateField, Field
+
+if TYPE_CHECKING:
+    from wtforms.fields.core import _Text
+
 from wtforms.fields.numeric import IntegerField
 from wtforms.form import BaseForm
 from wtforms.validators import InputRequired, Optional, StopValidation, ValidationError
@@ -147,7 +151,7 @@ class MultivalueInputRequired(InputRequired):
             return
 
         if self.message is None:
-            message = field.gettext("This field is required.")
+            message: _Text = field.gettext("This field is required.")
         else:
             message = self.message
 

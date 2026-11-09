@@ -171,17 +171,15 @@ class SchemeRowComponent:
         reference = cells[0]
         self.reference = reference.string
         self.reference_url = one(reference.select("a")).get("href")
-        self.funding_programme = cells[1].string or ""
-        name_cell = cells[2]
+        name_cell = cells[1]
         self.name = one(name_cell.select("span")).string
         tag = name_cell.select_one(".govuk-tag")
         self.needs_review = TagComponent(tag).text == "Needs review" if tag else False
-        self.last_reviewed = cells[3].string or ""
+        self.last_reviewed = cells[2].string or ""
 
     def to_dict(self) -> dict[str, str | bool | None]:
         return {
             "reference": self.reference,
-            "funding_programme": self.funding_programme,
             "name": self.name,
             "needs_review": self.needs_review,
             "last_reviewed": self.last_reviewed,

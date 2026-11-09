@@ -5,7 +5,6 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.overview import FundingProgrammes
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
@@ -99,14 +98,7 @@ class TestSchemes:
     async def test_schemes_shows_minimal_scheme(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(
-            build_scheme(
-                reference="ATE00001",
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                funding_programme=FundingProgrammes.ATF3,
-            )
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         schemes_page = await SchemesPage.open(async_client)
 
@@ -114,7 +106,6 @@ class TestSchemes:
         assert schemes_page.schemes.to_dicts() == [
             {
                 "reference": "ATE00001",
-                "funding_programme": "ATF3",
                 "name": "Wirral Package",
                 "needs_review": True,
                 "last_reviewed": "",
@@ -122,12 +113,7 @@ class TestSchemes:
         ]
 
     async def test_schemes_shows_scheme(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        scheme = build_scheme(
-            reference="ATE00001",
-            name="Wirral Package",
-            authority_abbreviation="LIV",
-            funding_programme=FundingProgrammes.ATF3,
-        )
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
         )
@@ -139,7 +125,6 @@ class TestSchemes:
         assert schemes_page.schemes.to_dicts() == [
             {
                 "reference": "ATE00001",
-                "funding_programme": "ATF3",
                 "name": "Wirral Package",
                 "needs_review": False,
                 "last_reviewed": "2 Jan 2020",

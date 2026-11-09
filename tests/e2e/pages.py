@@ -204,17 +204,13 @@ class SchemeRowComponent:
         self._row = row
         self._cells = row.get_by_role("cell")
         self._reference = self._cells.nth(0)
-        name_cell = self._cells.nth(2)
+        name_cell = self._cells.nth(1)
         self._name = name_cell.locator("span")
         self._tag = TagComponent(name_cell.locator(".govuk-tag"))
 
     @property
     def reference(self) -> str | None:
         return self._reference.text_content()
-
-    @property
-    def funding_programme(self) -> str | None:
-        return self._cells.nth(1).text_content()
 
     @property
     def name(self) -> str | None:
@@ -226,7 +222,7 @@ class SchemeRowComponent:
 
     @property
     def last_reviewed(self) -> str | None:
-        return self._cells.nth(3).text_content()
+        return self._cells.nth(2).text_content()
 
     def open(self) -> SchemePage:
         self._reference.get_by_role("link").click()
@@ -235,7 +231,6 @@ class SchemeRowComponent:
     def to_dict(self) -> dict[str, str | bool | None]:
         return {
             "reference": self.reference,
-            "funding_programme": self.funding_programme,
             "name": self.name,
             "needs_review": self.needs_review,
             "last_reviewed": self.last_reviewed,

@@ -88,16 +88,12 @@ class TestSchemesContext:
 
 class TestSchemeRowContext:
     def test_from_domain(self) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package", funding_programme=FundingProgrammes.ATF4)
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
 
         context = SchemeRowContext.from_domain(dummy_reporting_window(), scheme)
 
         assert context == SchemeRowContext(
-            reference="ATE00001",
-            funding_programme=FundingProgrammeContext(name="ATF4"),
-            name="Wirral Package",
-            needs_review=True,
-            last_reviewed=None,
+            reference="ATE00001", name="Wirral Package", needs_review=True, last_reviewed=None
         )
 
     @pytest.mark.parametrize(

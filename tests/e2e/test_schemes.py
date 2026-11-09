@@ -73,14 +73,12 @@ class TestAuthenticated:
         assert schemes_page.schemes.to_dicts() == [
             {
                 "reference": "ATE00001",
-                "funding_programme": "ATF3",
                 "name": "Wirral Package",
                 "needs_review": True,
                 "last_reviewed": "2 Jan 2020",
             },
             {
                 "reference": "ATE00002",
-                "funding_programme": "ATF4",
                 "name": "School Streets",
                 "needs_review": True,
                 "last_reviewed": "3 Jan 2020",

@@ -83,7 +83,6 @@ class FundingProgrammeContext:
 @dataclass(frozen=True)
 class SchemeRowContext:
     reference: str
-    funding_programme: FundingProgrammeContext
     name: str
     needs_review: bool
     last_reviewed: datetime | None
@@ -92,7 +91,6 @@ class SchemeRowContext:
     def from_domain(cls, reporting_window: ReportingWindow, scheme: Scheme) -> Self:
         return cls(
             reference=scheme.reference,
-            funding_programme=FundingProgrammeContext.from_domain(scheme.overview.funding_programme),
             name=scheme.overview.name,
             needs_review=scheme.reviews.needs_review(reporting_window),
             last_reviewed=scheme.reviews.last_reviewed,

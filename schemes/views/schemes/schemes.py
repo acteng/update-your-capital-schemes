@@ -149,14 +149,12 @@ async def get(
 @dataclass(frozen=True)
 class SchemeOverviewContext:
     reference: str
-    funding_programme: FundingProgrammeContext
     current_milestone: MilestoneContext
 
     @classmethod
     def from_domain(cls, scheme: Scheme) -> Self:
         return cls(
             reference=scheme.reference,
-            funding_programme=FundingProgrammeContext.from_domain(scheme.overview.funding_programme),
             current_milestone=MilestoneContext.from_domain(scheme.milestones.current_milestone),
         )
 

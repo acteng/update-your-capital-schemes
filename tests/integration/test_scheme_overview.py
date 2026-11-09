@@ -7,7 +7,6 @@ from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
-from schemes.domain.schemes.overview import FundingProgrammes
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
@@ -27,30 +26,14 @@ class TestSchemeOverview:
     async def test_scheme_shows_minimal_overview(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(
-            build_scheme(
-                reference="ATE00001",
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                funding_programme=FundingProgrammes.ATF4,
-            )
-        )
+        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
-        assert (
-            scheme_page.overview.reference == "ATE00001"
-            and scheme_page.overview.funding_programme == "ATF4"
-            and scheme_page.overview.current_milestone == ""
-        )
+        assert scheme_page.overview.reference == "ATE00001" and scheme_page.overview.current_milestone == ""
 
     async def test_scheme_shows_overview(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        scheme = build_scheme(
-            reference="ATE00001",
-            name="Wirral Package",
-            authority_abbreviation="LIV",
-            funding_programme=FundingProgrammes.ATF4,
-        )
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.milestones.update_milestone(
             SchemeMilestone(
                 id_=1,
@@ -69,6 +52,5 @@ class TestSchemeOverview:
 
         assert (
             scheme_page.overview.reference == "ATE00001"
-            and scheme_page.overview.funding_programme == "ATF4"
             and scheme_page.overview.current_milestone == "Detailed design completed"
         )

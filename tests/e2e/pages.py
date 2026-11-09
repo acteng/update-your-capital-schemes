@@ -290,16 +290,11 @@ class SchemeOverviewComponent(SummaryCardComponent):
     def __init__(self, title: Locator):
         super().__init__(title)
         self._reference = self._get_definition("Reference")
-        self._funding_programme = self._get_definition("Funding programme")
         self._current_milestone = self._get_definition("Current milestone")
 
     @property
     def reference(self) -> str:
         return (self._reference.text_content() or "").strip()
-
-    @property
-    def funding_programme(self) -> str:
-        return (self._funding_programme.text_content() or "").strip()
 
     @property
     def current_milestone(self) -> str:

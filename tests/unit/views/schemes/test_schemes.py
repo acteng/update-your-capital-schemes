@@ -223,13 +223,6 @@ class TestSchemeOverviewContext:
 
         assert context.reference == "ATE00001"
 
-    def test_from_domain_sets_funding_programme(self) -> None:
-        scheme = build_scheme(reference="", name="", funding_programme=FundingProgrammes.ATF4)
-
-        context = SchemeOverviewContext.from_domain(scheme)
-
-        assert context.funding_programme == FundingProgrammeContext(name="ATF4")
-
     def test_from_domain_sets_current_milestone(self) -> None:
         scheme = build_scheme(reference="", name="")
         scheme.milestones.update_milestones(

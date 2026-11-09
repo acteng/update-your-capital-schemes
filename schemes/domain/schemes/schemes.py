@@ -3,7 +3,7 @@ from enum import Enum, auto
 from schemes.domain.schemes.financials import SchemeFinancials
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
-from schemes.domain.schemes.overview import FundingProgramme, SchemeOverview
+from schemes.domain.schemes.overview import SchemeOverview
 from schemes.domain.schemes.reviews import SchemeReviews
 
 
@@ -56,12 +56,8 @@ class Scheme:
     @property
     def is_updateable(self) -> bool:
         is_active = self.status == Status.ACTIVE
-        is_eligible_for_authority_update = self._is_eligible_for_authority_update(self.overview.funding_programme)
+        is_eligible_for_authority_update = self.overview.funding_programme.is_eligible_for_authority_update
         return is_active and is_eligible_for_authority_update
-
-    @staticmethod
-    def _is_eligible_for_authority_update(funding_programme: FundingProgramme | None) -> bool:
-        return funding_programme.is_eligible_for_authority_update if funding_programme else True
 
 
 class SchemeRepository:

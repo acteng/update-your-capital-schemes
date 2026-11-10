@@ -43,6 +43,43 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
                     build_capital_scheme_funding_model(
                         funding_programme=f"{api_client.base_url}/funding-programmes/ATF2", amount=100_000
                     )
+                ]
+            ),
+        )
+    )
+    app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
+    oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
+
+    scheme_page = SchemePage.open(page, reference="ATE00001")
+
+    assert scheme_page.funding.funding_allocation == "£100,000"
+
+
+@pytest.mark.usefixtures("live_server", "oidc_server")
+def test_scheme_spend(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+    api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
+    api_client.add_improvements(
+        ImprovementModel(
+            reference="IMP00001",
+            overview=ImprovementOverviewModel(
+                name="Wirral Package",
+                description='Improvement for the "Wirral Package" capital scheme created as part of funding devolution.',
+                funding_managed_by=f"{api_client.base_url}/authorities/LIV",
+                source="authority update",
+            ),
+        )
+    )
+    api_client.add_schemes(
+        build_capital_scheme_model(
+            reference="ATE00001",
+            name="Wirral Package",
+            improvement=f"{api_client.base_url}/improvements/IMP00001",
+            financials=build_capital_scheme_financials_model(
+                funding=[
+                    build_capital_scheme_funding_model(
+                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF2", amount=100_000
+                    )
                 ],
                 spend=CapitalSchemeSpendModel(amount=50_000, source="ATF4 bid"),
             ),
@@ -54,9 +91,9 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
     scheme_page = SchemePage.open(page, reference="ATE00001")
 
     assert (
-        scheme_page.funding.funding_allocation == "£100,000"
-        and scheme_page.funding.spend_to_date == "£50,000"
-        and scheme_page.funding.allocation_still_to_spend == "£50,000"
+        scheme_page.spend.funding_allocation == "£100,000"
+        and scheme_page.spend.spend_to_date == "£50,000"
+        and scheme_page.spend.allocation_still_to_spend == "£50,000"
     )
 
 
@@ -96,11 +133,11 @@ def test_change_spend_to_date(
     oidc_client.add_user(StubUser("boardman", "boardman@example.com"))
 
     scheme_page = (
-        SchemePage.open(page, reference="ATE00001").funding.change_spend_to_date().form.enter_amount("60000").confirm()
+        SchemePage.open(page, reference="ATE00001").spend.change_spend_to_date().form.enter_amount("60000").confirm()
     )
 
     assert scheme_page.heading.text == "Wirral Package"
-    assert scheme_page.funding.spend_to_date == "£60,000"
+    assert scheme_page.spend.spend_to_date == "£60,000"
     assert api_client.get_scheme(reference="ATE00001").financials.spend == CapitalSchemeSpendModel(
         amount=60_000, source="authority update"
     )
@@ -143,7 +180,7 @@ def test_cannot_change_spend_to_date_when_error(
 
     change_spend_to_date_page = (
         SchemePage.open(page, reference="ATE00001")
-        .funding.change_spend_to_date()
+        .spend.change_spend_to_date()
         .form.enter_amount("")
         .confirm_when_error()
     )

@@ -173,6 +173,17 @@ class TestSchemeContext:
 
         assert context.funding.funding_allocation == 100_000
 
+    def test_from_domain_sets_spend(self) -> None:
+        authority = Authority(abbreviation="LIV", name="")
+        scheme = build_scheme(reference="", name="", authority_abbreviation="LIV")
+        scheme.financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        )
+
+        context = SchemeContext.from_domain(dummy_reporting_window(), authority, scheme)
+
+        assert context.spend.funding_allocation == 100_000
+
     def test_from_domain_sets_milestones(self) -> None:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", name="", authority_abbreviation="LIV")

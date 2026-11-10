@@ -15,7 +15,12 @@ from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
 from schemes.views.auth.bearer import async_bearer_auth
-from schemes.views.schemes.funding import ChangeSpendToDateContext, ChangeSpendToDateForm, SchemeFundingContext
+from schemes.views.schemes.financials import (
+    ChangeSpendToDateContext,
+    ChangeSpendToDateForm,
+    SchemeFundingContext,
+    SchemeSpendContext,
+)
 from schemes.views.schemes.milestones import (
     ChangeMilestoneDatesContext,
     ChangeMilestoneDatesForm,
@@ -167,6 +172,7 @@ class SchemeContext:
     needs_review: bool
     overview: SchemeOverviewContext
     funding: SchemeFundingContext
+    spend: SchemeSpendContext
     milestones: SchemeMilestonesContext
     outputs: SchemeOutputsContext
     review: SchemeReviewContext
@@ -180,6 +186,7 @@ class SchemeContext:
             needs_review=scheme.reviews.needs_review(reporting_window),
             overview=SchemeOverviewContext.from_domain(scheme),
             funding=SchemeFundingContext.from_domain(scheme.financials),
+            spend=SchemeSpendContext.from_domain(scheme.financials),
             milestones=SchemeMilestonesContext.from_domain(scheme.milestones),
             outputs=SchemeOutputsContext.from_domain(scheme.outputs.outputs),
             review=SchemeReviewContext.from_domain(scheme.reviews),

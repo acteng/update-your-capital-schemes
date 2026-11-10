@@ -5,7 +5,12 @@ from werkzeug.datastructures import MultiDict
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.financials import SchemeFinancials, SchemeFunding, SchemeSpend
 from schemes.domain.schemes.overview import FundingProgrammes
-from schemes.views.schemes.funding import ChangeSpendToDateContext, ChangeSpendToDateForm, SchemeFundingContext
+from schemes.views.schemes.financials import (
+    ChangeSpendToDateContext,
+    ChangeSpendToDateForm,
+    SchemeFundingContext,
+    SchemeSpendContext,
+)
 from tests.unit.domain.builders import build_scheme
 
 
@@ -20,11 +25,23 @@ class TestSchemeFundingContext:
 
         assert context.funding_allocation == 100_000
 
+
+class TestSchemeSpendContext:
+    def test_from_domain_sets_funding_allocation(self) -> None:
+        financials = SchemeFinancials()
+        financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        )
+
+        context = SchemeSpendContext.from_domain(financials)
+
+        assert context.funding_allocation == 100_000
+
     def test_from_domain_sets_spend_to_date(self) -> None:
         financials = SchemeFinancials()
         financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
 
-        context = SchemeFundingContext.from_domain(financials)
+        context = SchemeSpendContext.from_domain(financials)
 
         assert context.spend_to_date == 50_000
 
@@ -35,7 +52,7 @@ class TestSchemeFundingContext:
         )
         financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
 
-        context = SchemeFundingContext.from_domain(financials)
+        context = SchemeSpendContext.from_domain(financials)
 
         assert context.allocation_still_to_spend == 60_000
 

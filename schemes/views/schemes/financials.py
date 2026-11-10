@@ -15,6 +15,15 @@ from schemes.views.forms import CustomMessageIntegerField
 @dataclass(frozen=True)
 class SchemeFundingContext:
     funding_allocation: int | None
+
+    @classmethod
+    def from_domain(cls, financials: SchemeFinancials) -> Self:
+        return cls(funding_allocation=financials.funding_allocation)
+
+
+@dataclass(frozen=True)
+class SchemeSpendContext:
+    funding_allocation: int | None
     spend_to_date: int | None
     allocation_still_to_spend: int
 

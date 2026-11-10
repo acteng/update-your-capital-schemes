@@ -15,7 +15,7 @@ from tests.integration.pages import ChangeSpendToDatePage, SchemePage
 from tests.unit.domain.builders import build_scheme, build_scheme_funding
 
 
-class TestSchemeFunding:
+class TestSchemeFinancials:
     @pytest.fixture(name="auth", autouse=True)
     async def auth_fixture(self, authorities: AuthorityRepository, users: UserRepository, client: FlaskClient) -> None:
         await authorities.add(Authority(abbreviation="LIV", name="Liverpool City Region Combined Authority"))
@@ -23,9 +23,29 @@ class TestSchemeFunding:
         with client.session_transaction() as session:
             session["user"] = {"email": "boardman@example.com"}
 
-    async def test_scheme_shows_minimal_funding(
-        self, schemes: SchemeRepository, async_client: AsyncFlaskClient
-    ) -> None:
+    async def test_scheme_shows_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        )
+        await schemes.add(scheme)
+
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
+
+        assert scheme_page.funding.funding_allocation == "£100,000"
+
+    async def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=0, source=DataSource.ATF4_BID)
+        )
+        await schemes.add(scheme)
+
+        scheme_page = await SchemePage.open(async_client, reference="ATE00001")
+
+        assert scheme_page.funding.funding_allocation == "£0"
+
+    async def test_scheme_shows_minimal_spend(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.financials.update_funding(build_scheme_funding(amount=0))
         await schemes.add(scheme)
@@ -33,12 +53,12 @@ class TestSchemeFunding:
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert (
-            scheme_page.funding.funding_allocation == "£0"
-            and scheme_page.funding.spend_to_date == ""
-            and scheme_page.funding.allocation_still_to_spend == "£0"
+            scheme_page.spend.funding_allocation == "£0"
+            and scheme_page.spend.spend_to_date == ""
+            and scheme_page.spend.allocation_still_to_spend == "£0"
         )
 
-    async def test_scheme_shows_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
+    async def test_scheme_shows_spend(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.financials.update_funding(
             SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
@@ -49,12 +69,12 @@ class TestSchemeFunding:
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert (
-            scheme_page.funding.funding_allocation == "£100,000"
-            and scheme_page.funding.spend_to_date == "£50,000"
-            and scheme_page.funding.allocation_still_to_spend == "£50,000"
+            scheme_page.spend.funding_allocation == "£100,000"
+            and scheme_page.spend.spend_to_date == "£50,000"
+            and scheme_page.spend.allocation_still_to_spend == "£50,000"
         )
 
-    async def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
+    async def test_scheme_shows_zero_spend(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
         scheme.financials.update_funding(
             SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=0, source=DataSource.ATF4_BID)
@@ -65,9 +85,9 @@ class TestSchemeFunding:
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert (
-            scheme_page.funding.funding_allocation == "£0"
-            and scheme_page.funding.spend_to_date == "£0"
-            and scheme_page.funding.allocation_still_to_spend == "£0"
+            scheme_page.spend.funding_allocation == "£0"
+            and scheme_page.spend.spend_to_date == "£0"
+            and scheme_page.spend.allocation_still_to_spend == "£0"
         )
 
     async def test_scheme_shows_change_spend_to_date(
@@ -79,7 +99,7 @@ class TestSchemeFunding:
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
-        assert scheme_page.funding.change_spend_to_date_url == "/schemes/ATE00001/spend-to-date"
+        assert scheme_page.spend.change_spend_to_date_url == "/schemes/ATE00001/spend-to-date"
 
     async def test_spend_to_date_form_shows_title(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient

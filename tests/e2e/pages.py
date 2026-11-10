@@ -181,6 +181,7 @@ class SchemePage(PageObject):
         self._inset_text = InsetTextComponent(self._main.locator(".govuk-inset-text"))
         self.overview = SchemeOverviewComponent(self._main.get_by_role("heading", name="Overview"))
         self.funding = SchemeFundingComponent(self._main.get_by_role("heading", name="Funding"))
+        self.spend = SchemeSpendComponent(self._main.get_by_role("heading", name="Spend"))
         self.milestones = SchemeMilestonesComponent(self._main.get_by_role("heading", name="Milestones"))
         self.outputs = SchemeOutputsComponent(self._main.get_by_role("heading", name="Outputs"))
         self.review = SchemeReviewComponent(self._main.get_by_role("heading", name="Is this scheme up-to-date?"))
@@ -309,6 +310,17 @@ class ChangeSpendToDatePage(PageObject):
 
 
 class SchemeFundingComponent(SummaryCardComponent):
+    def __init__(self, title: Locator):
+        super().__init__(title)
+        self._title = title
+        self._funding_allocation = self._get_definition("Funding allocation")
+
+    @property
+    def funding_allocation(self) -> str:
+        return (self._funding_allocation.text_content() or "").strip()
+
+
+class SchemeSpendComponent(SummaryCardComponent):
     def __init__(self, title: Locator):
         super().__init__(title)
         self._title = title

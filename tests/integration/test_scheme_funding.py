@@ -6,12 +6,13 @@ from flask.testing import FlaskClient
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.financials import SchemeFunding, SchemeSpend
+from schemes.domain.schemes.overview import FundingProgrammes
 from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import ChangeSpendToDatePage, SchemePage
-from tests.unit.domain.builders import build_scheme
+from tests.unit.domain.builders import build_scheme, build_scheme_funding
 
 
 class TestSchemeFunding:
@@ -25,19 +26,23 @@ class TestSchemeFunding:
     async def test_scheme_shows_minimal_funding(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding(amount=0))
+        await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert (
-            scheme_page.funding.funding_allocation == ""
+            scheme_page.funding.funding_allocation == "£0"
             and scheme_page.funding.spend_to_date == ""
             and scheme_page.funding.allocation_still_to_spend == "£0"
         )
 
     async def test_scheme_shows_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.financials.update_funding(SchemeFunding(amount=100_000, source=DataSource.ATF4_BID))
+        scheme.financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        )
         scheme.financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
@@ -51,7 +56,9 @@ class TestSchemeFunding:
 
     async def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.financials.update_funding(SchemeFunding(amount=0, source=DataSource.ATF4_BID))
+        scheme.financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=0, source=DataSource.ATF4_BID)
+        )
         scheme.financials.update_spend(SchemeSpend(id_=1, amount=0, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
@@ -66,7 +73,9 @@ class TestSchemeFunding:
     async def test_scheme_shows_change_spend_to_date(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
@@ -75,7 +84,9 @@ class TestSchemeFunding:
     async def test_spend_to_date_form_shows_title(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
@@ -87,7 +98,9 @@ class TestSchemeFunding:
     async def test_spend_to_date_form_shows_back(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
@@ -96,7 +109,9 @@ class TestSchemeFunding:
     async def test_spend_to_date_form_shows_scheme(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
@@ -106,7 +121,9 @@ class TestSchemeFunding:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.financials.update_funding(SchemeFunding(amount=100_000, source=DataSource.ATF4_BID))
+        scheme.financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        )
         await schemes.add(scheme)
 
         change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
@@ -116,7 +133,9 @@ class TestSchemeFunding:
     async def test_spend_to_date_form_shows_minimal_funding_summary(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
@@ -126,6 +145,7 @@ class TestSchemeFunding:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
         scheme.financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
@@ -137,6 +157,7 @@ class TestSchemeFunding:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
         scheme.financials.update_spend(SchemeSpend(id_=1, amount=0, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
@@ -147,7 +168,9 @@ class TestSchemeFunding:
     async def test_spend_to_date_form_shows_empty_amount(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
@@ -156,7 +179,9 @@ class TestSchemeFunding:
     async def test_spend_to_date_form_shows_confirm(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
@@ -165,7 +190,9 @@ class TestSchemeFunding:
     async def test_spend_to_date_form_shows_cancel(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
 
@@ -175,7 +202,9 @@ class TestSchemeFunding:
         self, authorities: AuthorityRepository, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
-        await schemes.add(build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO"))
+        scheme = build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         forbidden_page = await ChangeSpendToDatePage.open_when_unauthorized(async_client, reference="ATE00002")
 
@@ -189,14 +218,11 @@ class TestSchemeFunding:
     async def test_cannot_spend_to_date_form_when_not_updateable_scheme(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(
-            build_scheme(
-                reference="ATE00001",
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                status=Status.PIPELINE,
-            )
+        scheme = build_scheme(
+            reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV", status=Status.PIPELINE
         )
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         not_found_page = await ChangeSpendToDatePage.open_when_not_found(async_client, reference="ATE00001")
 
@@ -207,7 +233,9 @@ class TestSchemeFunding:
     ) -> None:
         clock.now = datetime(2020, 2, 1, 13)
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.financials.update_funding(SchemeFunding(amount=100_000, source=DataSource.ATF4_BID))
+        scheme.financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        )
         scheme.financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
@@ -222,7 +250,9 @@ class TestSchemeFunding:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
-        scheme.financials.update_funding(SchemeFunding(amount=100_000, source=DataSource.ATF4_BID))
+        scheme.financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        )
         await schemes.add(scheme)
 
         response = await async_client.post(
@@ -235,6 +265,7 @@ class TestSchemeFunding:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
         scheme.financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
@@ -260,7 +291,9 @@ class TestSchemeFunding:
     async def test_cannot_spend_to_date_when_no_csrf_token(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_spend_to_date_page = ChangeSpendToDatePage(
             await async_client.post("/schemes/ATE00001/spend-to-date", data={"amount": "60000"}, follow_redirects=True)
@@ -276,7 +309,9 @@ class TestSchemeFunding:
     async def test_cannot_spend_to_date_when_incorrect_csrf_token(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_spend_to_date_page = ChangeSpendToDatePage(
             await async_client.post(
@@ -299,7 +334,9 @@ class TestSchemeFunding:
         csrf_token: str,
     ) -> None:
         await authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
-        await schemes.add(build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO"))
+        scheme = build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         response = await async_client.post(
             "/schemes/ATE00002/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"}
@@ -315,14 +352,11 @@ class TestSchemeFunding:
     async def test_cannot_spend_to_date_when_not_updateable_scheme(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
-        await schemes.add(
-            build_scheme(
-                reference="ATE00001",
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                status=Status.PIPELINE,
-            )
+        scheme = build_scheme(
+            reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV", status=Status.PIPELINE
         )
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         response = await async_client.post(
             "/schemes/ATE00001/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"}

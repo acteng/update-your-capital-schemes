@@ -1,6 +1,6 @@
 import pytest
 
-from schemes.domain.schemes.overview import FundingProgrammes, SchemeOverview
+from schemes.domain.schemes.overview import SchemeOverview
 from schemes.domain.schemes.schemes import Status
 from tests.unit.domain.builders import build_scheme
 
@@ -14,41 +14,19 @@ def test_build_scheme() -> None:
 def test_build_scheme_with_minimal_overview_fields() -> None:
     scheme = build_scheme(reference="", name="Wirral Package")
 
-    assert (
-        scheme.overview.name == "Wirral Package"
-        and scheme.overview.authority_abbreviation == ""
-        and scheme.overview.funding_programme == FundingProgrammes.ATF2
-    )
+    assert scheme.overview.name == "Wirral Package" and scheme.overview.authority_abbreviation == ""
 
 
 def test_build_scheme_with_overview_fields() -> None:
-    scheme = build_scheme(
-        reference="",
-        name="Wirral Package",
-        authority_abbreviation="LIV",
-        funding_programme=FundingProgrammes.ATF4,
-    )
+    scheme = build_scheme(reference="", name="Wirral Package", authority_abbreviation="LIV")
 
-    assert (
-        scheme.overview.name == "Wirral Package"
-        and scheme.overview.authority_abbreviation == "LIV"
-        and scheme.overview.funding_programme == FundingProgrammes.ATF4
-    )
+    assert scheme.overview.name == "Wirral Package" and scheme.overview.authority_abbreviation == "LIV"
 
 
 def test_build_scheme_with_overview() -> None:
-    scheme = build_scheme(
-        reference="",
-        overview=SchemeOverview(
-            name="Wirral Package", authority_abbreviation="LIV", funding_programme=FundingProgrammes.ATF4
-        ),
-    )
+    scheme = build_scheme(reference="", overview=SchemeOverview(name="Wirral Package", authority_abbreviation="LIV"))
 
-    assert (
-        scheme.overview.name == "Wirral Package"
-        and scheme.overview.authority_abbreviation == "LIV"
-        and scheme.overview.funding_programme == FundingProgrammes.ATF4
-    )
+    assert scheme.overview.name == "Wirral Package" and scheme.overview.authority_abbreviation == "LIV"
 
 
 def test_cannot_build_scheme_without_overview() -> None:
@@ -62,10 +40,7 @@ def test_cannot_build_scheme_with_overview_fields_and_overview() -> None:
             reference="",
             name="Wirral Package",
             authority_abbreviation="LIV",
-            funding_programme=FundingProgrammes.ATF4,
-            overview=SchemeOverview(
-                name="Wirral Package", authority_abbreviation="LIV", funding_programme=FundingProgrammes.ATF4
-            ),
+            overview=SchemeOverview(name="Wirral Package", authority_abbreviation="LIV"),
         )
 
 

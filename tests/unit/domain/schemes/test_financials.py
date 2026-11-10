@@ -1,12 +1,17 @@
 from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.financials import SchemeFinancials, SchemeFunding, SchemeSpend
+from schemes.domain.schemes.overview import FundingProgrammes
 
 
 class TestSchemeFunding:
     def test_create(self) -> None:
-        funding = SchemeFunding(amount=100_000, source=DataSource.ATF4_BID)
+        funding = SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
 
-        assert funding.amount == 100_000 and funding.source == DataSource.ATF4_BID
+        assert (
+            funding.funding_programme == FundingProgrammes.ATF4
+            and funding.amount == 100_000
+            and funding.source == DataSource.ATF4_BID
+        )
 
 
 class TestSchemeSpend:
@@ -24,7 +29,9 @@ class TestSchemeFinancials:
 
     def test_get_fundings_is_copy(self) -> None:
         financials = SchemeFinancials()
-        financials.update_funding(SchemeFunding(amount=100_000, source=DataSource.ATF4_BID))
+        financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        )
 
         financials.fundings.clear()
 
@@ -32,7 +39,7 @@ class TestSchemeFinancials:
 
     def test_update_funding(self) -> None:
         financials = SchemeFinancials()
-        funding = SchemeFunding(amount=100_000, source=DataSource.ATF4_BID)
+        funding = SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
 
         financials.update_funding(funding)
 
@@ -40,8 +47,10 @@ class TestSchemeFinancials:
 
     def test_update_fundings(self) -> None:
         financials = SchemeFinancials()
-        funding1 = SchemeFunding(amount=100_000, source=DataSource.ATF4_BID)
-        funding2 = SchemeFunding(amount=20_000, source=DataSource.ATF4_BID)
+        funding1 = SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        funding2 = SchemeFunding(
+            funding_programme=FundingProgrammes.ATF4, amount=20_000, source=DataSource.CHANGE_CONTROL
+        )
 
         financials.update_fundings(funding1, funding2)
 
@@ -66,8 +75,8 @@ class TestSchemeFinancials:
     def test_get_funding_allocation_sums_amounts(self) -> None:
         financials = SchemeFinancials()
         financials.update_fundings(
-            SchemeFunding(amount=100_000, source=DataSource.ATF4_BID),
-            SchemeFunding(amount=20_000, source=DataSource.CHANGE_CONTROL),
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID),
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=20_000, source=DataSource.CHANGE_CONTROL),
         )
 
         assert financials.funding_allocation == 120_000
@@ -90,7 +99,9 @@ class TestSchemeFinancials:
 
     def test_get_allocation_still_to_spend(self) -> None:
         financials = SchemeFinancials()
-        financials.update_funding(SchemeFunding(amount=100_000, source=DataSource.ATF4_BID))
+        financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        )
         financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
 
         assert financials.allocation_still_to_spend == 50_000
@@ -103,7 +114,9 @@ class TestSchemeFinancials:
 
     def test_get_allocation_still_to_spend_when_no_spend(self) -> None:
         financials = SchemeFinancials()
-        financials.update_funding(SchemeFunding(amount=100_000, source=DataSource.ATF4_BID))
+        financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        )
 
         assert financials.allocation_still_to_spend == 100_000
 

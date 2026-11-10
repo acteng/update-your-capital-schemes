@@ -82,15 +82,15 @@ def get_authority_funding_managed_by_capital_schemes(abbreviation: str) -> dict[
         abort(400, f"Unexpected query string parameters: {set(args.keys())}")
 
     authority_url = AnyUrl(url_for("authorities.get_authority", abbreviation=abbreviation, _external=True))
-    funding_programme_urls = [
+    funding_programme_urls = {
         AnyUrl(url_for("funding_programmes.get_funding_programme", code=funding_programme_code, _external=True))
         for funding_programme_code in funding_programme_codes
-    ]
+    }
     capital_scheme_items = [
         _to_capital_scheme_item(capital_scheme)
         for capital_scheme in capital_schemes.values()
         if _is_funding_managed_by(capital_scheme, authority_url)
-        and (not funding_programme_urls or capital_scheme.overview.funding_programme in funding_programme_urls)
+        and (not funding_programme_urls or _get_funding_programme_urls(capital_scheme) & funding_programme_urls)
         and (not status or capital_scheme.status.status == status)
     ]
 
@@ -112,6 +112,10 @@ def _is_funding_managed_by(capital_scheme: CapitalSchemeModel, authority_url: An
 
     improvement = improvements[improvement_url]
     return improvement.overview.funding_managed_by == authority_url
+
+
+def _get_funding_programme_urls(capital_scheme: CapitalSchemeModel) -> set[AnyUrl]:
+    return {funding.funding_programme for funding in capital_scheme.financials.funding.items}
 
 
 def _to_capital_scheme_item(capital_scheme: CapitalSchemeModel) -> CapitalSchemeItemModel:

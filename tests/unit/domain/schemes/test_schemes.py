@@ -1,6 +1,7 @@
 import pytest
 
-from schemes.domain.schemes.financials import SchemeFinancials
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.financials import SchemeFinancials, SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
 from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeOverview
@@ -63,9 +64,7 @@ class TestFundingProgrammes:
 
 class TestScheme:
     def test_create(self) -> None:
-        overview = SchemeOverview(
-            name="Wirral Package", authority_abbreviation="LIV", funding_programme=FundingProgrammes.ATF4
-        )
+        overview = SchemeOverview(name="Wirral Package", authority_abbreviation="LIV")
 
         scheme = Scheme(reference="ATE00001", overview=overview, status=Status.ACTIVE)
 
@@ -102,11 +101,9 @@ class TestScheme:
         ],
     )
     def test_is_updateable_when_active(self, status: Status, expected_updateable: bool) -> None:
-        scheme = build_scheme(
-            reference="ATE00001",
-            name="Wirral Package",
-            funding_programme=FundingProgrammes.ATF4,
-            status=status,
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", status=status)
+        scheme.financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
         )
 
         assert scheme.is_updateable == expected_updateable
@@ -121,11 +118,25 @@ class TestScheme:
     def test_is_updateable_when_eligible_for_authority_update(
         self, funding_programme: FundingProgramme, expected_updateable: bool
     ) -> None:
-        scheme = build_scheme(
-            reference="ATE00001",
-            name="Wirral Package",
-            funding_programme=funding_programme,
-            status=Status.ACTIVE,
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", status=Status.ACTIVE)
+        scheme.financials.update_funding(
+            SchemeFunding(funding_programme=funding_programme, amount=100_000, source=DataSource.ATF4_BID)
         )
 
         assert scheme.is_updateable == expected_updateable
+
+    def test_is_updateable_when_partially_eligible_for_authority_update(self) -> None:
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", status=Status.ACTIVE)
+        scheme.financials.update_fundings(
+            SchemeFunding(
+                funding_programme=FundingProgramme("ATF100", False), amount=100_000, source=DataSource.ATF4_BID
+            ),
+            SchemeFunding(funding_programme=FundingProgrammes.CON, amount=20_000, source=DataSource.FUNDING_DEVOLUTION),
+        )
+
+        assert scheme.is_updateable
+
+    def test_is_updateable_when_no_funding(self) -> None:
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", status=Status.ACTIVE)
+
+        assert not scheme.is_updateable

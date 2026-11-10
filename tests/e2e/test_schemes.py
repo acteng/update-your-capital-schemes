@@ -9,6 +9,8 @@ from tests.e2e.api_client import (
     FundingProgrammeModel,
     ImprovementModel,
     ImprovementOverviewModel,
+    build_capital_scheme_financials_model,
+    build_capital_scheme_funding_model,
     build_capital_scheme_model,
 )
 from tests.e2e.app_client import AppClient, UserRepr
@@ -25,10 +27,7 @@ class TestAuthenticated:
 
     def test_schemes(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
-        api_client.add_funding_programmes(
-            FundingProgrammeModel(code="ATF3", eligible_for_authority_update=True),
-            FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True),
-        )
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
@@ -47,8 +46,14 @@ class TestAuthenticated:
             build_capital_scheme_model(
                 reference="ATE00001",
                 name="Wirral Package",
-                funding_programme=f"{api_client.base_url}/funding-programmes/ATF3",
                 improvement=f"{api_client.base_url}/improvements/IMP00001",
+                financials=build_capital_scheme_financials_model(
+                    funding=[
+                        build_capital_scheme_funding_model(
+                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2"
+                        )
+                    ]
+                ),
                 milestones=CapitalSchemeMilestonesModel(current_milestone="detailed design completed", items=[]),
                 authority_review=CapitalSchemeAuthorityReviewModel(
                     review_date="2020-01-02T00:00:00Z", source="ATF3 bid"
@@ -57,8 +62,14 @@ class TestAuthenticated:
             build_capital_scheme_model(
                 reference="ATE00002",
                 name="School Streets",
-                funding_programme=f"{api_client.base_url}/funding-programmes/ATF4",
                 improvement=f"{api_client.base_url}/improvements/IMP00001",
+                financials=build_capital_scheme_financials_model(
+                    funding=[
+                        build_capital_scheme_funding_model(
+                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2"
+                        )
+                    ]
+                ),
                 milestones=CapitalSchemeMilestonesModel(current_milestone="construction started", items=[]),
                 authority_review=CapitalSchemeAuthorityReviewModel(
                     review_date="2020-01-03T00:00:00Z", source="ATF4 bid"
@@ -110,8 +121,14 @@ class TestAuthenticated:
             build_capital_scheme_model(
                 reference="ATE00001",
                 name="Wirral Package",
-                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
                 improvement=f"{api_client.base_url}/improvements/IMP00001",
+                financials=build_capital_scheme_financials_model(
+                    funding=[
+                        build_capital_scheme_funding_model(
+                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2"
+                        )
+                    ]
+                ),
             )
         )
         app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))
@@ -143,8 +160,14 @@ class TestAuthenticated:
             build_capital_scheme_model(
                 reference="ATE00001",
                 name="Wirral Package",
-                funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
                 improvement=f"{api_client.base_url}/improvements/IMP00001",
+                financials=build_capital_scheme_financials_model(
+                    funding=[
+                        build_capital_scheme_funding_model(
+                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2"
+                        )
+                    ]
+                ),
             )
         )
         app_client.add_users(UserRepr(email="boardman@example.com", authority_abbreviation="LIV"))

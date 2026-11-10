@@ -4,13 +4,12 @@ from playwright.sync_api import Page
 from tests.e2e.api_client import (
     ApiClient,
     AuthorityModel,
-    CapitalSchemeFinancialsModel,
-    CapitalSchemeFundingModel,
     CapitalSchemeSpendModel,
-    CollectionModel,
     FundingProgrammeModel,
     ImprovementModel,
     ImprovementOverviewModel,
+    build_capital_scheme_financials_model,
+    build_capital_scheme_funding_model,
     build_capital_scheme_model,
 )
 from tests.e2e.app_client import AppClient, UserRepr
@@ -38,12 +37,13 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
         build_capital_scheme_model(
             reference="ATE00001",
             name="Wirral Package",
-            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             improvement=f"{api_client.base_url}/improvements/IMP00001",
-            financials=CapitalSchemeFinancialsModel(
-                funding=CollectionModel[CapitalSchemeFundingModel](
-                    items=[CapitalSchemeFundingModel(amount=100_000, source="ATF4 bid")]
-                ),
+            financials=build_capital_scheme_financials_model(
+                funding=[
+                    build_capital_scheme_funding_model(
+                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF2", amount=100_000
+                    )
+                ],
                 spend=CapitalSchemeSpendModel(amount=50_000, source="ATF4 bid"),
             ),
         )
@@ -81,12 +81,13 @@ def test_change_spend_to_date(
         build_capital_scheme_model(
             reference="ATE00001",
             name="Wirral Package",
-            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             improvement=f"{api_client.base_url}/improvements/IMP00001",
-            financials=CapitalSchemeFinancialsModel(
-                funding=CollectionModel[CapitalSchemeFundingModel](
-                    items=[CapitalSchemeFundingModel(amount=100_000, source="ATF4 bid")]
-                ),
+            financials=build_capital_scheme_financials_model(
+                funding=[
+                    build_capital_scheme_funding_model(
+                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF2", amount=100_000
+                    )
+                ],
                 spend=CapitalSchemeSpendModel(amount=50_000, source="ATF4 bid"),
             ),
         )
@@ -126,12 +127,13 @@ def test_cannot_change_spend_to_date_when_error(
         build_capital_scheme_model(
             reference="ATE00001",
             name="Wirral Package",
-            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             improvement=f"{api_client.base_url}/improvements/IMP00001",
-            financials=CapitalSchemeFinancialsModel(
-                funding=CollectionModel[CapitalSchemeFundingModel](
-                    items=[CapitalSchemeFundingModel(amount=100_000, source="ATF4 bid")]
-                ),
+            financials=build_capital_scheme_financials_model(
+                funding=[
+                    build_capital_scheme_funding_model(
+                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF2", amount=100_000
+                    )
+                ],
                 spend=CapitalSchemeSpendModel(amount=50_000, source="ATF4 bid"),
             ),
         )

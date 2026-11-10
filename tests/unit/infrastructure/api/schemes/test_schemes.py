@@ -48,7 +48,6 @@ from tests.unit.infrastructure.api.builders import (
     build_capital_scheme_status_model,
     build_create_capital_scheme_authority_review_json,
     build_funding_programme_json,
-    build_funding_programme_model,
     build_improvement_json,
     build_improvement_overview_json,
 )
@@ -68,7 +67,7 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [])
 
         assert scheme.reference == "ATE00001"
         assert not scheme.financials.fundings and not scheme.financials.spend
@@ -85,15 +84,10 @@ class TestCapitalSchemeModel:
                 "https://api.example/authorities/LIV/capital-schemes/funding-managed-by"
             ),
         )
-        funding_programme_model = FundingProgrammeModel(
-            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4", eligible_for_authority_update=True
-        )
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
             overview=CapitalSchemeOverviewModel(
-                name="Wirral Package",
-                funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
-                improvement=AnyUrl("https://api.example/improvements/IMP00001"),
+                name="Wirral Package", improvement=AnyUrl("https://api.example/improvements/IMP00001")
             ),
             status=build_capital_scheme_status_model(),
             financials=CapitalSchemeFinancialsModel(
@@ -103,13 +97,9 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain(authority_model, [funding_programme_model])
+        scheme = capital_scheme_model.to_domain(authority_model, [])
 
-        assert (
-            scheme.overview.name == "Wirral Package"
-            and scheme.overview.authority_abbreviation == "LIV"
-            and scheme.overview.funding_programme == FundingProgrammes.ATF4
-        )
+        assert scheme.overview.name == "Wirral Package" and scheme.overview.authority_abbreviation == "LIV"
 
     def test_to_domain_sets_status(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
@@ -123,18 +113,27 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [])
 
         assert scheme.status == Status.ACTIVE
 
     def test_to_domain_sets_financials(self) -> None:
+        funding_programme_model = FundingProgrammeModel(
+            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4", eligible_for_authority_update=True
+        )
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
             overview=build_capital_scheme_overview_model(),
             status=build_capital_scheme_status_model(),
             financials=CapitalSchemeFinancialsModel(
                 funding=CollectionModel[CapitalSchemeFundingModel](
-                    items=[CapitalSchemeFundingModel(amount=100_000, source=DataSourceModel.ATF4_BID)]
+                    items=[
+                        CapitalSchemeFundingModel(
+                            funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
+                            amount=100_000,
+                            source=DataSourceModel.ATF4_BID,
+                        )
+                    ]
                 ),
                 spend=CapitalSchemeSpendModel(amount=50_000, source=DataSourceModel.ATF4_BID),
             ),
@@ -142,11 +141,15 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [funding_programme_model])
 
         (funding,) = scheme.financials.fundings
         spend = scheme.financials.spend
-        assert funding.amount == 100_000 and funding.source == DataSource.ATF4_BID
+        assert (
+            funding.funding_programme == FundingProgrammes.ATF4
+            and funding.amount == 100_000
+            and funding.source == DataSource.ATF4_BID
+        )
         assert spend and spend.id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
 
     def test_to_domain_sets_milestones(self) -> None:
@@ -176,7 +179,7 @@ class TestCapitalSchemeModel:
             outputs=CollectionModel[CapitalSchemeOutputModel](items=[]),
         )
 
-        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [])
 
         milestone1, milestone2 = scheme.milestones.milestones
         assert (
@@ -221,7 +224,7 @@ class TestCapitalSchemeModel:
             ),
         )
 
-        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [])
 
         output1, output2 = scheme.outputs.outputs
         assert (
@@ -250,7 +253,7 @@ class TestCapitalSchemeModel:
             ),
         )
 
-        scheme = capital_scheme_model.to_domain(build_authority_model(), [build_funding_programme_model()])
+        scheme = capital_scheme_model.to_domain(build_authority_model(), [])
 
         (authority_review1,) = scheme.reviews.authority_reviews
         assert (
@@ -268,7 +271,7 @@ class TestCapitalSchemeItemModel:
             status=build_capital_scheme_status_model(),
         )
 
-        scheme = capital_scheme_item_model.to_domain(build_authority_model(), [build_funding_programme_model()])
+        scheme = capital_scheme_item_model.to_domain(build_authority_model())
 
         assert scheme.reference == "ATE00001"
 
@@ -281,26 +284,17 @@ class TestCapitalSchemeItemModel:
                 "https://api.example/authorities/LIV/capital-schemes/funding-managed-by"
             ),
         )
-        funding_programme_model = FundingProgrammeModel(
-            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4", eligible_for_authority_update=True
-        )
         capital_scheme_item_model = CapitalSchemeItemModel(
             reference="ATE00001",
             overview=CapitalSchemeOverviewModel(
-                name="Wirral Package",
-                funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
-                improvement=AnyUrl("https://api.example/improvements/IMP00001"),
+                name="Wirral Package", improvement=AnyUrl("https://api.example/improvements/IMP00001")
             ),
             status=build_capital_scheme_status_model(),
         )
 
-        scheme = capital_scheme_item_model.to_domain(authority_model, [funding_programme_model])
+        scheme = capital_scheme_item_model.to_domain(authority_model)
 
-        assert (
-            scheme.overview.name == "Wirral Package"
-            and scheme.overview.authority_abbreviation == "LIV"
-            and scheme.overview.funding_programme == FundingProgrammes.ATF4
-        )
+        assert scheme.overview.name == "Wirral Package" and scheme.overview.authority_abbreviation == "LIV"
 
     def test_to_domain_sets_status(self) -> None:
         capital_scheme_item_model = CapitalSchemeItemModel(
@@ -309,7 +303,7 @@ class TestCapitalSchemeItemModel:
             status=CapitalSchemeStatusModel(status=StatusModel.ACTIVE),
         )
 
-        scheme = capital_scheme_item_model.to_domain(build_authority_model(), [build_funding_programme_model()])
+        scheme = capital_scheme_item_model.to_domain(build_authority_model())
 
         assert scheme.status == Status.ACTIVE
 
@@ -323,7 +317,7 @@ class TestCapitalSchemeItemModel:
             ),
         )
 
-        scheme = capital_scheme_item_model.to_domain(build_authority_model(), [build_funding_programme_model()])
+        scheme = capital_scheme_item_model.to_domain(build_authority_model())
 
         (authority_review1,) = scheme.reviews.authority_reviews
         assert (
@@ -339,9 +333,7 @@ class TestApiSchemeRepository:
         return ApiSchemeRepository(remote_app)
 
     async def test_get_scheme(self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository) -> None:
-        api_mock.get("/funding-programmes/ATF4").respond(
-            json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
-        )
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
         api_mock.get("/improvements/IMP00001").respond(
             json=build_improvement_json(
@@ -352,10 +344,7 @@ class TestApiSchemeRepository:
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_capital_scheme_overview_json(
-                    funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                    improvement=f"{api_base_url}/improvements/IMP00001",
-                ),
+                overview=build_capital_scheme_overview_json(improvement=f"{api_base_url}/improvements/IMP00001"),
             ),
         )
 
@@ -366,9 +355,7 @@ class TestApiSchemeRepository:
     async def test_get_scheme_sets_overview(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes/ATF4").respond(
-            json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4", code="ATF4")
-        )
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             json=build_authority_json(id_=f"{api_base_url}/authorities/LIV", abbreviation="LIV")
         )
@@ -382,9 +369,7 @@ class TestApiSchemeRepository:
             json=build_capital_scheme_json(
                 reference="ATE00001",
                 overview=build_capital_scheme_overview_json(
-                    name="Wirral Package",
-                    funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                    improvement=f"{api_base_url}/improvements/IMP00001",
+                    name="Wirral Package", improvement=f"{api_base_url}/improvements/IMP00001"
                 ),
             ),
         )
@@ -392,18 +377,12 @@ class TestApiSchemeRepository:
         scheme = await schemes.get("ATE00001")
 
         assert scheme
-        assert (
-            scheme.overview.name == "Wirral Package"
-            and scheme.overview.authority_abbreviation == "LIV"
-            and scheme.overview.funding_programme == FundingProgrammes.ATF4
-        )
+        assert scheme.overview.name == "Wirral Package" and scheme.overview.authority_abbreviation == "LIV"
 
     async def test_get_scheme_sets_status(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes/ATF4").respond(
-            json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
-        )
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
         api_mock.get("/improvements/IMP00001").respond(
             json=build_improvement_json(
@@ -414,10 +393,7 @@ class TestApiSchemeRepository:
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_capital_scheme_overview_json(
-                    funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                    improvement=f"{api_base_url}/improvements/IMP00001",
-                ),
+                overview=build_capital_scheme_overview_json(improvement=f"{api_base_url}/improvements/IMP00001"),
                 status=build_capital_scheme_status_json(status="active"),
             ),
         )
@@ -429,8 +405,13 @@ class TestApiSchemeRepository:
     async def test_get_scheme_sets_financials(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes/ATF4").respond(
-            json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
+        api_mock.get("/funding-programmes", params__eq={}).respond(
+            json={
+                "items": [
+                    build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4", code="ATF4"),
+                    build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/CON", code="CON"),
+                ]
+            }
         )
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
         api_mock.get("/improvements/IMP00001").respond(
@@ -442,12 +423,20 @@ class TestApiSchemeRepository:
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_capital_scheme_overview_json(
-                    funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                    improvement=f"{api_base_url}/improvements/IMP00001",
-                ),
+                overview=build_capital_scheme_overview_json(improvement=f"{api_base_url}/improvements/IMP00001"),
                 financials=build_capital_scheme_financials_json(
-                    funding=[build_capital_scheme_funding_json(amount=100_000, source="ATF4 bid")],
+                    funding=[
+                        build_capital_scheme_funding_json(
+                            funding_programme=f"{api_base_url}/funding-programmes/ATF4",
+                            amount=100_000,
+                            source="ATF4 bid",
+                        ),
+                        build_capital_scheme_funding_json(
+                            funding_programme=f"{api_base_url}/funding-programmes/CON",
+                            amount=20_000,
+                            source="funding devolution",
+                        ),
+                    ],
                     spend=build_capital_scheme_spend_json(amount=50_000, source="ATF4 bid"),
                 ),
             ),
@@ -456,17 +445,24 @@ class TestApiSchemeRepository:
         scheme = await schemes.get("ATE00001")
 
         assert scheme
-        (funding,) = scheme.financials.fundings
+        funding1, funding2 = scheme.financials.fundings
         spend = scheme.financials.spend
-        assert funding.amount == 100_000 and funding.source == DataSource.ATF4_BID
+        assert (
+            funding1.funding_programme == FundingProgrammes.ATF4
+            and funding1.amount == 100_000
+            and funding1.source == DataSource.ATF4_BID
+        )
+        assert (
+            funding2.funding_programme == FundingProgrammes.CON
+            and funding2.amount == 20_000
+            and funding2.source == DataSource.FUNDING_DEVOLUTION
+        )
         assert spend and spend.id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
 
     async def test_get_scheme_sets_milestones(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes/ATF4").respond(
-            json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
-        )
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
         api_mock.get("/improvements/IMP00001").respond(
             json=build_improvement_json(
@@ -477,10 +473,7 @@ class TestApiSchemeRepository:
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_capital_scheme_overview_json(
-                    funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                    improvement=f"{api_base_url}/improvements/IMP00001",
-                ),
+                overview=build_capital_scheme_overview_json(improvement=f"{api_base_url}/improvements/IMP00001"),
                 milestones=[
                     build_capital_scheme_milestone_json(
                         milestone="detailed design completed",
@@ -520,9 +513,7 @@ class TestApiSchemeRepository:
     async def test_get_scheme_sets_outputs(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes/ATF4").respond(
-            json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
-        )
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
         api_mock.get("/improvements/IMP00001").respond(
             json=build_improvement_json(
@@ -533,10 +524,7 @@ class TestApiSchemeRepository:
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_capital_scheme_overview_json(
-                    funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                    improvement=f"{api_base_url}/improvements/IMP00001",
-                ),
+                overview=build_capital_scheme_overview_json(improvement=f"{api_base_url}/improvements/IMP00001"),
                 outputs=[
                     build_capital_scheme_output_json(
                         type_="widening existing footway", measure="miles", observation_type="actual", value="1.500000"
@@ -569,9 +557,7 @@ class TestApiSchemeRepository:
     async def test_get_scheme_sets_authority_review(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes/ATF4").respond(
-            json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
-        )
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
         api_mock.get("/improvements/IMP00001").respond(
             json=build_improvement_json(
@@ -582,10 +568,7 @@ class TestApiSchemeRepository:
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_capital_scheme_overview_json(
-                    funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                    improvement=f"{api_base_url}/improvements/IMP00001",
-                ),
+                overview=build_capital_scheme_overview_json(improvement=f"{api_base_url}/improvements/IMP00001"),
                 authority_review=build_capital_scheme_authority_review_json(
                     review_date="2020-01-02T00:00:00Z", source="authority update"
                 ),
@@ -605,9 +588,7 @@ class TestApiSchemeRepository:
     async def test_get_scheme_ignores_unknown_key(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes/ATF4").respond(
-            json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
-        )
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
         api_mock.get("/improvements/IMP00001").respond(
             json=build_improvement_json(
@@ -618,10 +599,7 @@ class TestApiSchemeRepository:
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_capital_scheme_overview_json(
-                    funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                    improvement=f"{api_base_url}/improvements/IMP00001",
-                ),
+                overview=build_capital_scheme_overview_json(improvement=f"{api_base_url}/improvements/IMP00001"),
             )
             | {"foo": "bar"},
         )
@@ -647,9 +625,7 @@ class TestApiSchemeRepository:
     async def test_get_scheme_reuses_client(
         self, api_mock: MockRouter, api_base_url: str, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes/ATF4").respond(
-            json=build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4")
-        )
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(json=build_authority_json(id_=f"{api_base_url}/authorities/LIV"))
         api_mock.get("/improvements/IMP00001").respond(
             json=build_improvement_json(
@@ -660,10 +636,7 @@ class TestApiSchemeRepository:
         api_mock.get("/capital-schemes/ATE00001").respond(
             json=build_capital_scheme_json(
                 reference="ATE00001",
-                overview=build_capital_scheme_overview_json(
-                    funding_programme=f"{api_base_url}/funding-programmes/ATF4",
-                    improvement=f"{api_base_url}/improvements/IMP00001",
-                ),
+                overview=build_capital_scheme_overview_json(improvement=f"{api_base_url}/improvements/IMP00001"),
             ),
         )
 
@@ -674,7 +647,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(json={"items": [build_funding_programme_json()]})
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
@@ -699,9 +672,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_sets_overview(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(
-            json={"items": [build_funding_programme_json(id_=f"{api_base_url}/funding-programmes/ATF4", code="ATF4")]},
-        )
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
@@ -713,10 +684,7 @@ class TestApiSchemeRepository:
             json={
                 "items": [
                     build_capital_scheme_item_json(
-                        reference="ATE00001",
-                        overview=build_capital_scheme_overview_json(
-                            name="Wirral Package", funding_programme=f"{api_base_url}/funding-programmes/ATF4"
-                        ),
+                        reference="ATE00001", overview=build_capital_scheme_overview_json(name="Wirral Package")
                     )
                 ]
             },
@@ -724,16 +692,12 @@ class TestApiSchemeRepository:
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
-        assert (
-            scheme1.overview.name == "Wirral Package"
-            and scheme1.overview.authority_abbreviation == "LIV"
-            and scheme1.overview.funding_programme == FundingProgrammes.ATF4
-        )
+        assert scheme1.overview.name == "Wirral Package" and scheme1.overview.authority_abbreviation == "LIV"
 
     async def test_get_schemes_by_authority_sets_status(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(json={"items": [build_funding_programme_json()]})
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
@@ -755,10 +719,35 @@ class TestApiSchemeRepository:
 
         assert scheme1.status == Status.ACTIVE
 
+    async def test_get_schemes_by_authority_sets_is_updateable(
+        self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
+    ) -> None:
+        api_mock.get("/funding-programmes").respond(json={"items": []})
+        api_mock.get("/authorities/LIV").respond(
+            json=build_authority_json(
+                id_=f"{api_base_url}/authorities/LIV",
+                abbreviation="LIV",
+                funding_managed_by_capital_schemes=f"{api_base_url}/authorities/LIV/capital-schemes/funding-managed-by",
+            ),
+        )
+        api_mock.get("/authorities/LIV/capital-schemes/funding-managed-by").respond(
+            json={
+                "items": [
+                    build_capital_scheme_item_json(
+                        reference="ATE00001", status=build_capital_scheme_status_json(status="active")
+                    )
+                ]
+            }
+        )
+
+        (scheme1,) = await schemes.get_by_authority("LIV")
+
+        assert scheme1.is_updateable
+
     async def test_get_schemes_by_authority_sets_authority_review(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(json={"items": [build_funding_programme_json()]})
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
@@ -808,18 +797,7 @@ class TestApiSchemeRepository:
         )
         api_mock.get(
             "/authorities/LIV/capital-schemes/funding-managed-by", params={"funding-programme-code": ["ATF3", "ATF4"]}
-        ).respond(
-            json={
-                "items": [
-                    build_capital_scheme_item_json(
-                        reference="ATE00001",
-                        overview=build_capital_scheme_overview_json(
-                            funding_programme=f"{api_base_url}/funding-programmes/ATF4"
-                        ),
-                    )
-                ]
-            },
-        )
+        ).respond(json={"items": [build_capital_scheme_item_json(reference="ATE00001")]})
 
         (scheme1,) = await schemes.get_by_authority("LIV")
 
@@ -828,7 +806,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_filters_by_status_active(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(json={"items": [build_funding_programme_json()]})
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",
@@ -847,7 +825,7 @@ class TestApiSchemeRepository:
     async def test_get_schemes_by_authority_reuses_client(
         self, api_mock: MockRouter, api_base_url: str, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
-        api_mock.get("/funding-programmes").respond(json={"items": [build_funding_programme_json()]})
+        api_mock.get("/funding-programmes").respond(json={"items": []})
         api_mock.get("/authorities/LIV").respond(
             json=build_authority_json(
                 id_=f"{api_base_url}/authorities/LIV",

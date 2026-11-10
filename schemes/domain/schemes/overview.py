@@ -27,10 +27,9 @@ class FundingProgrammes:
 
 
 class SchemeOverview:
-    def __init__(self, name: str, authority_abbreviation: str, funding_programme: FundingProgramme):
+    def __init__(self, name: str, authority_abbreviation: str):
         self._name = name
         self._authority_abbreviation = authority_abbreviation
-        self._funding_programme = funding_programme
 
     @property
     def name(self) -> str:
@@ -39,7 +38,3 @@ class SchemeOverview:
     @property
     def authority_abbreviation(self) -> str:
         return self._authority_abbreviation
-
-    @property
-    def funding_programme(self) -> FundingProgramme:
-        return self._funding_programme

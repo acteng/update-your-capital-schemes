@@ -36,11 +36,9 @@ def build_authority_model(
 
 
 def build_capital_scheme_overview_model(
-    name: str = "dummy",
-    funding_programme: AnyUrl = _dummy_funding_programme_url,
-    improvement: AnyUrl | None = None,
+    name: str = "dummy", improvement: AnyUrl | None = None
 ) -> CapitalSchemeOverviewModel:
-    return CapitalSchemeOverviewModel(name=name, funding_programme=funding_programme, improvement=improvement)
+    return CapitalSchemeOverviewModel(name=name, improvement=improvement)
 
 
 def build_capital_scheme_status_model(status: StatusModel = StatusModel.PIPELINE) -> CapitalSchemeStatusModel:
@@ -82,16 +80,8 @@ def build_improvement_json(
     return {"@id": id_, "reference": reference, "overview": overview or build_improvement_overview_json()}
 
 
-def build_capital_scheme_overview_json(
-    name: str = "dummy",
-    funding_programme: str = str(_dummy_funding_programme_url),
-    improvement: str | None = None,
-) -> dict[str, Any]:
-    return {
-        "name": name,
-        "fundingProgramme": funding_programme,
-        "improvement": improvement,
-    }
+def build_capital_scheme_overview_json(name: str = "dummy", improvement: str | None = None) -> dict[str, Any]:
+    return {"name": name, "improvement": improvement}
 
 
 def build_capital_scheme_status_json(status: str = "pipeline") -> dict[str, Any]:
@@ -104,8 +94,10 @@ def build_capital_scheme_financials_json(
     return {"funding": {"items": funding or []}, "spend": spend}
 
 
-def build_capital_scheme_funding_json(amount: int = 0, source: str = "Pulse 5") -> dict[str, Any]:
-    return {"amount": amount, "source": source}
+def build_capital_scheme_funding_json(
+    funding_programme: str = str(_dummy_funding_programme_url), amount: int = 0, source: str = "Pulse 5"
+) -> dict[str, Any]:
+    return {"fundingProgramme": funding_programme, "amount": amount, "source": source}
 
 
 def build_capital_scheme_spend_json(amount: int = 0, source: str = "Pulse 5") -> dict[str, Any]:

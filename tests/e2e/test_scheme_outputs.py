@@ -8,6 +8,8 @@ from tests.e2e.api_client import (
     FundingProgrammeModel,
     ImprovementModel,
     ImprovementOverviewModel,
+    build_capital_scheme_financials_model,
+    build_capital_scheme_funding_model,
     build_capital_scheme_model,
 )
 from tests.e2e.app_client import AppClient, UserRepr
@@ -35,8 +37,14 @@ def test_scheme_outputs(app_client: AppClient, api_client: ApiClient, oidc_clien
         build_capital_scheme_model(
             reference="ATE00001",
             name="Wirral Package",
-            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2",
             improvement=f"{api_client.base_url}/improvements/IMP00001",
+            financials=build_capital_scheme_financials_model(
+                funding=[
+                    build_capital_scheme_funding_model(
+                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF2"
+                    )
+                ]
+            ),
             outputs=[
                 CapitalSchemeOutputModel(
                     type="new segregated cycling facility",

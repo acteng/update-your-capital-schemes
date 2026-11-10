@@ -1,10 +1,16 @@
 from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.overview import FundingProgramme
 
 
 class SchemeFunding:
-    def __init__(self, amount: int, source: DataSource):
+    def __init__(self, funding_programme: FundingProgramme, amount: int, source: DataSource):
+        self._funding_programme = funding_programme
         self._amount = amount
         self._source = source
+
+    @property
+    def funding_programme(self) -> FundingProgramme:
+        return self._funding_programme
 
     @property
     def amount(self) -> int:

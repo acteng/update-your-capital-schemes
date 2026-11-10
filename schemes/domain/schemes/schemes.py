@@ -56,7 +56,9 @@ class Scheme:
     @property
     def is_updateable(self) -> bool:
         is_active = self.status == Status.ACTIVE
-        is_eligible_for_authority_update = self.overview.funding_programme.is_eligible_for_authority_update
+        is_eligible_for_authority_update = any(
+            funding.funding_programme.is_eligible_for_authority_update for funding in self.financials.fundings
+        )
         return is_active and is_eligible_for_authority_update
 
 

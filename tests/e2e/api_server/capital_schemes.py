@@ -12,7 +12,6 @@ from tests.e2e.api_server.collections import CollectionModel
 
 class CapitalSchemeOverviewModel(BaseModel):
     name: str
-    funding_programme: AnyUrl
     improvement: AnyUrl | None
 
 
@@ -27,6 +26,7 @@ class CapitalSchemeFinancialModel(BaseModel):
 
 
 class CapitalSchemeFundingModel(BaseModel):
+    funding_programme: AnyUrl
     amount: int
     source: str
 

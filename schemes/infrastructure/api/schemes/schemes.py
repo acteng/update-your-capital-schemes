@@ -1,5 +1,8 @@
 from typing import Any
 
+from schemes.domain.schemes.data_sources import DataSource
+from schemes.domain.schemes.financials import SchemeFunding
+from schemes.domain.schemes.overview import FundingProgramme
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel
@@ -32,10 +35,10 @@ class CapitalSchemeModel(BaseModel):
     ) -> Scheme:
         scheme = Scheme(
             reference=self.reference,
-            overview=self.overview.to_domain(authority_model, funding_programme_models),
+            overview=self.overview.to_domain(authority_model),
             status=self.status.status.to_domain(),
         )
-        scheme.financials.update_fundings(*self.financials.to_funding_domain())
+        scheme.financials.update_fundings(*self.financials.to_funding_domain(funding_programme_models))
         spend = self.financials.to_spend_domain()
         if spend:
             scheme.financials.update_spend(spend)
@@ -54,12 +57,10 @@ class CapitalSchemeItemModel(BaseModel):
     status: CapitalSchemeStatusModel
     authority_review: CapitalSchemeAuthorityReviewModel | None = None
 
-    def to_domain(
-        self, authority_model: AuthorityModel, funding_programme_models: list[FundingProgrammeModel]
-    ) -> Scheme:
+    def to_domain(self, authority_model: AuthorityModel) -> Scheme:
         scheme = Scheme(
             reference=self.reference,
-            overview=self.overview.to_domain(authority_model, funding_programme_models),
+            overview=self.overview.to_domain(authority_model),
             status=self.status.status.to_domain(),
         )
         # TODO: financials, milestones, outputs
@@ -93,18 +94,17 @@ class ApiSchemeRepository(SchemeRepository):
             authority_url = improvement_model.overview.funding_managed_by
             authority_model = await self._get_authority_model_by_url(client, str(authority_url))
 
-            funding_programme_url = capital_scheme_model.overview.funding_programme
-            funding_programme_models = [
-                await self._get_funding_programme_model_by_url(client, str(funding_programme_url))
-            ]
+            funding_programmes_model = await self._get_funding_programmes_model(client)
 
-            return capital_scheme_model.to_domain(authority_model, funding_programme_models)
+            return capital_scheme_model.to_domain(authority_model, funding_programmes_model.items)
 
     async def get_by_authority(self, authority_abbreviation: str) -> list[Scheme]:
         async with self._remote_app.client() as client:
             authority_url = f"/authorities/{authority_abbreviation}"
             authority_model = await self._get_authority_model_by_url(client, authority_url)
-            funding_programmes_model = await self._get_funding_programmes_model(client)
+            funding_programmes_model = await self._get_funding_programmes_model(
+                client, is_eligible_for_authority_update=True
+            )
             funding_programme_codes = [
                 funding_programme_model.code for funding_programme_model in funding_programmes_model.items
             ]
@@ -113,9 +113,28 @@ class ApiSchemeRepository(SchemeRepository):
                 client, str(authority_model.funding_managed_by_capital_schemes), funding_programme_codes
             )
             return [
-                capital_scheme_item_model.to_domain(authority_model, funding_programmes_model.items)
+                self._add_dummy_eligible_funding_programme(capital_scheme_item_model.to_domain(authority_model))
                 for capital_scheme_item_model in capital_scheme_items_model.items
             ]
+
+    @staticmethod
+    def _add_dummy_eligible_funding_programme(scheme: Scheme) -> Scheme:
+        """
+        The capital scheme item model does not contain funding but whether a scheme is updateable depends on an eligible
+        for authority update funding programme being present. Add a placeholder funding so that the scheme can be
+        updated.
+
+        This can be justified as the input capital schemes are already filtered by funding programmes that are eligible
+        for authority update.
+        """
+        scheme.financials.update_funding(
+            SchemeFunding(
+                funding_programme=FundingProgramme(code="dummy", is_eligible_for_authority_update=True),
+                amount=0,
+                source=DataSource.UNKNOWN,
+            )
+        )
+        return scheme
 
     async def update(self, scheme: Scheme) -> None:
         async with self._remote_app.client() as client:
@@ -123,17 +142,17 @@ class ApiSchemeRepository(SchemeRepository):
             await self._update_milestones(client, scheme)
             await self._update_authority_reviews(client, scheme)
 
-    async def _get_funding_programmes_model(self, remote_app: AsyncBaseApp) -> CollectionModel[FundingProgrammeModel]:
-        response = await remote_app.get(
-            "/funding-programmes", params={"eligible-for-authority-update": "true"}, request=self._dummy_request()
+    async def _get_funding_programmes_model(
+        self, remote_app: AsyncBaseApp, is_eligible_for_authority_update: bool | None = None
+    ) -> CollectionModel[FundingProgrammeModel]:
+        params = (
+            {"eligible-for-authority-update": is_eligible_for_authority_update}
+            if is_eligible_for_authority_update is not None
+            else None
         )
+        response = await remote_app.get("/funding-programmes", params=params, request=self._dummy_request())
         response.raise_for_status()
         return CollectionModel[FundingProgrammeModel].model_validate(response.json())
-
-    async def _get_funding_programme_model_by_url(self, remote_app: AsyncBaseApp, url: str) -> FundingProgrammeModel:
-        response = await remote_app.get(url, request=self._dummy_request())
-        response.raise_for_status()
-        return FundingProgrammeModel.model_validate(response.json())
 
     async def _get_capital_scheme_items_model_by_url(
         self,

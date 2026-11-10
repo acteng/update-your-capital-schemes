@@ -165,7 +165,9 @@ class TestSchemeContext:
     def test_from_domain_sets_funding(self) -> None:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", name="", authority_abbreviation="LIV")
-        scheme.financials.update_funding(SchemeFunding(amount=100_000, source=DataSource.ATF4_BID))
+        scheme.financials.update_funding(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
+        )
 
         context = SchemeContext.from_domain(dummy_reporting_window(), authority, scheme)
 

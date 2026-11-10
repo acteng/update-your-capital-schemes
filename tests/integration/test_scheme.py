@@ -11,7 +11,7 @@ from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import SchemePage
-from tests.unit.domain.builders import build_scheme
+from tests.unit.domain.builders import build_scheme, build_scheme_funding
 
 
 class TestScheme:
@@ -23,28 +23,36 @@ class TestScheme:
             session["user"] = {"email": "boardman@example.com"}
 
     async def test_scheme_shows_title(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.title == "Wirral Package - Update your capital schemes - Active Travel England - GOV.UK"
 
     async def test_scheme_shows_back(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.back_url == "/schemes"
 
     async def test_scheme_shows_authority(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.heading and scheme_page.heading.caption == "Liverpool City Region Combined Authority"
 
     async def test_scheme_shows_name(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
@@ -67,6 +75,7 @@ class TestScheme:
     ) -> None:
         clock.now = datetime(2023, 4, 24)
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
         )
@@ -80,7 +89,9 @@ class TestScheme:
         self, authorities: AuthorityRepository, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
-        await schemes.add(build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO"))
+        scheme = build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         forbidden_page = await SchemePage.open_when_unauthorized(async_client, reference="ATE00002")
 
@@ -94,14 +105,11 @@ class TestScheme:
     async def test_cannot_scheme_when_not_updateable_scheme(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(
-            build_scheme(
-                reference="ATE00001",
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                status=Status.PIPELINE,
-            )
+        scheme = build_scheme(
+            reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV", status=Status.PIPELINE
         )
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         not_found_page = await SchemePage.open_when_not_found(async_client, reference="ATE00001")
 

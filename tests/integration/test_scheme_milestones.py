@@ -12,7 +12,7 @@ from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import ChangeMilestoneDatesPage, SchemePage
-from tests.unit.domain.builders import build_scheme
+from tests.unit.domain.builders import build_scheme, build_scheme_funding
 
 
 class TestSchemeMilestones:
@@ -26,7 +26,9 @@ class TestSchemeMilestones:
     async def test_scheme_shows_change_milestones(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
@@ -35,7 +37,9 @@ class TestSchemeMilestones:
     async def test_scheme_shows_minimal_milestones(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
@@ -49,6 +53,7 @@ class TestSchemeMilestones:
 
     async def test_scheme_shows_milestones(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
         scheme.milestones.update_milestones(
             SchemeMilestone(
                 1,
@@ -134,7 +139,9 @@ class TestSchemeMilestones:
         ]
 
     async def test_milestones_form_shows_title(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_milestone_dates_page = await ChangeMilestoneDatesPage.open(async_client, reference="ATE00001")
 
@@ -144,7 +151,9 @@ class TestSchemeMilestones:
         )
 
     async def test_milestones_form_shows_back(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_milestone_dates_page = await ChangeMilestoneDatesPage.open(async_client, reference="ATE00001")
 
@@ -153,7 +162,9 @@ class TestSchemeMilestones:
     async def test_milestones_form_shows_scheme(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_milestone_dates_page = await ChangeMilestoneDatesPage.open(async_client, reference="ATE00001")
 
@@ -162,7 +173,9 @@ class TestSchemeMilestones:
     async def test_milestones_form_shows_fields(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_milestone_dates_page = await ChangeMilestoneDatesPage.open(async_client, reference="ATE00001")
 
@@ -188,7 +201,9 @@ class TestSchemeMilestones:
     async def test_milestones_form_shows_milestone_heading(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_milestone_dates_page = await ChangeMilestoneDatesPage.open(async_client, reference="ATE00001")
 
@@ -196,6 +211,7 @@ class TestSchemeMilestones:
 
     async def test_milestones_form_shows_date(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
         scheme.milestones.update_milestones(
             SchemeMilestone(
                 id_=1,
@@ -214,7 +230,9 @@ class TestSchemeMilestones:
     async def test_milestones_form_shows_confirm(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_milestone_dates_page = await ChangeMilestoneDatesPage.open(async_client, reference="ATE00001")
 
@@ -223,7 +241,9 @@ class TestSchemeMilestones:
     async def test_milestones_form_shows_cancel(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_milestone_dates_page = await ChangeMilestoneDatesPage.open(async_client, reference="ATE00001")
 
@@ -233,7 +253,9 @@ class TestSchemeMilestones:
         self, authorities: AuthorityRepository, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         await authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
-        await schemes.add(build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO"))
+        scheme = build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         forbidden_page = await ChangeMilestoneDatesPage.open_when_unauthorized(async_client, reference="ATE00002")
 
@@ -247,14 +269,11 @@ class TestSchemeMilestones:
     async def test_cannot_milestones_form_when_not_updateable_scheme(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(
-            build_scheme(
-                reference="ATE00001",
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                status=Status.PIPELINE,
-            )
+        scheme = build_scheme(
+            reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV", status=Status.PIPELINE
         )
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         not_found_page = await ChangeMilestoneDatesPage.open_when_not_found(async_client, reference="ATE00001")
 
@@ -269,6 +288,7 @@ class TestSchemeMilestones:
     ) -> None:
         clock.now = datetime(2020, 2, 1, 13)
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
         scheme.milestones.update_milestones(
             SchemeMilestone(
                 id_=1,
@@ -299,7 +319,9 @@ class TestSchemeMilestones:
     async def test_milestones_shows_scheme(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         response = await async_client.post("/schemes/ATE00001/milestones", data={"csrf_token": csrf_token})
 
@@ -309,6 +331,7 @@ class TestSchemeMilestones:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
         scheme.milestones.update_milestones(
             SchemeMilestone(
                 id_=1,
@@ -356,7 +379,9 @@ class TestSchemeMilestones:
         self, clock: Clock, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
         clock.now = datetime(2020, 2, 1)
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_milestone_dates_page = ChangeMilestoneDatesPage(
             await async_client.post(
@@ -373,7 +398,9 @@ class TestSchemeMilestones:
     async def test_cannot_milestones_when_no_csrf_token(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_milestone_dates_page = ChangeMilestoneDatesPage(
             await async_client.post("/schemes/ATE00001/milestones", follow_redirects=True)
@@ -389,7 +416,9 @@ class TestSchemeMilestones:
     async def test_cannot_milestones_when_incorrect_csrf_token(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         change_milestone_dates_page = ChangeMilestoneDatesPage(
             await async_client.post("/schemes/ATE00001/milestones", data={"csrf_token": "x"}, follow_redirects=True)
@@ -410,7 +439,9 @@ class TestSchemeMilestones:
         csrf_token: str,
     ) -> None:
         await authorities.add(Authority(abbreviation="WYO", name="West Yorkshire Combined Authority"))
-        await schemes.add(build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO"))
+        scheme = build_scheme(reference="ATE00002", name="Hospital Fields Road", authority_abbreviation="WYO")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         response = await async_client.post("/schemes/ATE00002/milestones", data={"csrf_token": csrf_token})
 
@@ -424,14 +455,11 @@ class TestSchemeMilestones:
     async def test_cannot_milestones_when_not_updateable_scheme(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient, csrf_token: str
     ) -> None:
-        await schemes.add(
-            build_scheme(
-                reference="ATE00001",
-                name="Wirral Package",
-                authority_abbreviation="LIV",
-                status=Status.PIPELINE,
-            )
+        scheme = build_scheme(
+            reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV", status=Status.PIPELINE
         )
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         response = await async_client.post("/schemes/ATE00001/milestones", data={"csrf_token": csrf_token})
 

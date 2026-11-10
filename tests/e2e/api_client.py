@@ -42,7 +42,6 @@ class ImprovementModel(BaseModel):
 
 class CapitalSchemeOverviewModel(BaseModel):
     name: str
-    funding_programme: str
     improvement: str | None
 
 
@@ -51,6 +50,7 @@ class CapitalSchemeStatusModel(BaseModel):
 
 
 class CapitalSchemeFundingModel(BaseModel):
+    funding_programme: str
     amount: int
     source: str
 
@@ -101,7 +101,6 @@ class CapitalSchemeModel(BaseModel):
 def build_capital_scheme_model(
     reference: str,
     name: str,
-    funding_programme: str,
     improvement: str | None = None,
     status: CapitalSchemeStatusModel | None = None,
     financials: CapitalSchemeFinancialsModel | None = None,
@@ -111,18 +110,27 @@ def build_capital_scheme_model(
 ) -> CapitalSchemeModel:
     return CapitalSchemeModel(
         reference=reference,
-        overview=CapitalSchemeOverviewModel(
-            name=name,
-            funding_programme=funding_programme,
-            improvement=improvement,
-        ),
+        overview=CapitalSchemeOverviewModel(name=name, improvement=improvement),
         status=status or CapitalSchemeStatusModel(status="active"),
-        financials=financials
-        or CapitalSchemeFinancialsModel(funding=CollectionModel[CapitalSchemeFundingModel](items=[]), spend=None),
+        financials=financials or build_capital_scheme_financials_model(),
         milestones=milestones or CapitalSchemeMilestonesModel(current_milestone=None, items=[]),
         outputs=CollectionModel[CapitalSchemeOutputModel](items=outputs or []),
         authority_review=authority_review,
     )
+
+
+def build_capital_scheme_financials_model(
+    funding: list[CapitalSchemeFundingModel] | None = None, spend: CapitalSchemeSpendModel | None = None
+) -> CapitalSchemeFinancialsModel:
+    return CapitalSchemeFinancialsModel(
+        funding=CollectionModel[CapitalSchemeFundingModel](items=funding or []), spend=spend
+    )
+
+
+def build_capital_scheme_funding_model(
+    funding_programme: str, amount: int = 0, source: str = "Pulse 5"
+) -> CapitalSchemeFundingModel:
+    return CapitalSchemeFundingModel(funding_programme=funding_programme, amount=amount, source=source)
 
 
 class ApiClient:

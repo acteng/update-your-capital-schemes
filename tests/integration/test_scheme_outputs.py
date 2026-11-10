@@ -10,7 +10,7 @@ from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
 from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import SchemePage
-from tests.unit.domain.builders import build_scheme
+from tests.unit.domain.builders import build_scheme, build_scheme_funding
 
 
 class TestSchemeOutputs:
@@ -25,6 +25,7 @@ class TestSchemeOutputs:
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
         scheme.outputs.update_outputs(
             SchemeOutput(
                 type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
@@ -42,6 +43,7 @@ class TestSchemeOutputs:
 
     async def test_scheme_shows_outputs(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
         scheme.outputs.update_outputs(
             SchemeOutput(
                 type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_MILES,
@@ -74,6 +76,7 @@ class TestSchemeOutputs:
 
     async def test_scheme_shows_zero_outputs(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
         scheme.outputs.update_outputs(
             SchemeOutput(
                 type_measure=OutputTypeMeasure.NEW_SEGREGATED_CYCLING_FACILITY_NUMBER_OF_JUNCTIONS,
@@ -92,7 +95,9 @@ class TestSchemeOutputs:
     async def test_scheme_shows_message_when_no_outputs(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        await schemes.add(build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV"))
+        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme.financials.update_funding(build_scheme_funding())
+        await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 

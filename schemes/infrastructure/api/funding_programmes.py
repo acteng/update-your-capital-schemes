@@ -13,12 +13,3 @@ class FundingProgrammeModel(BaseModel):
     def to_domain(self) -> FundingProgramme:
         # TODO: is_eligible_for_authority_update
         return FundingProgramme(code=self.code, is_eligible_for_authority_update=True)
-
-
-class FundingProgrammeItemModel(BaseModel):
-    id: Annotated[AnyUrl, Field(alias="@id")]
-    code: str
-
-    def to_domain(self) -> FundingProgramme:
-        # TODO: is_eligible_for_authority_update
-        return FundingProgramme(code=self.code, is_eligible_for_authority_update=True)

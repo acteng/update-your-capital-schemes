@@ -3,7 +3,7 @@ from typing import Any
 from pydantic import AnyUrl
 
 from schemes.infrastructure.api.authorities import AuthorityModel
-from schemes.infrastructure.api.funding_programmes import FundingProgrammeItemModel
+from schemes.infrastructure.api.funding_programmes import FundingProgrammeModel
 from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewModel
 from schemes.infrastructure.api.schemes.statuses import CapitalSchemeStatusModel, StatusModel
 
@@ -15,10 +15,10 @@ _dummy_funding_managed_by_capital_schemes_url = AnyUrl(
 _dummy_improvement_url = AnyUrl("https://api.example/improvements/dummy")
 
 
-def build_funding_programme_item_model(
+def build_funding_programme_model(
     id_: AnyUrl = _dummy_funding_programme_url, code: str = "dummy"
-) -> FundingProgrammeItemModel:
-    return FundingProgrammeItemModel(id=id_, code=code)
+) -> FundingProgrammeModel:
+    return FundingProgrammeModel(id=id_, code=code)
 
 
 def build_authority_model(
@@ -48,12 +48,6 @@ def build_capital_scheme_status_model(status: StatusModel = StatusModel.PIPELINE
 
 
 def build_funding_programme_json(id_: str = str(_dummy_funding_programme_url), code: str = "dummy") -> dict[str, Any]:
-    return {"@id": id_, "code": code}
-
-
-def build_funding_programme_item_json(
-    id_: str = str(_dummy_funding_programme_url), code: str = "dummy"
-) -> dict[str, Any]:
     return {"@id": id_, "code": code}
 
 

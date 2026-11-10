@@ -16,11 +16,6 @@ class FundingProgrammeModel(BaseModel):
     eligible_for_authority_update: bool
 
 
-class FundingProgrammeItemModel(BaseModel):
-    id: Annotated[AnyUrl, Field(alias="@id")]
-    code: str
-
-
 bp = Blueprint("funding_programmes", __name__)
 funding_programmes: dict[str, FundingProgrammeModel] = {}
 
@@ -51,18 +46,15 @@ def get_funding_programmes() -> dict[str, Any]:
     if args:
         abort(400, f"Unexpected query string parameters: {set(args.keys())}")
 
-    funding_programme_items = [
-        FundingProgrammeItemModel(
-            id=AnyUrl(url_for("funding_programmes.get_funding_programme", code=funding_programme.code, _external=True)),
-            code=funding_programme.code,
-        )
+    filtered_funding_programmes = [
+        funding_programme
         for funding_programme in funding_programmes.values()
         if (
             eligible_for_authority_update is None
             or funding_programme.eligible_for_authority_update == eligible_for_authority_update
         )
     ]
-    return CollectionModel[FundingProgrammeItemModel](items=funding_programme_items).to_json()
+    return CollectionModel[FundingProgrammeModel](items=filtered_funding_programmes).to_json()
 
 
 @bp.get("<code>")

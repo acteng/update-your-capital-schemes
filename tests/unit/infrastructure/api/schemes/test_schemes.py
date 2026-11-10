@@ -86,7 +86,7 @@ class TestCapitalSchemeModel:
             ),
         )
         funding_programme_model = FundingProgrammeModel(
-            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
+            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4", eligible_for_authority_update=True
         )
         capital_scheme_model = CapitalSchemeModel(
             reference="ATE00001",
@@ -282,7 +282,7 @@ class TestCapitalSchemeItemModel:
             ),
         )
         funding_programme_model = FundingProgrammeModel(
-            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
+            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4", eligible_for_authority_update=True
         )
         capital_scheme_item_model = CapitalSchemeItemModel(
             reference="ATE00001",

@@ -17,7 +17,7 @@ class TestCapitalSchemeOverviewModel:
             ),
         )
         funding_programme_model = FundingProgrammeModel(
-            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
+            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4", eligible_for_authority_update=True
         )
         overview_model = CapitalSchemeOverviewModel(
             name="Wirral Package",

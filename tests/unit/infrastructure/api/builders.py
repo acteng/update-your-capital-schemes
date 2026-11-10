@@ -16,9 +16,9 @@ _dummy_improvement_url = AnyUrl("https://api.example/improvements/dummy")
 
 
 def build_funding_programme_model(
-    id_: AnyUrl = _dummy_funding_programme_url, code: str = "dummy"
+    id_: AnyUrl = _dummy_funding_programme_url, code: str = "dummy", eligible_for_authority_update: bool = True
 ) -> FundingProgrammeModel:
-    return FundingProgrammeModel(id=id_, code=code)
+    return FundingProgrammeModel(id=id_, code=code, eligible_for_authority_update=eligible_for_authority_update)
 
 
 def build_authority_model(
@@ -47,8 +47,10 @@ def build_capital_scheme_status_model(status: StatusModel = StatusModel.PIPELINE
     return CapitalSchemeStatusModel(status=status)
 
 
-def build_funding_programme_json(id_: str = str(_dummy_funding_programme_url), code: str = "dummy") -> dict[str, Any]:
-    return {"@id": id_, "code": code}
+def build_funding_programme_json(
+    id_: str = str(_dummy_funding_programme_url), code: str = "dummy", eligible_for_authority_update: bool = True
+) -> dict[str, Any]:
+    return {"@id": id_, "code": code, "eligible_for_authority_update": eligible_for_authority_update}
 
 
 def build_authority_json(

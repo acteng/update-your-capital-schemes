@@ -7,7 +7,7 @@ from schemes.infrastructure.api.funding_programmes import FundingProgrammeModel
 class TestFundingProgrammeModel:
     def test_to_domain(self) -> None:
         funding_programme_model = FundingProgrammeModel(
-            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4"
+            id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4", eligible_for_authority_update=True
         )
 
         funding_programme = funding_programme_model.to_domain()

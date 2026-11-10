@@ -9,7 +9,7 @@ from schemes.infrastructure.api.base import BaseModel
 class FundingProgrammeModel(BaseModel):
     id: Annotated[AnyUrl, Field(alias="@id")]
     code: str
+    eligible_for_authority_update: bool
 
     def to_domain(self) -> FundingProgramme:
-        # TODO: is_eligible_for_authority_update
-        return FundingProgramme(code=self.code, is_eligible_for_authority_update=True)
+        return FundingProgramme(code=self.code, is_eligible_for_authority_update=self.eligible_for_authority_update)

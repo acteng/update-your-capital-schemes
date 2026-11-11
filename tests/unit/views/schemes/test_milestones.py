@@ -18,7 +18,7 @@ from schemes.views.schemes.milestones import (
     SchemeMilestoneRowContext,
     SchemeMilestonesContext,
 )
-from tests.unit.domain.builders import build_scheme
+from tests.unit.domain.builders import build_scheme, build_scheme_overview
 
 
 class TestSchemeMilestonesContext:
@@ -126,7 +126,7 @@ class TestMilestoneContext:
 @pytest.mark.usefixtures("app")
 class TestChangeMilestoneDatesContext:
     def test_from_domain(self) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.milestones.update_milestone(
             SchemeMilestone(
                 id_=1,

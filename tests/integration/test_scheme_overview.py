@@ -12,7 +12,7 @@ from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
 from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import SchemePage
-from tests.unit.domain.builders import build_scheme, build_scheme_funding
+from tests.unit.domain.builders import build_scheme, build_scheme_funding, build_scheme_overview
 
 
 class TestSchemeOverview:
@@ -26,7 +26,9 @@ class TestSchemeOverview:
     async def test_scheme_shows_minimal_overview(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(
+            reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
+        )
         scheme.financials.update_funding(build_scheme_funding())
         await schemes.add(scheme)
 
@@ -35,7 +37,9 @@ class TestSchemeOverview:
         assert scheme_page.overview.reference == "ATE00001" and scheme_page.overview.current_milestone == ""
 
     async def test_scheme_shows_overview(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(
+            reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
+        )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.milestones.update_milestone(
             SchemeMilestone(

@@ -30,7 +30,7 @@ from schemes.infrastructure.api.schemes.overviews import CapitalSchemeOverviewMo
 from schemes.infrastructure.api.schemes.schemes import ApiSchemeRepository, CapitalSchemeItemModel, CapitalSchemeModel
 from schemes.infrastructure.api.schemes.statuses import CapitalSchemeStatusModel, StatusModel
 from schemes.oauth import ClientAsyncBaseApp
-from tests.unit.domain.builders import build_scheme
+from tests.unit.domain.builders import build_scheme, build_scheme_overview
 from tests.unit.infrastructure.api.builders import (
     build_authority_json,
     build_authority_model,
@@ -847,7 +847,7 @@ class TestApiSchemeRepository:
         assert remote_app.client_count == 1
 
     async def test_update_scheme_spend(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.financials.update_spend(SchemeSpend(id_=None, amount=60_000, source=DataSource.AUTHORITY_UPDATE))
         create_spend_response = api_mock.post(
             "/capital-schemes/ATE00001/financials/spend",
@@ -861,7 +861,7 @@ class TestApiSchemeRepository:
     async def test_update_scheme_spend_when_no_changes(
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.financials.update_spend(SchemeSpend(id_=2, amount=50_000, source=DataSource.ATF4_BID))
 
         await schemes.update(scheme)
@@ -869,7 +869,7 @@ class TestApiSchemeRepository:
         assert not api_mock.calls.called
 
     async def test_update_scheme_milestones(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.milestones.update_milestones(
             SchemeMilestone(
                 id_=None,
@@ -913,7 +913,7 @@ class TestApiSchemeRepository:
     async def test_update_scheme_milestones_when_no_changes(
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.milestones.update_milestones(
             SchemeMilestone(
                 id_=2,
@@ -929,7 +929,7 @@ class TestApiSchemeRepository:
         assert not api_mock.calls.called
 
     async def test_update_scheme_authority_reviews(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
             AuthorityReview(id_=None, review_date=datetime(2020, 2, 1), source=DataSource.AUTHORITY_UPDATE),
@@ -946,7 +946,7 @@ class TestApiSchemeRepository:
     async def test_update_scheme_authority_reviews_when_no_changes(
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
         )
@@ -958,7 +958,7 @@ class TestApiSchemeRepository:
     async def test_update_scheme_reuses_client(
         self, api_mock: MockRouter, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.financials.update_spend(SchemeSpend(id_=None, amount=60_000, source=DataSource.AUTHORITY_UPDATE))
         scheme.reviews.update_authority_reviews(
             AuthorityReview(id_=None, review_date=datetime(2020, 1, 1), source=DataSource.AUTHORITY_UPDATE)

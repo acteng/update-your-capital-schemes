@@ -11,7 +11,7 @@ from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.conftest import AsyncFlaskClient
 from tests.integration.pages import SchemesPage
-from tests.unit.domain.builders import build_scheme, build_scheme_funding
+from tests.unit.domain.builders import build_scheme, build_scheme_funding, build_scheme_overview
 
 
 class TestSchemes:
@@ -44,7 +44,9 @@ class TestSchemes:
         expected_notification_banner: str,
     ) -> None:
         clock.now = now
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(
+            reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
+        )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
@@ -62,7 +64,9 @@ class TestSchemes:
         self, async_client: AsyncFlaskClient, clock: Clock, schemes: SchemeRepository
     ) -> None:
         clock.now = datetime(2020, 3, 1)
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(
+            reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
+        )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
@@ -79,15 +83,24 @@ class TestSchemes:
         assert schemes_page.heading and schemes_page.heading.caption == "Liverpool City Region Combined Authority"
 
     async def test_schemes_shows_schemes(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        scheme1 = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme1 = build_scheme(
+            reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
+        )
         scheme1.financials.update_funding(build_scheme_funding())
-        scheme2 = build_scheme(reference="ATE00002", name="School Streets", authority_abbreviation="LIV")
+        scheme2 = build_scheme(
+            reference="ATE00002", overview=build_scheme_overview(name="School Streets", authority_abbreviation="LIV")
+        )
         scheme2.financials.update_funding(build_scheme_funding())
         scheme3 = build_scheme(
-            reference="ATE00003", name="Runcorn Busway", authority_abbreviation="LIV", status=Status.PIPELINE
+            reference="ATE00003",
+            overview=build_scheme_overview(name="Runcorn Busway", authority_abbreviation="LIV"),
+            status=Status.PIPELINE,
         )
         scheme3.financials.update_funding(build_scheme_funding())
-        scheme4 = build_scheme(reference="ATE00004", name="Hospital Fields Road", authority_abbreviation="WYO")
+        scheme4 = build_scheme(
+            reference="ATE00004",
+            overview=build_scheme_overview(name="Hospital Fields Road", authority_abbreviation="WYO"),
+        )
         scheme4.financials.update_funding(build_scheme_funding())
         await schemes.add(scheme1, scheme2, scheme3, scheme4)
 
@@ -100,7 +113,9 @@ class TestSchemes:
     async def test_schemes_shows_minimal_scheme(
         self, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(
+            reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
+        )
         scheme.financials.update_funding(build_scheme_funding())
         await schemes.add(scheme)
 
@@ -117,7 +132,9 @@ class TestSchemes:
         ]
 
     async def test_schemes_shows_scheme(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(
+            reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
+        )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
@@ -140,7 +157,9 @@ class TestSchemes:
         self, clock: Clock, schemes: SchemeRepository, async_client: AsyncFlaskClient
     ) -> None:
         clock.now = datetime(2023, 4, 24)
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(
+            reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
+        )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
             AuthorityReview(id_=1, review_date=datetime(2023, 1, 2), source=DataSource.ATF3_BID)
@@ -153,7 +172,9 @@ class TestSchemes:
         assert [row.needs_review for row in schemes_page.schemes] == [True]
 
     async def test_scheme_shows_scheme(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package", authority_abbreviation="LIV")
+        scheme = build_scheme(
+            reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
+        )
         scheme.financials.update_funding(build_scheme_funding())
         await schemes.add(scheme)
 

@@ -11,7 +11,7 @@ from schemes.views.schemes.financials import (
     SchemeFundingContext,
     SchemeSpendContext,
 )
-from tests.unit.domain.builders import build_scheme
+from tests.unit.domain.builders import build_scheme, build_scheme_overview
 
 
 class TestSchemeFundingContext:
@@ -60,7 +60,7 @@ class TestSchemeSpendContext:
 @pytest.mark.usefixtures("app")
 class TestChangeSpendToDateContext:
     def test_from_domain(self) -> None:
-        scheme = build_scheme(reference="ATE00001", name="Wirral Package")
+        scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.financials.update_funding(
             SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
         )

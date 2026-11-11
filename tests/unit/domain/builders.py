@@ -5,23 +5,13 @@ from schemes.domain.schemes.schemes import Scheme, Status
 
 
 def build_scheme(
-    reference: str,
-    name: str | None = None,
-    authority_abbreviation: str | None = None,
-    overview: SchemeOverview | None = None,
-    status: Status = Status.ACTIVE,
+    reference: str = "dummy", overview: SchemeOverview | None = None, status: Status = Status.ACTIVE
 ) -> Scheme:
-    if any((name is not None, authority_abbreviation is not None)) == (overview is not None):
-        assert False, "Either overview fields or overview must be specified"
+    return Scheme(reference, overview or build_scheme_overview(), status)
 
-    if overview is not None:
-        pass
-    elif name is not None:
-        overview = SchemeOverview(name=name, authority_abbreviation=authority_abbreviation or "")
-    else:
-        assert False, "Overview fields must be specified"
 
-    return Scheme(reference, overview, status)
+def build_scheme_overview(name: str = "dummy", authority_abbreviation: str = "dummy") -> SchemeOverview:
+    return SchemeOverview(name=name, authority_abbreviation=authority_abbreviation)
 
 
 def build_scheme_funding(

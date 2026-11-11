@@ -25,10 +25,8 @@ def build_scheme(
 
 
 def build_scheme_funding(
-    funding_programme: FundingProgramme | None = None, amount: int = 0, source: DataSource | None = None
+    funding_programme: FundingProgramme = FundingProgrammes.ATF2,
+    amount: int = 0,
+    source: DataSource = DataSource.PULSE_5,
 ) -> SchemeFunding:
-    return SchemeFunding(
-        funding_programme=funding_programme or FundingProgrammes.ATF2,
-        amount=amount,
-        source=source or DataSource.PULSE_5,
-    )
+    return SchemeFunding(funding_programme=funding_programme, amount=amount, source=source)

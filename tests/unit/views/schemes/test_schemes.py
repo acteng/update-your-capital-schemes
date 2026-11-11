@@ -173,9 +173,7 @@ class TestSchemeContext:
     def test_from_domain_sets_funding(self) -> None:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", overview=build_scheme_overview(name="", authority_abbreviation="LIV"))
-        scheme.financials.update_funding(
-            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
 
         context = SchemeContext.from_domain(dummy_reporting_window(), authority, scheme)
 
@@ -184,9 +182,7 @@ class TestSchemeContext:
     def test_from_domain_sets_spend(self) -> None:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", overview=build_scheme_overview(name="", authority_abbreviation="LIV"))
-        scheme.financials.update_funding(
-            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
 
         context = SchemeContext.from_domain(dummy_reporting_window(), authority, scheme)
 

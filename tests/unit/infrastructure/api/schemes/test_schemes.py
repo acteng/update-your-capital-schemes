@@ -129,9 +129,7 @@ class TestCapitalSchemeModel:
                 funding=CollectionModel[CapitalSchemeFundingModel](
                     items=[
                         CapitalSchemeFundingModel(
-                            funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
-                            amount=100_000,
-                            source=DataSourceModel.ATF4_BID,
+                            funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"), amount=100_000
                         )
                     ]
                 ),
@@ -145,11 +143,7 @@ class TestCapitalSchemeModel:
 
         (funding,) = scheme.financials.fundings
         spend = scheme.financials.spend
-        assert (
-            funding.funding_programme == FundingProgrammes.ATF4
-            and funding.amount == 100_000
-            and funding.source == DataSource.ATF4_BID
-        )
+        assert funding.funding_programme == FundingProgrammes.ATF4 and funding.amount == 100_000
         assert spend and spend.id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
 
     def test_to_domain_sets_milestones(self) -> None:
@@ -447,16 +441,8 @@ class TestApiSchemeRepository:
         assert scheme
         funding1, funding2 = scheme.financials.fundings
         spend = scheme.financials.spend
-        assert (
-            funding1.funding_programme == FundingProgrammes.ATF4
-            and funding1.amount == 100_000
-            and funding1.source == DataSource.ATF4_BID
-        )
-        assert (
-            funding2.funding_programme == FundingProgrammes.CON
-            and funding2.amount == 20_000
-            and funding2.source == DataSource.FUNDING_DEVOLUTION
-        )
+        assert funding1.funding_programme == FundingProgrammes.ATF4 and funding1.amount == 100_000
+        assert funding2.funding_programme == FundingProgrammes.CON and funding2.amount == 20_000
         assert spend and spend.id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
 
     async def test_get_scheme_sets_milestones(

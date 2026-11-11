@@ -19,18 +19,12 @@ class TestCapitalSchemeFundingModel:
             id=AnyUrl("https://api.example/funding-programmes/ATF4"), code="ATF4", eligible_for_authority_update=True
         )
         funding_model = CapitalSchemeFundingModel(
-            funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
-            amount=100_000,
-            source=DataSourceModel.ATF4_BID,
+            funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"), amount=100_000
         )
 
         funding = funding_model.to_domain([funding_programme_model])
 
-        assert (
-            funding.funding_programme == FundingProgrammes.ATF4
-            and funding.amount == 100_000
-            and funding.source == DataSource.ATF4_BID
-        )
+        assert funding.funding_programme == FundingProgrammes.ATF4 and funding.amount == 100_000
 
 
 class TestCapitalSchemeSpendModel:
@@ -65,14 +59,10 @@ class TestCapitalSchemeFinancialsModel:
             funding=CollectionModel[CapitalSchemeFundingModel](
                 items=[
                     CapitalSchemeFundingModel(
-                        funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"),
-                        amount=100_000,
-                        source=DataSourceModel.ATF4_BID,
+                        funding_programme=AnyUrl("https://api.example/funding-programmes/ATF4"), amount=100_000
                     ),
                     CapitalSchemeFundingModel(
-                        funding_programme=AnyUrl("https://api.example/funding-programmes/CON"),
-                        amount=20_000,
-                        source=DataSourceModel.FUNDING_DEVOLUTION,
+                        funding_programme=AnyUrl("https://api.example/funding-programmes/CON"), amount=20_000
                     ),
                 ]
             ),
@@ -81,16 +71,8 @@ class TestCapitalSchemeFinancialsModel:
 
         funding1, funding2 = financials_model.to_funding_domain(funding_programme_models)
 
-        assert (
-            funding1.funding_programme == FundingProgrammes.ATF4
-            and funding1.amount == 100_000
-            and funding1.source == DataSource.ATF4_BID
-        )
-        assert (
-            funding2.funding_programme == FundingProgrammes.CON
-            and funding2.amount == 20_000
-            and funding2.source == DataSource.FUNDING_DEVOLUTION
-        )
+        assert funding1.funding_programme == FundingProgrammes.ATF4 and funding1.amount == 100_000
+        assert funding2.funding_programme == FundingProgrammes.CON and funding2.amount == 20_000
 
     def test_to_spend_domain(self) -> None:
         financials_model = CapitalSchemeFinancialsModel(

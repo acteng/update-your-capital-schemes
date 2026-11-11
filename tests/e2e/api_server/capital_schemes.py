@@ -28,7 +28,6 @@ class CapitalSchemeFinancialModel(BaseModel):
 class CapitalSchemeFundingModel(BaseModel):
     funding_programme: AnyUrl
     amount: int
-    source: str
 
 
 class CapitalSchemeSpendModel(BaseModel):

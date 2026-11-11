@@ -1,6 +1,5 @@
 import pytest
 
-from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.financials import SchemeFinancials, SchemeFunding
 from schemes.domain.schemes.milestones import SchemeMilestones
 from schemes.domain.schemes.outputs import SchemeOutputs
@@ -104,9 +103,7 @@ class TestScheme:
         scheme = build_scheme(
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"), status=status
         )
-        scheme.financials.update_funding(
-            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
 
         assert scheme.is_updateable == expected_updateable
 
@@ -123,9 +120,7 @@ class TestScheme:
         scheme = build_scheme(
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"), status=Status.ACTIVE
         )
-        scheme.financials.update_funding(
-            SchemeFunding(funding_programme=funding_programme, amount=100_000, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(funding_programme=funding_programme, amount=100_000))
 
         assert scheme.is_updateable == expected_updateable
 
@@ -134,10 +129,8 @@ class TestScheme:
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"), status=Status.ACTIVE
         )
         scheme.financials.update_fundings(
-            SchemeFunding(
-                funding_programme=FundingProgramme("ATF100", False), amount=100_000, source=DataSource.ATF4_BID
-            ),
-            SchemeFunding(funding_programme=FundingProgrammes.CON, amount=20_000, source=DataSource.FUNDING_DEVOLUTION),
+            SchemeFunding(funding_programme=FundingProgramme("ATF100", False), amount=100_000),
+            SchemeFunding(funding_programme=FundingProgrammes.CON, amount=20_000),
         )
 
         assert scheme.is_updateable

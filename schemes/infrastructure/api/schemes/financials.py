@@ -12,7 +12,6 @@ from schemes.infrastructure.api.funding_programmes import FundingProgrammeModel
 class CapitalSchemeFundingModel(BaseModel):
     funding_programme: AnyUrl
     amount: int
-    source: DataSourceModel
 
     def to_domain(self, funding_programme_models: list[FundingProgrammeModel]) -> SchemeFunding:
         return SchemeFunding(
@@ -22,7 +21,6 @@ class CapitalSchemeFundingModel(BaseModel):
                 if funding_programme_model.id == self.funding_programme
             ),
             amount=self.amount,
-            source=self.source.to_domain(),
         )
 
 

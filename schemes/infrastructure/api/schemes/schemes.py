@@ -1,6 +1,5 @@
 from typing import Any
 
-from schemes.domain.schemes.data_sources import DataSource
 from schemes.domain.schemes.financials import SchemeFunding
 from schemes.domain.schemes.overview import FundingProgramme
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
@@ -129,9 +128,7 @@ class ApiSchemeRepository(SchemeRepository):
         """
         scheme.financials.update_funding(
             SchemeFunding(
-                funding_programme=FundingProgramme(code="dummy", is_eligible_for_authority_update=True),
-                amount=0,
-                source=DataSource.UNKNOWN,
+                funding_programme=FundingProgramme(code="dummy", is_eligible_for_authority_update=True), amount=0
             )
         )
         return scheme

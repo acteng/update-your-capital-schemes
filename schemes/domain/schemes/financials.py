@@ -3,10 +3,9 @@ from schemes.domain.schemes.overview import FundingProgramme
 
 
 class SchemeFunding:
-    def __init__(self, funding_programme: FundingProgramme, amount: int, source: DataSource):
+    def __init__(self, funding_programme: FundingProgramme, amount: int):
         self._funding_programme = funding_programme
         self._amount = amount
-        self._source = source
 
     @property
     def funding_programme(self) -> FundingProgramme:
@@ -15,10 +14,6 @@ class SchemeFunding:
     @property
     def amount(self) -> int:
         return self._amount
-
-    @property
-    def source(self) -> DataSource:
-        return self._source
 
 
 class SchemeSpend:

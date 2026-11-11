@@ -27,9 +27,7 @@ class TestSchemeFinancials:
         scheme = build_scheme(
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
-        scheme.financials.update_funding(
-            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
         await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
@@ -40,9 +38,7 @@ class TestSchemeFinancials:
         scheme = build_scheme(
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
-        scheme.financials.update_funding(
-            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=0, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=0))
         await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
@@ -68,9 +64,7 @@ class TestSchemeFinancials:
         scheme = build_scheme(
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
-        scheme.financials.update_funding(
-            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
         scheme.financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
@@ -86,9 +80,7 @@ class TestSchemeFinancials:
         scheme = build_scheme(
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
-        scheme.financials.update_funding(
-            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=0, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=0))
         scheme.financials.update_spend(SchemeSpend(id_=1, amount=0, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
@@ -161,9 +153,7 @@ class TestSchemeFinancials:
         scheme = build_scheme(
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
-        scheme.financials.update_funding(
-            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
         await schemes.add(scheme)
 
         change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
@@ -292,9 +282,7 @@ class TestSchemeFinancials:
         scheme = build_scheme(
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
-        scheme.financials.update_funding(
-            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
         scheme.financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
@@ -311,9 +299,7 @@ class TestSchemeFinancials:
         scheme = build_scheme(
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
-        scheme.financials.update_funding(
-            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000, source=DataSource.ATF4_BID)
-        )
+        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
         await schemes.add(scheme)
 
         response = await async_client.post(

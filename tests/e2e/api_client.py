@@ -52,7 +52,6 @@ class CapitalSchemeStatusModel(BaseModel):
 class CapitalSchemeFundingModel(BaseModel):
     funding_programme: str
     amount: int
-    source: str
 
 
 class CapitalSchemeSpendModel(BaseModel):
@@ -127,10 +126,8 @@ def build_capital_scheme_financials_model(
     )
 
 
-def build_capital_scheme_funding_model(
-    funding_programme: str, amount: int = 0, source: str = "Pulse 5"
-) -> CapitalSchemeFundingModel:
-    return CapitalSchemeFundingModel(funding_programme=funding_programme, amount=amount, source=source)
+def build_capital_scheme_funding_model(funding_programme: str, amount: int = 0) -> CapitalSchemeFundingModel:
+    return CapitalSchemeFundingModel(funding_programme=funding_programme, amount=amount)
 
 
 class ApiClient:

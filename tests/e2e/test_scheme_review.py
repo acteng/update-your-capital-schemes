@@ -21,7 +21,7 @@ from tests.e2e.pages import SchemePage
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_scheme_review(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
     api_client.set_clock("2023-04-24T12:00:00Z")
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True))
     api_client.add_improvements(
         ImprovementModel(
             reference="IMP00001",
@@ -42,7 +42,7 @@ def test_scheme_review(app_client: AppClient, api_client: ApiClient, oidc_client
             financials=build_capital_scheme_financials_model(
                 funding=[
                     build_capital_scheme_funding_model(
-                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF2"
+                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF4"
                     )
                 ]
             ),
@@ -65,7 +65,7 @@ def test_scheme_review(app_client: AppClient, api_client: ApiClient, oidc_client
 def test_scheme_cannot_review_when_error(
     app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     api_client.add_improvements(
         ImprovementModel(
@@ -86,7 +86,7 @@ def test_scheme_cannot_review_when_error(
             financials=build_capital_scheme_financials_model(
                 funding=[
                     build_capital_scheme_funding_model(
-                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF2"
+                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF4"
                     )
                 ]
             ),

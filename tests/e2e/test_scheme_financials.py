@@ -20,7 +20,7 @@ from tests.e2e.pages import SchemePage
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     api_client.add_improvements(
         ImprovementModel(
@@ -41,7 +41,7 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
             financials=build_capital_scheme_financials_model(
                 funding=[
                     build_capital_scheme_funding_model(
-                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF2", amount=100_000
+                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF4", amount=100_000
                     )
                 ]
             ),
@@ -57,7 +57,7 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
 def test_scheme_spend(app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     api_client.add_improvements(
         ImprovementModel(
@@ -78,7 +78,7 @@ def test_scheme_spend(app_client: AppClient, api_client: ApiClient, oidc_client:
             financials=build_capital_scheme_financials_model(
                 funding=[
                     build_capital_scheme_funding_model(
-                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF2", amount=100_000
+                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF4", amount=100_000
                     )
                 ],
                 spend=CapitalSchemeSpendModel(amount=50_000, source="ATF4 bid"),
@@ -101,7 +101,7 @@ def test_scheme_spend(app_client: AppClient, api_client: ApiClient, oidc_client:
 def test_change_spend_to_date(
     app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     api_client.add_improvements(
         ImprovementModel(
@@ -122,7 +122,7 @@ def test_change_spend_to_date(
             financials=build_capital_scheme_financials_model(
                 funding=[
                     build_capital_scheme_funding_model(
-                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF2", amount=100_000
+                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF4", amount=100_000
                     )
                 ],
                 spend=CapitalSchemeSpendModel(amount=50_000, source="ATF4 bid"),
@@ -147,7 +147,7 @@ def test_change_spend_to_date(
 def test_cannot_change_spend_to_date_when_error(
     app_client: AppClient, api_client: ApiClient, oidc_client: OidcClient, page: Page
 ) -> None:
-    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+    api_client.add_funding_programmes(FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True))
     api_client.add_authorities(AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority"))
     api_client.add_improvements(
         ImprovementModel(
@@ -168,7 +168,7 @@ def test_cannot_change_spend_to_date_when_error(
             financials=build_capital_scheme_financials_model(
                 funding=[
                     build_capital_scheme_funding_model(
-                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF2", amount=100_000
+                        funding_programme=f"{api_client.base_url}/funding-programmes/ATF4", amount=100_000
                     )
                 ],
                 spend=CapitalSchemeSpendModel(amount=50_000, source="ATF4 bid"),

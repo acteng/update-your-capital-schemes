@@ -27,7 +27,7 @@ class TestAuthenticated:
 
     def test_schemes(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
-        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True))
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
@@ -50,13 +50,13 @@ class TestAuthenticated:
                 financials=build_capital_scheme_financials_model(
                     funding=[
                         build_capital_scheme_funding_model(
-                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2"
+                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF4"
                         )
                     ]
                 ),
                 milestones=CapitalSchemeMilestonesModel(current_milestone="detailed design completed", items=[]),
                 authority_review=CapitalSchemeAuthorityReviewModel(
-                    review_date="2020-01-02T00:00:00Z", source="ATF3 bid"
+                    review_date="2020-01-02T00:00:00Z", source="ATF4 bid"
                 ),
             ),
             build_capital_scheme_model(
@@ -66,7 +66,7 @@ class TestAuthenticated:
                 financials=build_capital_scheme_financials_model(
                     funding=[
                         build_capital_scheme_funding_model(
-                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2"
+                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF4"
                         )
                     ]
                 ),
@@ -102,7 +102,7 @@ class TestAuthenticated:
         assert forbidden_page.is_visible
 
     def test_scheme_shows_scheme(self, app_client: AppClient, api_client: ApiClient, page: Page) -> None:
-        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True))
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
@@ -125,7 +125,7 @@ class TestAuthenticated:
                 financials=build_capital_scheme_financials_model(
                     funding=[
                         build_capital_scheme_funding_model(
-                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2"
+                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF4"
                         )
                     ]
                 ),
@@ -141,7 +141,7 @@ class TestAuthenticated:
         self, app_client: AppClient, api_client: ApiClient, page: Page
     ) -> None:
         app_client.set_clock("2023-04-24T12:00:00")
-        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF2", eligible_for_authority_update=True))
+        api_client.add_funding_programmes(FundingProgrammeModel(code="ATF4", eligible_for_authority_update=True))
         api_client.add_authorities(
             AuthorityModel(abbreviation="LIV", full_name="Liverpool City Region Combined Authority")
         )
@@ -164,7 +164,7 @@ class TestAuthenticated:
                 financials=build_capital_scheme_financials_model(
                     funding=[
                         build_capital_scheme_funding_model(
-                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF2"
+                            funding_programme=f"{api_client.base_url}/funding-programmes/ATF4"
                         )
                     ]
                 ),

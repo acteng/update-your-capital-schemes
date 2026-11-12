@@ -10,7 +10,7 @@ from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.conftest import AsyncFlaskClient
-from tests.integration.pages import ChangeSpendToDatePage, SchemePage
+from tests.integration.pages import ChangeSpendToDatePage, SchemeFundingRowData, SchemePage
 from tests.unit.domain.builders import build_scheme, build_scheme_funding, build_scheme_overview
 
 
@@ -26,18 +26,25 @@ class TestSchemeFinancials:
         scheme = build_scheme(
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
-        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
+        scheme.financials.update_fundings(
+            SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000),
+            SchemeFunding(funding_programme=FundingProgrammes.CON, amount=20_000),
+        )
         await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
-        assert scheme_page.funding.funding_allocation == "£100,000"
+        assert scheme_page.funding.to_data() == [
+            SchemeFundingRowData(funding_programme="ATF4", amount="£100,000"),
+            SchemeFundingRowData(funding_programme="CON", amount="£20,000"),
+        ]
+        assert scheme_page.funding.funding_allocation == "£120,000"
 
     async def test_scheme_shows_zero_funding(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
         scheme = build_scheme(
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
-        scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=0))
+        scheme.financials.update_funding(build_scheme_funding(amount=0))
         await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")

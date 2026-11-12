@@ -285,11 +285,13 @@ class InsetTextComponent:
 class SummaryCardComponent:
     def __init__(self, title: Locator):
         self._card = title.locator("xpath=../..")
+        self._rows = self._card.locator(".govuk-summary-list__row")
+
+    def _get_rows(self) -> list[Locator]:
+        return self._rows.all()
 
     def _get_definition(self, term_text: str) -> Locator:
-        row = self._card.locator(".govuk-summary-list__row").filter(
-            has=self._card.page.get_by_role("term").filter(has_text=term_text)
-        )
+        row = self._rows.filter(has=self._card.page.get_by_role("term").filter(has_text=term_text))
         return row.get_by_role("definition")
 
 
@@ -315,15 +317,44 @@ class ChangeSpendToDatePage(PageObject):
         self.form = ChangeSpendToDateFormComponent(page.get_by_role("form"))
 
 
+@dataclass(frozen=True)
+class SchemeFundingRowData:
+    funding_programme: str
+    amount: str
+
+
+class SchemeFundingRowComponent:
+    def __init__(self, row: Locator):
+        self._funding_programme = row.get_by_role("term")
+        self._amount = row.get_by_role("definition")
+
+    @property
+    def funding_programme(self) -> str:
+        return (self._funding_programme.text_content() or "").strip()
+
+    @property
+    def amount(self) -> str:
+        return (self._amount.text_content() or "").strip()
+
+    def to_data(self) -> SchemeFundingRowData:
+        return SchemeFundingRowData(funding_programme=self.funding_programme, amount=self.amount)
+
+
 class SchemeFundingComponent(SummaryCardComponent):
     def __init__(self, title: Locator):
         super().__init__(title)
         self._title = title
         self._funding_allocation = self._get_definition("Funding allocation")
 
+    def __iter__(self) -> Iterator[SchemeFundingRowComponent]:
+        return (SchemeFundingRowComponent(row) for row in self._get_rows()[:-1])
+
     @property
     def funding_allocation(self) -> str:
         return (self._funding_allocation.text_content() or "").strip()
+
+    def to_data(self) -> list[SchemeFundingRowData]:
+        return [row.to_data() for row in self]
 
 
 class SchemeSpendComponent(SummaryCardComponent):

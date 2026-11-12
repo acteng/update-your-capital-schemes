@@ -15,6 +15,7 @@ from schemes.views.schemes.financials import (
     ChangeSpendToDateForm,
     FundingProgrammeContext,
     SchemeFundingContext,
+    SchemeFundingRowContext,
     SchemeSpendContext,
 )
 from tests.unit.domain.builders import build_scheme, build_scheme_overview
@@ -49,6 +50,18 @@ class TestFundingProgrammeContext:
 
 
 class TestSchemeFundingContext:
+    def test_from_domain_sets_fundings(self) -> None:
+        financials = SchemeFinancials()
+        financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
+        financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.CON, amount=20_000))
+
+        context = SchemeFundingContext.from_domain(financials)
+
+        assert context.fundings == [
+            SchemeFundingRowContext(funding_programme=FundingProgrammeContext(name="ATF4"), amount=100_000),
+            SchemeFundingRowContext(funding_programme=FundingProgrammeContext(name="CON"), amount=20_000),
+        ]
+
     def test_from_domain_sets_funding_allocation(self) -> None:
         financials = SchemeFinancials()
         financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))

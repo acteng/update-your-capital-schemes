@@ -1,22 +1,39 @@
 {% from "govuk_frontend_jinja/components/summary-list/macro.html" import govukSummaryList %}
 
+{% set rows = [] %}
+{% for funding in funding.fundings %}
+    {% do rows.append(
+        {
+            "classes": "govuk-summary-list__row--no-actions",
+            "key": {
+                "classes": "govuk-!-width-one-half",
+                "text": funding.funding_programme.name
+            },
+            "value": {
+                "classes": "govuk-!-text-align-right",
+                "text": funding.amount | pounds
+            }
+        }
+    ) %}
+{% endfor %}
+{% do rows.append(
+    {
+        "classes": "govuk-summary-list__row--no-actions",
+        "key": {
+            "classes": "govuk-!-width-one-half",
+            "text": "Funding allocation"
+        },
+        "value": {
+            "classes": "govuk-!-text-align-right",
+            "text": funding.funding_allocation | pounds if funding.funding_allocation is not none()
+        }
+    }
+) %}
 {{ govukSummaryList({
     "card": {
         "title": {
             "text": "Funding"
         }
     },
-    "rows": [
-        {
-            "classes": "govuk-summary-list__row--no-actions",
-            "key": {
-                "classes": "govuk-!-width-one-half",
-                "text": "Funding allocation"
-            },
-            "value": {
-                "classes": "govuk-!-text-align-right",
-                "text": funding.funding_allocation | pounds if funding.funding_allocation is not none()
-            }
-        }
-    ]
+    "rows": rows
 }) }}

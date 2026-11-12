@@ -219,6 +219,7 @@ class SummaryCardComponent:
         card = title.find_parent("div", class_="govuk-summary-card")
         assert isinstance(card, Tag)
         self._card = card
+        self.rows = self._card.select(".govuk-summary-list__row")
 
     def _get_definition(self, term_text: str) -> list[Tag]:
         return self._card.select(f"dt:-soup-contains('{term_text}') ~ dd")
@@ -231,10 +232,33 @@ class SchemeOverviewComponent(SummaryCardComponent):
         self.current_milestone = (self._get_definition("Current milestone")[0].string or "").strip()
 
 
+@dataclass(frozen=True)
+class SchemeFundingRowData:
+    funding_programme: str
+    amount: str
+
+
+class SchemeFundingRowComponent:
+    def __init__(self, row: Tag):
+        term = one(row.select("dt"))
+        definition = one(row.select("dd"))
+        self.funding_programme = (term.string or "").strip()
+        self.amount = (definition.string or "").strip()
+
+    def to_data(self) -> SchemeFundingRowData:
+        return SchemeFundingRowData(funding_programme=self.funding_programme, amount=self.amount)
+
+
 class SchemeFundingComponent(SummaryCardComponent):
     def __init__(self, title: Tag):
         super().__init__(title)
         self.funding_allocation = (self._get_definition("Funding allocation")[0].string or "").strip()
+
+    def __iter__(self) -> Iterator[SchemeFundingRowComponent]:
+        return (SchemeFundingRowComponent(row) for row in self.rows[:-1])
+
+    def to_data(self) -> list[SchemeFundingRowData]:
+        return [row.to_data() for row in self]
 
 
 class SchemeSpendComponent(SummaryCardComponent):

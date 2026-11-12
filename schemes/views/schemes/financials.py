@@ -40,13 +40,29 @@ class FundingProgrammeContext:
         return cls(name=cls._NAMES[funding_programme])
 
 
+@dataclass
+class SchemeFundingRowContext:
+    funding_programme: FundingProgrammeContext
+    amount: int
+
+
 @dataclass(frozen=True)
 class SchemeFundingContext:
+    fundings: list[SchemeFundingRowContext]
     funding_allocation: int | None
 
     @classmethod
     def from_domain(cls, financials: SchemeFinancials) -> Self:
-        return cls(funding_allocation=financials.funding_allocation)
+        return cls(
+            fundings=[
+                SchemeFundingRowContext(
+                    funding_programme=FundingProgrammeContext.from_domain(funding.funding_programme),
+                    amount=funding.amount,
+                )
+                for funding in financials.fundings
+            ],
+            funding_allocation=financials.funding_allocation,
+        )
 
 
 @dataclass(frozen=True)

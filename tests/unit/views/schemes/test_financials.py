@@ -3,14 +3,49 @@ from flask_wtf.csrf import generate_csrf
 from werkzeug.datastructures import MultiDict
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.financials import FundingProgrammes, SchemeFinancials, SchemeFunding, SchemeSpend
+from schemes.domain.schemes.financials import (
+    FundingProgramme,
+    FundingProgrammes,
+    SchemeFinancials,
+    SchemeFunding,
+    SchemeSpend,
+)
 from schemes.views.schemes.financials import (
     ChangeSpendToDateContext,
     ChangeSpendToDateForm,
+    FundingProgrammeContext,
     SchemeFundingContext,
     SchemeSpendContext,
 )
 from tests.unit.domain.builders import build_scheme, build_scheme_overview
+
+
+class TestFundingProgrammeContext:
+    @pytest.mark.parametrize(
+        "funding_programme, expected_name",
+        [
+            (FundingProgrammes.ATF2, "ATF2"),
+            (FundingProgrammes.ATF3, "ATF3"),
+            (FundingProgrammes.ATF4, "ATF4"),
+            (FundingProgrammes.ATF4E, "ATF4e"),
+            (FundingProgrammes.ATF5, "ATF5"),
+            (FundingProgrammes.CATF, "CATF"),
+            (FundingProgrammes.CRSTS, "CRSTS"),
+            (FundingProgrammes.IST, "IST"),
+            (FundingProgrammes.LUF1, "LUF1"),
+            (FundingProgrammes.LUF2, "LUF2"),
+            (FundingProgrammes.LUF3, "LUF3"),
+            (FundingProgrammes.MRN, "MRN"),
+            (FundingProgrammes.OTH, "OTH"),
+            (FundingProgrammes.CON, "CON"),
+            (FundingProgrammes.NCN, "NCN"),
+            (FundingProgrammes.BUS, "BUS"),
+        ],
+    )
+    def test_from_domain(self, funding_programme: FundingProgramme, expected_name: str) -> None:
+        context = FundingProgrammeContext.from_domain(funding_programme)
+
+        assert context == FundingProgrammeContext(name=expected_name)
 
 
 class TestSchemeFundingContext:

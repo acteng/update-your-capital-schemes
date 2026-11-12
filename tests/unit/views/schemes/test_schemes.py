@@ -7,14 +7,13 @@ from schemes.domain.authorities import Authority
 from schemes.domain.dates import DateRange
 from schemes.domain.reporting_window import ReportingWindow
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.financials import FundingProgramme, FundingProgrammes, SchemeFunding
+from schemes.domain.schemes.financials import FundingProgrammes, SchemeFunding
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure, SchemeOutput
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.views.schemes.milestones import MilestoneContext
 from schemes.views.schemes.schemes import (
-    FundingProgrammeContext,
     SchemeContext,
     SchemeOverviewContext,
     SchemeRowContext,
@@ -268,34 +267,6 @@ class TestSchemeOverviewContext:
         context = SchemeOverviewContext.from_domain(scheme)
 
         assert context.current_milestone == MilestoneContext(name=None)
-
-
-class TestFundingProgrammeContext:
-    @pytest.mark.parametrize(
-        "funding_programme, expected_name",
-        [
-            (FundingProgrammes.ATF2, "ATF2"),
-            (FundingProgrammes.ATF3, "ATF3"),
-            (FundingProgrammes.ATF4, "ATF4"),
-            (FundingProgrammes.ATF4E, "ATF4e"),
-            (FundingProgrammes.ATF5, "ATF5"),
-            (FundingProgrammes.CATF, "CATF"),
-            (FundingProgrammes.CRSTS, "CRSTS"),
-            (FundingProgrammes.IST, "IST"),
-            (FundingProgrammes.LUF1, "LUF1"),
-            (FundingProgrammes.LUF2, "LUF2"),
-            (FundingProgrammes.LUF3, "LUF3"),
-            (FundingProgrammes.MRN, "MRN"),
-            (FundingProgrammes.OTH, "OTH"),
-            (FundingProgrammes.CON, "CON"),
-            (FundingProgrammes.NCN, "NCN"),
-            (FundingProgrammes.BUS, "BUS"),
-        ],
-    )
-    def test_from_domain(self, funding_programme: FundingProgramme, expected_name: str) -> None:
-        context = FundingProgrammeContext.from_domain(funding_programme)
-
-        assert context == FundingProgrammeContext(name=expected_name)
 
 
 def dummy_reporting_window() -> ReportingWindow:

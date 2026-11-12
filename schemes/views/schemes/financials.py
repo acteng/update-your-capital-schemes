@@ -1,15 +1,43 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Self
+from typing import ClassVar, Self
 
 from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovTextInput
 from wtforms.validators import InputRequired, NumberRange, ValidationError
 
-from schemes.domain.schemes.financials import SchemeFinancials
+from schemes.domain.schemes.financials import FundingProgramme, FundingProgrammes, SchemeFinancials
 from schemes.domain.schemes.schemes import Scheme
 from schemes.views.forms import CustomMessageIntegerField
+
+
+@dataclass(frozen=True)
+class FundingProgrammeContext:
+    name: str
+    _NAMES: ClassVar[Mapping[FundingProgramme, str]] = {
+        FundingProgrammes.ATF2: "ATF2",
+        FundingProgrammes.ATF3: "ATF3",
+        FundingProgrammes.ATF4: "ATF4",
+        FundingProgrammes.ATF4E: "ATF4e",
+        FundingProgrammes.ATF5: "ATF5",
+        FundingProgrammes.CATF: "CATF",
+        FundingProgrammes.CRSTS: "CRSTS",
+        FundingProgrammes.IST: "IST",
+        FundingProgrammes.LUF1: "LUF1",
+        FundingProgrammes.LUF2: "LUF2",
+        FundingProgrammes.LUF3: "LUF3",
+        FundingProgrammes.MRN: "MRN",
+        FundingProgrammes.OTH: "OTH",
+        FundingProgrammes.CON: "CON",
+        FundingProgrammes.NCN: "NCN",
+        FundingProgrammes.BUS: "BUS",
+    }
+
+    @classmethod
+    def from_domain(cls, funding_programme: FundingProgramme) -> Self:
+        return cls(name=cls._NAMES[funding_programme])
 
 
 @dataclass(frozen=True)

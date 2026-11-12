@@ -1,7 +1,6 @@
-from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
-from typing import ClassVar, Self
+from typing import Self
 
 import inject
 from flask import Blueprint, Response, abort, flash, redirect, render_template, session, url_for
@@ -10,7 +9,6 @@ from werkzeug import Response as BaseResponse
 from schemes.dicts import as_shallow_dict
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.reporting_window import ReportingWindow, ReportingWindowService
-from schemes.domain.schemes.financials import FundingProgramme, FundingProgrammes
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.domain.users import UserRepository
 from schemes.infrastructure.clock import Clock
@@ -56,33 +54,6 @@ async def index(
 
     context = SchemesContext.from_domain(now, reporting_window, authority, authority_schemes)
     return render_template("schemes.html", **as_shallow_dict(context))
-
-
-@dataclass(frozen=True)
-class FundingProgrammeContext:
-    name: str
-    _NAMES: ClassVar[Mapping[FundingProgramme, str]] = {
-        FundingProgrammes.ATF2: "ATF2",
-        FundingProgrammes.ATF3: "ATF3",
-        FundingProgrammes.ATF4: "ATF4",
-        FundingProgrammes.ATF4E: "ATF4e",
-        FundingProgrammes.ATF5: "ATF5",
-        FundingProgrammes.CATF: "CATF",
-        FundingProgrammes.CRSTS: "CRSTS",
-        FundingProgrammes.IST: "IST",
-        FundingProgrammes.LUF1: "LUF1",
-        FundingProgrammes.LUF2: "LUF2",
-        FundingProgrammes.LUF3: "LUF3",
-        FundingProgrammes.MRN: "MRN",
-        FundingProgrammes.OTH: "OTH",
-        FundingProgrammes.CON: "CON",
-        FundingProgrammes.NCN: "NCN",
-        FundingProgrammes.BUS: "BUS",
-    }
-
-    @classmethod
-    def from_domain(cls, funding_programme: FundingProgramme) -> Self:
-        return cls(name=cls._NAMES[funding_programme])
 
 
 @dataclass(frozen=True)

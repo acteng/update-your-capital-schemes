@@ -51,7 +51,7 @@ class TestSchemesContext:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", overview=build_scheme_overview(name="", authority_abbreviation="LIV"))
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
 
         context = SchemesContext.from_domain(datetime(2020, 4, 24, 12), reporting_window, authority, [scheme])
@@ -63,7 +63,7 @@ class TestSchemesContext:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", overview=build_scheme_overview(name="", authority_abbreviation="LIV"))
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 4, 1), source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 4, 1), source=DataSource.ATF4_BID)
         )
 
         context = SchemesContext.from_domain(datetime(2020, 4, 24, 12), reporting_window, authority, [scheme])
@@ -84,7 +84,7 @@ class TestSchemesContext:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", overview=build_scheme_overview(name="", authority_abbreviation="LIV"))
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
 
         context = SchemesContext.from_domain(datetime.min, reporting_window, authority, [scheme])
@@ -113,7 +113,7 @@ class TestSchemeRowContext:
         reporting_window = ReportingWindow(DateRange(datetime(2020, 4, 1), datetime(2020, 5, 1)))
         scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=review_date, source=DataSource.ATF4_BID)
         )
 
         context = SchemeRowContext.from_domain(reporting_window, scheme)
@@ -123,8 +123,8 @@ class TestSchemeRowContext:
     def test_from_domain_sets_last_reviewed(self) -> None:
         scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.reviews.update_authority_reviews(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID),
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.ATF4_BID),
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID),
+            AuthorityReview(surrogate_id=2, review_date=datetime(2020, 1, 3, 12), source=DataSource.ATF4_BID),
         )
 
         context = SchemeRowContext.from_domain(dummy_reporting_window(), scheme)
@@ -163,7 +163,7 @@ class TestSchemeContext:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", overview=build_scheme_overview(name="", authority_abbreviation="LIV"))
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=review_date, source=DataSource.ATF4_BID)
         )
 
         context = SchemeContext.from_domain(reporting_window, authority, scheme)
@@ -193,7 +193,7 @@ class TestSchemeContext:
         scheme = build_scheme(reference="", overview=build_scheme_overview(name="", authority_abbreviation="LIV"))
         scheme.milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
@@ -224,7 +224,7 @@ class TestSchemeContext:
         authority = Authority(abbreviation="LIV", name="")
         scheme = build_scheme(reference="", overview=build_scheme_overview(name="", authority_abbreviation="LIV"))
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
         )
 
         context = SchemeContext.from_domain(dummy_reporting_window(), authority, scheme)
@@ -244,14 +244,14 @@ class TestSchemeOverviewContext:
         scheme = build_scheme(reference="", overview=build_scheme_overview(name=""))
         scheme.milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
             SchemeMilestone(
-                id_=2,
+                surrogate_id=2,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),

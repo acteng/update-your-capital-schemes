@@ -29,7 +29,7 @@ class TestCapitalSchemeFundingModel:
 
 class TestCapitalSchemeSpendModel:
     def test_from_domain(self) -> None:
-        spend = SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID)
+        spend = SchemeSpend(surrogate_id=1, amount=50_000, source=DataSource.ATF4_BID)
 
         spend_model = CapitalSchemeSpendModel.from_domain(spend)
 
@@ -40,7 +40,7 @@ class TestCapitalSchemeSpendModel:
 
         spend = spend_model.to_domain()
 
-        assert spend.id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
+        assert spend.surrogate_id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
 
 
 class TestCapitalSchemeFinancialsModel:
@@ -82,7 +82,9 @@ class TestCapitalSchemeFinancialsModel:
 
         spend = financials_model.to_spend_domain()
 
-        assert spend and spend.id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
+        assert (
+            spend and spend.surrogate_id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
+        )
 
     def test_to_spend_domain_when_no_spend(self) -> None:
         financials_model = CapitalSchemeFinancialsModel(

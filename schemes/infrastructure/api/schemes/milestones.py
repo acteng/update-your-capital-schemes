@@ -48,7 +48,7 @@ class CapitalSchemeMilestoneModel(BaseModel):
     def to_domain(self) -> SchemeMilestone:
         # TODO: id
         return SchemeMilestone(
-            id_=0,
+            surrogate_id=0,
             milestone=self.milestone.to_domain(),
             observation_type=self.observation_type.to_domain(),
             status_date=self.status_date,

@@ -13,7 +13,9 @@ class CapitalSchemeAuthorityReviewModel(BaseModel):
 
     def to_domain(self) -> AuthorityReview:
         # TODO: id
-        return AuthorityReview(id_=0, review_date=zoned_to_local(self.review_date), source=self.source.to_domain())
+        return AuthorityReview(
+            surrogate_id=0, review_date=zoned_to_local(self.review_date), source=self.source.to_domain()
+        )
 
 
 class CreateCapitalSchemeAuthorityReviewModel(BaseModel):

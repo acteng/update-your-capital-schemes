@@ -34,7 +34,7 @@ class CapitalSchemeSpendModel(BaseModel):
 
     def to_domain(self) -> SchemeSpend:
         # TODO: id
-        return SchemeSpend(id_=0, amount=self.amount, source=self.source.to_domain())
+        return SchemeSpend(surrogate_id=0, amount=self.amount, source=self.source.to_domain())
 
 
 class CapitalSchemeFinancialsModel(BaseModel):

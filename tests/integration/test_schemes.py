@@ -49,7 +49,7 @@ class TestSchemes:
         )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
         await schemes.add(scheme)
 
@@ -69,7 +69,7 @@ class TestSchemes:
         )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF3_BID)
         )
         await schemes.add(scheme)
 
@@ -137,7 +137,7 @@ class TestSchemes:
         )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF3_BID)
         )
         await schemes.add(scheme)
 
@@ -162,7 +162,7 @@ class TestSchemes:
         )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2023, 1, 2), source=DataSource.ATF3_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2023, 1, 2), source=DataSource.ATF3_BID)
         )
         await schemes.add(scheme)
 

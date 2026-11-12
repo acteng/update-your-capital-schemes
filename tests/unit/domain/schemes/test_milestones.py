@@ -33,7 +33,7 @@ class TestMilestone:
 class TestSchemeMilestone:
     def test_create(self) -> None:
         milestone = SchemeMilestone(
-            id_=1,
+            surrogate_id=1,
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
@@ -41,7 +41,7 @@ class TestSchemeMilestone:
         )
 
         assert (
-            milestone.id == 1
+            milestone.surrogate_id == 1
             and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone.observation_type == ObservationType.ACTUAL
             and milestone.status_date == date(2020, 1, 1)
@@ -70,7 +70,7 @@ class TestSchemeMilestones:
         milestones = SchemeMilestones()
         milestones.update_milestone(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -85,7 +85,7 @@ class TestSchemeMilestones:
     def test_update_milestone(self) -> None:
         milestones = SchemeMilestones()
         milestone = SchemeMilestone(
-            id_=1,
+            surrogate_id=1,
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
@@ -99,7 +99,7 @@ class TestSchemeMilestones:
     def test_cannot_update_milestone_with_existing_milestone(self) -> None:
         milestones = SchemeMilestones()
         milestone = SchemeMilestone(
-            id_=1,
+            surrogate_id=1,
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2000, 1, 1),
@@ -110,7 +110,7 @@ class TestSchemeMilestones:
         with pytest.raises(ValueError, match=re.escape(f"Milestone already exists: {milestone!r}")):
             milestones.update_milestone(
                 SchemeMilestone(
-                    id_=2,
+                    surrogate_id=2,
                     milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                     observation_type=ObservationType.ACTUAL,
                     status_date=date(2000, 2, 1),
@@ -121,14 +121,14 @@ class TestSchemeMilestones:
     def test_update_milestones(self) -> None:
         milestones = SchemeMilestones()
         milestone1 = SchemeMilestone(
-            id_=1,
+            surrogate_id=1,
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 1, 1),
             source=DataSource.ATF4_BID,
         )
         milestone2 = SchemeMilestone(
-            id_=2,
+            surrogate_id=2,
             milestone=Milestone.CONSTRUCTION_STARTED,
             observation_type=ObservationType.ACTUAL,
             status_date=date(2020, 2, 1),
@@ -143,7 +143,7 @@ class TestSchemeMilestones:
         milestones = SchemeMilestones()
         milestones.update_milestone(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -157,7 +157,7 @@ class TestSchemeMilestones:
             status_date=date(2020, 1, 3),
         )
 
-        assert 1 not in (milestone.id for milestone in milestones.milestones)
+        assert 1 not in (milestone.surrogate_id for milestone in milestones.milestones)
 
     def test_update_milestone_date_adds_new_milestone(self) -> None:
         milestones = SchemeMilestones()
@@ -170,7 +170,7 @@ class TestSchemeMilestones:
 
         (milestone,) = milestones.milestones
         assert (
-            milestone.id is None
+            milestone.surrogate_id is None
             and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone.observation_type == ObservationType.ACTUAL
             and milestone.status_date == date(2020, 1, 3)
@@ -180,14 +180,14 @@ class TestSchemeMilestones:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
             SchemeMilestone(
-                id_=2,
+                surrogate_id=2,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -201,14 +201,14 @@ class TestSchemeMilestones:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
             SchemeMilestone(
-                id_=2,
+                surrogate_id=2,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -227,14 +227,14 @@ class TestSchemeMilestones:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
             SchemeMilestone(
-                id_=2,
+                surrogate_id=2,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 2, 1),
@@ -250,14 +250,14 @@ class TestSchemeMilestones:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
             SchemeMilestone(
-                id_=2,
+                surrogate_id=2,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 2, 1),

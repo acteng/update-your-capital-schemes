@@ -17,15 +17,14 @@ class SchemeFunding:
 
 
 class SchemeSpend:
-    # TODO: domain identifier should be mandatory for transient instances
-    def __init__(self, id_: int | None, amount: int, source: DataSource):
-        self._id = id_
+    def __init__(self, surrogate_id: int | None, amount: int, source: DataSource):
+        self._surrogate_id = surrogate_id
         self._amount = amount
         self._source = source
 
     @property
-    def id(self) -> int | None:
-        return self._id
+    def surrogate_id(self) -> int | None:
+        return self._surrogate_id
 
     @property
     def amount(self) -> int:
@@ -60,7 +59,7 @@ class SchemeFinancials:
         self._spend = spend
 
     def update_spend_to_date(self, amount: int) -> None:
-        self.update_spend(SchemeSpend(id_=None, amount=amount, source=DataSource.AUTHORITY_UPDATE))
+        self.update_spend(SchemeSpend(surrogate_id=None, amount=amount, source=DataSource.AUTHORITY_UPDATE))
 
     @property
     def funding_allocation(self) -> int | None:

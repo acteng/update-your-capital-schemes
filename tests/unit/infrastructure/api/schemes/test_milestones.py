@@ -38,7 +38,7 @@ class TestMilestoneModel:
 class TestCapitalSchemeMilestoneModel:
     def test_from_domain(self) -> None:
         milestone = SchemeMilestone(
-            id_=1,
+            surrogate_id=1,
             milestone=Milestone.DETAILED_DESIGN_COMPLETED,
             observation_type=ObservationType.PLANNED,
             status_date=date(2020, 2, 1),
@@ -65,7 +65,7 @@ class TestCapitalSchemeMilestoneModel:
         milestone = milestone_model.to_domain()
 
         assert (
-            milestone.id is not None
+            milestone.surrogate_id is not None
             and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone.observation_type == ObservationType.PLANNED
             and milestone.status_date == date(2020, 2, 1)

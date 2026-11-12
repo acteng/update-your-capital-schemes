@@ -232,7 +232,7 @@ class TestSchemeMilestones:
         scheme.financials.update_funding(build_scheme_funding())
         scheme.milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
@@ -320,7 +320,7 @@ class TestSchemeMilestones:
         scheme.financials.update_funding(build_scheme_funding())
         scheme.milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
@@ -338,7 +338,7 @@ class TestSchemeMilestones:
         assert actual_scheme
         (milestone,) = actual_scheme.milestones.milestones
         assert (
-            milestone.id is None
+            milestone.surrogate_id is None
             and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone.observation_type == ObservationType.ACTUAL
             and milestone.status_date == date(2020, 1, 3)
@@ -367,7 +367,7 @@ class TestSchemeMilestones:
         scheme.financials.update_funding(build_scheme_funding())
         scheme.milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
@@ -401,7 +401,7 @@ class TestSchemeMilestones:
         assert actual_scheme
         (milestone1,) = actual_scheme.milestones.milestones
         assert (
-            milestone1.id == 1
+            milestone1.surrogate_id == 1
             and milestone1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone1.observation_type == ObservationType.ACTUAL
             and milestone1.status_date == date(2020, 1, 2)

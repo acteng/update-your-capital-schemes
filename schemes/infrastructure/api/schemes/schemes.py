@@ -182,7 +182,7 @@ class ApiSchemeRepository(SchemeRepository):
 
     async def _update_financials(self, remote_app: AsyncBaseApp, scheme: Scheme) -> None:
         spend = scheme.financials.spend
-        if spend and spend.id is None:
+        if spend and spend.surrogate_id is None:
             spend_model = CapitalSchemeSpendModel.from_domain(spend)
             await self._create_spend(remote_app, scheme.reference, spend_model)
 
@@ -198,7 +198,7 @@ class ApiSchemeRepository(SchemeRepository):
         response.raise_for_status()
 
     async def _update_milestones(self, remote_app: AsyncBaseApp, scheme: Scheme) -> None:
-        new_milestones = [milestone for milestone in scheme.milestones.milestones if milestone.id is None]
+        new_milestones = [milestone for milestone in scheme.milestones.milestones if milestone.surrogate_id is None]
         if new_milestones:
             milestones_model = CollectionModel[CapitalSchemeMilestoneModel](
                 items=[CapitalSchemeMilestoneModel.from_domain(milestone) for milestone in new_milestones]
@@ -221,7 +221,7 @@ class ApiSchemeRepository(SchemeRepository):
 
     async def _update_authority_reviews(self, remote_app: AsyncBaseApp, scheme: Scheme) -> None:
         for authority_review in scheme.reviews.authority_reviews:
-            if authority_review.id is None:
+            if authority_review.surrogate_id is None:
                 authority_review_model = CreateCapitalSchemeAuthorityReviewModel.from_domain(authority_review)
                 await self._create_authority_review(remote_app, scheme.reference, authority_review_model)
 

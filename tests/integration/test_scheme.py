@@ -87,7 +87,7 @@ class TestScheme:
         )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=review_date, source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
 

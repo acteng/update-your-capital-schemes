@@ -65,7 +65,7 @@ class TestSchemeFinancials:
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
         scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
-        scheme.financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
+        scheme.financials.update_spend(SchemeSpend(surrogate_id=1, amount=50_000, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
@@ -81,7 +81,7 @@ class TestSchemeFinancials:
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
         scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=0))
-        scheme.financials.update_spend(SchemeSpend(id_=1, amount=0, source=DataSource.ATF4_BID))
+        scheme.financials.update_spend(SchemeSpend(surrogate_id=1, amount=0, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
@@ -180,7 +180,7 @@ class TestSchemeFinancials:
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
         scheme.financials.update_funding(build_scheme_funding())
-        scheme.financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
+        scheme.financials.update_spend(SchemeSpend(surrogate_id=1, amount=50_000, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
         change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
@@ -194,7 +194,7 @@ class TestSchemeFinancials:
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
         scheme.financials.update_funding(build_scheme_funding())
-        scheme.financials.update_spend(SchemeSpend(id_=1, amount=0, source=DataSource.ATF4_BID))
+        scheme.financials.update_spend(SchemeSpend(surrogate_id=1, amount=0, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
         change_spend_to_date_page = await ChangeSpendToDatePage.open(async_client, reference="ATE00001")
@@ -283,7 +283,7 @@ class TestSchemeFinancials:
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
         scheme.financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
-        scheme.financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
+        scheme.financials.update_spend(SchemeSpend(surrogate_id=1, amount=50_000, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
         await async_client.post("/schemes/ATE00001/spend-to-date", data={"csrf_token": csrf_token, "amount": "60000"})
@@ -315,7 +315,7 @@ class TestSchemeFinancials:
             reference="ATE00001", overview=build_scheme_overview(name="Wirral Package", authority_abbreviation="LIV")
         )
         scheme.financials.update_funding(build_scheme_funding())
-        scheme.financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
+        scheme.financials.update_spend(SchemeSpend(surrogate_id=1, amount=50_000, source=DataSource.ATF4_BID))
         await schemes.add(scheme)
 
         change_spend_to_date_page = ChangeSpendToDatePage(

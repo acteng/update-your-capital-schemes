@@ -5,15 +5,14 @@ from schemes.domain.schemes.data_sources import DataSource
 
 
 class AuthorityReview:
-    # TODO: domain identifier should be mandatory for transient instances
-    def __init__(self, id_: int | None, review_date: datetime, source: DataSource):
-        self._id = id_
+    def __init__(self, surrogate_id: int | None, review_date: datetime, source: DataSource):
+        self._surrogate_id = surrogate_id
         self._review_date = review_date
         self._source = source
 
     @property
-    def id(self) -> int | None:
-        return self._id
+    def surrogate_id(self) -> int | None:
+        return self._surrogate_id
 
     @property
     def review_date(self) -> datetime:

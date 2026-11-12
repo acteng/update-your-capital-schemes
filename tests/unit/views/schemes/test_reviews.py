@@ -20,7 +20,7 @@ class TestSchemeReviewForm:
         form = SchemeReviewForm()
         reviews = SchemeReviews()
         reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2023, 1, 1, 12), source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2023, 1, 1, 12), source=DataSource.ATF4_BID)
         )
 
         form.update_domain(reviews, now=datetime(2023, 4, 24, 12))
@@ -55,8 +55,8 @@ class TestSchemeReviewContext:
     def test_from_domain_sets_last_reviewed(self) -> None:
         reviews = SchemeReviews()
         reviews.update_authority_reviews(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID),
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
+            AuthorityReview(surrogate_id=2, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID),
         )
 
         context = SchemeReviewContext.from_domain(reviews)

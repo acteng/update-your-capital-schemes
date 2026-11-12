@@ -49,14 +49,14 @@ class TestSchemeMilestonesContext:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=milestone,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 3, 1),
                 source=DataSource.ATF4_BID,
             ),
             SchemeMilestone(
-                id_=2,
+                surrogate_id=2,
                 milestone=milestone,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 5, 1),
@@ -129,7 +129,7 @@ class TestChangeMilestoneDatesContext:
         scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.milestones.update_milestone(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 3, 1),
@@ -213,7 +213,7 @@ class TestMilestoneDatesForm:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
                 status_date=date(2020, 2, 1),
@@ -241,7 +241,7 @@ class TestMilestoneDatesForm:
         milestones = SchemeMilestones()
         milestones.update_milestone(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
                 status_date=date(2020, 1, 2),
@@ -253,7 +253,7 @@ class TestMilestoneDatesForm:
 
         (milestone,) = milestones.milestones
         assert (
-            milestone.id is None
+            milestone.surrogate_id is None
             and milestone.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone.observation_type == observation_type
             and milestone.status_date == date(2020, 1, 3)
@@ -271,7 +271,7 @@ class TestMilestoneDatesForm:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
                 status_date=date(2020, 1, 2),
@@ -283,7 +283,7 @@ class TestMilestoneDatesForm:
 
         (milestone1,) = milestones.milestones
         assert (
-            milestone1.id == 1
+            milestone1.surrogate_id == 1
             and milestone1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone1.observation_type == observation_type
             and milestone1.status_date == date(2020, 1, 2)
@@ -299,7 +299,7 @@ class TestMilestoneDatesForm:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=observation_type,
                 status_date=date(2020, 1, 2),
@@ -311,7 +311,7 @@ class TestMilestoneDatesForm:
 
         (milestone1,) = milestones.milestones
         assert (
-            milestone1.id == 1
+            milestone1.surrogate_id == 1
             and milestone1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone1.observation_type == observation_type
             and milestone1.status_date == date(2020, 1, 2)
@@ -489,35 +489,35 @@ class TestChangeMilestoneDatesForm:
         milestones = SchemeMilestones()
         milestones.update_milestones(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.FEASIBILITY_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
                 source=DataSource.ATF4_BID,
             ),
             SchemeMilestone(
-                id_=2,
+                surrogate_id=2,
                 milestone=Milestone.PRELIMINARY_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 2),
                 source=DataSource.ATF4_BID,
             ),
             SchemeMilestone(
-                id_=3,
+                surrogate_id=3,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 3),
                 source=DataSource.ATF4_BID,
             ),
             SchemeMilestone(
-                id_=3,
+                surrogate_id=3,
                 milestone=Milestone.CONSTRUCTION_STARTED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 4),
                 source=DataSource.ATF4_BID,
             ),
             SchemeMilestone(
-                id_=3,
+                surrogate_id=3,
                 milestone=Milestone.CONSTRUCTION_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 5),

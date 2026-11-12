@@ -43,7 +43,7 @@ class TestSchemeOverview:
         scheme.financials.update_funding(build_scheme_funding())
         scheme.milestones.update_milestone(
             SchemeMilestone(
-                id_=1,
+                surrogate_id=1,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 1, 1),
@@ -51,7 +51,7 @@ class TestSchemeOverview:
             )
         )
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
 

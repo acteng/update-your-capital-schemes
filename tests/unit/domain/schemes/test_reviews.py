@@ -10,10 +10,10 @@ from schemes.domain.schemes.reviews import AuthorityReview, SchemeReviews
 
 class TestAuthorityReview:
     def test_create(self) -> None:
-        authority_review = AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+        authority_review = AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
 
         assert (
-            authority_review.id == 1
+            authority_review.surrogate_id == 1
             and authority_review.review_date == datetime(2020, 1, 2)
             and authority_review.source == DataSource.ATF4_BID
         )
@@ -28,7 +28,7 @@ class TestSchemeReviews:
     def test_get_authority_reviews_is_copy(self) -> None:
         reviews = SchemeReviews()
         reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
 
         reviews.authority_reviews.clear()
@@ -37,7 +37,7 @@ class TestSchemeReviews:
 
     def test_update_authority_review(self) -> None:
         reviews = SchemeReviews()
-        authority_review = AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+        authority_review = AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
 
         reviews.update_authority_review(authority_review)
 
@@ -45,8 +45,12 @@ class TestSchemeReviews:
 
     def test_update_authority_reviews(self) -> None:
         reviews = SchemeReviews()
-        authority_review1 = AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
-        authority_review2 = AuthorityReview(id_=2, review_date=datetime(2020, 1, 3), source=DataSource.ATF4_BID)
+        authority_review1 = AuthorityReview(
+            surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID
+        )
+        authority_review2 = AuthorityReview(
+            surrogate_id=2, review_date=datetime(2020, 1, 3), source=DataSource.ATF4_BID
+        )
 
         reviews.update_authority_reviews(authority_review1, authority_review2)
 
@@ -55,9 +59,9 @@ class TestSchemeReviews:
     def test_last_reviewed(self) -> None:
         reviews = SchemeReviews()
         reviews.update_authority_reviews(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID),
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 4), source=DataSource.ATF4_BID),
-            AuthorityReview(id_=3, review_date=datetime(2020, 1, 3), source=DataSource.ATF4_BID),
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID),
+            AuthorityReview(surrogate_id=2, review_date=datetime(2020, 1, 4), source=DataSource.ATF4_BID),
+            AuthorityReview(surrogate_id=3, review_date=datetime(2020, 1, 3), source=DataSource.ATF4_BID),
         )
 
         assert reviews.last_reviewed == datetime(2020, 1, 4)
@@ -79,7 +83,9 @@ class TestSchemeReviews:
     def test_needs_review(self, review_date: datetime, expected_needs_review: bool) -> None:
         reporting_window = ReportingWindow(DateRange(datetime(2023, 4, 1), datetime(2023, 5, 1)))
         reviews = SchemeReviews()
-        reviews.update_authority_review(AuthorityReview(id_=1, review_date=review_date, source=DataSource.ATF4_BID))
+        reviews.update_authority_review(
+            AuthorityReview(surrogate_id=1, review_date=review_date, source=DataSource.ATF4_BID)
+        )
 
         assert reviews.needs_review(reporting_window) == expected_needs_review
 

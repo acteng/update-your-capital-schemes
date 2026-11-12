@@ -12,9 +12,9 @@ class TestSchemeFunding:
 
 class TestSchemeSpend:
     def test_create(self) -> None:
-        spend = SchemeSpend(id_=1, amount=100_000, source=DataSource.ATF4_BID)
+        spend = SchemeSpend(surrogate_id=1, amount=100_000, source=DataSource.ATF4_BID)
 
-        assert spend.id == 1 and spend.amount == 100_000 and spend.source == DataSource.ATF4_BID
+        assert spend.surrogate_id == 1 and spend.amount == 100_000 and spend.source == DataSource.ATF4_BID
 
 
 class TestSchemeFinancials:
@@ -50,7 +50,7 @@ class TestSchemeFinancials:
 
     def test_update_spend(self) -> None:
         financials = SchemeFinancials()
-        spend = SchemeSpend(id_=1, amount=100_000, source=DataSource.ATF4_BID)
+        spend = SchemeSpend(surrogate_id=1, amount=100_000, source=DataSource.ATF4_BID)
 
         financials.update_spend(spend)
 
@@ -62,7 +62,12 @@ class TestSchemeFinancials:
         financials.update_spend_to_date(60_000)
 
         spend = financials.spend
-        assert spend and spend.id is None and spend.amount == 60_000 and spend.source == DataSource.AUTHORITY_UPDATE
+        assert (
+            spend
+            and spend.surrogate_id is None
+            and spend.amount == 60_000
+            and spend.source == DataSource.AUTHORITY_UPDATE
+        )
 
     def test_get_funding_allocation_sums_amounts(self) -> None:
         financials = SchemeFinancials()
@@ -80,7 +85,7 @@ class TestSchemeFinancials:
 
     def test_get_spend_to_date(self) -> None:
         financials = SchemeFinancials()
-        financials.update_spend(SchemeSpend(id_=1, amount=100_000, source=DataSource.ATF4_BID))
+        financials.update_spend(SchemeSpend(surrogate_id=1, amount=100_000, source=DataSource.ATF4_BID))
 
         assert financials.spend_to_date == 100_000
 
@@ -92,13 +97,13 @@ class TestSchemeFinancials:
     def test_get_allocation_still_to_spend(self) -> None:
         financials = SchemeFinancials()
         financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000))
-        financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
+        financials.update_spend(SchemeSpend(surrogate_id=1, amount=50_000, source=DataSource.ATF4_BID))
 
         assert financials.allocation_still_to_spend == 50_000
 
     def test_get_allocation_still_to_spend_when_no_funding_allocation(self) -> None:
         financials = SchemeFinancials()
-        financials.update_spend(SchemeSpend(id_=1, amount=50_000, source=DataSource.ATF4_BID))
+        financials.update_spend(SchemeSpend(surrogate_id=1, amount=50_000, source=DataSource.ATF4_BID))
 
         assert financials.allocation_still_to_spend == -50_000
 

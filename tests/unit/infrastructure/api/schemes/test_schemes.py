@@ -144,7 +144,9 @@ class TestCapitalSchemeModel:
         (funding,) = scheme.financials.fundings
         spend = scheme.financials.spend
         assert funding.funding_programme == FundingProgrammes.ATF4 and funding.amount == 100_000
-        assert spend and spend.id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
+        assert (
+            spend and spend.surrogate_id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
+        )
 
     def test_to_domain_sets_milestones(self) -> None:
         capital_scheme_model = CapitalSchemeModel(
@@ -177,14 +179,14 @@ class TestCapitalSchemeModel:
 
         milestone1, milestone2 = scheme.milestones.milestones
         assert (
-            milestone1.id is not None
+            milestone1.surrogate_id is not None
             and milestone1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone1.observation_type == ObservationType.PLANNED
             and milestone1.status_date == date(2020, 2, 1)
             and milestone1.source == DataSource.ATF4_BID
         )
         assert (
-            milestone2.id is not None
+            milestone2.surrogate_id is not None
             and milestone2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone2.observation_type == ObservationType.PLANNED
             and milestone2.status_date == date(2020, 3, 1)
@@ -251,7 +253,7 @@ class TestCapitalSchemeModel:
 
         (authority_review1,) = scheme.reviews.authority_reviews
         assert (
-            authority_review1.id is not None
+            authority_review1.surrogate_id is not None
             and authority_review1.review_date == datetime(2020, 1, 2)
             and authority_review1.source == DataSource.AUTHORITY_UPDATE
         )
@@ -315,7 +317,7 @@ class TestCapitalSchemeItemModel:
 
         (authority_review1,) = scheme.reviews.authority_reviews
         assert (
-            authority_review1.id is not None
+            authority_review1.surrogate_id is not None
             and authority_review1.review_date == datetime(2020, 1, 2)
             and authority_review1.source == DataSource.AUTHORITY_UPDATE
         )
@@ -443,7 +445,9 @@ class TestApiSchemeRepository:
         spend = scheme.financials.spend
         assert funding1.funding_programme == FundingProgrammes.ATF4 and funding1.amount == 100_000
         assert funding2.funding_programme == FundingProgrammes.CON and funding2.amount == 20_000
-        assert spend and spend.id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
+        assert (
+            spend and spend.surrogate_id is not None and spend.amount == 50_000 and spend.source == DataSource.ATF4_BID
+        )
 
     async def test_get_scheme_sets_milestones(
         self, api_mock: MockRouter, api_base_url: str, schemes: ApiSchemeRepository
@@ -482,14 +486,14 @@ class TestApiSchemeRepository:
         assert scheme
         milestone1, milestone2 = scheme.milestones.milestones
         assert (
-            milestone1.id is not None
+            milestone1.surrogate_id is not None
             and milestone1.milestone == Milestone.DETAILED_DESIGN_COMPLETED
             and milestone1.observation_type == ObservationType.PLANNED
             and milestone1.status_date == date(2020, 2, 1)
             and milestone1.source == DataSource.ATF4_BID
         )
         assert (
-            milestone2.id is not None
+            milestone2.surrogate_id is not None
             and milestone2.milestone == Milestone.CONSTRUCTION_STARTED
             and milestone2.observation_type == ObservationType.PLANNED
             and milestone2.status_date == date(2020, 3, 1)
@@ -566,7 +570,7 @@ class TestApiSchemeRepository:
         assert scheme
         (authority_review1,) = scheme.reviews.authority_reviews
         assert (
-            authority_review1.id is not None
+            authority_review1.surrogate_id is not None
             and authority_review1.review_date == datetime(2020, 1, 2)
             and authority_review1.source == DataSource.AUTHORITY_UPDATE
         )
@@ -758,7 +762,7 @@ class TestApiSchemeRepository:
 
         (authority_review1,) = scheme1.reviews.authority_reviews
         assert (
-            authority_review1.id is not None
+            authority_review1.surrogate_id is not None
             and authority_review1.review_date == datetime(2020, 1, 2)
             and authority_review1.source == DataSource.AUTHORITY_UPDATE
         )
@@ -834,7 +838,9 @@ class TestApiSchemeRepository:
 
     async def test_update_scheme_spend(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
         scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
-        scheme.financials.update_spend(SchemeSpend(id_=None, amount=60_000, source=DataSource.AUTHORITY_UPDATE))
+        scheme.financials.update_spend(
+            SchemeSpend(surrogate_id=None, amount=60_000, source=DataSource.AUTHORITY_UPDATE)
+        )
         create_spend_response = api_mock.post(
             "/capital-schemes/ATE00001/financials/spend",
             json=build_capital_scheme_spend_json(amount=60_000, source="authority update"),
@@ -848,7 +854,7 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, schemes: ApiSchemeRepository
     ) -> None:
         scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
-        scheme.financials.update_spend(SchemeSpend(id_=2, amount=50_000, source=DataSource.ATF4_BID))
+        scheme.financials.update_spend(SchemeSpend(surrogate_id=2, amount=50_000, source=DataSource.ATF4_BID))
 
         await schemes.update(scheme)
 
@@ -858,14 +864,14 @@ class TestApiSchemeRepository:
         scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.milestones.update_milestones(
             SchemeMilestone(
-                id_=None,
+                surrogate_id=None,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 3, 1),
                 source=DataSource.AUTHORITY_UPDATE,
             ),
             SchemeMilestone(
-                id_=None,
+                surrogate_id=None,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.ACTUAL,
                 status_date=date(2020, 4, 1),
@@ -902,7 +908,7 @@ class TestApiSchemeRepository:
         scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.milestones.update_milestones(
             SchemeMilestone(
-                id_=2,
+                surrogate_id=2,
                 milestone=Milestone.DETAILED_DESIGN_COMPLETED,
                 observation_type=ObservationType.PLANNED,
                 status_date=date(2020, 2, 1),
@@ -917,8 +923,8 @@ class TestApiSchemeRepository:
     async def test_update_scheme_authority_reviews(self, api_mock: MockRouter, schemes: ApiSchemeRepository) -> None:
         scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.reviews.update_authority_reviews(
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
-            AuthorityReview(id_=None, review_date=datetime(2020, 2, 1), source=DataSource.AUTHORITY_UPDATE),
+            AuthorityReview(surrogate_id=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID),
+            AuthorityReview(surrogate_id=None, review_date=datetime(2020, 2, 1), source=DataSource.AUTHORITY_UPDATE),
         )
         create_authority_review_response = api_mock.post(
             "/capital-schemes/ATE00001/authority-reviews",
@@ -934,7 +940,7 @@ class TestApiSchemeRepository:
     ) -> None:
         scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
         scheme.reviews.update_authority_reviews(
-            AuthorityReview(id_=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=2, review_date=datetime(2020, 1, 1), source=DataSource.ATF4_BID)
         )
 
         await schemes.update(scheme)
@@ -945,9 +951,11 @@ class TestApiSchemeRepository:
         self, api_mock: MockRouter, remote_app: StubRemoteApp, schemes: ApiSchemeRepository
     ) -> None:
         scheme = build_scheme(reference="ATE00001", overview=build_scheme_overview(name="Wirral Package"))
-        scheme.financials.update_spend(SchemeSpend(id_=None, amount=60_000, source=DataSource.AUTHORITY_UPDATE))
+        scheme.financials.update_spend(
+            SchemeSpend(surrogate_id=None, amount=60_000, source=DataSource.AUTHORITY_UPDATE)
+        )
         scheme.reviews.update_authority_reviews(
-            AuthorityReview(id_=None, review_date=datetime(2020, 1, 1), source=DataSource.AUTHORITY_UPDATE)
+            AuthorityReview(surrogate_id=None, review_date=datetime(2020, 1, 1), source=DataSource.AUTHORITY_UPDATE)
         )
         api_mock.post(
             "/capital-schemes/ATE00001/financials/spend",

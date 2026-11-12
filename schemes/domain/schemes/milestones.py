@@ -30,24 +30,23 @@ class Milestone(Enum):
 
 
 class SchemeMilestone:
-    # TODO: domain identifier should be mandatory for transient instances
     def __init__(
         self,
-        id_: int | None,
+        surrogate_id: int | None,
         milestone: Milestone,
         observation_type: ObservationType,
         status_date: date,
         source: DataSource,
     ):
-        self._id = id_
+        self._surrogate_id = surrogate_id
         self._milestone = milestone
         self._observation_type = observation_type
         self._status_date = status_date
         self._source = source
 
     @property
-    def id(self) -> int | None:
-        return self._id
+    def surrogate_id(self) -> int | None:
+        return self._surrogate_id
 
     @property
     def milestone(self) -> Milestone:
@@ -96,7 +95,7 @@ class SchemeMilestones:
 
         self.update_milestone(
             SchemeMilestone(
-                id_=None,
+                surrogate_id=None,
                 milestone=milestone,
                 observation_type=observation_type,
                 status_date=status_date,

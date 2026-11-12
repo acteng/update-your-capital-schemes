@@ -39,7 +39,7 @@ class TestSchemeReview:
         )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
 
@@ -69,7 +69,7 @@ class TestSchemeReview:
         )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
 
@@ -129,7 +129,7 @@ class TestSchemeReview:
         )
         scheme.financials.update_funding(build_scheme_funding())
         scheme.reviews.update_authority_review(
-            AuthorityReview(id_=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
+            AuthorityReview(surrogate_id=1, review_date=datetime(2020, 1, 2, 12), source=DataSource.ATF4_BID)
         )
         await schemes.add(scheme)
 
@@ -150,7 +150,7 @@ class TestSchemeReview:
         assert actual_scheme
         (authority_review,) = actual_scheme.reviews.authority_reviews
         assert (
-            authority_review.id == 1
+            authority_review.surrogate_id == 1
             and authority_review.review_date == datetime(2020, 1, 2, 12)
             and authority_review.source == DataSource.ATF4_BID
         )

@@ -18,7 +18,9 @@ class SchemeReviewForm(FlaskForm):  # type: ignore
     )
 
     def update_domain(self, reviews: SchemeReviews, now: datetime) -> None:
-        reviews.update_authority_review(AuthorityReview(id_=None, review_date=now, source=DataSource.AUTHORITY_UPDATE))
+        reviews.update_authority_review(
+            AuthorityReview(surrogate_id=None, review_date=now, source=DataSource.AUTHORITY_UPDATE)
+        )
 
 
 @dataclass(frozen=True)

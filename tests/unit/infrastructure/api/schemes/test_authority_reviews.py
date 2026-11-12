@@ -18,7 +18,7 @@ class TestCapitalSchemeAuthorityReviewModel:
         authority_review = authority_review_model.to_domain()
 
         assert (
-            authority_review.id is not None
+            authority_review.surrogate_id is not None
             and authority_review.review_date == datetime(2020, 1, 2)
             and authority_review.source == DataSource.AUTHORITY_UPDATE
         )
@@ -35,7 +35,9 @@ class TestCapitalSchemeAuthorityReviewModel:
 
 class TestCreateCapitalSchemeAuthorityReviewModel:
     def test_from_domain(self) -> None:
-        authority_review = AuthorityReview(id_=1, review_date=datetime(2020, 1, 2), source=DataSource.AUTHORITY_UPDATE)
+        authority_review = AuthorityReview(
+            surrogate_id=1, review_date=datetime(2020, 1, 2), source=DataSource.AUTHORITY_UPDATE
+        )
 
         authority_review_model = CreateCapitalSchemeAuthorityReviewModel.from_domain(authority_review)
 

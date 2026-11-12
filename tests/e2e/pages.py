@@ -1,5 +1,6 @@
 import re
 from collections.abc import Iterator
+from dataclasses import dataclass
 from re import Pattern
 from typing import Self
 
@@ -366,6 +367,13 @@ class SchemeMilestonesComponent:
         return ChangeMilestoneDatesPage(self._title.page)
 
 
+@dataclass
+class SchemeMilestoneRowData:
+    milestone: str | None
+    planned: str | None
+    actual: str | None
+
+
 class SchemeMilestoneRowComponent:
     def __init__(self, row: Locator):
         self._header = row.get_by_role("rowheader")
@@ -383,8 +391,8 @@ class SchemeMilestoneRowComponent:
     def actual(self) -> str | None:
         return self._cells.nth(1).text_content()
 
-    def to_dict(self) -> dict[str, str | None]:
-        return {"milestone": self.milestone, "planned": self.planned, "actual": self.actual}
+    def to_data(self) -> SchemeMilestoneRowData:
+        return SchemeMilestoneRowData(milestone=self.milestone, planned=self.planned, actual=self.actual)
 
 
 class SchemeMilestonesTableComponent:
@@ -398,8 +406,8 @@ class SchemeMilestonesTableComponent:
     def __getitem__(self, milestone: str) -> SchemeMilestoneRowComponent:
         return next(row for row in self if row.milestone == milestone)
 
-    def to_dicts(self) -> list[dict[str, str | None]]:
-        return [milestone.to_dict() for milestone in self]
+    def to_data(self) -> list[SchemeMilestoneRowData]:
+        return [milestone.to_data() for milestone in self]
 
 
 class SchemeOutputsComponent:

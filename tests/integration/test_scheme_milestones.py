@@ -11,7 +11,7 @@ from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.conftest import AsyncFlaskClient
-from tests.integration.pages import ChangeMilestoneDatesPage, SchemePage
+from tests.integration.pages import ChangeMilestoneDatesPage, SchemeMilestoneRowData, SchemePage
 from tests.unit.domain.builders import build_scheme, build_scheme_funding, build_scheme_overview
 
 
@@ -47,12 +47,12 @@ class TestSchemeMilestones:
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
-        assert scheme_page.milestones.milestones.to_dicts() == [
-            {"milestone": "Feasibility design completed", "planned": "", "actual": ""},
-            {"milestone": "Preliminary design completed", "planned": "", "actual": ""},
-            {"milestone": "Detailed design completed", "planned": "", "actual": ""},
-            {"milestone": "Construction started", "planned": "", "actual": ""},
-            {"milestone": "Construction completed", "planned": "", "actual": ""},
+        assert scheme_page.milestones.milestones.to_data() == [
+            SchemeMilestoneRowData(milestone="Feasibility design completed", planned="", actual=""),
+            SchemeMilestoneRowData(milestone="Preliminary design completed", planned="", actual=""),
+            SchemeMilestoneRowData(milestone="Detailed design completed", planned="", actual=""),
+            SchemeMilestoneRowData(milestone="Construction started", planned="", actual=""),
+            SchemeMilestoneRowData(milestone="Construction completed", planned="", actual=""),
         ]
 
     async def test_scheme_shows_milestones(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
@@ -136,12 +136,12 @@ class TestSchemeMilestones:
 
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
-        assert scheme_page.milestones.milestones.to_dicts() == [
-            {"milestone": "Feasibility design completed", "planned": "1 Feb 2020", "actual": "2 Feb 2020"},
-            {"milestone": "Preliminary design completed", "planned": "1 Mar 2020", "actual": "2 Mar 2020"},
-            {"milestone": "Detailed design completed", "planned": "1 Apr 2020", "actual": "2 Apr 2020"},
-            {"milestone": "Construction started", "planned": "1 May 2020", "actual": "2 May 2020"},
-            {"milestone": "Construction completed", "planned": "1 Jun 2020", "actual": "2 Jun 2020"},
+        assert scheme_page.milestones.milestones.to_data() == [
+            SchemeMilestoneRowData(milestone="Feasibility design completed", planned="1 Feb 2020", actual="2 Feb 2020"),
+            SchemeMilestoneRowData(milestone="Preliminary design completed", planned="1 Mar 2020", actual="2 Mar 2020"),
+            SchemeMilestoneRowData(milestone="Detailed design completed", planned="1 Apr 2020", actual="2 Apr 2020"),
+            SchemeMilestoneRowData(milestone="Construction started", planned="1 May 2020", actual="2 May 2020"),
+            SchemeMilestoneRowData(milestone="Construction completed", planned="1 Jun 2020", actual="2 Jun 2020"),
         ]
 
     async def test_milestones_form_shows_title(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:

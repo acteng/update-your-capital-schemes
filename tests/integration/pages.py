@@ -1,5 +1,6 @@
 import re
 from collections.abc import Iterator
+from dataclasses import dataclass
 from re import Pattern
 from typing import Self
 
@@ -339,6 +340,13 @@ class InsetTextComponent:
         return pattern.match(self.text()) is not None
 
 
+@dataclass
+class SchemeMilestoneRowData:
+    milestone: str | None
+    planned: str
+    actual: str
+
+
 class SchemeMilestoneRowComponent:
     def __init__(self, row: Tag):
         self.milestone = one(row.select("th")).string
@@ -346,8 +354,8 @@ class SchemeMilestoneRowComponent:
         self.planned = cells[0].string or ""
         self.actual = cells[1].string or ""
 
-    def to_dict(self) -> dict[str, str | None]:
-        return {"milestone": self.milestone, "planned": self.planned, "actual": self.actual}
+    def to_data(self) -> SchemeMilestoneRowData:
+        return SchemeMilestoneRowData(milestone=self.milestone, planned=self.planned, actual=self.actual)
 
 
 class SchemeMilestonesTableComponent:
@@ -357,8 +365,8 @@ class SchemeMilestonesTableComponent:
     def __iter__(self) -> Iterator[SchemeMilestoneRowComponent]:
         return (SchemeMilestoneRowComponent(row) for row in self._rows)
 
-    def to_dicts(self) -> list[dict[str, str | None]]:
-        return [milestone.to_dict() for milestone in self]
+    def to_data(self) -> list[SchemeMilestoneRowData]:
+        return [milestone.to_data() for milestone in self]
 
 
 class SchemeOutputRowComponent:

@@ -16,7 +16,7 @@ from tests.e2e.api_client import (
 from tests.e2e.app_client import AppClient, UserRepr
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
-from tests.e2e.pages import SchemePage
+from tests.e2e.pages import SchemeMilestoneRowData, SchemePage
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
@@ -88,12 +88,12 @@ def test_scheme_milestones(app_client: AppClient, api_client: ApiClient, oidc_cl
 
     scheme_page = SchemePage.open(page, reference="ATE00001")
 
-    assert scheme_page.milestones.milestones.to_dicts() == [
-        {"milestone": "Feasibility design completed", "planned": "", "actual": "30 Nov 2020"},
-        {"milestone": "Preliminary design completed", "planned": "", "actual": "30 Jun 2022"},
-        {"milestone": "Detailed design completed", "planned": "", "actual": "30 Jun 2022"},
-        {"milestone": "Construction started", "planned": "5 Jun 2023", "actual": ""},
-        {"milestone": "Construction completed", "planned": "31 Aug 2023", "actual": ""},
+    assert scheme_page.milestones.milestones.to_data() == [
+        SchemeMilestoneRowData(milestone="Feasibility design completed", planned="", actual="30 Nov 2020"),
+        SchemeMilestoneRowData(milestone="Preliminary design completed", planned="", actual="30 Jun 2022"),
+        SchemeMilestoneRowData(milestone="Detailed design completed", planned="", actual="30 Jun 2022"),
+        SchemeMilestoneRowData(milestone="Construction started", planned="5 Jun 2023", actual=""),
+        SchemeMilestoneRowData(milestone="Construction completed", planned="31 Aug 2023", actual=""),
     ]
 
 

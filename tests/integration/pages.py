@@ -369,6 +369,13 @@ class SchemeMilestonesTableComponent:
         return [milestone.to_data() for milestone in self]
 
 
+@dataclass
+class SchemeOutputRowData:
+    infrastructure: str | None
+    measurement: str | None
+    planned: str
+
+
 class SchemeOutputRowComponent:
     def __init__(self, row: Tag):
         cells = row.select("td")
@@ -376,12 +383,10 @@ class SchemeOutputRowComponent:
         self.measurement = cells[1].string
         self.planned = cells[2].string or ""
 
-    def to_dict(self) -> dict[str, str | None]:
-        return {
-            "infrastructure": self.infrastructure,
-            "measurement": self.measurement,
-            "planned": self.planned,
-        }
+    def to_data(self) -> SchemeOutputRowData:
+        return SchemeOutputRowData(
+            infrastructure=self.infrastructure, measurement=self.measurement, planned=self.planned
+        )
 
 
 class SchemeOutputsTableComponent:
@@ -391,8 +396,8 @@ class SchemeOutputsTableComponent:
     def __iter__(self) -> Iterator[SchemeOutputRowComponent]:
         return (SchemeOutputRowComponent(row) for row in self._rows)
 
-    def to_dicts(self) -> list[dict[str, str | None]]:
-        return [output.to_dict() for output in self]
+    def to_data(self) -> list[SchemeOutputRowData]:
+        return [output.to_data() for output in self]
 
 
 class SchemeReviewFormComponent:

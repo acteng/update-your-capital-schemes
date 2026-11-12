@@ -9,7 +9,7 @@ from schemes.domain.schemes.outputs import OutputTypeMeasure, SchemeOutput
 from schemes.domain.schemes.schemes import SchemeRepository
 from schemes.domain.users import User, UserRepository
 from tests.integration.conftest import AsyncFlaskClient
-from tests.integration.pages import SchemePage
+from tests.integration.pages import SchemeOutputRowData, SchemePage
 from tests.unit.domain.builders import build_scheme, build_scheme_funding, build_scheme_overview
 
 
@@ -65,17 +65,17 @@ class TestSchemeOutputs:
         scheme_page = await SchemePage.open(async_client, reference="ATE00001")
 
         assert scheme_page.outputs.outputs
-        assert scheme_page.outputs.outputs.to_dicts() == [
-            {
-                "infrastructure": "New segregated cycling facility",
-                "measurement": "Miles",
-                "planned": "3",
-            },
-            {
-                "infrastructure": "Improvements to make an existing walking/cycle route safer",
-                "measurement": "Number of junctions",
-                "planned": "2.6",
-            },
+        assert scheme_page.outputs.outputs.to_data() == [
+            SchemeOutputRowData(
+                infrastructure="New segregated cycling facility",
+                measurement="Miles",
+                planned="3",
+            ),
+            SchemeOutputRowData(
+                infrastructure="Improvements to make an existing walking/cycle route safer",
+                measurement="Number of junctions",
+                planned="2.6",
+            ),
         ]
 
     async def test_scheme_shows_zero_outputs(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:

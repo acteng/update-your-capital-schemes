@@ -15,7 +15,7 @@ from tests.e2e.api_client import (
 from tests.e2e.app_client import AppClient, UserRepr
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
-from tests.e2e.pages import SchemePage
+from tests.e2e.pages import SchemeOutputRowData, SchemePage
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
@@ -66,15 +66,15 @@ def test_scheme_outputs(app_client: AppClient, api_client: ApiClient, oidc_clien
 
     scheme_page = SchemePage.open(page, reference="ATE00001")
 
-    assert scheme_page.outputs.outputs.to_dicts() == [
-        {
-            "infrastructure": "New segregated cycling facility",
-            "measurement": "Miles",
-            "planned": "3",
-        },
-        {
-            "infrastructure": "Improvements to make an existing walking/cycle route safer",
-            "measurement": "Number of junctions",
-            "planned": "2.6",
-        },
+    assert scheme_page.outputs.outputs.to_data() == [
+        SchemeOutputRowData(
+            infrastructure="New segregated cycling facility",
+            measurement="Miles",
+            planned="3",
+        ),
+        SchemeOutputRowData(
+            infrastructure="Improvements to make an existing walking/cycle route safer",
+            measurement="Number of junctions",
+            planned="2.6",
+        ),
     ]

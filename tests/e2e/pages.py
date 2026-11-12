@@ -416,6 +416,13 @@ class SchemeOutputsComponent:
         self.outputs = SchemeOutputsTableComponent(card.get_by_role("table"))
 
 
+@dataclass
+class SchemeOutputRowData:
+    infrastructure: str | None
+    measurement: str | None
+    planned: str | None
+
+
 class SchemeOutputRowComponent:
     def __init__(self, row: Locator):
         self._cells = row.get_by_role("cell")
@@ -432,12 +439,12 @@ class SchemeOutputRowComponent:
     def planned(self) -> str | None:
         return self._cells.nth(2).text_content()
 
-    def to_dict(self) -> dict[str, str | None]:
-        return {
-            "infrastructure": self.infrastructure,
-            "measurement": self.measurement,
-            "planned": self.planned,
-        }
+    def to_data(self) -> SchemeOutputRowData:
+        return SchemeOutputRowData(
+            infrastructure=self.infrastructure,
+            measurement=self.measurement,
+            planned=self.planned,
+        )
 
 
 class SchemeOutputsTableComponent:
@@ -448,8 +455,8 @@ class SchemeOutputsTableComponent:
         self._rows.first.wait_for()
         return (SchemeOutputRowComponent(row) for row in self._rows.all()[1:])
 
-    def to_dicts(self) -> list[dict[str, str | None]]:
-        return [output.to_dict() for output in self]
+    def to_data(self) -> list[SchemeOutputRowData]:
+        return [output.to_data() for output in self]
 
 
 class SchemeReviewComponent:

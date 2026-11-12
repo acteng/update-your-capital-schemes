@@ -2,7 +2,7 @@ from typing import Annotated
 
 from pydantic import AnyUrl, Field
 
-from schemes.domain.schemes.overview import FundingProgramme
+from schemes.domain.schemes.financials import FundingProgramme
 from schemes.infrastructure.api.base import BaseModel
 
 

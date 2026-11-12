@@ -3,8 +3,7 @@ from flask_wtf.csrf import generate_csrf
 from werkzeug.datastructures import MultiDict
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.financials import SchemeFinancials, SchemeFunding, SchemeSpend
-from schemes.domain.schemes.overview import FundingProgrammes
+from schemes.domain.schemes.financials import FundingProgrammes, SchemeFinancials, SchemeFunding, SchemeSpend
 from schemes.views.schemes.financials import (
     ChangeSpendToDateContext,
     ChangeSpendToDateForm,

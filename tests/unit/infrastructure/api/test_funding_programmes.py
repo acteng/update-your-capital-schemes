@@ -1,6 +1,6 @@
 from pydantic import AnyUrl
 
-from schemes.domain.schemes.overview import FundingProgrammes
+from schemes.domain.schemes.financials import FundingProgrammes
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeModel
 
 

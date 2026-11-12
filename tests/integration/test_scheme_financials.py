@@ -5,8 +5,7 @@ from flask.testing import FlaskClient
 
 from schemes.domain.authorities import Authority, AuthorityRepository
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.financials import SchemeFunding, SchemeSpend
-from schemes.domain.schemes.overview import FundingProgrammes
+from schemes.domain.schemes.financials import FundingProgrammes, SchemeFunding, SchemeSpend
 from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock

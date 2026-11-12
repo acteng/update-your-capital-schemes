@@ -1,7 +1,6 @@
 from typing import Any
 
-from schemes.domain.schemes.financials import SchemeFunding
-from schemes.domain.schemes.overview import FundingProgramme
+from schemes.domain.schemes.financials import FundingProgramme, SchemeFunding
 from schemes.domain.schemes.schemes import Scheme, SchemeRepository
 from schemes.infrastructure.api.authorities import AuthorityModel
 from schemes.infrastructure.api.base import BaseModel

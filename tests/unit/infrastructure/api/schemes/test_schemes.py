@@ -6,11 +6,10 @@ from pydantic import AnyUrl
 from respx import MockRouter
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.financials import SchemeSpend
+from schemes.domain.schemes.financials import FundingProgrammes, SchemeSpend
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure
-from schemes.domain.schemes.overview import FundingProgrammes
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.domain.schemes.schemes import Status
 from schemes.infrastructure.api.authorities import AuthorityModel

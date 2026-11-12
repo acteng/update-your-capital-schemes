@@ -1,8 +1,7 @@
 from pydantic import AnyUrl
 
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.financials import SchemeSpend
-from schemes.domain.schemes.overview import FundingProgrammes
+from schemes.domain.schemes.financials import FundingProgrammes, SchemeSpend
 from schemes.infrastructure.api.collections import CollectionModel
 from schemes.infrastructure.api.data_sources import DataSourceModel
 from schemes.infrastructure.api.funding_programmes import FundingProgrammeModel

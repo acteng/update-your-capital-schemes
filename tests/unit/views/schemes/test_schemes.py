@@ -7,11 +7,10 @@ from schemes.domain.authorities import Authority
 from schemes.domain.dates import DateRange
 from schemes.domain.reporting_window import ReportingWindow
 from schemes.domain.schemes.data_sources import DataSource
-from schemes.domain.schemes.financials import SchemeFunding
+from schemes.domain.schemes.financials import FundingProgramme, FundingProgrammes, SchemeFunding
 from schemes.domain.schemes.milestones import Milestone, SchemeMilestone
 from schemes.domain.schemes.observations import ObservationType
 from schemes.domain.schemes.outputs import OutputTypeMeasure, SchemeOutput
-from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes
 from schemes.domain.schemes.reviews import AuthorityReview
 from schemes.views.schemes.milestones import MilestoneContext
 from schemes.views.schemes.schemes import (

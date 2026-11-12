@@ -1,5 +1,5 @@
-from schemes.domain.schemes.financials import SchemeFunding
-from schemes.domain.schemes.overview import FundingProgramme, FundingProgrammes, SchemeOverview
+from schemes.domain.schemes.financials import FundingProgramme, FundingProgrammes, SchemeFunding
+from schemes.domain.schemes.overview import SchemeOverview
 from schemes.domain.schemes.schemes import Scheme, Status
 
 

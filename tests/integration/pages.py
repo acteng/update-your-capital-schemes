@@ -166,7 +166,7 @@ class HeadingComponent:
         self.text = one(heading.select("span:nth-child(2)")).string
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemeRowData:
     reference: str | None
     name: str | None
@@ -348,7 +348,7 @@ class InsetTextComponent:
         return pattern.match(self.text()) is not None
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemeMilestoneRowData:
     milestone: str | None
     planned: str
@@ -377,7 +377,7 @@ class SchemeMilestonesTableComponent:
         return [milestone.to_data() for milestone in self]
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemeOutputRowData:
     infrastructure: str | None
     measurement: str | None

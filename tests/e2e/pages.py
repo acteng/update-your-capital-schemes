@@ -201,7 +201,7 @@ class SchemePage(PageObject):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemeRowData:
     reference: str | None
     name: str | None
@@ -372,7 +372,7 @@ class SchemeMilestonesComponent:
         return ChangeMilestoneDatesPage(self._title.page)
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemeMilestoneRowData:
     milestone: str | None
     planned: str | None
@@ -421,7 +421,7 @@ class SchemeOutputsComponent:
         self.outputs = SchemeOutputsTableComponent(card.get_by_role("table"))
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemeOutputRowData:
     infrastructure: str | None
     measurement: str | None

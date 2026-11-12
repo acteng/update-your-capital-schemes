@@ -16,7 +16,7 @@ from tests.e2e.api_client import (
 from tests.e2e.app_client import AppClient, UserRepr
 from tests.e2e.oidc_server.users import StubUser
 from tests.e2e.oidc_server.web_client import OidcClient
-from tests.e2e.pages import SchemesPage
+from tests.e2e.pages import SchemeRowData, SchemesPage
 
 
 @pytest.mark.usefixtures("live_server", "oidc_server")
@@ -81,19 +81,19 @@ class TestAuthenticated:
         schemes_page = SchemesPage.open(page)
 
         assert schemes_page.heading.caption == "Liverpool City Region Combined Authority"
-        assert schemes_page.schemes.to_dicts() == [
-            {
-                "reference": "ATE00001",
-                "name": "Wirral Package",
-                "needs_review": True,
-                "last_reviewed": "2 Jan 2020",
-            },
-            {
-                "reference": "ATE00002",
-                "name": "School Streets",
-                "needs_review": True,
-                "last_reviewed": "3 Jan 2020",
-            },
+        assert schemes_page.schemes.to_data() == [
+            SchemeRowData(
+                reference="ATE00001",
+                name="Wirral Package",
+                needs_review=True,
+                last_reviewed="2 Jan 2020",
+            ),
+            SchemeRowData(
+                reference="ATE00002",
+                name="School Streets",
+                needs_review=True,
+                last_reviewed="3 Jan 2020",
+            ),
         ]
 
     def test_schemes_when_unauthorized(self, page: Page) -> None:

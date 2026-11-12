@@ -166,6 +166,14 @@ class HeadingComponent:
         self.text = one(heading.select("span:nth-child(2)")).string
 
 
+@dataclass
+class SchemeRowData:
+    reference: str | None
+    name: str | None
+    needs_review: bool
+    last_reviewed: str
+
+
 class SchemeRowComponent:
     def __init__(self, row: Tag):
         cells = row.select("td")
@@ -178,13 +186,13 @@ class SchemeRowComponent:
         self.needs_review = TagComponent(tag).text == "Needs review" if tag else False
         self.last_reviewed = cells[2].string or ""
 
-    def to_dict(self) -> dict[str, str | bool | None]:
-        return {
-            "reference": self.reference,
-            "name": self.name,
-            "needs_review": self.needs_review,
-            "last_reviewed": self.last_reviewed,
-        }
+    def to_data(self) -> SchemeRowData:
+        return SchemeRowData(
+            reference=self.reference,
+            name=self.name,
+            needs_review=self.needs_review,
+            last_reviewed=self.last_reviewed,
+        )
 
 
 class SchemesTableComponent:
@@ -197,8 +205,8 @@ class SchemesTableComponent:
     def __getitem__(self, reference: str) -> SchemeRowComponent:
         return next(scheme for scheme in self if scheme.reference == reference)
 
-    def to_dicts(self) -> list[dict[str, str | bool | None]]:
-        return [scheme.to_dict() for scheme in self]
+    def to_data(self) -> list[SchemeRowData]:
+        return [scheme.to_data() for scheme in self]
 
 
 class TagComponent:

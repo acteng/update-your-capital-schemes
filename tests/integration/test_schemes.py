@@ -10,7 +10,7 @@ from schemes.domain.schemes.schemes import SchemeRepository, Status
 from schemes.domain.users import User, UserRepository
 from schemes.infrastructure.clock import Clock
 from tests.integration.conftest import AsyncFlaskClient
-from tests.integration.pages import SchemesPage
+from tests.integration.pages import SchemeRowData, SchemesPage
 from tests.unit.domain.builders import build_scheme, build_scheme_funding, build_scheme_overview
 
 
@@ -122,13 +122,13 @@ class TestSchemes:
         schemes_page = await SchemesPage.open(async_client)
 
         assert schemes_page.schemes
-        assert schemes_page.schemes.to_dicts() == [
-            {
-                "reference": "ATE00001",
-                "name": "Wirral Package",
-                "needs_review": True,
-                "last_reviewed": "",
-            }
+        assert schemes_page.schemes.to_data() == [
+            SchemeRowData(
+                reference="ATE00001",
+                name="Wirral Package",
+                needs_review=True,
+                last_reviewed="",
+            )
         ]
 
     async def test_schemes_shows_scheme(self, schemes: SchemeRepository, async_client: AsyncFlaskClient) -> None:
@@ -144,13 +144,13 @@ class TestSchemes:
         schemes_page = await SchemesPage.open(async_client)
 
         assert schemes_page.schemes
-        assert schemes_page.schemes.to_dicts() == [
-            {
-                "reference": "ATE00001",
-                "name": "Wirral Package",
-                "needs_review": False,
-                "last_reviewed": "2 Jan 2020",
-            }
+        assert schemes_page.schemes.to_data() == [
+            SchemeRowData(
+                reference="ATE00001",
+                name="Wirral Package",
+                needs_review=False,
+                last_reviewed="2 Jan 2020",
+            )
         ]
 
     async def test_schemes_shows_scheme_needs_review(

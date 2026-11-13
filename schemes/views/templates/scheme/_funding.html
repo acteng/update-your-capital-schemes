@@ -4,9 +4,8 @@
 {% for funding in funding.fundings %}
     {% do rows.append(
         {
-            "classes": "govuk-summary-list__row--no-actions",
             "key": {
-                "classes": "govuk-!-width-one-half",
+                "classes": "govuk-!-width-three-quarters",
                 "text": funding.funding_programme.name
             },
             "value": {
@@ -18,9 +17,8 @@
 {% endfor %}
 {% do rows.append(
     {
-        "classes": "govuk-summary-list__row--no-actions",
         "key": {
-            "classes": "govuk-!-width-one-half",
+            "classes": "govuk-!-width-three-quarters",
             "text": "Funding allocation"
         },
         "value": {

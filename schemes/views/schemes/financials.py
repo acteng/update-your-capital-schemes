@@ -40,7 +40,7 @@ class FundingProgrammeContext:
         return cls(name=cls._NAMES[funding_programme])
 
 
-@dataclass
+@dataclass(frozen=True)
 class SchemeFundingRowContext:
     funding_programme: FundingProgrammeContext
     amount: int

@@ -18,22 +18,22 @@ from schemes.views.forms import CustomMessageIntegerField
 class FundingProgrammeContext:
     name: str
     _NAMES: ClassVar[Mapping[FundingProgramme, str]] = {
-        FundingProgrammes.ATF2: "ATF2",
-        FundingProgrammes.ATF3: "ATF3",
-        FundingProgrammes.ATF4: "ATF4",
-        FundingProgrammes.ATF4E: "ATF4e",
-        FundingProgrammes.ATF5: "ATF5",
-        FundingProgrammes.BUS: "BUS",
-        FundingProgrammes.CATF: "CATF",
-        FundingProgrammes.CON: "CON",
-        FundingProgrammes.CRSTS: "CRSTS",
-        FundingProgrammes.IST: "IST",
-        FundingProgrammes.LUF1: "LUF1",
-        FundingProgrammes.LUF2: "LUF2",
-        FundingProgrammes.LUF3: "LUF3",
-        FundingProgrammes.MRN: "MRN",
-        FundingProgrammes.NCN: "NCN",
-        FundingProgrammes.OTH: "OTH",
+        FundingProgrammes.ATF2: "Active Travel Fund Tranche 2",
+        FundingProgrammes.ATF3: "Active Travel Fund Tranche 3",
+        FundingProgrammes.ATF4: "Active Travel Fund Tranche 4",
+        FundingProgrammes.ATF4E: "Active Travel Fund Tranche 4 extension",
+        FundingProgrammes.ATF5: "Active Travel Fund Tranche 5",
+        FundingProgrammes.BUS: "Floating Bus Stop Remediation Fund",
+        FundingProgrammes.CATF: "Consolidated Active Travel Fund",
+        FundingProgrammes.CON: "Consolidated funding",
+        FundingProgrammes.CRSTS: "City Region Sustainable Transport Settlements",
+        FundingProgrammes.IST: "Integrated Settlement Trailblazer",
+        FundingProgrammes.LUF1: "Levelling Up Fund Round 1",
+        FundingProgrammes.LUF2: "Levelling Up Fund Round 2",
+        FundingProgrammes.LUF3: "Levelling Up Fund Round 3",
+        FundingProgrammes.MRN: "Major Road Network",
+        FundingProgrammes.NCN: "National Cycle Network Fund",
+        FundingProgrammes.OTH: "Other funding",
     }
 
     @classmethod

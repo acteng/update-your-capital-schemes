@@ -59,8 +59,8 @@ def test_scheme_funding(app_client: AppClient, api_client: ApiClient, oidc_clien
     scheme_page = SchemePage.open(page, reference="ATE00001")
 
     assert scheme_page.funding.to_data() == [
-        SchemeFundingRowData(funding_programme="ATF4", amount="£100,000"),
-        SchemeFundingRowData(funding_programme="CON", amount="£20,000"),
+        SchemeFundingRowData(funding_programme="Active Travel Fund Tranche 4", amount="£100,000"),
+        SchemeFundingRowData(funding_programme="Consolidated funding", amount="£20,000"),
     ]
     assert scheme_page.funding.funding_allocation == "£120,000"
 

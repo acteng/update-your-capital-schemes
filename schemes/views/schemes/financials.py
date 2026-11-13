@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from itertools import groupby
 from typing import ClassVar, Self
 
 from flask_wtf import FlaskForm
 from govuk_frontend_wtf.wtforms_widgets import GovTextInput
 from wtforms.validators import InputRequired, NumberRange, ValidationError
 
-from schemes.domain.schemes.financials import FundingProgramme, FundingProgrammes, SchemeFinancials
+from schemes.domain.schemes.financials import FundingProgramme, FundingProgrammes, SchemeFinancials, SchemeFunding
 from schemes.domain.schemes.schemes import Scheme
 from schemes.views.forms import CustomMessageIntegerField
 
@@ -45,6 +46,12 @@ class SchemeFundingRowContext:
     funding_programme: FundingProgrammeContext
     amount: int
 
+    @classmethod
+    def from_domain(cls, funding: SchemeFunding) -> Self:
+        return cls(
+            funding_programme=FundingProgrammeContext.from_domain(funding.funding_programme), amount=funding.amount
+        )
+
 
 @dataclass(frozen=True)
 class SchemeFundingContext:
@@ -53,16 +60,23 @@ class SchemeFundingContext:
 
     @classmethod
     def from_domain(cls, financials: SchemeFinancials) -> Self:
-        return cls(
-            fundings=[
-                SchemeFundingRowContext(
-                    funding_programme=FundingProgrammeContext.from_domain(funding.funding_programme),
-                    amount=funding.amount,
-                )
-                for funding in financials.fundings
-            ],
-            funding_allocation=financials.funding_allocation,
+        rows = [SchemeFundingRowContext.from_domain(funding) for funding in financials.fundings]
+        aggregate_rows = [
+            cls._aggregate_rows(list(group))
+            for _, group in groupby(sorted(rows, key=cls._by_funding_programme_name), cls._by_funding_programme_name)
+        ]
+
+        return cls(fundings=aggregate_rows, funding_allocation=financials.funding_allocation)
+
+    @staticmethod
+    def _aggregate_rows(rows: list[SchemeFundingRowContext]) -> SchemeFundingRowContext:
+        return SchemeFundingRowContext(
+            funding_programme=rows[0].funding_programme, amount=sum(row.amount for row in rows)
         )
+
+    @staticmethod
+    def _by_funding_programme_name(row: SchemeFundingRowContext) -> str:
+        return row.funding_programme.name
 
 
 @dataclass(frozen=True)

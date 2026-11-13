@@ -49,6 +49,17 @@ class TestFundingProgrammeContext:
         assert context == FundingProgrammeContext(name=expected_name)
 
 
+class TestSchemeFundingRowContext:
+    def test_from_domain(self) -> None:
+        funding = SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=100_000)
+
+        context = SchemeFundingRowContext.from_domain(funding)
+
+        assert context == SchemeFundingRowContext(
+            funding_programme=FundingProgrammeContext(name="ATF4"), amount=100_000
+        )
+
+
 class TestSchemeFundingContext:
     def test_from_domain_sets_fundings(self) -> None:
         financials = SchemeFinancials()
@@ -57,10 +68,33 @@ class TestSchemeFundingContext:
 
         context = SchemeFundingContext.from_domain(financials)
 
-        assert context.fundings == [
+        assert set(context.fundings) == {
             SchemeFundingRowContext(funding_programme=FundingProgrammeContext(name="ATF4"), amount=100_000),
             SchemeFundingRowContext(funding_programme=FundingProgrammeContext(name="CON"), amount=20_000),
-        ]
+        }
+
+    def test_from_domain_aggregates_fundings_by_funding_programme(self) -> None:
+        financials = SchemeFinancials()
+        financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=90_000))
+        financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=10_000))
+        financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.CON, amount=20_000))
+
+        context = SchemeFundingContext.from_domain(financials)
+
+        assert set(context.fundings) == {
+            SchemeFundingRowContext(funding_programme=FundingProgrammeContext(name="ATF4"), amount=100_000),
+            SchemeFundingRowContext(funding_programme=FundingProgrammeContext(name="CON"), amount=20_000),
+        }
+
+    def test_from_domain_orders_fundings_by_funding_programme_name(self) -> None:
+        financials = SchemeFinancials()
+        financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.CON, amount=20_000))
+        financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4E, amount=10_000))
+        financials.update_funding(SchemeFunding(funding_programme=FundingProgrammes.ATF4, amount=90_000))
+
+        context = SchemeFundingContext.from_domain(financials)
+
+        assert [funding.funding_programme.name for funding in context.fundings] == ["ATF4", "ATF4e", "CON"]
 
     def test_from_domain_sets_funding_allocation(self) -> None:
         financials = SchemeFinancials()

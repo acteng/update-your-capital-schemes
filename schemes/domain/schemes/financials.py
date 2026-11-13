@@ -15,17 +15,17 @@ class FundingProgrammes:
     ATF4 = FundingProgramme("ATF4", True)
     ATF4E = FundingProgramme("ATF4e", True)
     ATF5 = FundingProgramme("ATF5", True)
+    BUS = FundingProgramme("BUS", True)
     CATF = FundingProgramme("CATF", True)
+    CON = FundingProgramme("CON", True)
     CRSTS = FundingProgramme("CRSTS", False)
     IST = FundingProgramme("IST", True)
     LUF1 = FundingProgramme("LUF1", False)
     LUF2 = FundingProgramme("LUF2", False)
     LUF3 = FundingProgramme("LUF3", False)
     MRN = FundingProgramme("MRN", False)
-    OTH = FundingProgramme("OTH", False)
-    CON = FundingProgramme("CON", True)
     NCN = FundingProgramme("NCN", True)
-    BUS = FundingProgramme("BUS", True)
+    OTH = FundingProgramme("OTH", False)
 
 
 class SchemeFunding:

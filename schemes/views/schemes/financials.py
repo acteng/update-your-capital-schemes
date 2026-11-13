@@ -23,17 +23,17 @@ class FundingProgrammeContext:
         FundingProgrammes.ATF4: "ATF4",
         FundingProgrammes.ATF4E: "ATF4e",
         FundingProgrammes.ATF5: "ATF5",
+        FundingProgrammes.BUS: "BUS",
         FundingProgrammes.CATF: "CATF",
+        FundingProgrammes.CON: "CON",
         FundingProgrammes.CRSTS: "CRSTS",
         FundingProgrammes.IST: "IST",
         FundingProgrammes.LUF1: "LUF1",
         FundingProgrammes.LUF2: "LUF2",
         FundingProgrammes.LUF3: "LUF3",
         FundingProgrammes.MRN: "MRN",
-        FundingProgrammes.OTH: "OTH",
-        FundingProgrammes.CON: "CON",
         FundingProgrammes.NCN: "NCN",
-        FundingProgrammes.BUS: "BUS",
+        FundingProgrammes.OTH: "OTH",
     }
 
     @classmethod
